@@ -1100,5 +1100,45 @@
     "review": "Review incident",
     "note": "Note",
     "saveReview": "Save review"
+  },
+  "engineer": {
+    "title": "Race engineer",
+    "reference": "Reference: {{driver}}, lap {{lap}} ({{time}}), the fastest lap that you can see.",
+    "referenceOwn": "Reference: your best lap, lap {{lap}} ({{time}}). Nobody else shares a faster lap.",
+    "lapsUsed_one": "{{count}} of your laps is compared.",
+    "lapsUsed_other": "{{count}} of your laps are compared.",
+    "length": "measured lap length: {{meters}} m",
+    "notEnough": "At least two of your laps with telemetry and a reference are needed.",
+    "caution": "This shows where you lose time against the reference, not why. It compares only speed, because other drivers do not share their pedals. Advice shows only when the difference repeats.",
+    "noAdvice": "The {{zones}} braking zones show no difference that repeats.",
+    "evidence": "Your laps",
+    "test": "Try",
+    "kind": {
+      "brake_later": {
+        "title": "Braking zone {{zone}} (at {{position}} % of the lap)",
+        "finding": "You start to brake {{difference}} m before the reference on average, on {{showing}} of {{total}} laps.",
+        "unit": "m earlier",
+        "test": "brake 10 m later for 3 laps and check if the sector time goes down. If you run wide, go back to the old point."
+      },
+      "carry_speed": {
+        "title": "Corner {{zone}} (at {{position}} % of the lap)",
+        "finding": "Your minimum speed is {{difference}} km/h lower than the reference ({{reference}} km/h), on {{showing}} of {{total}} laps.",
+        "unit": "km/h",
+        "test": "release the brake a little earlier and carry more speed to the apex for 3 laps. Compare the exit speed."
+      },
+      "consistent_exit": {
+        "title": "Exit {{zone}} (at {{position}} % of the lap)",
+        "finding": "Your exit speed changes a lot from lap to lap (spread {{difference}} km/h). The reference exits at {{reference}} km/h.",
+        "unit": "km/h",
+        "test": "choose one fixed point to go full throttle and repeat it for 5 laps. A steady exit is usually worth more than one fast exit now and then."
+      }
+    },
+    "setupOff": "Setup advice: off. It needs {{missing}} data, and the app does not get it yet.",
+    "missing": {
+      "setup": "setup",
+      "tyre_temperatures": "tyre temperature",
+      "fuel": "fuel",
+      "track_conditions": "track conditions"
+    }
   }
 }

@@ -4098,6 +4098,58 @@
         ]
       }
     },
+    "/api/rounds/{round_id}/engineer": {
+      "get": {
+        "operationId": "apps_telemetry_api_engineer",
+        "summary": "Engineer",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "session",
+            "schema": {
+              "default": "race",
+              "enum": [
+                "race",
+                "qualifying",
+                "practice"
+              ],
+              "title": "Session",
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EngineerOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "telemetry"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/championships/{championship_id}/health": {
       "get": {
         "operationId": "apps_collectors_health_api_get_health",
@@ -10965,6 +11017,158 @@
           "channels"
         ],
         "title": "LapDetailOut",
+        "type": "object"
+      },
+      "AdviceOut": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "zone": {
+            "title": "Zone",
+            "type": "integer"
+          },
+          "position": {
+            "title": "Position",
+            "type": "number"
+          },
+          "reference_value": {
+            "title": "Reference Value",
+            "type": "number"
+          },
+          "lap_values": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Lap Values",
+            "type": "array"
+          },
+          "difference": {
+            "title": "Difference",
+            "type": "number"
+          },
+          "laps_showing": {
+            "title": "Laps Showing",
+            "type": "integer"
+          },
+          "laps_total": {
+            "title": "Laps Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "kind",
+          "zone",
+          "position",
+          "reference_value",
+          "lap_values",
+          "difference",
+          "laps_showing",
+          "laps_total"
+        ],
+        "title": "AdviceOut",
+        "type": "object"
+      },
+      "EngineerLapOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "lap_number": {
+            "title": "Lap Number",
+            "type": "integer"
+          },
+          "lap_time_ms": {
+            "title": "Lap Time Ms",
+            "type": "integer"
+          },
+          "own": {
+            "title": "Own",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "driver_name",
+          "lap_number",
+          "lap_time_ms",
+          "own"
+        ],
+        "title": "EngineerLapOut",
+        "type": "object"
+      },
+      "EngineerOut": {
+        "properties": {
+          "reference": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EngineerLapOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "laps": {
+            "items": {
+              "$ref": "#/components/schemas/EngineerLapOut"
+            },
+            "title": "Laps",
+            "type": "array"
+          },
+          "lap_length_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap Length M"
+          },
+          "zones": {
+            "title": "Zones",
+            "type": "integer"
+          },
+          "advice": {
+            "items": {
+              "$ref": "#/components/schemas/AdviceOut"
+            },
+            "title": "Advice",
+            "type": "array"
+          },
+          "setup_missing": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Setup Missing",
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Gaps",
+            "type": "array"
+          }
+        },
+        "required": [
+          "reference",
+          "laps",
+          "lap_length_m",
+          "zones",
+          "advice",
+          "setup_missing",
+          "gaps"
+        ],
+        "title": "EngineerOut",
         "type": "object"
       },
       "CollectorHealthOut": {

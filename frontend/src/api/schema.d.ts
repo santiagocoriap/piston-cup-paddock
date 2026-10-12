@@ -1491,6 +1491,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/engineer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Engineer */
+        get: operations["apps_telemetry_api_engineer"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/championships/{championship_id}/health": {
         parameters: {
             query?: never;
@@ -3783,6 +3800,54 @@ export interface components {
             channels: {
                 [key: string]: number[];
             };
+        };
+        /** AdviceOut */
+        AdviceOut: {
+            /** Kind */
+            kind: string;
+            /** Zone */
+            zone: number;
+            /** Position */
+            position: number;
+            /** Reference Value */
+            reference_value: number;
+            /** Lap Values */
+            lap_values: number[];
+            /** Difference */
+            difference: number;
+            /** Laps Showing */
+            laps_showing: number;
+            /** Laps Total */
+            laps_total: number;
+        };
+        /** EngineerLapOut */
+        EngineerLapOut: {
+            /** Id */
+            id: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Lap Number */
+            lap_number: number;
+            /** Lap Time Ms */
+            lap_time_ms: number;
+            /** Own */
+            own: boolean;
+        };
+        /** EngineerOut */
+        EngineerOut: {
+            reference: components["schemas"]["EngineerLapOut"] | null;
+            /** Laps */
+            laps: components["schemas"]["EngineerLapOut"][];
+            /** Lap Length M */
+            lap_length_m: number | null;
+            /** Zones */
+            zones: number;
+            /** Advice */
+            advice: components["schemas"]["AdviceOut"][];
+            /** Setup Missing */
+            setup_missing: string[];
+            /** Gaps */
+            gaps: string[];
         };
         /** CollectorHealthOut */
         CollectorHealthOut: {
@@ -6371,6 +6436,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LapDetailOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_api_engineer: {
+        parameters: {
+            query?: {
+                session?: "race" | "qualifying" | "practice";
+            };
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EngineerOut"];
                 };
             };
         };

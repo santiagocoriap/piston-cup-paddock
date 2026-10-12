@@ -10,6 +10,7 @@ import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { penaltyChanged } from '../lib/results'
 import { ImportSection } from './ImportSection'
+import { EngineerSection } from './EngineerSection'
 import { IncidentsSection } from './IncidentsSection'
 import { LapsSection } from './LapsSection'
 import { PenaltyLogsSection } from './PenaltyLogsSection'
@@ -134,6 +135,7 @@ export function RoundPage() {
       <RestartsSection roundId={data.id} entries={data.entries} adminView={may('restarts')} refresh={saves} />
 
       <TelemetrySection roundId={data.id} />
+      <EngineerSection roundId={data.id} />
 
       <ReportSection target={{ kind: 'round', id: data.id }} adminView={may('reports')} />
     </section>

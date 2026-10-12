@@ -1100,5 +1100,45 @@
     "review": "Revisar incidente",
     "note": "Nota",
     "saveReview": "Guardar revisión"
+  },
+  "engineer": {
+    "title": "Ingeniero de carrera",
+    "reference": "Referencia: {{driver}}, vuelta {{lap}} ({{time}}), la vuelta más rápida que podés ver.",
+    "referenceOwn": "Referencia: tu mejor vuelta, la {{lap}} ({{time}}). Nadie más comparte una vuelta más rápida.",
+    "lapsUsed_one": "Se compara {{count}} vuelta tuya.",
+    "lapsUsed_other": "Se comparan {{count}} vueltas tuyas.",
+    "length": "largo de vuelta medido: {{meters}} m",
+    "notEnough": "Hacen falta al menos dos vueltas tuyas con telemetría y una referencia.",
+    "caution": "Esto muestra dónde perdés tiempo frente a la referencia, no por qué. Solo compara velocidad, porque los otros pilotos no comparten sus pedales. Un consejo aparece solo si la diferencia se repite.",
+    "noAdvice": "En las {{zones}} frenadas no hay una diferencia que se repita.",
+    "evidence": "Datos de tus vueltas",
+    "test": "Probá",
+    "kind": {
+      "brake_later": {
+        "title": "Frenada {{zone}} (al {{position}} % de la vuelta)",
+        "finding": "Empezás a frenar en promedio {{difference}} m antes que la referencia, en {{showing}} de {{total}} vueltas.",
+        "unit": "m antes",
+        "test": "frená 10 m más tarde durante 3 vueltas y mirá si baja el tiempo del sector. Si te pasás de la curva, volvé al punto anterior."
+      },
+      "carry_speed": {
+        "title": "Curva {{zone}} (al {{position}} % de la vuelta)",
+        "finding": "Tu velocidad mínima es {{difference}} km/h más baja que la referencia ({{reference}} km/h), en {{showing}} de {{total}} vueltas.",
+        "unit": "km/h",
+        "test": "soltá el freno un poco antes y llevá más velocidad al vértice durante 3 vueltas. Compará la velocidad de salida."
+      },
+      "consistent_exit": {
+        "title": "Salida {{zone}} (al {{position}} % de la vuelta)",
+        "finding": "Tu velocidad de salida cambia mucho de vuelta a vuelta (desvío {{difference}} km/h). La referencia sale a {{reference}} km/h.",
+        "unit": "km/h",
+        "test": "elegí un punto fijo para acelerar a fondo y repetilo 5 vueltas. Una salida pareja suele valer más que una salida rápida de vez en cuando."
+      }
+    },
+    "setupOff": "Consejos de setup: apagados. Hacen falta datos de {{missing}}, y la app todavía no los recibe.",
+    "missing": {
+      "setup": "setup",
+      "tyre_temperatures": "temperatura de neumáticos",
+      "fuel": "combustible",
+      "track_conditions": "condiciones de pista"
+    }
   }
 }
