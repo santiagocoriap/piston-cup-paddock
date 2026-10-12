@@ -17,11 +17,22 @@ from apps.results.services import season_standings
 router = Router(tags=["exports"])
 
 
+FORMULA_START = ("=", "+", "-", "@", "\t", "\r")
+
+
+def _cell(value):
+    """Stop a text cell from running as a spreadsheet formula. Players choose their names in
+    AC, so a name like "=HYPERLINK(...)" must stay text. Numbers stay numbers."""
+    if isinstance(value, str) and value.startswith(FORMULA_START):
+        return "'" + value
+    return value
+
+
 def _csv(filename: str, header: list[str], rows) -> HttpResponse:
     buffer = io.StringIO()
     writer = csv.writer(buffer)
     writer.writerow(header)
-    writer.writerows(rows)
+    writer.writerows([_cell(value) for value in row] for row in rows)
     # A byte order mark lets Excel open the file as UTF-8.
     response = HttpResponse("﻿" + buffer.getvalue(), content_type="text/csv; charset=utf-8")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'

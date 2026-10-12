@@ -142,3 +142,13 @@ def test_exports_give_csv_files(league_with_history):
 def test_user_outside_the_championship_cannot_export(api, make_user, season):
     response = api(make_user("outsider")).client.get(f"/api/seasons/{season.id}/export/results.csv")
     assert response.status_code == 404
+
+
+def test_formula_in_a_driver_name_stays_text(league_with_history):
+    client, round_ = league_with_history
+    DriverProfile.objects.filter(display_name="D2").update(display_name="=HYPERLINK(1)")
+    content = client.client.get(f"/api/seasons/{round_.season_id}/export/results.csv")
+    text = content.content.decode("utf-8-sig")
+    assert ",'=HYPERLINK(1)," in text
+    assert ",=HYPERLINK" not in text
+    assert ",-" not in text.splitlines()[1]  # Numbers keep no quote.
