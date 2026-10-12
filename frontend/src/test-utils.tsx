@@ -3,10 +3,11 @@ import type { ReactElement } from 'react'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { vi } from 'vitest'
 import type { Me } from './api/client'
-import { SessionContext } from './session'
+import type { Mode } from './session'
+import { SessionProvider } from './SessionProvider'
 
-export const ADMIN: Me = { id: 1, username: 'santi', language: 'es', is_admin: true }
-export const DRIVER: Me = { id: 2, username: 'racer', language: 'es', is_admin: false }
+export const ADMIN: Me = { id: 1, username: 'santi', language: 'es', is_admin: true, can_admin: true }
+export const DRIVER: Me = { id: 2, username: 'racer', language: 'es', is_admin: false, can_admin: false }
 
 export function json(status: number, body?: unknown) {
   return new Response(body === undefined ? null : JSON.stringify(body), {
@@ -32,15 +33,19 @@ export function mockApi(routes: Record<string, Handler>) {
   return calls
 }
 
-/** Render one page at a URL, with a signed-in user. */
-export function renderPage(page: ReactElement, { path, url, me = ADMIN }: { path: string; url: string; me?: Me }) {
+/** Render one page at a URL, with a signed-in user. An admin starts in the admin mode. */
+export function renderPage(
+  page: ReactElement,
+  { path, url, me = ADMIN, mode }: { path: string; url: string; me?: Me; mode?: Mode },
+) {
+  localStorage.setItem('paddock.mode', mode ?? (me.can_admin ? 'admin' : 'driver'))
   return render(
-    <SessionContext.Provider value={me}>
+    <SessionProvider me={me}>
       <MemoryRouter initialEntries={[url]}>
         <Routes>
           <Route path={path} element={page} />
         </Routes>
       </MemoryRouter>
-    </SessionContext.Provider>,
+    </SessionProvider>,
   )
 }

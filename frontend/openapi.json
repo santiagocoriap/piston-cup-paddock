@@ -1087,13 +1087,18 @@
           "is_admin": {
             "title": "Is Admin",
             "type": "boolean"
+          },
+          "can_admin": {
+            "title": "Can Admin",
+            "type": "boolean"
           }
         },
         "required": [
           "id",
           "username",
           "language",
-          "is_admin"
+          "is_admin",
+          "can_admin"
         ],
         "title": "Me",
         "type": "object"

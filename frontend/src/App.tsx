@@ -10,7 +10,8 @@ import { ChampionshipPage } from './pages/ChampionshipPage'
 import { ChampionshipsPage } from './pages/ChampionshipsPage'
 import { RoundPage } from './pages/RoundPage'
 import { SeasonPage } from './pages/SeasonPage'
-import { SessionContext } from './session'
+import { useMode } from './session'
+import { SessionProvider } from './SessionProvider'
 
 type Session = { status: 'loading' } | { status: 'anonymous' } | { status: 'signed-in'; me: Me }
 
@@ -46,24 +47,31 @@ export default function App() {
     )
   }
 
-  const isAdmin = session.me.is_admin
   return (
-    <SessionContext.Provider value={session.me}>
+    <SessionProvider me={session.me}>
       <BrowserRouter>
-        <Routes>
-          <Route element={<Layout onSignOut={signOut} />}>
-            <Route index element={<ChampionshipsPage />} />
-            <Route path="championships/:championshipId" element={<ChampionshipPage />} />
-            <Route path="seasons/:seasonId" element={<SeasonPage />} />
-            <Route path="rounds/:roundId" element={<RoundPage />} />
-            {isAdmin && <Route path="admin/leagues" element={<LeaguesPage />} />}
-            {isAdmin && <Route path="admin/drivers" element={<DriversPage />} />}
-            {isAdmin && <Route path="admin/catalog" element={<CatalogPage />} />}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Route>
-        </Routes>
+        <AppRoutes isAdmin={session.me.is_admin} onSignOut={signOut} />
       </BrowserRouter>
-    </SessionContext.Provider>
+    </SessionProvider>
+  )
+}
+
+function AppRoutes({ isAdmin, onSignOut }: { isAdmin: boolean; onSignOut: () => void }) {
+  const { mode } = useMode()
+  const adminPages = isAdmin && mode === 'admin'
+  return (
+    <Routes>
+      <Route element={<Layout onSignOut={onSignOut} />}>
+        <Route index element={<ChampionshipsPage />} />
+        <Route path="championships/:championshipId" element={<ChampionshipPage />} />
+        <Route path="seasons/:seasonId" element={<SeasonPage />} />
+        <Route path="rounds/:roundId" element={<RoundPage />} />
+        {adminPages && <Route path="admin/leagues" element={<LeaguesPage />} />}
+        {adminPages && <Route path="admin/drivers" element={<DriversPage />} />}
+        {adminPages && <Route path="admin/catalog" element={<CatalogPage />} />}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
   )
 }
 

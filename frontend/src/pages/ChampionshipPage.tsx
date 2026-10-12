@@ -4,6 +4,7 @@ import { api } from '../api/client'
 import { ActionForm } from '../components/ActionForm'
 import { Loading } from '../components/Layout'
 import { useLoad } from '../lib/useLoad'
+import { useAdminView } from '../session'
 
 export function ChampionshipPage() {
   const { t } = useTranslation()
@@ -15,6 +16,7 @@ export function ChampionshipPage() {
   )
 
   const data = championship.data
+  const adminView = useAdminView(data?.can_manage ?? false)
   if (!data) return <Loading failed={championship.failed} />
   return (
     <section>
@@ -35,7 +37,7 @@ export function ChampionshipPage() {
         ))}
       </ul>
 
-      {data.can_manage && (
+      {adminView && (
         <div className="forms">
           <ActionForm
             title={t('championship.newSeason')}

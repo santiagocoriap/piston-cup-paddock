@@ -8,6 +8,7 @@
   --accent-text: #ffffff;
   --error: #ff6b6b;
   --success: #4ade80;
+  --admin-surface: #2a0b0a;
   color-scheme: dark;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
@@ -24,15 +25,29 @@ body {
   color: var(--text);
 }
 
-.shell {
-  max-width: 64rem;
-  margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
-}
-
 .shell.narrow {
   max-width: 28rem;
-  padding-top: 2rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.app {
+  min-height: 100vh;
+  border-top: 4px solid transparent;
+}
+
+.app.admin-mode {
+  border-top-color: var(--accent);
+}
+
+.content {
+  padding: 1rem 1rem 3rem;
+}
+
+@media (min-width: 64rem) {
+  .content {
+    padding: 1.25rem 1.5rem 3rem;
+  }
 }
 
 .brand {
@@ -84,9 +99,38 @@ a {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem 1.5rem;
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
+}
+
+.admin-mode .topbar {
+  background: var(--admin-surface);
+}
+
+.mode-switch {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.mode-switch button {
+  padding: 0.35rem 0.9rem;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.mode-switch button.on {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.admin-mode .mode-switch button.on {
+  background: var(--accent);
+  color: var(--accent-text);
 }
 
 .topbar .brand {

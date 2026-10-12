@@ -14,6 +14,9 @@ const names = {
 test('an admin sets up a season without voting and enters a result', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'One run is enough. The flow writes data.')
   await signIn(page)
+  await expect(page.getByRole('button', { name: 'Modo piloto' })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByRole('link', { name: 'Ligas' })).toBeHidden()
+  await page.getByRole('button', { name: 'Modo admin' }).click()
 
   // League and championship
   await page.getByRole('link', { name: 'Ligas' }).click()

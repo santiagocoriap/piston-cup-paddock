@@ -70,6 +70,13 @@ describe('SeasonPage', () => {
     expect(within(row).getByText('25')).toBeInTheDocument()
   })
 
+  it('hides the forms from an admin in the driver mode', async () => {
+    mockApi({ 'GET /api/seasons/5': () => json(200, season(true)), ...standings })
+    renderPage(<SeasonPage />, { path: '/seasons/:seasonId', url: '/seasons/5', mode: 'driver' })
+    await screen.findAllByRole('table')
+    expect(screen.queryByRole('form', { name: 'Agregar fecha' })).not.toBeInTheDocument()
+  })
+
   it('hides the forms from a driver', async () => {
     mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
     show(DRIVER)

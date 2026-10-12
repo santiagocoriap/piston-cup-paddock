@@ -5,6 +5,8 @@ from ninja import Router, Schema, Status
 from ninja.security import django_auth
 from ninja.utils import check_csrf
 
+from apps.competition.permissions import manages_any_championship
+
 router = Router(tags=["auth"])
 
 
@@ -18,6 +20,7 @@ class Me(Schema):
     username: str
     language: str
     is_admin: bool
+    can_admin: bool  # True when the user can manage something, so the admin mode is useful.
 
 
 class Error(Schema):
@@ -25,7 +28,13 @@ class Error(Schema):
 
 
 def _me(user) -> Me:
-    return Me(id=user.id, username=user.username, language=user.language, is_admin=user.is_staff)
+    return Me(
+        id=user.id,
+        username=user.username,
+        language=user.language,
+        is_admin=user.is_staff,
+        can_admin=manages_any_championship(user),
+    )
 
 
 @router.get("/csrf", response={204: None}, auth=None)

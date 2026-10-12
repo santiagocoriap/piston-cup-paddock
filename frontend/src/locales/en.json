@@ -17,7 +17,8 @@
     "leagues": "Leagues",
     "drivers": "Drivers",
     "catalog": "Tracks and cars",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "main": "Main navigation"
   },
   "common": {
     "create": "Create",
@@ -159,5 +160,10 @@
       "dns": "DNS",
       "dsq": "DSQ"
     }
+  },
+  "mode": {
+    "label": "Mode",
+    "driver": "Driver mode",
+    "admin": "Admin mode"
   }
 }

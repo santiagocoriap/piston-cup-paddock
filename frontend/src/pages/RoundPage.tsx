@@ -7,6 +7,7 @@ import { Loading } from '../components/Layout'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { useAdminView } from '../session'
 
 type RoundDetail = components['schemas']['RoundDetail']
 type Status = components['schemas']['LineIn']['status']
@@ -23,6 +24,7 @@ export function RoundPage() {
   )
 
   const data = round.data
+  const adminView = useAdminView(data?.can_manage ?? false)
   if (!data) return <Loading failed={round.failed} />
   const rules = data.rules
   return (
@@ -75,7 +77,7 @@ export function RoundPage() {
           t('round.bonuses', { pole: rules.pole_bonus, fastest: rules.fastest_lap_bonus })}
       </p>
 
-      {data.can_manage && <ResultForm round={data} onSaved={round.reload} />}
+      {adminView && <ResultForm round={data} onSaved={round.reload} />}
     </section>
   )
 }

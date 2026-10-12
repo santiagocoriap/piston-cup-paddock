@@ -33,7 +33,24 @@ describe('App', () => {
     await userEvent.type(screen.getByLabelText('Contraseña'), 'secret-pass')
     await userEvent.click(screen.getByRole('button', { name: 'Entrar' }))
     expect(await screen.findByRole('heading', { name: 'Campeonatos' })).toBeInTheDocument()
+  })
+
+  it('starts an admin in the driver mode and switches to the admin mode', async () => {
+    mockApi({
+      'GET /api/auth/me': () => json(200, ADMIN),
+      'GET /api/championships': () => json(200, []),
+    })
+    render(<App />)
+    const driverMode = await screen.findByRole('button', { name: 'Modo piloto' })
+    expect(driverMode).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.queryByRole('link', { name: 'Ligas' })).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Modo admin' }))
+    expect(screen.getByRole('button', { name: 'Modo admin' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('link', { name: 'Ligas' })).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Modo piloto' }))
+    expect(screen.queryByRole('link', { name: 'Ligas' })).not.toBeInTheDocument()
   })
 
   it('shows an error after a wrong password', async () => {
@@ -54,13 +71,13 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: 'Championships' })).toBeInTheDocument()
   })
 
-  it('hides the admin links from a driver', async () => {
+  it('shows no mode switch to a driver', async () => {
     mockApi({
-      'GET /api/auth/me': () => json(200, { ...ADMIN, is_admin: false }),
+      'GET /api/auth/me': () => json(200, { ...ADMIN, is_admin: false, can_admin: false }),
       'GET /api/championships': () => json(200, []),
     })
     render(<App />)
     await screen.findByRole('heading', { name: 'Campeonatos' })
-    expect(screen.queryByRole('link', { name: 'Ligas' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Modo admin' })).not.toBeInTheDocument()
   })
 })

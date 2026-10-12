@@ -36,6 +36,7 @@ def test_login_with_correct_password_starts_a_session(user):
         "username": "driver",
         "language": "es",
         "is_admin": False,
+        "can_admin": False,
     }
     assert client.get("/api/auth/me").json()["username"] == "driver"
 
@@ -68,3 +69,11 @@ def test_database_stores_only_a_password_hash(user):
     user.refresh_from_db()
     assert PASSWORD not in user.password
     assert user.check_password(PASSWORD)
+
+
+def test_championship_admin_can_use_the_admin_mode(api, champ_admin):
+    assert api(champ_admin).get("/auth/me").json()["can_admin"] is True
+
+
+def test_driver_cannot_use_the_admin_mode(api, driver_user):
+    assert api(driver_user).get("/auth/me").json()["can_admin"] is False

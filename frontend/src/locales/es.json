@@ -17,7 +17,8 @@
     "leagues": "Ligas",
     "drivers": "Pilotos",
     "catalog": "Pistas y autos",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "main": "Navegación principal"
   },
   "common": {
     "create": "Crear",
@@ -159,5 +160,10 @@
       "dns": "DNS",
       "dsq": "DSQ"
     }
+  },
+  "mode": {
+    "label": "Modo",
+    "driver": "Modo piloto",
+    "admin": "Modo admin"
   }
 }

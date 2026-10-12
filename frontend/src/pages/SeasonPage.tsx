@@ -5,6 +5,7 @@ import { ActionForm } from '../components/ActionForm'
 import { Loading } from '../components/Layout'
 import { formatDateTime, localInputToIso } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { useAdminView } from '../session'
 
 export function SeasonPage() {
   const { t, i18n } = useTranslation()
@@ -17,6 +18,7 @@ export function SeasonPage() {
   )
 
   const data = season.data
+  const adminView = useAdminView(data?.can_manage ?? false)
   if (!data) return <Loading failed={season.failed} />
   return (
     <section>
@@ -137,7 +139,7 @@ export function SeasonPage() {
         </div>
       )}
 
-      {data.can_manage && <SeasonForms seasonId={seasonId} onChange={season.reload} />}
+      {adminView && <SeasonForms seasonId={seasonId} onChange={season.reload} />}
     </section>
   )
 }

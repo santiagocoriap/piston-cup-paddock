@@ -433,6 +433,8 @@ export interface components {
             language: string;
             /** Is Admin */
             is_admin: boolean;
+            /** Can Admin */
+            can_admin: boolean;
         };
         /** Error */
         Error: {
