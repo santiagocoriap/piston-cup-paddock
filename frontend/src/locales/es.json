@@ -1,0 +1,16 @@
+{
+  "app": { "name": "Piston Cup Paddock", "loading": "Cargando…" },
+  "login": {
+    "title": "Iniciar sesión",
+    "username": "Usuario",
+    "password": "Contraseña",
+    "submit": "Entrar",
+    "invalid": "Usuario o contraseña incorrectos.",
+    "error": "No se pudo iniciar sesión. Intentá de nuevo."
+  },
+  "home": {
+    "welcome": "Bienvenido, {{name}}",
+    "intro": "El paddock está listo. Las temporadas, las carreras y los resultados llegan pronto.",
+    "logout": "Cerrar sesión"
+  }
+}

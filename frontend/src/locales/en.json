@@ -1,0 +1,16 @@
+{
+  "app": { "name": "Piston Cup Paddock", "loading": "Loading…" },
+  "login": {
+    "title": "Sign in",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Sign in",
+    "invalid": "Incorrect username or password.",
+    "error": "Sign in failed. Try again."
+  },
+  "home": {
+    "welcome": "Welcome, {{name}}",
+    "intro": "The paddock is ready. Seasons, races, and results come soon.",
+    "logout": "Sign out"
+  }
+}

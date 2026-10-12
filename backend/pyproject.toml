@@ -1,0 +1,34 @@
+[project]
+name = "piston-cup-paddock"
+version = "0.1.0"
+description = "Championship management for a friends Assetto Corsa league"
+requires-python = ">=3.13"
+dependencies = [
+    "django>=6.1.2",
+    "django-ninja>=1.7.1",
+    "gunicorn>=26.2.0",
+    "procrastinate[django]>=3.10.0",
+    "psycopg[binary]>=3.3.6",
+    "whitenoise>=6.12.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-django>=4.14.0",
+    "ruff>=0.17.0",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py"]
+testpaths = ["tests"]
+filterwarnings = ["ignore:No directory at:UserWarning"]
+
+[tool.ruff]
+extend-exclude = ["*/migrations/*"]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "DJ"]

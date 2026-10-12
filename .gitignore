@@ -1,1 +1,9 @@
 samples-raw/
+.env
+backend/.venv/
+backend/staticfiles/
+__pycache__/
+node_modules/
+frontend/dist/
+test-results/
+playwright-report/

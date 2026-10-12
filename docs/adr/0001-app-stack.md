@@ -25,7 +25,7 @@ The league is small. One developer builds the app with AI agents. The owner depl
 | AI | The LiteLLM Python library, called only from the worker |
 | Data analysis | pandas and numpy, added when a ticket needs them |
 | Python tools | uv for packages, ruff for lint and format |
-| Frontend tools | pnpm for packages, ESLint, Prettier |
+| Frontend tools | pnpm for packages, oxlint (the Vite template default) |
 | Tests | pytest for unit and integration tests, Vitest for frontend units, Playwright for end-to-end flows |
 | Deployment | Docker Compose with the services `web`, `worker`, and `db`, deployed with Coolify |
 
