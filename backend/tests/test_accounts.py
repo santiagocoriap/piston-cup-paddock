@@ -155,3 +155,61 @@ def test_audit_has_no_token_and_no_password(api, league_admin):
 @pytest.mark.parametrize("bad", ["", "a b", "x/y"])
 def test_user_name_format(api, league_admin, bad):
     assert api(league_admin).post("/accounts", {"username": bad}).status_code == 422
+
+
+class TestLinkScope:
+    """A link must never give more rights to the person who makes it."""
+
+    def test_championship_admin_cannot_reset_a_league_admin(
+        self, api, champ_admin, league_admin, championship
+    ):
+        ChampionshipMember.objects.create(
+            championship=championship, user=league_admin, role="driver"
+        )
+        response = api(champ_admin).post(f"/accounts/{league_admin.id}/link")
+        assert response.status_code == 403
+
+    def test_championship_admin_cannot_reset_another_admin(
+        self, api, champ_admin, championship, make_user
+    ):
+        other = make_user("other_admin")
+        ChampionshipMember.objects.create(championship=championship, user=other, role="admin")
+        assert api(champ_admin).post(f"/accounts/{other.id}/link").status_code == 403
+
+    def test_championship_admin_cannot_reset_a_driver_of_another_championship_too(
+        self, api, champ_admin, championship, other_championship, make_user
+    ):
+        driver = make_user("shared")
+        ChampionshipMember.objects.create(championship=championship, user=driver, role="driver")
+        ChampionshipMember.objects.create(
+            championship=other_championship, user=driver, role="driver"
+        )
+        assert api(champ_admin).post(f"/accounts/{driver.id}/link").status_code == 403
+
+    def test_championship_admin_resets_a_own_driver(self, api, champ_admin, driver_user):
+        assert api(champ_admin).post(f"/accounts/{driver_user.id}/link").status_code == 200
+
+    def test_championship_admin_cannot_reset_the_own_account(self, api, champ_admin):
+        assert api(champ_admin).post(f"/accounts/{champ_admin.id}/link").status_code == 403
+
+    def test_league_admin_cannot_reset_a_superuser(self, api, league_admin, make_user):
+        root = make_user("root", is_staff=True, is_superuser=True)
+        assert api(league_admin).post(f"/accounts/{root.id}/link").status_code == 403
+
+    def test_championship_admin_links_only_a_driver_of_the_championship(
+        self, api, champ_admin, championship, other_championship, car
+    ):
+        from apps.competition.models import Season, SeasonEntry
+
+        foreign = DriverProfile.objects.create(display_name="Foreign")
+        season = Season.objects.create(
+            championship=other_championship, name="X", planned_round_count=1
+        )
+        SeasonEntry.objects.create(season=season, driver=foreign, car=car, number=1)
+        response = api(champ_admin).post(
+            "/accounts",
+            {"username": "taker", "driver_id": foreign.id, "championship_id": championship.id},
+        )
+        assert response.status_code == 403
+        foreign.refresh_from_db()
+        assert foreign.user_id is None

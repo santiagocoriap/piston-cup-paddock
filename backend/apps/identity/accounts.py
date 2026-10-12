@@ -89,6 +89,12 @@ def create_account(
             raise AccountError("driver_not_found")
         if profile.user_id is not None:
             raise AccountError("account_has_profile")
+        # A championship admin links only a driver who races in that championship.
+        if (
+            not is_league_admin(admin)
+            and not profile.entries.filter(season__championship=championship).exists()
+        ):
+            raise AccountError("forbidden")
 
     with transaction.atomic():
         user = User(username=username)
@@ -118,12 +124,29 @@ def create_account(
 
 
 def can_manage_user(admin, user: User) -> bool:
+    """Who can see an account and make a new link for it.
+
+    A league admin manages every account, but only a superuser manages a superuser. A
+    championship admin manages only plain drivers whose roles are all in championships that
+    the admin manages. Never an admin, and never the own account, so a link can never give
+    more rights to the person who makes it.
+    """
+    if user.is_superuser and not admin.is_superuser:
+        return False
     if is_league_admin(admin):
         return True
-    managed = ChampionshipMember.objects.filter(
-        user=admin, role=ChampionshipMember.Role.ADMIN
-    ).values("championship_id")
-    return ChampionshipMember.objects.filter(user=user, championship_id__in=managed).exists()
+    if user.pk == admin.pk or user.is_staff:
+        return False
+    roles = ChampionshipMember.objects.filter(user=user)
+    if roles.filter(role=ChampionshipMember.Role.ADMIN).exists():
+        return False
+    managed = set(
+        ChampionshipMember.objects.filter(
+            user=admin, role=ChampionshipMember.Role.ADMIN
+        ).values_list("championship_id", flat=True)
+    )
+    championships = set(roles.values_list("championship_id", flat=True))
+    return bool(championships) and championships <= managed
 
 
 def open_link(token: str) -> AccountLink:
