@@ -47,9 +47,19 @@ class FixedRoundIn(Schema):
     scheduled_at: AwareDatetime | None = None
 
 
+class ConditionsIn(Schema):
+    time_of_day: str = Field("", max_length=20)
+    weather: str = Field("", max_length=100)
+    air_temp_c: int | None = Field(None, ge=-30, le=60)
+    track_temp_c: int | None = Field(None, ge=-30, le=80)
+    grip: str = Field("", max_length=50)
+    notes: str = Field("", max_length=500)
+
+
 class RoundPatchIn(Schema):
     number: int | None = Field(None, ge=1, le=99)
     scheduled_at: AwareDatetime | None = None
+    announced_conditions: ConditionsIn | None = None
 
 
 class SeasonSummary(Schema):
@@ -464,6 +474,11 @@ def update_round(request, round_id: int, payload: RoundPatchIn):
         old = round_.scheduled_at.isoformat() if round_.scheduled_at else None
         changes.append(change("scheduled_at", old, payload.scheduled_at.isoformat()))
         round_.scheduled_at = payload.scheduled_at
+    if payload.announced_conditions is not None:
+        conditions = payload.announced_conditions.dict()
+        if conditions != round_.announced_conditions:
+            changes.append(change("announced_conditions", round_.announced_conditions, conditions))
+            round_.announced_conditions = conditions
     with conflict_on_duplicate("round_number_exists"):
         round_.save()
         record(

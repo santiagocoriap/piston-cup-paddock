@@ -20,7 +20,8 @@
     "logout": "Sign out",
     "main": "Main navigation",
     "audit": "History",
-    "records": "Records"
+    "records": "Records",
+    "home": "My paddock"
   },
   "common": {
     "create": "Create",
@@ -297,7 +298,8 @@
       "slots": "Places",
       "selected": "Selected",
       "runoff": "Runoff",
-      "allow_repeat_layouts": "Repeat fixed tracks"
+      "allow_repeat_layouts": "Repeat fixed tracks",
+      "announced_conditions": "Announced conditions"
     },
     "none": "—",
     "pts": "{{count}} pts"
@@ -622,6 +624,45 @@
     "edit": "Change position or date",
     "round": "Round",
     "votedSlots": "{{count}} free rounds for voting",
-    "allowRepeats": "A fixed track can also be a voting candidate"
+    "allowRepeats": "A fixed track can also be a voting candidate",
+    "conditions": "Announced conditions (optional)"
+  },
+  "dashboard": {
+    "title": "My paddock",
+    "noProfile": "Your account has no linked driver. Ask an admin to link it.",
+    "noSeasons": "You are not in a season yet.",
+    "position": "Position",
+    "of": "of {{count}}",
+    "points": "Points",
+    "wins": "Wins",
+    "gap": "{{count}} pts behind the leader",
+    "leader": "Championship leader",
+    "recent": "Last results",
+    "noRecent": "There are no results yet.",
+    "next": "Next round",
+    "noNext": "There is no next round.",
+    "handicap": "Your ballast and restrictor",
+    "briefing": "See the briefing",
+    "car": "#{{number}} · {{car}}"
+  },
+  "briefing": {
+    "title": "Briefing",
+    "schedule": "Schedule",
+    "noDate": "Date to be confirmed",
+    "conditions": "Announced conditions",
+    "noConditions": "There are no announced conditions yet.",
+    "timeOfDay": "Track time",
+    "weather": "Weather",
+    "airTemp": "Air temperature",
+    "trackTemp": "Track temperature",
+    "grip": "Grip",
+    "notes": "Notes",
+    "rules": "Rules",
+    "points": "Points: {{points}}",
+    "protestWindow": "Protest window: {{count}} minutes after the provisional result.",
+    "myHandicap": "Your car",
+    "used": "The values of your race.",
+    "assigned": "The values for this round.",
+    "notEntered": "You are not in this season."
   }
 }

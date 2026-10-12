@@ -9,6 +9,7 @@ from pydantic import AwareDatetime
 
 from apps.competition.models import ChampionshipMember, Round, Season, SeasonEntry
 from apps.competition.permissions import can_manage, can_view
+from apps.dashboard.services import my_handicap
 from apps.rules.models import RulesVersion
 from apps.rules.scoring import Line, ResultError, Status
 
@@ -100,6 +101,20 @@ class ProtestOut(Schema):
     created_at: datetime
 
 
+class MyHandicapOut(Schema):
+    entry_number: int
+    car_name: str
+    ballast_kg: int
+    restrictor_pct: int
+    source: str
+
+
+class BriefingOut(Schema):
+    announced_conditions: dict
+    protest_window_minutes: int
+    my_handicap: MyHandicapOut | None
+
+
 class RoundDetail(Schema):
     id: int
     number: int
@@ -111,6 +126,7 @@ class RoundDetail(Schema):
     scheduled_at: AwareDatetime | None
     can_manage: bool
     can_protest: bool
+    briefing: BriefingOut
     rules: RulesOut
     entries: list[EntryOption]
     status: str | None
@@ -241,6 +257,7 @@ def _lines(version: ResultVersion) -> list[LineOut]:
 
 def _round_detail(user, round_: Round) -> RoundDetail:
     season = round_.season
+    mine = my_handicap(user, round_)
     result = (
         RaceResult.objects.filter(round=round_)
         .select_related("current_version__rules_version")
@@ -271,6 +288,13 @@ def _round_detail(user, round_: Round) -> RoundDetail:
         scheduled_at=round_.scheduled_at,
         can_manage=can_manage(user, season.championship),
         can_protest=_can_protest(user, round_, result),
+        briefing=BriefingOut(
+            announced_conditions=round_.announced_conditions,
+            protest_window_minutes=season.protest_window_minutes,
+            my_handicap=MyHandicapOut(**vars(mine))
+            if (mine := my_handicap(user, round_))
+            else None,
+        ),
         rules=RulesOut(
             version=rules.number,
             points_by_position=rules.points_by_position,

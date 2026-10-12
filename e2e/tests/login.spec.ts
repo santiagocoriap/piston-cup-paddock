@@ -26,3 +26,12 @@ test('the health check reports the database', async ({ request }) => {
   expect(response.ok()).toBe(true)
   expect(await response.json()).toEqual({ status: 'ok', database: true })
 })
+
+test('the home page shows the dashboard and fits the screen', async ({ page }) => {
+  await signIn(page)
+  await expect(page.getByRole('heading', { name: 'Mi paddock' })).toBeVisible()
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  )
+  expect(overflow).toBeLessThanOrEqual(0)
+})

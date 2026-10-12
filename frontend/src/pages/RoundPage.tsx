@@ -10,6 +10,7 @@ import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { penaltyChanged } from '../lib/results'
 import { ImportSection } from './ImportSection'
+import { Briefing } from './Briefing'
 import { RestartsSection } from './RestartsSection'
 import { ApproveButton, Penalties, Protests, ResultStatus, Versions } from './ResultReview'
 
@@ -48,6 +49,8 @@ export function RoundPage() {
         {t('round.title', { number: data.number })}: {data.track_name} · {data.layout_name}
       </h1>
       <p className="muted">{formatDateTime(data.scheduled_at, i18n.language)}</p>
+
+      <Briefing round={data} />
 
       <h2>{t('round.result')}</h2>
       <ResultStatus round={data} />

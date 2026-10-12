@@ -98,6 +98,9 @@ class Round(models.Model):
     # A voted or fixed round can wait for its date. The admin sets it in the calendar.
     scheduled_at = models.DateTimeField(null=True, blank=True)
     origin = models.CharField(max_length=10, choices=Origin.choices, default=Origin.MANUAL)
+    # What the admin announces before the race: time of day, weather, temperatures, grip, notes.
+    # The observed conditions can differ and never replace these values.
+    announced_conditions = models.JSONField(default=dict, blank=True)
 
     class Meta:
         ordering = ["number"]

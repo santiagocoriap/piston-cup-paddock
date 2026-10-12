@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "apps.handicaps",
     "apps.records",
     "apps.voting",
+    "apps.dashboard",
 ]
 
 MIDDLEWARE = [

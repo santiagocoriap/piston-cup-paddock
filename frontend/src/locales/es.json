@@ -20,7 +20,8 @@
     "logout": "Cerrar sesión",
     "main": "Navegación principal",
     "audit": "Historial",
-    "records": "Récords"
+    "records": "Récords",
+    "home": "Mi paddock"
   },
   "common": {
     "create": "Crear",
@@ -297,7 +298,8 @@
       "slots": "Lugares",
       "selected": "Elegidas",
       "runoff": "Desempate",
-      "allow_repeat_layouts": "Repetir pistas fijas"
+      "allow_repeat_layouts": "Repetir pistas fijas",
+      "announced_conditions": "Condiciones anunciadas"
     },
     "none": "—",
     "pts": "{{count}} pts"
@@ -622,6 +624,45 @@
     "edit": "Cambiar posición o fecha",
     "round": "Fecha",
     "votedSlots": "{{count}} fechas libres para votar",
-    "allowRepeats": "Una pista fija también puede ser candidata en la votación"
+    "allowRepeats": "Una pista fija también puede ser candidata en la votación",
+    "conditions": "Condiciones anunciadas (opcional)"
+  },
+  "dashboard": {
+    "title": "Mi paddock",
+    "noProfile": "Tu cuenta no tiene un piloto vinculado. Pedile a un admin que lo vincule.",
+    "noSeasons": "Todavía no estás inscripto en ninguna temporada.",
+    "position": "Posición",
+    "of": "de {{count}}",
+    "points": "Puntos",
+    "wins": "Victorias",
+    "gap": "{{count}} pts del líder",
+    "leader": "Líder del campeonato",
+    "recent": "Últimos resultados",
+    "noRecent": "Todavía no hay resultados.",
+    "next": "Próxima fecha",
+    "noNext": "No hay próxima fecha.",
+    "handicap": "Tu lastre y restrictor",
+    "briefing": "Ver briefing",
+    "car": "#{{number}} · {{car}}"
+  },
+  "briefing": {
+    "title": "Briefing",
+    "schedule": "Horario",
+    "noDate": "Fecha a confirmar",
+    "conditions": "Condiciones anunciadas",
+    "noConditions": "Todavía no hay condiciones anunciadas.",
+    "timeOfDay": "Hora en pista",
+    "weather": "Clima",
+    "airTemp": "Temperatura del aire",
+    "trackTemp": "Temperatura de pista",
+    "grip": "Grip",
+    "notes": "Notas",
+    "rules": "Reglas",
+    "points": "Puntos: {{points}}",
+    "protestWindow": "Plazo de protestas: {{count}} minutos después del resultado provisional.",
+    "myHandicap": "Tu auto",
+    "used": "Valores con los que corriste.",
+    "assigned": "Valores asignados para esta fecha.",
+    "notEntered": "No estás inscripto en esta temporada."
   }
 }

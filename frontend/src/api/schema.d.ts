@@ -913,6 +913,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dashboard */
+        get: operations["apps_dashboard_api_dashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1227,12 +1244,50 @@ export interface components {
             /** Scheduled At */
             scheduled_at?: string | null;
         };
+        /** ConditionsIn */
+        ConditionsIn: {
+            /**
+             * Time Of Day
+             * @default
+             */
+            time_of_day?: string;
+            /**
+             * Weather
+             * @default
+             */
+            weather?: string;
+            /** Air Temp C */
+            air_temp_c?: number | null;
+            /** Track Temp C */
+            track_temp_c?: number | null;
+            /**
+             * Grip
+             * @default
+             */
+            grip?: string;
+            /**
+             * Notes
+             * @default
+             */
+            notes?: string;
+        };
         /** RoundPatchIn */
         RoundPatchIn: {
             /** Number */
             number?: number | null;
             /** Scheduled At */
             scheduled_at?: string | null;
+            announced_conditions?: components["schemas"]["ConditionsIn"] | null;
+        };
+        /** BriefingOut */
+        BriefingOut: {
+            /** Announced Conditions */
+            announced_conditions: {
+                [key: string]: unknown;
+            };
+            /** Protest Window Minutes */
+            protest_window_minutes: number;
+            my_handicap: components["schemas"]["MyHandicapOut"] | null;
         };
         /** EntryOption */
         EntryOption: {
@@ -1273,6 +1328,19 @@ export interface components {
             entered_status: components["schemas"]["Status"];
             /** Entered Position */
             entered_position: number | null;
+        };
+        /** MyHandicapOut */
+        MyHandicapOut: {
+            /** Entry Number */
+            entry_number: number;
+            /** Car Name */
+            car_name: string;
+            /** Ballast Kg */
+            ballast_kg: number;
+            /** Restrictor Pct */
+            restrictor_pct: number;
+            /** Source */
+            source: string;
         };
         /** PenaltyOut */
         PenaltyOut: {
@@ -1350,6 +1418,7 @@ export interface components {
             can_manage: boolean;
             /** Can Protest */
             can_protest: boolean;
+            briefing: components["schemas"]["BriefingOut"];
             rules: components["schemas"]["RulesOut"];
             /** Entries */
             entries: components["schemas"]["EntryOption"][];
@@ -2221,6 +2290,71 @@ export interface components {
             option_ids: number[];
             /** Reason */
             reason: string;
+        };
+        /** DashboardOut */
+        DashboardOut: {
+            /** Has Driver Profile */
+            has_driver_profile: boolean;
+            /** Seasons */
+            seasons: components["schemas"]["SeasonCardOut"][];
+        };
+        /** NextRoundOut */
+        NextRoundOut: {
+            /** Round Id */
+            round_id: number;
+            /** Round Number */
+            round_number: number;
+            /** Track Name */
+            track_name: string;
+            /** Layout Name */
+            layout_name: string;
+            /** Scheduled At */
+            scheduled_at: string | null;
+            /** Ballast Kg */
+            ballast_kg: number;
+            /** Restrictor Pct */
+            restrictor_pct: number;
+        };
+        /** RecentOut */
+        RecentOut: {
+            /** Round Id */
+            round_id: number;
+            /** Round Number */
+            round_number: number;
+            /** Track Name */
+            track_name: string;
+            /** Status */
+            status: string;
+            /** Position */
+            position: number | null;
+            /** Points */
+            points: number;
+        };
+        /** SeasonCardOut */
+        SeasonCardOut: {
+            /** Season Id */
+            season_id: number;
+            /** Season Name */
+            season_name: string;
+            /** Championship Name */
+            championship_name: string;
+            /** Entry Number */
+            entry_number: number;
+            /** Car Name */
+            car_name: string;
+            /** Rank */
+            rank: number;
+            /** Entries */
+            entries: number;
+            /** Points */
+            points: number;
+            /** Wins */
+            wins: number;
+            /** Leader Points */
+            leader_points: number;
+            /** Recent */
+            recent: components["schemas"]["RecentOut"][];
+            next_round: components["schemas"]["NextRoundOut"] | null;
         };
     };
     responses: never;
@@ -3684,6 +3818,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BallotDetail"];
+                };
+            };
+        };
+    };
+    apps_dashboard_api_dashboard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardOut"];
                 };
             };
         };

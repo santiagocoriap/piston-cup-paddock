@@ -9,6 +9,7 @@ afterEach(() => vi.restoreAllMocks())
 function round(canManage: boolean, result: unknown = null, extra: Record<string, unknown> = {}) {
   return {
     can_protest: false,
+    briefing: { announced_conditions: {}, protest_window_minutes: 60, my_handicap: null },
     status: result ? 'provisional' : null,
     published_at: result ? '2026-10-19T02:00:00Z' : null,
     protest_deadline: result ? '2026-10-19T03:00:00Z' : null,
@@ -155,5 +156,26 @@ describe('RoundPage', () => {
     await userEvent.click(within(form).getByRole('button', { name: 'Enviar protesta' }))
     const body = calls.find((call) => call.key === 'POST /api/rounds/9/protests')!.body
     expect(body).toEqual({ description: 'Me chocó en la T1', entry_ids: [2], lap: null })
+  })
+
+  it('shows the briefing with conditions and the own car', async () => {
+    mockApi({
+      ...noRestarts,
+      'GET /api/rounds/9': () =>
+        json(200, round(false, null, {
+          briefing: {
+            announced_conditions: { time_of_day: '14:00', weather: 'Nublado', air_temp_c: 18, track_temp_c: null, grip: '', notes: '' },
+            protest_window_minutes: 60,
+            my_handicap: { entry_number: 7, car_name: 'Acura', ballast_kg: 10, restrictor_pct: 2, source: 'assigned' },
+          },
+        })),
+    })
+    show(DRIVER)
+    const briefing = await screen.findByRole('region', { name: 'Briefing' })
+    expect(within(briefing).getByText('Nublado')).toBeInTheDocument()
+    expect(within(briefing).getByText('18 °C')).toBeInTheDocument()
+    expect(within(briefing).queryByText('Temperatura de pista')).not.toBeInTheDocument()
+    expect(within(briefing).getByText('10 kg · 2 %')).toBeInTheDocument()
+    expect(within(briefing).getByText(/Plazo de protestas: 60 minutos/)).toBeInTheDocument()
   })
 })

@@ -15,6 +15,21 @@ function optionalNumber(value: FormDataEntryValue | null): number | null {
   return value ? Number(value) : null
 }
 
+/** The announced conditions, or undefined when the admin left all fields empty. */
+function conditionsFrom(form: FormData) {
+  const text = (name: string) => String(form.get(name) ?? '').trim()
+  const conditions = {
+    time_of_day: text('time_of_day'),
+    weather: text('weather'),
+    air_temp_c: optionalNumber(form.get('air_temp_c')),
+    track_temp_c: optionalNumber(form.get('track_temp_c')),
+    grip: text('grip'),
+    notes: text('notes'),
+  }
+  const filled = Object.values(conditions).some((value) => value !== '' && value !== null)
+  return filled ? conditions : undefined
+}
+
 /** Admin forms for the calendar: reserve a fixed track, and set a round position or date. */
 export function CalendarAdmin({ season, onChange }: { season: SeasonDetail; onChange: () => void }) {
   const { t } = useTranslation()
@@ -76,6 +91,7 @@ export function CalendarAdmin({ season, onChange }: { season: SeasonDetail; onCh
               body: {
                 number: optionalNumber(form.get('number')),
                 scheduled_at: optionalDate(form.get('scheduled_at')),
+                announced_conditions: conditionsFrom(form),
               },
             })
             if (!error) onChange()
@@ -105,6 +121,37 @@ export function CalendarAdmin({ season, onChange }: { season: SeasonDetail; onCh
               <input name="scheduled_at" type="datetime-local" />
             </label>
           </div>
+          <details>
+            <summary>{t('calendar.conditions')}</summary>
+            <div className="field-row">
+              <label>
+                {t('briefing.timeOfDay')}
+                <input name="time_of_day" maxLength={20} placeholder="14:00" />
+              </label>
+              <label>
+                {t('briefing.weather')}
+                <input name="weather" maxLength={100} />
+              </label>
+            </div>
+            <div className="field-row">
+              <label>
+                {t('briefing.airTemp')}
+                <input name="air_temp_c" type="number" min={-30} max={60} />
+              </label>
+              <label>
+                {t('briefing.trackTemp')}
+                <input name="track_temp_c" type="number" min={-30} max={80} />
+              </label>
+              <label>
+                {t('briefing.grip')}
+                <input name="grip" maxLength={50} />
+              </label>
+            </div>
+            <label>
+              {t('briefing.notes')}
+              <input name="notes" maxLength={500} />
+            </label>
+          </details>
         </ActionForm>
       )}
     </div>
