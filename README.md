@@ -34,7 +34,7 @@ You need Docker, [uv](https://docs.astral.sh/uv/), Node 24, and pnpm 10 (`corepa
 | Lint the backend | `cd backend && uv run ruff check . && uv run ruff format --check .` |
 | Lint the frontend | `pnpm --filter @paddock/frontend lint` |
 
-`pnpm test` runs the backend tests, the frontend tests, and the end-to-end tests. The end-to-end tests build and start the Docker stack, and make a test account `e2e-admin` in the local database.
+`pnpm test` runs the backend tests, the frontend tests, and the end-to-end tests. The end-to-end tests start a separate Docker stack (`paddock-e2e`, port 8421) with an empty database, and delete it after the run. Your local app and its data do not change. To keep the test stack after a failure, set `E2E_KEEP_STACK=true`.
 
 ## Deploy
 

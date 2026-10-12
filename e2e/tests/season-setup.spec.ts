@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { signIn, submitForm } from './helpers'
 
-// The local database keeps data between runs, so each run uses new names.
+// Each run starts with an empty test database. global-teardown.ts deletes it after the run.
 const run = Date.now().toString(36)
 const names = {
   league: `Liga ${run}`,
