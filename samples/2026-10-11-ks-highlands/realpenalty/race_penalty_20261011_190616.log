@@ -1,0 +1,30 @@
+2026-10-11 19:06:16.577512: ----------------------------------------------------
+2026-10-11 19:06:16.577512: Server name: League Server
+2026-10-11 19:06:16.577512: Track: ks_highlands / layout_long
+2026-10-11 19:06:16.577512: Name: Race
+2026-10-11 19:06:16.577512: Type: 3
+2026-10-11 19:06:16.577512: Time: 30
+2026-10-11 19:06:16.577512: Laps: 0
+2026-10-11 19:06:16.577512: ----------------------------------------------------
+2026-10-11 19:06:16.577512: ----------------------------------------------------
+2026-10-11 19:06:33.271935: New penalty - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - Penalty: Drive Through - Cause: jump - Other: ['15'] - Lap: 1 - Laps left: 2 - ID: 1 - True
+2026-10-11 19:06:33.292459: New penalty - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - Penalty: Drive Through - Cause: jump - Other: ['25'] - Lap: 1 - Laps left: 2 - ID: 1 - True
+2026-10-11 19:06:33.313472: New penalty - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - Penalty: Drive Through - Cause: jump - Other: ['13'] - Lap: 1 - Laps left: 2 - ID: 1 - True
+2026-10-11 19:06:33.334543: New penalty - Car ID: 0 - Name: Driver 01 - GUID: 76561190000000001 - Penalty: Drive Through - Cause: jump - Other: ['19'] - Lap: 1 - Laps left: 2 - ID: 1 - True
+2026-10-11 19:06:33.458269: New penalty - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - Penalty: Drive Through - Cause: jump - Other: ['3'] - Lap: 1 - Laps left: 2 - ID: 1 - True
+2026-10-11 19:06:47.944177: Teleport from Track - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - dsq: False - Lap: 1 - Norm.pos.: 0.00806 - World pos.: 714.565 / 5.722 / 598.331 - Distance: 10.521 - Speed: 8279
+2026-10-11 19:06:48.949900: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: False - lap: 1
+2026-10-11 19:06:50.581707: ----------------------------------------
+2026-10-11 19:06:50.581707: DSQ summary
+2026-10-11 19:06:50.581707: ----------------------------------------
+2026-10-11 19:06:50.581707: ----------------------------------------
+2026-10-11 19:06:50.581707: ----------------------------------------
+2026-10-11 19:06:50.581707: Time penalty summary
+2026-10-11 19:06:50.581707: ----------------------------------------
+2026-10-11 19:06:50.581707: Seconds penalty to final time - Car ID: 0 - Name: Driver 01 - GUID: 76561190000000001 - Team:  - seconds: 20
+2026-10-11 19:06:50.581707: Seconds penalty to final time - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - Team:  - seconds: 20
+2026-10-11 19:06:50.581707: Seconds penalty to final time - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - Team:  - seconds: 20
+2026-10-11 19:06:50.581707: Seconds penalty to final time - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - Team:  - seconds: 20
+2026-10-11 19:06:50.581707: Seconds penalty to final time - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - Team:  - seconds: 20
+2026-10-11 19:06:50.581707: ----------------------------------------
+2026-10-11 19:06:50.581707: End session - new info from AC

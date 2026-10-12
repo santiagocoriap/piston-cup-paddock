@@ -1,0 +1,8024 @@
+{
+  "TrackName": "csp/3460/../D/../ks_highlands",
+  "TrackConfig": "layout_long",
+  "Type": "PRACTICE",
+  "DurationSecs": 999,
+  "RaceLaps": 0,
+  "Cars": [
+    {
+      "CarId": 0,
+      "Driver": {
+        "Name": "Driver 01",
+        "Team": "",
+        "Nation": "PLA",
+        "Guid": "76561190000000001",
+        "GuidsList": [
+          "76561190000000001"
+        ]
+      },
+      "Model": "TRR_LMDh_acura_arx-06",
+      "Skin": "2025_MeyerShankRacing_93_Test",
+      "BallastKG": 8,
+      "Restrictor": 0
+    },
+    {
+      "CarId": 1,
+      "Driver": {
+        "Name": "Driver 02",
+        "Team": "Team 1",
+        "Nation": "",
+        "Guid": "76561190000000002",
+        "GuidsList": [
+          "76561190000000002"
+        ]
+      },
+      "Model": "TRR_LMDh_acura_arx-06",
+      "Skin": "2023 MSR #60",
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "Model": "TRR_LMDh_cadillac_v-series.r",
+      "Skin": "LM23_3",
+      "BallastKG": 15,
+      "Restrictor": 2
+    },
+    {
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "Model": "TRR_LMDh_cadillac_v-series.r",
+      "Skin": "WEC 38 Jota",
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "Model": "TRR_LMH_vanwall_vandervell_680_p",
+      "Skin": "l",
+      "BallastKG": 10,
+      "Restrictor": 2
+    },
+    {
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "Model": "TRR_LMH_vanwall_vandervell_680_p",
+      "Skin": "w",
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "CarId": 6,
+      "Driver": {
+        "Name": "Driver 07",
+        "Team": "Team 2",
+        "Nation": "",
+        "Guid": "76561190000000007",
+        "GuidsList": [
+          "76561190000000007"
+        ]
+      },
+      "Model": "TRR_LMH_toyota_gr010_hybrid",
+      "Skin": "2023 #7 Toyota Gazoo Racing LM24",
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "CarId": 7,
+      "Driver": {
+        "Name": "Driver 08",
+        "Team": "Team 2",
+        "Nation": "",
+        "Guid": "76561190000000008",
+        "GuidsList": [
+          "76561190000000008"
+        ]
+      },
+      "Model": "TRR_LMH_toyota_gr010_hybrid",
+      "Skin": "2023 #8 Toyota Gazoo Racing WEC",
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "CarId": 8,
+      "Driver": {
+        "Name": "Driver 09",
+        "Team": "Team 3",
+        "Nation": "",
+        "Guid": "76561190000000009",
+        "GuidsList": [
+          "76561190000000009"
+        ]
+      },
+      "Model": "TRR_LMH_aston_martin_valkyrie_amr-lmh",
+      "Skin": "009",
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "CarId": 9,
+      "Driver": {
+        "Name": "Driver 10",
+        "Team": "Team 4",
+        "Nation": "",
+        "Guid": "76561190000000010",
+        "GuidsList": [
+          "76561190000000010"
+        ]
+      },
+      "Model": "TRR_LMH_aston_martin_valkyrie_amr-lmh",
+      "Skin": "007",
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "CarId": 10,
+      "Driver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": [
+          ""
+        ]
+      },
+      "Model": "TRR_LMH_glickenhaus_scg_007_lmh",
+      "Skin": "#708_WEC",
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "CarId": 11,
+      "Driver": {
+        "Name": "Race Control",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": [
+          ""
+        ]
+      },
+      "Model": "ks_abarth_595ss",
+      "Skin": "1_official",
+      "BallastKG": 0,
+      "Restrictor": 0
+    }
+  ],
+  "Result": [
+    {
+      "DriverName": "Driver 01",
+      "DriverGuid": "76561190000000001",
+      "CarId": 0,
+      "CarModel": "TRR_LMDh_acura_arx-06",
+      "BestLap": 189445,
+      "TotalTime": 2889251,
+      "BallastKG": 8,
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 03",
+      "DriverGuid": "76561190000000003",
+      "CarId": 2,
+      "CarModel": "TRR_LMDh_cadillac_v-series.r",
+      "BestLap": 190282,
+      "TotalTime": 2028510,
+      "BallastKG": 15,
+      "Restrictor": 2
+    },
+    {
+      "DriverName": "Driver 05",
+      "DriverGuid": "76561190000000005",
+      "CarId": 4,
+      "CarModel": "TRR_LMH_vanwall_vandervell_680_p",
+      "BestLap": 630822,
+      "TotalTime": 2832501,
+      "BallastKG": 10,
+      "Restrictor": 2
+    },
+    {
+      "DriverName": "Driver 06",
+      "DriverGuid": "76561190000000006",
+      "CarId": 5,
+      "CarModel": "TRR_LMH_vanwall_vandervell_680_p",
+      "BestLap": 657842,
+      "TotalTime": 1805391,
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 04",
+      "DriverGuid": "76561190000000004",
+      "CarId": 3,
+      "CarModel": "TRR_LMDh_cadillac_v-series.r",
+      "BestLap": 932280,
+      "TotalTime": 2661514,
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 02",
+      "DriverGuid": "76561190000000002",
+      "CarId": 1,
+      "CarModel": "TRR_LMDh_acura_arx-06",
+      "BestLap": 999999999,
+      "TotalTime": 0,
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 07",
+      "DriverGuid": "76561190000000007",
+      "CarId": 6,
+      "CarModel": "TRR_LMH_toyota_gr010_hybrid",
+      "BestLap": 999999999,
+      "TotalTime": 0,
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 08",
+      "DriverGuid": "76561190000000008",
+      "CarId": 7,
+      "CarModel": "TRR_LMH_toyota_gr010_hybrid",
+      "BestLap": 999999999,
+      "TotalTime": 0,
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 09",
+      "DriverGuid": "76561190000000009",
+      "CarId": 8,
+      "CarModel": "TRR_LMH_aston_martin_valkyrie_amr-lmh",
+      "BestLap": 999999999,
+      "TotalTime": 0,
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 10",
+      "DriverGuid": "76561190000000010",
+      "CarId": 9,
+      "CarModel": "TRR_LMH_aston_martin_valkyrie_amr-lmh",
+      "BestLap": 999999999,
+      "TotalTime": 0,
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "",
+      "DriverGuid": "",
+      "CarId": 10,
+      "CarModel": "TRR_LMH_glickenhaus_scg_007_lmh",
+      "BestLap": 999999999,
+      "TotalTime": 0,
+      "BallastKG": 0,
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Race Control",
+      "DriverGuid": "",
+      "CarId": 11,
+      "CarModel": "ks_abarth_595ss",
+      "BestLap": 999999999,
+      "TotalTime": 0,
+      "BallastKG": 0,
+      "Restrictor": 0
+    }
+  ],
+  "Laps": [
+    {
+      "DriverName": "Driver 03",
+      "DriverGuid": "76561190000000003",
+      "CarId": 2,
+      "CarModel": "TRR_LMDh_cadillac_v-series.r",
+      "Timestamp": 422441,
+      "LapTime": 202989,
+      "Sectors": [
+        80813,
+        54198,
+        67978
+      ],
+      "Cuts": 0,
+      "BallastKG": 15,
+      "Tyre": "S",
+      "Restrictor": 2
+    },
+    {
+      "DriverName": "Driver 03",
+      "DriverGuid": "76561190000000003",
+      "CarId": 2,
+      "CarModel": "TRR_LMDh_cadillac_v-series.r",
+      "Timestamp": 612722,
+      "LapTime": 190282,
+      "Sectors": [
+        68872,
+        54580,
+        66830
+      ],
+      "Cuts": 0,
+      "BallastKG": 15,
+      "Tyre": "S",
+      "Restrictor": 2
+    },
+    {
+      "DriverName": "Driver 03",
+      "DriverGuid": "76561190000000003",
+      "CarId": 2,
+      "CarModel": "TRR_LMDh_cadillac_v-series.r",
+      "Timestamp": 872834,
+      "LapTime": 260114,
+      "Sectors": [
+        138889,
+        54571,
+        66654
+      ],
+      "Cuts": 0,
+      "BallastKG": 15,
+      "Tyre": "M",
+      "Restrictor": 2
+    },
+    {
+      "DriverName": "Driver 03",
+      "DriverGuid": "76561190000000003",
+      "CarId": 2,
+      "CarModel": "TRR_LMDh_cadillac_v-series.r",
+      "Timestamp": 1168282,
+      "LapTime": 295450,
+      "Sectors": [
+        174692,
+        54635,
+        66123
+      ],
+      "Cuts": 0,
+      "BallastKG": 15,
+      "Tyre": "M",
+      "Restrictor": 2
+    },
+    {
+      "DriverName": "Driver 03",
+      "DriverGuid": "76561190000000003",
+      "CarId": 2,
+      "CarModel": "TRR_LMDh_cadillac_v-series.r",
+      "Timestamp": 1358933,
+      "LapTime": 190652,
+      "Sectors": [
+        69391,
+        54482,
+        66779
+      ],
+      "Cuts": 0,
+      "BallastKG": 15,
+      "Tyre": "M",
+      "Restrictor": 2
+    },
+    {
+      "DriverName": "Driver 03",
+      "DriverGuid": "76561190000000003",
+      "CarId": 2,
+      "CarModel": "TRR_LMDh_cadillac_v-series.r",
+      "Timestamp": 1587158,
+      "LapTime": 228225,
+      "Sectors": [
+        106257,
+        54656,
+        67312
+      ],
+      "Cuts": 0,
+      "BallastKG": 15,
+      "Tyre": "H",
+      "Restrictor": 2
+    },
+    {
+      "DriverName": "Driver 03",
+      "DriverGuid": "76561190000000003",
+      "CarId": 2,
+      "CarModel": "TRR_LMDh_cadillac_v-series.r",
+      "Timestamp": 1784603,
+      "LapTime": 197446,
+      "Sectors": [
+        69246,
+        55867,
+        72333
+      ],
+      "Cuts": 0,
+      "BallastKG": 15,
+      "Tyre": "H",
+      "Restrictor": 2
+    },
+    {
+      "DriverName": "Driver 03",
+      "DriverGuid": "76561190000000003",
+      "CarId": 2,
+      "CarModel": "TRR_LMDh_cadillac_v-series.r",
+      "Timestamp": 2009939,
+      "LapTime": 225338,
+      "Sectors": [
+        104198,
+        54910,
+        66230
+      ],
+      "Cuts": 0,
+      "BallastKG": 15,
+      "Tyre": "S",
+      "Restrictor": 2
+    },
+    {
+      "DriverName": "Driver 06",
+      "DriverGuid": "76561190000000006",
+      "CarId": 5,
+      "CarModel": "TRR_LMH_vanwall_vandervell_680_p",
+      "Timestamp": 2024844,
+      "LapTime": 657842,
+      "Sectors": [
+        526708,
+        56826,
+        74308
+      ],
+      "Cuts": 0,
+      "BallastKG": 0,
+      "Tyre": "S",
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 01",
+      "DriverGuid": "76561190000000001",
+      "CarId": 0,
+      "CarModel": "TRR_LMDh_acura_arx-06",
+      "Timestamp": 2029378,
+      "LapTime": 227089,
+      "Sectors": [
+        104487,
+        53657,
+        68945
+      ],
+      "Cuts": 0,
+      "BallastKG": 8,
+      "Tyre": "M",
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 01",
+      "DriverGuid": "76561190000000001",
+      "CarId": 0,
+      "CarModel": "TRR_LMDh_acura_arx-06",
+      "Timestamp": 2247423,
+      "LapTime": 218044,
+      "Sectors": [
+        96044,
+        53487,
+        68513
+      ],
+      "Cuts": 0,
+      "BallastKG": 8,
+      "Tyre": "M",
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 03",
+      "DriverGuid": "76561190000000003",
+      "CarId": 2,
+      "CarModel": "TRR_LMDh_cadillac_v-series.r",
+      "Timestamp": 2247953,
+      "LapTime": 238016,
+      "Sectors": [
+        116269,
+        54301,
+        67446
+      ],
+      "Cuts": 0,
+      "BallastKG": 15,
+      "Tyre": "S",
+      "Restrictor": 2
+    },
+    {
+      "DriverName": "Driver 05",
+      "DriverGuid": "76561190000000005",
+      "CarId": 4,
+      "CarModel": "TRR_LMH_vanwall_vandervell_680_p",
+      "Timestamp": 2421138,
+      "LapTime": 632507,
+      "Sectors": [
+        446972,
+        73764,
+        111771
+      ],
+      "Cuts": 0,
+      "BallastKG": 10,
+      "Tyre": "M",
+      "Restrictor": 2
+    },
+    {
+      "DriverName": "Driver 01",
+      "DriverGuid": "76561190000000001",
+      "CarId": 0,
+      "CarModel": "TRR_LMDh_acura_arx-06",
+      "Timestamp": 2491529,
+      "LapTime": 244104,
+      "Sectors": [
+        122685,
+        53491,
+        67928
+      ],
+      "Cuts": 0,
+      "BallastKG": 8,
+      "Tyre": "M",
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 01",
+      "DriverGuid": "76561190000000001",
+      "CarId": 0,
+      "CarModel": "TRR_LMDh_acura_arx-06",
+      "Timestamp": 2682628,
+      "LapTime": 191097,
+      "Sectors": [
+        69367,
+        53429,
+        68301
+      ],
+      "Cuts": 0,
+      "BallastKG": 8,
+      "Tyre": "M",
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 01",
+      "DriverGuid": "76561190000000001",
+      "CarId": 0,
+      "CarModel": "TRR_LMDh_acura_arx-06",
+      "Timestamp": 2872073,
+      "LapTime": 189445,
+      "Sectors": [
+        69119,
+        53352,
+        66974
+      ],
+      "Cuts": 0,
+      "BallastKG": 8,
+      "Tyre": "M",
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 04",
+      "DriverGuid": "76561190000000004",
+      "CarId": 3,
+      "CarModel": "TRR_LMDh_cadillac_v-series.r",
+      "Timestamp": 2881082,
+      "LapTime": 932280,
+      "Sectors": [
+        800115,
+        57294,
+        74871
+      ],
+      "Cuts": 0,
+      "BallastKG": 0,
+      "Tyre": "M",
+      "Restrictor": 0
+    },
+    {
+      "DriverName": "Driver 05",
+      "DriverGuid": "76561190000000005",
+      "CarId": 4,
+      "CarModel": "TRR_LMH_vanwall_vandervell_680_p",
+      "Timestamp": 3051968,
+      "LapTime": 630822,
+      "Sectors": [
+        492392,
+        57560,
+        80870
+      ],
+      "Cuts": 0,
+      "BallastKG": 10,
+      "Tyre": "M",
+      "Restrictor": 2
+    },
+    {
+      "DriverName": "Driver 01",
+      "DriverGuid": "76561190000000001",
+      "CarId": 0,
+      "CarModel": "TRR_LMDh_acura_arx-06",
+      "Timestamp": 3108718,
+      "LapTime": 236643,
+      "Sectors": [
+        116673,
+        53689,
+        66281
+      ],
+      "Cuts": 0,
+      "BallastKG": 8,
+      "Tyre": "M",
+      "Restrictor": 0
+    }
+  ],
+  "Events": [
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 6.843737,
+      "WorldPosition": {
+        "X": 756.0435,
+        "Y": 5.504429,
+        "Z": 773.158
+      },
+      "RelPosition": {
+        "X": 0.97024983,
+        "Y": -0.12846753,
+        "Z": -1.306801
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 23.677645,
+      "WorldPosition": {
+        "X": 325.4909,
+        "Y": 9.367107,
+        "Z": 1271.2366
+      },
+      "RelPosition": {
+        "X": -0.9694449,
+        "Y": 0.85956764,
+        "Z": -1.9858056
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 216.92328,
+      "WorldPosition": {
+        "X": 143.38486,
+        "Y": 20.746395,
+        "Z": 1464.5234
+      },
+      "RelPosition": {
+        "X": 0.6834626,
+        "Y": 0.019554265,
+        "Z": 2.3273478
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 0.27970055,
+      "WorldPosition": {
+        "X": 132.18527,
+        "Y": 20.780561,
+        "Z": 1446.3013
+      },
+      "RelPosition": {
+        "X": 0.9244534,
+        "Y": 0.8619957,
+        "Z": -2.3155215
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 15.542771,
+      "WorldPosition": {
+        "X": 671.6614,
+        "Y": 5.254348,
+        "Z": 552.089
+      },
+      "RelPosition": {
+        "X": 0.98736966,
+        "Y": -0.19719501,
+        "Z": 2.498919
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 197.85843,
+      "WorldPosition": {
+        "X": 825.4943,
+        "Y": 16.112362,
+        "Z": 1145.3713
+      },
+      "RelPosition": {
+        "X": 0.71624786,
+        "Y": -0.04514474,
+        "Z": 2.5555966
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 4,
+      "OtherDriver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "ImpactSpeed": 108.09408,
+      "WorldPosition": {
+        "X": 815.35736,
+        "Y": 15.540928,
+        "Z": 1148.4637
+      },
+      "RelPosition": {
+        "X": 0.1676315,
+        "Y": -0.045111544,
+        "Z": 2.723602
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": 2,
+      "OtherDriver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "ImpactSpeed": 106.03219,
+      "WorldPosition": {
+        "X": 815.316,
+        "Y": 15.674975,
+        "Z": 1148.3812
+      },
+      "RelPosition": {
+        "X": 0.23432848,
+        "Y": 0.08583958,
+        "Z": 2.8018057
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 22.017927,
+      "WorldPosition": {
+        "X": 802.661,
+        "Y": 17.11878,
+        "Z": 1169.5797
+      },
+      "RelPosition": {
+        "X": 0.9244729,
+        "Y": 0.83199763,
+        "Z": -2.2315402
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 57.480614,
+      "WorldPosition": {
+        "X": 815.8282,
+        "Y": 17.526615,
+        "Z": 1183.8577
+      },
+      "RelPosition": {
+        "X": 0.88276386,
+        "Y": -0.13151343,
+        "Z": 2.4699888
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 7.488129,
+      "WorldPosition": {
+        "X": 802.47144,
+        "Y": 16.737345,
+        "Z": 1170.0974
+      },
+      "RelPosition": {
+        "X": 0.9245213,
+        "Y": 0.4330749,
+        "Z": -2.2327623
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 0,
+      "Driver": {
+        "Name": "Driver 01",
+        "Team": "",
+        "Nation": "PLA",
+        "Guid": "76561190000000001",
+        "GuidsList": [
+          "76561190000000001"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 8.699037,
+      "WorldPosition": {
+        "X": 390.03644,
+        "Y": 5.5540423,
+        "Z": 829.50745
+      },
+      "RelPosition": {
+        "X": -0.94888026,
+        "Y": 0.22347616,
+        "Z": 2.066298
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 109.623924,
+      "WorldPosition": {
+        "X": 122.06298,
+        "Y": 20.946241,
+        "Z": 1462.2435
+      },
+      "RelPosition": {
+        "X": 0.8555,
+        "Y": -0.14669044,
+        "Z": 2.6063194
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 103.45309,
+      "WorldPosition": {
+        "X": -675.92804,
+        "Y": 45.247406,
+        "Z": 2205.5933
+      },
+      "RelPosition": {
+        "X": 0.95649546,
+        "Y": -0.16759737,
+        "Z": 2.4598875
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 48.773273,
+      "WorldPosition": {
+        "X": 822.27606,
+        "Y": 15.346288,
+        "Z": 1126.837
+      },
+      "RelPosition": {
+        "X": 0.8892534,
+        "Y": 0.19555786,
+        "Z": 2.3790133
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 5.815185,
+      "WorldPosition": {
+        "X": 824.3302,
+        "Y": 16.132034,
+        "Z": 1134.9855
+      },
+      "RelPosition": {
+        "X": 0.97024983,
+        "Y": 0.43192077,
+        "Z": -1.9689779
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 94.76834,
+      "WorldPosition": {
+        "X": 825.3996,
+        "Y": 16.371798,
+        "Z": 1153.4429
+      },
+      "RelPosition": {
+        "X": 0.9049363,
+        "Y": -0.17964768,
+        "Z": 2.586239
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 2.602462,
+      "WorldPosition": {
+        "X": 421.79916,
+        "Y": 5.6697497,
+        "Z": 854.8659
+      },
+      "RelPosition": {
+        "X": -0.96946454,
+        "Y": 0.8295691,
+        "Z": -1.9018333
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 116.21656,
+      "WorldPosition": {
+        "X": 824.87146,
+        "Y": 16.729448,
+        "Z": 1158.7694
+      },
+      "RelPosition": {
+        "X": 0.8420597,
+        "Y": -0.13582228,
+        "Z": 2.5883934
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 36.867363,
+      "WorldPosition": {
+        "X": 631.3947,
+        "Y": 5.105917,
+        "Z": 552.8815
+      },
+      "RelPosition": {
+        "X": 0.8962889,
+        "Y": -0.19358554,
+        "Z": 2.572862
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 5.091957,
+      "WorldPosition": {
+        "X": 1258.4255,
+        "Y": 8.434982,
+        "Z": 342.3633
+      },
+      "RelPosition": {
+        "X": 0.99889433,
+        "Y": 0.066780075,
+        "Z": 1.7946602
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 10.314257,
+      "WorldPosition": {
+        "X": 852.078,
+        "Y": 5.3237553,
+        "Z": 864.2012
+      },
+      "RelPosition": {
+        "X": 0.9873874,
+        "Y": -0.16719547,
+        "Z": 2.4149246
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 89.24816,
+      "WorldPosition": {
+        "X": 346.67285,
+        "Y": 5.855302,
+        "Z": 765.77924
+      },
+      "RelPosition": {
+        "X": -0.93994415,
+        "Y": 0.22281067,
+        "Z": 2.3175764
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 57.237473,
+      "WorldPosition": {
+        "X": 700.1377,
+        "Y": 5.6585197,
+        "Z": 615.1071
+      },
+      "RelPosition": {
+        "X": 0.61037976,
+        "Y": 0.10253379,
+        "Z": 2.3705993
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 17.878216,
+      "WorldPosition": {
+        "X": 368.26218,
+        "Y": 5.8922644,
+        "Z": 806.3549
+      },
+      "RelPosition": {
+        "X": -0.9694529,
+        "Y": 0.43192226,
+        "Z": -1.9690481
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 10.249551,
+      "WorldPosition": {
+        "X": 671.24097,
+        "Y": 5.883232,
+        "Z": 551.76843
+      },
+      "RelPosition": {
+        "X": 0.9973675,
+        "Y": 0.42419058,
+        "Z": 2.0429049
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 27.693964,
+      "WorldPosition": {
+        "X": 655.72766,
+        "Y": 5.8804107,
+        "Z": 540.5947
+      },
+      "RelPosition": {
+        "X": -0.96944994,
+        "Y": 0.43192253,
+        "Z": -1.9690351
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 120.168495,
+      "WorldPosition": {
+        "X": 122.06409,
+        "Y": 21.021894,
+        "Z": 1462.2429
+      },
+      "RelPosition": {
+        "X": 0.8760493,
+        "Y": -0.12139407,
+        "Z": -2.1259296
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 162.46109,
+      "WorldPosition": {
+        "X": 74.06726,
+        "Y": 18.840063,
+        "Z": 1163.6311
+      },
+      "RelPosition": {
+        "X": -0.89470506,
+        "Y": -0.16787532,
+        "Z": 2.575576
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 9.504699,
+      "WorldPosition": {
+        "X": 71.65192,
+        "Y": 19.04189,
+        "Z": 1091.0923
+      },
+      "RelPosition": {
+        "X": -0.96625423,
+        "Y": -0.19773293,
+        "Z": 2.5371845
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 16.696232,
+      "WorldPosition": {
+        "X": -554.1425,
+        "Y": 35.505653,
+        "Z": 1966.5577
+      },
+      "RelPosition": {
+        "X": -0.9694578,
+        "Y": 0.43192467,
+        "Z": -1.9690734
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 81.324646,
+      "WorldPosition": {
+        "X": -47.946026,
+        "Y": 19.988588,
+        "Z": 1070.3085
+      },
+      "RelPosition": {
+        "X": -0.78184557,
+        "Y": -0.09425246,
+        "Z": 2.6279926
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 59.927994,
+      "WorldPosition": {
+        "X": -97.794136,
+        "Y": -21.13501,
+        "Z": -1179.8698
+      },
+      "RelPosition": {
+        "X": 0.92447186,
+        "Y": -0.1694998,
+        "Z": -2.1522648
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 131.21283,
+      "WorldPosition": {
+        "X": -735.822,
+        "Y": 30.097393,
+        "Z": 2046.2686
+      },
+      "RelPosition": {
+        "X": 0.52931464,
+        "Y": 0.072999366,
+        "Z": 2.7110791
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 50.79436,
+      "WorldPosition": {
+        "X": -737.3292,
+        "Y": 25.461018,
+        "Z": 1993.5327
+      },
+      "RelPosition": {
+        "X": -0.9598827,
+        "Y": -0.19404136,
+        "Z": 2.3906274
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 117.7485,
+      "WorldPosition": {
+        "X": 964.3222,
+        "Y": 6.0325933,
+        "Z": -74.18687
+      },
+      "RelPosition": {
+        "X": -0.9682224,
+        "Y": -0.2055197,
+        "Z": 2.4989717
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 13.098258,
+      "WorldPosition": {
+        "X": -777.5067,
+        "Y": 17.2179,
+        "Z": 1845.2297
+      },
+      "RelPosition": {
+        "X": -0.9966135,
+        "Y": 0.48873684,
+        "Z": 1.3230772
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 26.34956,
+      "WorldPosition": {
+        "X": 1017.1637,
+        "Y": 7.844289,
+        "Z": -13.440169
+      },
+      "RelPosition": {
+        "X": -0.9929942,
+        "Y": -0.19719513,
+        "Z": 2.4989085
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 5.843522,
+      "WorldPosition": {
+        "X": -836.6726,
+        "Y": 9.947621,
+        "Z": 1603.8145
+      },
+      "RelPosition": {
+        "X": -0.9904216,
+        "Y": -0.17533994,
+        "Z": 1.8022592
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 23.97034,
+      "WorldPosition": {
+        "X": 1283.0873,
+        "Y": 11.090858,
+        "Z": 314.04288
+      },
+      "RelPosition": {
+        "X": 0.99572355,
+        "Y": 0.4291082,
+        "Z": 2.036547
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 10.576899,
+      "WorldPosition": {
+        "X": -905.39404,
+        "Y": 10.431807,
+        "Z": 1323.5356
+      },
+      "RelPosition": {
+        "X": -0.99600136,
+        "Y": 0.4184312,
+        "Z": 2.0510361
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 224.18698,
+      "WorldPosition": {
+        "X": -989.2378,
+        "Y": 8.254412,
+        "Z": 984.98663
+      },
+      "RelPosition": {
+        "X": -0.9102762,
+        "Y": -0.15100123,
+        "Z": -2.1426096
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 21.055408,
+      "WorldPosition": {
+        "X": -1013.27905,
+        "Y": 5.162242,
+        "Z": 887.5546
+      },
+      "RelPosition": {
+        "X": -0.96241236,
+        "Y": -0.19689222,
+        "Z": 2.4919682
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 11.377719,
+      "WorldPosition": {
+        "X": 683.1184,
+        "Y": 5.4393377,
+        "Z": 546.21765
+      },
+      "RelPosition": {
+        "X": 0.98740155,
+        "Y": -0.16719508,
+        "Z": 2.4149532
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 70.19578,
+      "WorldPosition": {
+        "X": -1068.2947,
+        "Y": -1.6041707,
+        "Z": 666.70966
+      },
+      "RelPosition": {
+        "X": -0.9706108,
+        "Y": -0.20066446,
+        "Z": 2.5174084
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 42.920296,
+      "WorldPosition": {
+        "X": -1115.756,
+        "Y": -8.363507,
+        "Z": 484.4898
+      },
+      "RelPosition": {
+        "X": -0.9881192,
+        "Y": -0.1980425,
+        "Z": 2.5024326
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 0,
+      "Driver": {
+        "Name": "Driver 01",
+        "Team": "",
+        "Nation": "PLA",
+        "Guid": "76561190000000001",
+        "GuidsList": [
+          "76561190000000001"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 15.993845,
+      "WorldPosition": {
+        "X": 888.9307,
+        "Y": 6.225099,
+        "Z": 879.0753
+      },
+      "RelPosition": {
+        "X": 0.9461813,
+        "Y": 0.6616448,
+        "Z": -2.1492226
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 7.630427,
+      "WorldPosition": {
+        "X": 706.65796,
+        "Y": 5.3168483,
+        "Z": 620.9654
+      },
+      "RelPosition": {
+        "X": -0.9930064,
+        "Y": -0.19719511,
+        "Z": 2.4989507
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 77.81572,
+      "WorldPosition": {
+        "X": 753.3,
+        "Y": 15.447765,
+        "Z": 1220.8213
+      },
+      "RelPosition": {
+        "X": 0.97502893,
+        "Y": -0.16929148,
+        "Z": 2.423951
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 183.91068,
+      "WorldPosition": {
+        "X": 353.66788,
+        "Y": 7.73833,
+        "Z": 1250.7601
+      },
+      "RelPosition": {
+        "X": -0.73693687,
+        "Y": -0.03427478,
+        "Z": 2.5562289
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 0,
+      "Driver": {
+        "Name": "Driver 01",
+        "Team": "",
+        "Nation": "PLA",
+        "Guid": "76561190000000001",
+        "GuidsList": [
+          "76561190000000001"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 4.415316,
+      "WorldPosition": {
+        "X": 674.7807,
+        "Y": 5.3134856,
+        "Z": 554.97516
+      },
+      "RelPosition": {
+        "X": 0.95953965,
+        "Y": -0.16916361,
+        "Z": 1.7157484
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 149.99101,
+      "WorldPosition": {
+        "X": 129.98193,
+        "Y": 20.883984,
+        "Z": 1463.7688
+      },
+      "RelPosition": {
+        "X": 0.75842416,
+        "Y": -0.081780545,
+        "Z": 2.6427314
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 24.982002,
+      "WorldPosition": {
+        "X": 380.6408,
+        "Y": 5.8395586,
+        "Z": 820.66296
+      },
+      "RelPosition": {
+        "X": -0.96946466,
+        "Y": 0.43192226,
+        "Z": -1.9689984
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 102.62966,
+      "WorldPosition": {
+        "X": -131.03761,
+        "Y": -20.724028,
+        "Z": -1180.5767
+      },
+      "RelPosition": {
+        "X": 0.9025541,
+        "Y": -0.14829758,
+        "Z": 2.5062952
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 4,
+      "OtherDriver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "ImpactSpeed": 20.796951,
+      "WorldPosition": {
+        "X": 40.432034,
+        "Y": 19.642574,
+        "Z": 1053.5548
+      },
+      "RelPosition": {
+        "X": -0.99114513,
+        "Y": -0.15419775,
+        "Z": 2.4647853
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 30.046934,
+      "WorldPosition": {
+        "X": 41.126328,
+        "Y": 19.6163,
+        "Z": 1053.8934
+      },
+      "RelPosition": {
+        "X": 0.9947363,
+        "Y": -0.17384337,
+        "Z": 1.2245016
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 45.217255,
+      "WorldPosition": {
+        "X": 26.656096,
+        "Y": 20.092014,
+        "Z": 1042.4429
+      },
+      "RelPosition": {
+        "X": -0.95000476,
+        "Y": -0.20804588,
+        "Z": 2.5152893
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 78.84315,
+      "WorldPosition": {
+        "X": -560.2353,
+        "Y": 34.540237,
+        "Z": 1933.0256
+      },
+      "RelPosition": {
+        "X": -0.92912275,
+        "Y": 0.8319981,
+        "Z": -2.2315347
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 4,
+      "OtherDriver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "ImpactSpeed": 124.43061,
+      "WorldPosition": {
+        "X": -554.53076,
+        "Y": 34.917442,
+        "Z": 1953.997
+      },
+      "RelPosition": {
+        "X": 0.9925916,
+        "Y": 0.37906322,
+        "Z": 2.1055984
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 137.4663,
+      "WorldPosition": {
+        "X": -557.19855,
+        "Y": 34.36422,
+        "Z": 1952.8374
+      },
+      "RelPosition": {
+        "X": -0.8014738,
+        "Y": -0.10736511,
+        "Z": 2.6226969
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 128.14455,
+      "WorldPosition": {
+        "X": -554.50616,
+        "Y": 34.88854,
+        "Z": 1953.9973
+      },
+      "RelPosition": {
+        "X": -0.55385196,
+        "Y": -0.16219175,
+        "Z": -2.0998523
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 4,
+      "OtherDriver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "ImpactSpeed": 4.7199287,
+      "WorldPosition": {
+        "X": -550.85834,
+        "Y": 35.52799,
+        "Z": 1965.9133
+      },
+      "RelPosition": {
+        "X": 0.9987024,
+        "Y": 0.41844925,
+        "Z": 2.0449772
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 72.49878,
+      "WorldPosition": {
+        "X": -539.6352,
+        "Y": 37.23835,
+        "Z": 2007.9606
+      },
+      "RelPosition": {
+        "X": -0.9423566,
+        "Y": -0.1998567,
+        "Z": 2.5640576
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 17.432602,
+      "WorldPosition": {
+        "X": -536.40173,
+        "Y": 37.761894,
+        "Z": 2015.6902
+      },
+      "RelPosition": {
+        "X": 0.98736805,
+        "Y": -0.19719176,
+        "Z": 2.4989572
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 22.105125,
+      "WorldPosition": {
+        "X": -530.6067,
+        "Y": 38.497856,
+        "Z": 2028.6938
+      },
+      "RelPosition": {
+        "X": -0.93683475,
+        "Y": -0.19756345,
+        "Z": 2.5828643
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 175.7966,
+      "WorldPosition": {
+        "X": 1309.5276,
+        "Y": 13.0677,
+        "Z": 270.78622
+      },
+      "RelPosition": {
+        "X": 0.9015542,
+        "Y": -0.11554088,
+        "Z": -2.2146835
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 60.164997,
+      "WorldPosition": {
+        "X": 135.28903,
+        "Y": 20.775549,
+        "Z": 1464.366
+      },
+      "RelPosition": {
+        "X": 0.9560228,
+        "Y": -0.20652242,
+        "Z": 2.5038145
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 125.07308,
+      "WorldPosition": {
+        "X": 129.94592,
+        "Y": 20.867388,
+        "Z": 1463.7632
+      },
+      "RelPosition": {
+        "X": 0.88600385,
+        "Y": -0.1343972,
+        "Z": 2.477457
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 120.27592,
+      "WorldPosition": {
+        "X": -557.1949,
+        "Y": 34.32432,
+        "Z": 1952.8418
+      },
+      "RelPosition": {
+        "X": -0.99764735,
+        "Y": -0.17611219,
+        "Z": 1.5855614
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 0,
+      "Driver": {
+        "Name": "Driver 01",
+        "Team": "",
+        "Nation": "PLA",
+        "Guid": "76561190000000001",
+        "GuidsList": [
+          "76561190000000001"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 96.30101,
+      "WorldPosition": {
+        "X": 652.4423,
+        "Y": 5.7407665,
+        "Z": 525.77045
+      },
+      "RelPosition": {
+        "X": -0.923821,
+        "Y": 0.05883002,
+        "Z": 2.5649896
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 40.62309,
+      "WorldPosition": {
+        "X": 650.04895,
+        "Y": 5.5177393,
+        "Z": 525.8408
+      },
+      "RelPosition": {
+        "X": -0.9449143,
+        "Y": -0.17638753,
+        "Z": 2.4465773
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 0,
+      "Driver": {
+        "Name": "Driver 01",
+        "Team": "",
+        "Nation": "PLA",
+        "Guid": "76561190000000001",
+        "GuidsList": [
+          "76561190000000001"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 4.7964907,
+      "WorldPosition": {
+        "X": 627.8355,
+        "Y": 5.3542123,
+        "Z": 530.8371
+      },
+      "RelPosition": {
+        "X": -0.9279913,
+        "Y": -0.16493599,
+        "Z": 2.5431354
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 70.639725,
+      "WorldPosition": {
+        "X": 577.93146,
+        "Y": 5.4924684,
+        "Z": 545.4152
+      },
+      "RelPosition": {
+        "X": -0.90168446,
+        "Y": -0.1352061,
+        "Z": 2.410973
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 95.53113,
+      "WorldPosition": {
+        "X": 814.30884,
+        "Y": 17.584747,
+        "Z": 1186.0812
+      },
+      "RelPosition": {
+        "X": 0.9090934,
+        "Y": -0.123356834,
+        "Z": -2.2216167
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 7.0492377,
+      "WorldPosition": {
+        "X": -1100.1069,
+        "Y": -5.9587574,
+        "Z": 542.85046
+      },
+      "RelPosition": {
+        "X": -0.9658944,
+        "Y": 0.4398032,
+        "Z": -1.7354995
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 2,
+      "OtherDriver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "ImpactSpeed": 10.446215,
+      "WorldPosition": {
+        "X": 693.05206,
+        "Y": 5.55775,
+        "Z": 596.01685
+      },
+      "RelPosition": {
+        "X": 0.67986387,
+        "Y": -0.000569593,
+        "Z": 2.6054657
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 7.8164167,
+      "WorldPosition": {
+        "X": 693.06573,
+        "Y": 5.6851707,
+        "Z": 596.07465
+      },
+      "RelPosition": {
+        "X": -0.9290833,
+        "Y": 0.11428597,
+        "Z": -2.2701652
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 36.105522,
+      "WorldPosition": {
+        "X": 47.518623,
+        "Y": 19.687605,
+        "Z": 1052.6594
+      },
+      "RelPosition": {
+        "X": -0.9291134,
+        "Y": -0.16949823,
+        "Z": -2.1522608
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 2,
+      "OtherDriver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "ImpactSpeed": 13.85929,
+      "WorldPosition": {
+        "X": 693.20667,
+        "Y": 5.6464953,
+        "Z": 595.7274
+      },
+      "RelPosition": {
+        "X": 0.67661196,
+        "Y": 0.13177139,
+        "Z": 2.5055404
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 22.634157,
+      "WorldPosition": {
+        "X": -1313.8376,
+        "Y": -15.315893,
+        "Z": -565.134
+      },
+      "RelPosition": {
+        "X": -0.9997564,
+        "Y": 0.4289036,
+        "Z": 2.0364559
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 10.106165,
+      "WorldPosition": {
+        "X": 413.52783,
+        "Y": 5.4667635,
+        "Z": 848.7869
+      },
+      "RelPosition": {
+        "X": -0.9995544,
+        "Y": 0.48930758,
+        "Z": 1.3818201
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 148.08743,
+      "WorldPosition": {
+        "X": -469.73813,
+        "Y": -20.095734,
+        "Z": -1031.9187
+      },
+      "RelPosition": {
+        "X": -0.87542623,
+        "Y": -0.15245622,
+        "Z": 2.550047
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 64.97179,
+      "WorldPosition": {
+        "X": -48.01213,
+        "Y": 19.78161,
+        "Z": 1069.7393
+      },
+      "RelPosition": {
+        "X": -0.99293876,
+        "Y": -0.19719508,
+        "Z": 2.4989672
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 24.938543,
+      "WorldPosition": {
+        "X": 335.18607,
+        "Y": -22.985945,
+        "Z": -715.6537
+      },
+      "RelPosition": {
+        "X": -0.9930002,
+        "Y": -0.19719574,
+        "Z": 2.4989283
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 2,
+      "OtherDriver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "ImpactSpeed": 11.076168,
+      "WorldPosition": {
+        "X": 693.20935,
+        "Y": 5.667986,
+        "Z": 595.52966
+      },
+      "RelPosition": {
+        "X": 0.43588626,
+        "Y": 0.11748394,
+        "Z": 2.656005
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 6.5001483,
+      "WorldPosition": {
+        "X": 692.9491,
+        "Y": 5.681953,
+        "Z": 595.63934
+      },
+      "RelPosition": {
+        "X": -0.6511962,
+        "Y": 0.11089614,
+        "Z": -2.2643495
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 34.541775,
+      "WorldPosition": {
+        "X": 672.5621,
+        "Y": 5.2638426,
+        "Z": 552.7407
+      },
+      "RelPosition": {
+        "X": 0.9363523,
+        "Y": -0.2120128,
+        "Z": 2.5084157
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 84.629524,
+      "WorldPosition": {
+        "X": 361.59085,
+        "Y": -22.079578,
+        "Z": -701.15106
+      },
+      "RelPosition": {
+        "X": -0.93043244,
+        "Y": -0.19282795,
+        "Z": 2.5789702
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 2,
+      "OtherDriver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "ImpactSpeed": 10.32337,
+      "WorldPosition": {
+        "X": 693.2575,
+        "Y": 5.6743355,
+        "Z": 595.20667
+      },
+      "RelPosition": {
+        "X": 0.5029922,
+        "Y": 0.11706819,
+        "Z": 2.6806285
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 38.762657,
+      "WorldPosition": {
+        "X": 694.5952,
+        "Y": 5.659655,
+        "Z": 604.3946
+      },
+      "RelPosition": {
+        "X": 0.25628412,
+        "Y": 0.08593679,
+        "Z": 2.7987473
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 49.898808,
+      "WorldPosition": {
+        "X": 694.7545,
+        "Y": 5.4383407,
+        "Z": 604.1752
+      },
+      "RelPosition": {
+        "X": -0.41084313,
+        "Y": -0.1338333,
+        "Z": -2.1970558
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 2,
+      "OtherDriver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "ImpactSpeed": 13.198499,
+      "WorldPosition": {
+        "X": 691.6563,
+        "Y": 5.6564054,
+        "Z": 595.7754
+      },
+      "RelPosition": {
+        "X": 0.50300705,
+        "Y": 0.11706831,
+        "Z": 2.6806328
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 12.174902,
+      "WorldPosition": {
+        "X": 691.69336,
+        "Y": 5.681462,
+        "Z": 595.86975
+      },
+      "RelPosition": {
+        "X": 0.8787001,
+        "Y": 0.110906415,
+        "Z": -2.2605968
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 51.05498,
+      "WorldPosition": {
+        "X": 694.77295,
+        "Y": 5.434345,
+        "Z": 604.1915
+      },
+      "RelPosition": {
+        "X": 0.034000028,
+        "Y": -0.13976319,
+        "Z": 2.824729
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 46.253647,
+      "WorldPosition": {
+        "X": 694.30316,
+        "Y": 5.6601863,
+        "Z": 604.82745
+      },
+      "RelPosition": {
+        "X": 0.04184357,
+        "Y": 0.08812776,
+        "Z": -2.2542398
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 48.35183,
+      "WorldPosition": {
+        "X": 693.65247,
+        "Y": 5.659846,
+        "Z": 600.33124
+      },
+      "RelPosition": {
+        "X": -0.12864247,
+        "Y": 0.08535145,
+        "Z": 2.8163493
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 13.544779,
+      "WorldPosition": {
+        "X": 689.207,
+        "Y": 5.4029493,
+        "Z": 596.4071
+      },
+      "RelPosition": {
+        "X": 0.9309269,
+        "Y": -0.19756164,
+        "Z": 2.5828264
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 360.09366,
+      "WorldPosition": {
+        "X": 690.521,
+        "Y": 5.4552026,
+        "Z": 595.3247
+      },
+      "RelPosition": {
+        "X": 0.97190756,
+        "Y": -0.083640344,
+        "Z": -1.1659614
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 39.565865,
+      "WorldPosition": {
+        "X": 693.7114,
+        "Y": 5.439922,
+        "Z": 604.14575
+      },
+      "RelPosition": {
+        "X": 0.9364067,
+        "Y": -0.13340764,
+        "Z": 2.5456903
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 226.25488,
+      "WorldPosition": {
+        "X": 692.64056,
+        "Y": 5.559504,
+        "Z": 599.29584
+      },
+      "RelPosition": {
+        "X": 0.50296533,
+        "Y": 0.11706845,
+        "Z": 2.6806214
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 41.645172,
+      "WorldPosition": {
+        "X": 694.43304,
+        "Y": 5.658868,
+        "Z": 603.9142
+      },
+      "RelPosition": {
+        "X": -2.73757e-05,
+        "Y": 0.084761806,
+        "Z": 2.8341396
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 48.077118,
+      "WorldPosition": {
+        "X": 945.3707,
+        "Y": 1.6937176,
+        "Z": -198.17378
+      },
+      "RelPosition": {
+        "X": -0.96878344,
+        "Y": -0.20120612,
+        "Z": 2.5176966
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 20.536438,
+      "WorldPosition": {
+        "X": 695.1029,
+        "Y": 5.432516,
+        "Z": 602.58636
+      },
+      "RelPosition": {
+        "X": -0.9702043,
+        "Y": -0.10125058,
+        "Z": -1.3066055
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 11.2460165,
+      "WorldPosition": {
+        "X": 688.69946,
+        "Y": 5.4104924,
+        "Z": 594.70636
+      },
+      "RelPosition": {
+        "X": 0.9873977,
+        "Y": -0.16719538,
+        "Z": 2.4149349
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 20.212477,
+      "WorldPosition": {
+        "X": 694.4879,
+        "Y": 5.55027,
+        "Z": 601.03564
+      },
+      "RelPosition": {
+        "X": -0.9240615,
+        "Y": -0.09529699,
+        "Z": 2.2318943
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 45.23133,
+      "WorldPosition": {
+        "X": 941.88855,
+        "Y": 3.298629,
+        "Z": -165.18503
+      },
+      "RelPosition": {
+        "X": -0.98200005,
+        "Y": -0.19970788,
+        "Z": 2.5042684
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 149.96806,
+      "WorldPosition": {
+        "X": 693.48914,
+        "Y": 6.0410423,
+        "Z": 602.4751
+      },
+      "RelPosition": {
+        "X": 0.9811083,
+        "Y": 0.50380296,
+        "Z": -0.65652597
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 47.69616,
+      "WorldPosition": {
+        "X": 773.61304,
+        "Y": 16.464563,
+        "Z": 1215.2837
+      },
+      "RelPosition": {
+        "X": 0.9323273,
+        "Y": -0.17129107,
+        "Z": 2.4795747
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 43.580013,
+      "WorldPosition": {
+        "X": 1018.26227,
+        "Y": 7.9332943,
+        "Z": -12.804878
+      },
+      "RelPosition": {
+        "X": -0.96029854,
+        "Y": -0.19771396,
+        "Z": 2.5463889
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 119.13307,
+      "WorldPosition": {
+        "X": 693.18304,
+        "Y": 10.318631,
+        "Z": 1211.7216
+      },
+      "RelPosition": {
+        "X": -0.88778746,
+        "Y": -0.13300681,
+        "Z": 2.490131
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 60.59939,
+      "WorldPosition": {
+        "X": 534.519,
+        "Y": 6.7532797,
+        "Z": 1220.6495
+      },
+      "RelPosition": {
+        "X": -0.5030022,
+        "Y": 0.11706858,
+        "Z": 2.6805937
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 17.492994,
+      "WorldPosition": {
+        "X": 1011.74396,
+        "Y": 5.3981957,
+        "Z": 570.7944
+      },
+      "RelPosition": {
+        "X": -0.99298245,
+        "Y": -0.19719538,
+        "Z": 2.4989252
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 3.9200315,
+      "WorldPosition": {
+        "X": 970.50073,
+        "Y": 6.464369,
+        "Z": 673.70483
+      },
+      "RelPosition": {
+        "X": -0.9694871,
+        "Y": 0.82956904,
+        "Z": -1.9018263
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 10.963252,
+      "WorldPosition": {
+        "X": 955.10376,
+        "Y": 5.1669827,
+        "Z": 744.9799
+      },
+      "RelPosition": {
+        "X": -0.99296093,
+        "Y": -0.19719613,
+        "Z": 2.498893
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 77.33567,
+      "WorldPosition": {
+        "X": 114.26724,
+        "Y": 20.989532,
+        "Z": 1460.0854
+      },
+      "RelPosition": {
+        "X": 0.883351,
+        "Y": -0.20081697,
+        "Z": 2.557814
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 25.241623,
+      "WorldPosition": {
+        "X": 789.9782,
+        "Y": 5.2142725,
+        "Z": 821.1594
+      },
+      "RelPosition": {
+        "X": -0.99298286,
+        "Y": -0.19719529,
+        "Z": 2.498903
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 35.648003,
+      "WorldPosition": {
+        "X": 672.5806,
+        "Y": 5.2570763,
+        "Z": 552.75433
+      },
+      "RelPosition": {
+        "X": 0.9516585,
+        "Y": -0.19788207,
+        "Z": 2.5499327
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 61.504684,
+      "WorldPosition": {
+        "X": -15.214713,
+        "Y": 20.746483,
+        "Z": 1042.0321
+      },
+      "RelPosition": {
+        "X": -0.8931437,
+        "Y": -0.13834359,
+        "Z": 2.510978
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 126.01109,
+      "WorldPosition": {
+        "X": 132.59943,
+        "Y": 20.927504,
+        "Z": 1464.1083
+      },
+      "RelPosition": {
+        "X": 0.6592965,
+        "Y": -0.008905068,
+        "Z": 2.599644
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 120.034355,
+      "WorldPosition": {
+        "X": -490.93143,
+        "Y": 51.725925,
+        "Z": 2263.538
+      },
+      "RelPosition": {
+        "X": 0.76874167,
+        "Y": -0.05437646,
+        "Z": 2.5021944
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 0.026831144,
+      "WorldPosition": {
+        "X": -521.1805,
+        "Y": 52.547096,
+        "Z": 2285.0134
+      },
+      "RelPosition": {
+        "X": 0.92457086,
+        "Y": -0.13951075,
+        "Z": -2.236249
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 2,
+      "OtherDriver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "ImpactSpeed": 9.642943,
+      "WorldPosition": {
+        "X": 693.0595,
+        "Y": 5.6762633,
+        "Z": 596.1133
+      },
+      "RelPosition": {
+        "X": 0.40352705,
+        "Y": 0.1170365,
+        "Z": 2.6744807
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 4.6659875,
+      "WorldPosition": {
+        "X": 692.8833,
+        "Y": 5.682264,
+        "Z": 596.16595
+      },
+      "RelPosition": {
+        "X": -0.74806774,
+        "Y": 0.11098322,
+        "Z": -2.262345
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 28.378048,
+      "WorldPosition": {
+        "X": 665.1348,
+        "Y": 6.373639,
+        "Z": 540.7216
+      },
+      "RelPosition": {
+        "X": -0.9291266,
+        "Y": 0.8619959,
+        "Z": -2.31556
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 93.82763,
+      "WorldPosition": {
+        "X": 700.49066,
+        "Y": 6.335617,
+        "Z": 1019.0277
+      },
+      "RelPosition": {
+        "X": 0.9796704,
+        "Y": 0.32629102,
+        "Z": 2.1362896
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 157.36186,
+      "WorldPosition": {
+        "X": -557.1952,
+        "Y": 34.308376,
+        "Z": 1952.8475
+      },
+      "RelPosition": {
+        "X": -0.7694385,
+        "Y": -0.08409769,
+        "Z": 2.6087046
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 196.90334,
+      "WorldPosition": {
+        "X": 825.33435,
+        "Y": 16.161518,
+        "Z": 1142.681
+      },
+      "RelPosition": {
+        "X": 0.46724507,
+        "Y": 0.10199197,
+        "Z": 2.6596284
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 24.7665,
+      "WorldPosition": {
+        "X": 35.14999,
+        "Y": 20.066359,
+        "Z": 1045.5929
+      },
+      "RelPosition": {
+        "X": -0.9290887,
+        "Y": -0.13949853,
+        "Z": -2.236272
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 173.43446,
+      "WorldPosition": {
+        "X": -557.34827,
+        "Y": 34.390106,
+        "Z": 1952.9395
+      },
+      "RelPosition": {
+        "X": -0.9368541,
+        "Y": -0.19756314,
+        "Z": 2.5828788
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 3.9623444,
+      "WorldPosition": {
+        "X": 28.808424,
+        "Y": 20.073652,
+        "Z": 1043.1478
+      },
+      "RelPosition": {
+        "X": -0.99301887,
+        "Y": -0.16719766,
+        "Z": 2.4149404
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 9.453006,
+      "WorldPosition": {
+        "X": 584.90796,
+        "Y": 5.4241667,
+        "Z": 557.1336
+      },
+      "RelPosition": {
+        "X": 0.9904742,
+        "Y": -0.16247514,
+        "Z": 2.246371
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 85.94682,
+      "WorldPosition": {
+        "X": 339.86584,
+        "Y": 5.6472187,
+        "Z": 727.0428
+      },
+      "RelPosition": {
+        "X": -0.9661777,
+        "Y": -0.16918977,
+        "Z": 2.4467633
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 2.3454385,
+      "WorldPosition": {
+        "X": 667.30707,
+        "Y": 5.221036,
+        "Z": 549.7022
+      },
+      "RelPosition": {
+        "X": 0.9947353,
+        "Y": -0.17385831,
+        "Z": 1.2268364
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 43.20674,
+      "WorldPosition": {
+        "X": 407.47568,
+        "Y": 4.2518015,
+        "Z": 817.9348
+      },
+      "RelPosition": {
+        "X": 0.9309427,
+        "Y": -0.16756018,
+        "Z": 2.4988275
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 4.5236306,
+      "WorldPosition": {
+        "X": 512.8842,
+        "Y": 5.54575,
+        "Z": 890.256
+      },
+      "RelPosition": {
+        "X": 0.99766064,
+        "Y": 0.444492,
+        "Z": 1.9724509
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 136.13295,
+      "WorldPosition": {
+        "X": -560.0098,
+        "Y": 33.685932,
+        "Z": 1934.8285
+      },
+      "RelPosition": {
+        "X": -0.8902159,
+        "Y": -0.13548917,
+        "Z": 2.5004842
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 151.27124,
+      "WorldPosition": {
+        "X": 119.45471,
+        "Y": 20.929237,
+        "Z": 1461.5908
+      },
+      "RelPosition": {
+        "X": 0.91050655,
+        "Y": -0.18385287,
+        "Z": 2.589873
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 35.94028,
+      "WorldPosition": {
+        "X": 62.112408,
+        "Y": 21.346273,
+        "Z": 1415.0164
+      },
+      "RelPosition": {
+        "X": 0.9556373,
+        "Y": -0.20148557,
+        "Z": 2.5273855
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 9.001654,
+      "WorldPosition": {
+        "X": 685.24554,
+        "Y": 5.4189243,
+        "Z": 566.12915
+      },
+      "RelPosition": {
+        "X": -0.992227,
+        "Y": -0.13644977,
+        "Z": 2.3922095
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 2,
+      "OtherDriver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "ImpactSpeed": 22.447329,
+      "WorldPosition": {
+        "X": 682.77527,
+        "Y": 5.384459,
+        "Z": 561.60815
+      },
+      "RelPosition": {
+        "X": 0.98518723,
+        "Y": -0.137846,
+        "Z": 0.18581297
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 5.1309843,
+      "WorldPosition": {
+        "X": 675.7821,
+        "Y": 5.3332224,
+        "Z": 556.1898
+      },
+      "RelPosition": {
+        "X": 0.98750657,
+        "Y": -0.16136312,
+        "Z": 2.4105942
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 12.863644,
+      "WorldPosition": {
+        "X": 677.0757,
+        "Y": 5.387222,
+        "Z": 554.60895
+      },
+      "RelPosition": {
+        "X": -0.9908108,
+        "Y": -0.11476856,
+        "Z": 2.3761942
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 87.320404,
+      "WorldPosition": {
+        "X": -36.695602,
+        "Y": 20.442436,
+        "Z": 1055.6383
+      },
+      "RelPosition": {
+        "X": -0.8276249,
+        "Y": -0.11922225,
+        "Z": 2.5467033
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 80.56051,
+      "WorldPosition": {
+        "X": -32.731525,
+        "Y": 20.583536,
+        "Z": 1052.0134
+      },
+      "RelPosition": {
+        "X": -0.82270944,
+        "Y": -0.12121264,
+        "Z": 2.613157
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 69.16249,
+      "WorldPosition": {
+        "X": -34.713158,
+        "Y": 20.558784,
+        "Z": 1053.7522
+      },
+      "RelPosition": {
+        "X": -0.83983344,
+        "Y": -0.1012254,
+        "Z": 2.5064487
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 8.02633,
+      "WorldPosition": {
+        "X": -50.29308,
+        "Y": 20.707811,
+        "Z": 1073.4495
+      },
+      "RelPosition": {
+        "X": -0.96947795,
+        "Y": 0.82956713,
+        "Z": -1.9018478
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 18.605474,
+      "WorldPosition": {
+        "X": -889.40137,
+        "Y": 11.346047,
+        "Z": 1389.6118
+      },
+      "RelPosition": {
+        "X": -0.9971373,
+        "Y": 0.48973125,
+        "Z": 1.3498641
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 1.475272,
+      "WorldPosition": {
+        "X": -889.31793,
+        "Y": 11.267407,
+        "Z": 1389.9526
+      },
+      "RelPosition": {
+        "X": -0.969439,
+        "Y": 0.43192193,
+        "Z": -1.9689902
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 68.03262,
+      "WorldPosition": {
+        "X": 825.5206,
+        "Y": 16.353428,
+        "Z": 1150.7693
+      },
+      "RelPosition": {
+        "X": 0.84478307,
+        "Y": -0.10806646,
+        "Z": 2.508274
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 20.069773,
+      "WorldPosition": {
+        "X": -987.58325,
+        "Y": 12.80659,
+        "Z": -1011.28467
+      },
+      "RelPosition": {
+        "X": 0.9244728,
+        "Y": -0.16949959,
+        "Z": -2.1522777
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 242.00804,
+      "WorldPosition": {
+        "X": -510.09293,
+        "Y": -17.44638,
+        "Z": -1035.2725
+      },
+      "RelPosition": {
+        "X": 0.9400789,
+        "Y": 0.7808743,
+        "Z": -1.8835598
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": 2,
+      "OtherDriver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "ImpactSpeed": 162.62776,
+      "WorldPosition": {
+        "X": -453.53763,
+        "Y": -21.64877,
+        "Z": -1043.3027
+      },
+      "RelPosition": {
+        "X": -0.9368299,
+        "Y": -0.19755954,
+        "Z": 2.582787
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 4,
+      "OtherDriver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "ImpactSpeed": 129.81242,
+      "WorldPosition": {
+        "X": -453.1455,
+        "Y": -21.364748,
+        "Z": -1043.3778
+      },
+      "RelPosition": {
+        "X": 0.85263515,
+        "Y": 0.10388816,
+        "Z": 2.0689547
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 267.97964,
+      "WorldPosition": {
+        "X": -427.41397,
+        "Y": -22.34432,
+        "Z": -1046.4302
+      },
+      "RelPosition": {
+        "X": -0.8589158,
+        "Y": -0.11331458,
+        "Z": 2.4935546
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 4,
+      "OtherDriver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "ImpactSpeed": 306.70956,
+      "WorldPosition": {
+        "X": -445.8962,
+        "Y": -21.90625,
+        "Z": -1048.6552
+      },
+      "RelPosition": {
+        "X": -0.45912957,
+        "Y": 0.07422048,
+        "Z": 2.673746
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 2,
+      "OtherDriver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "ImpactSpeed": 136.47253,
+      "WorldPosition": {
+        "X": -432.15027,
+        "Y": -22.194006,
+        "Z": -1056.2225
+      },
+      "RelPosition": {
+        "X": -0.17389934,
+        "Y": -0.028543083,
+        "Z": 2.5835638
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 56.77328,
+      "WorldPosition": {
+        "X": -431.0729,
+        "Y": -22.607933,
+        "Z": -1058.0234
+      },
+      "RelPosition": {
+        "X": 0.91512793,
+        "Y": -0.05172831,
+        "Z": 2.4477031
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 292.40005,
+      "WorldPosition": {
+        "X": -446.00882,
+        "Y": -22.10342,
+        "Z": -1048.3287
+      },
+      "RelPosition": {
+        "X": -0.9208875,
+        "Y": -0.1693986,
+        "Z": -2.1441257
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 110.457634,
+      "WorldPosition": {
+        "X": -417.28955,
+        "Y": -21.631378,
+        "Z": -1050.1005
+      },
+      "RelPosition": {
+        "X": 0.92449987,
+        "Y": 0.7025291,
+        "Z": -2.2000093
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 165.8866,
+      "WorldPosition": {
+        "X": -432.30566,
+        "Y": -22.448751,
+        "Z": -1056.0828
+      },
+      "RelPosition": {
+        "X": -0.99691904,
+        "Y": 0.19485337,
+        "Z": 2.1474826
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 22.934614,
+      "WorldPosition": {
+        "X": -425.60062,
+        "Y": -23.154554,
+        "Z": -1060.1382
+      },
+      "RelPosition": {
+        "X": -0.99299115,
+        "Y": -0.167195,
+        "Z": 2.4149113
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 4,
+      "OtherDriver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "ImpactSpeed": 13.898051,
+      "WorldPosition": {
+        "X": -393.4247,
+        "Y": -22.657911,
+        "Z": -1070.1777
+      },
+      "RelPosition": {
+        "X": 0.9845191,
+        "Y": -0.16744293,
+        "Z": 0.20570157
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 3.2049417,
+      "WorldPosition": {
+        "X": -380.627,
+        "Y": -22.079357,
+        "Z": -1080.4932
+      },
+      "RelPosition": {
+        "X": -0.93685097,
+        "Y": -0.19756351,
+        "Z": 2.5828304
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 62.58872,
+      "WorldPosition": {
+        "X": -511.96417,
+        "Y": 52.257275,
+        "Z": 2280.2732
+      },
+      "RelPosition": {
+        "X": 0.95888704,
+        "Y": -0.17408194,
+        "Z": 2.4266372
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 12.731849,
+      "WorldPosition": {
+        "X": -42.710384,
+        "Y": 20.143377,
+        "Z": 1062.3466
+      },
+      "RelPosition": {
+        "X": -0.992973,
+        "Y": -0.19719483,
+        "Z": 2.4989295
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 42.595253,
+      "WorldPosition": {
+        "X": 140.79883,
+        "Y": 21.121567,
+        "Z": 1464.5757
+      },
+      "RelPosition": {
+        "X": 0.96867055,
+        "Y": 0.31850067,
+        "Z": -1.6350547
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 155.7361,
+      "WorldPosition": {
+        "X": -557.20087,
+        "Y": 34.430744,
+        "Z": 1952.8337
+      },
+      "RelPosition": {
+        "X": -0.7319428,
+        "Y": -0.061872926,
+        "Z": 2.6534147
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 20.034315,
+      "WorldPosition": {
+        "X": -543.05,
+        "Y": 36.862144,
+        "Z": 1999.3987
+      },
+      "RelPosition": {
+        "X": -0.9929838,
+        "Y": -0.1971986,
+        "Z": 2.4989555
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 0.17588148,
+      "WorldPosition": {
+        "X": -524.441,
+        "Y": 39.330647,
+        "Z": 2042.0415
+      },
+      "RelPosition": {
+        "X": -0.99300516,
+        "Y": -0.19719772,
+        "Z": 2.4989626
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 0,
+      "OtherDriver": {
+        "Name": "Driver 01",
+        "Team": "",
+        "Nation": "PLA",
+        "Guid": "76561190000000001",
+        "GuidsList": [
+          "76561190000000001"
+        ]
+      },
+      "ImpactSpeed": 138.73907,
+      "WorldPosition": {
+        "X": 708.6375,
+        "Y": 5.960642,
+        "Z": 579.0853
+      },
+      "RelPosition": {
+        "X": 0.034068383,
+        "Y": 0.115307726,
+        "Z": 2.7271836
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 0,
+      "Driver": {
+        "Name": "Driver 01",
+        "Team": "",
+        "Nation": "PLA",
+        "Guid": "76561190000000001",
+        "GuidsList": [
+          "76561190000000001"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 150.62656,
+      "WorldPosition": {
+        "X": 708.6296,
+        "Y": 5.7026095,
+        "Z": 578.9243
+      },
+      "RelPosition": {
+        "X": 0.8962947,
+        "Y": -0.13119316,
+        "Z": -2.0001495
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 0,
+      "Driver": {
+        "Name": "Driver 01",
+        "Team": "",
+        "Nation": "PLA",
+        "Guid": "76561190000000001",
+        "GuidsList": [
+          "76561190000000001"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 30.862562,
+      "WorldPosition": {
+        "X": 709.9287,
+        "Y": 6.0108457,
+        "Z": 571.77795
+      },
+      "RelPosition": {
+        "X": -0.9337649,
+        "Y": 0.066569336,
+        "Z": 2.5649078
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 44.914654,
+      "WorldPosition": {
+        "X": 692.56256,
+        "Y": 5.4718714,
+        "Z": 561.2997
+      },
+      "RelPosition": {
+        "X": 0.93094677,
+        "Y": -0.16756186,
+        "Z": 2.4987953
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 96.45608,
+      "WorldPosition": {
+        "X": 57.75517,
+        "Y": 20.50945,
+        "Z": 1061.6102
+      },
+      "RelPosition": {
+        "X": -0.9111628,
+        "Y": 0.82134056,
+        "Z": -2.229899
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 0.01695124,
+      "WorldPosition": {
+        "X": 688.369,
+        "Y": 6.1937857,
+        "Z": 551.9724
+      },
+      "RelPosition": {
+        "X": 0.9883067,
+        "Y": 0.5451319,
+        "Z": 0.412197
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 0.28257582,
+      "WorldPosition": {
+        "X": 688.3652,
+        "Y": 6.188795,
+        "Z": 551.97504
+      },
+      "RelPosition": {
+        "X": 0.99013716,
+        "Y": 0.5409455,
+        "Z": 0.30441308
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 5.447867,
+      "WorldPosition": {
+        "X": 685.738,
+        "Y": 5.4567723,
+        "Z": 548.7779
+      },
+      "RelPosition": {
+        "X": 0.97966343,
+        "Y": -0.16777599,
+        "Z": 2.4239795
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 1.6948655,
+      "WorldPosition": {
+        "X": 680.41034,
+        "Y": 6.1209245,
+        "Z": 544.03503
+      },
+      "RelPosition": {
+        "X": 1.0002017,
+        "Y": 0.5193067,
+        "Z": 1.297792
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 167.35017,
+      "WorldPosition": {
+        "X": 342.53513,
+        "Y": 6.111255,
+        "Z": 693.0248
+      },
+      "RelPosition": {
+        "X": -0.8693527,
+        "Y": -0.12274207,
+        "Z": 2.5205598
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 87.15326,
+      "WorldPosition": {
+        "X": 363.83368,
+        "Y": 5.0183764,
+        "Z": 754.00134
+      },
+      "RelPosition": {
+        "X": 0.8402799,
+        "Y": -0.1036446,
+        "Z": 2.49273
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 10.490836,
+      "WorldPosition": {
+        "X": 410.61118,
+        "Y": 4.395387,
+        "Z": 820.5522
+      },
+      "RelPosition": {
+        "X": 0.98739123,
+        "Y": -0.16719566,
+        "Z": 2.414919
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 1.6113924,
+      "WorldPosition": {
+        "X": 447.48718,
+        "Y": 5.404565,
+        "Z": 848.61316
+      },
+      "RelPosition": {
+        "X": 0.97024626,
+        "Y": 0.8595682,
+        "Z": -1.9858202
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 24.824678,
+      "WorldPosition": {
+        "X": 50.820763,
+        "Y": 20.199898,
+        "Z": 1055.2384
+      },
+      "RelPosition": {
+        "X": -0.96948254,
+        "Y": 0.43192092,
+        "Z": -1.9690019
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 12.366726,
+      "WorldPosition": {
+        "X": 692.1843,
+        "Y": 5.68221,
+        "Z": 596.3382
+      },
+      "RelPosition": {
+        "X": -0.008086213,
+        "Y": 0.111694455,
+        "Z": -2.2692192
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 5.386926,
+      "WorldPosition": {
+        "X": 45.933483,
+        "Y": 20.349815,
+        "Z": 1051.5347
+      },
+      "RelPosition": {
+        "X": -0.9694166,
+        "Y": 0.4319216,
+        "Z": -1.969043
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 2,
+      "OtherDriver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "ImpactSpeed": 13.811378,
+      "WorldPosition": {
+        "X": 692.0731,
+        "Y": 5.6828146,
+        "Z": 596.371
+      },
+      "RelPosition": {
+        "X": 0.15679629,
+        "Y": 0.11548097,
+        "Z": 2.7285037
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 2,
+      "OtherDriver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "ImpactSpeed": 5.896255,
+      "WorldPosition": {
+        "X": 692.7144,
+        "Y": 5.432016,
+        "Z": 595.4987
+      },
+      "RelPosition": {
+        "X": 0.98816293,
+        "Y": -0.12895487,
+        "Z": 2.38666
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 6.9663987,
+      "WorldPosition": {
+        "X": 692.73236,
+        "Y": 5.446391,
+        "Z": 595.49646
+      },
+      "RelPosition": {
+        "X": -0.92909837,
+        "Y": -0.12472184,
+        "Z": -2.2368174
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 25.43637,
+      "WorldPosition": {
+        "X": 380.03494,
+        "Y": 5.8410087,
+        "Z": 820.0453
+      },
+      "RelPosition": {
+        "X": -0.9694494,
+        "Y": 0.43192202,
+        "Z": -1.9690142
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 4.5134854,
+      "WorldPosition": {
+        "X": 386.48825,
+        "Y": 6.23284,
+        "Z": 826.3052
+      },
+      "RelPosition": {
+        "X": -0.96945816,
+        "Y": 0.82956874,
+        "Z": -1.9018344
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 43.66284,
+      "WorldPosition": {
+        "X": -479.5258,
+        "Y": -19.789927,
+        "Z": -1041.392
+      },
+      "RelPosition": {
+        "X": 0.9675437,
+        "Y": 0.52841616,
+        "Z": -1.9522187
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 35.133312,
+      "WorldPosition": {
+        "X": 825.4981,
+        "Y": 17.297483,
+        "Z": 1149.265
+      },
+      "RelPosition": {
+        "X": 0.9244547,
+        "Y": 0.8619972,
+        "Z": -2.315528
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 58.064976,
+      "WorldPosition": {
+        "X": 810.9388,
+        "Y": 17.63683,
+        "Z": 1190.1887
+      },
+      "RelPosition": {
+        "X": 0.8157879,
+        "Y": -0.089950025,
+        "Z": 2.5352094
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 10.97921,
+      "WorldPosition": {
+        "X": 692.67865,
+        "Y": 5.5191216,
+        "Z": 595.35767
+      },
+      "RelPosition": {
+        "X": -0.9291223,
+        "Y": -0.051532872,
+        "Z": -2.2369564
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 19.778776,
+      "WorldPosition": {
+        "X": 387.4582,
+        "Y": -22.283558,
+        "Z": -694.53674
+      },
+      "RelPosition": {
+        "X": -0.92910445,
+        "Y": -0.16949902,
+        "Z": -2.1522782
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 2,
+      "OtherDriver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "ImpactSpeed": 15.534029,
+      "WorldPosition": {
+        "X": 692.93835,
+        "Y": 6.0326242,
+        "Z": 595.9877
+      },
+      "RelPosition": {
+        "X": 0.9621986,
+        "Y": 0.5459747,
+        "Z": 0.6130701
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 9.81828,
+      "WorldPosition": {
+        "X": 692.9647,
+        "Y": 6.042045,
+        "Z": 595.5008
+      },
+      "RelPosition": {
+        "X": -0.96945107,
+        "Y": 0.50855434,
+        "Z": -1.9234748
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": 3,
+      "OtherDriver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "ImpactSpeed": 4.1871166,
+      "WorldPosition": {
+        "X": 692.91144,
+        "Y": 5.4373336,
+        "Z": 595.2083
+      },
+      "RelPosition": {
+        "X": -0.921926,
+        "Y": -0.13449976,
+        "Z": -2.234356
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 9.384458,
+      "WorldPosition": {
+        "X": 55.307564,
+        "Y": 21.605265,
+        "Z": 1384.8458
+      },
+      "RelPosition": {
+        "X": 0.970267,
+        "Y": 0.43192148,
+        "Z": -1.9690653
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 80.35959,
+      "WorldPosition": {
+        "X": -48.089363,
+        "Y": 19.815891,
+        "Z": 1070.1093
+      },
+      "RelPosition": {
+        "X": -0.9930341,
+        "Y": -0.1970051,
+        "Z": 2.4921486
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 41.330624,
+      "WorldPosition": {
+        "X": 672.56165,
+        "Y": 5.268249,
+        "Z": 552.74036
+      },
+      "RelPosition": {
+        "X": 0.9366289,
+        "Y": -0.20301361,
+        "Z": 2.549215
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 25.134329,
+      "WorldPosition": {
+        "X": 649.73785,
+        "Y": 5.161752,
+        "Z": 541.3407
+      },
+      "RelPosition": {
+        "X": -0.92910886,
+        "Y": -0.16949949,
+        "Z": -2.1522496
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 5.916078,
+      "WorldPosition": {
+        "X": 665.05945,
+        "Y": 6.4391828,
+        "Z": 526.3337
+      },
+      "RelPosition": {
+        "X": -0.96945643,
+        "Y": 0.82956845,
+        "Z": -1.9018394
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 101.47011,
+      "WorldPosition": {
+        "X": 820.9042,
+        "Y": 17.243599,
+        "Z": 1174.3503
+      },
+      "RelPosition": {
+        "X": 0.92006046,
+        "Y": -0.189473,
+        "Z": 2.5768642
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 46.822697,
+      "WorldPosition": {
+        "X": 774.6437,
+        "Y": 16.092962,
+        "Z": 1195.1674
+      },
+      "RelPosition": {
+        "X": -0.5030093,
+        "Y": 0.08706849,
+        "Z": 2.7646618
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 140.98738,
+      "WorldPosition": {
+        "X": -498.679,
+        "Y": 51.90223,
+        "Z": 2271.02
+      },
+      "RelPosition": {
+        "X": 0.89009506,
+        "Y": -0.1383565,
+        "Z": 2.4911084
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 74.4093,
+      "WorldPosition": {
+        "X": -561.12103,
+        "Y": 52.943893,
+        "Z": 2294.6846
+      },
+      "RelPosition": {
+        "X": 0.7092821,
+        "Y": -0.01835824,
+        "Z": 2.5716538
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 0,
+      "Driver": {
+        "Name": "Driver 01",
+        "Team": "",
+        "Nation": "PLA",
+        "Guid": "76561190000000001",
+        "GuidsList": [
+          "76561190000000001"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 3.872605,
+      "WorldPosition": {
+        "X": 1272.6649,
+        "Y": 9.591735,
+        "Z": 326.3294
+      },
+      "RelPosition": {
+        "X": 0.95361423,
+        "Y": -0.16587223,
+        "Z": -1.6483183
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 108.14525,
+      "WorldPosition": {
+        "X": -48.1413,
+        "Y": 19.913628,
+        "Z": 1070.2422
+      },
+      "RelPosition": {
+        "X": -0.93683887,
+        "Y": -0.19756095,
+        "Z": 2.5828438
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 4,
+      "OtherDriver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "ImpactSpeed": 15.785135,
+      "WorldPosition": {
+        "X": 697.0154,
+        "Y": 5.6578045,
+        "Z": 611.44434
+      },
+      "RelPosition": {
+        "X": -1.364039e-06,
+        "Y": 0.084761925,
+        "Z": 2.8341644
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 15.171669,
+      "WorldPosition": {
+        "X": 697.0013,
+        "Y": 5.657662,
+        "Z": 611.45013
+      },
+      "RelPosition": {
+        "X": -0.28839692,
+        "Y": 0.089730665,
+        "Z": -2.16832
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 42.180202,
+      "WorldPosition": {
+        "X": 703.53375,
+        "Y": 6.0506754,
+        "Z": 610.5137
+      },
+      "RelPosition": {
+        "X": -0.92910117,
+        "Y": 0.43307266,
+        "Z": -2.232788
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 107.69649,
+      "WorldPosition": {
+        "X": 824.8685,
+        "Y": 16.798332,
+        "Z": 1158.7662
+      },
+      "RelPosition": {
+        "X": 0.7499116,
+        "Y": -0.04599609,
+        "Z": 2.5612793
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 75.86073,
+      "WorldPosition": {
+        "X": 806.1819,
+        "Y": 17.2519,
+        "Z": 1190.2162
+      },
+      "RelPosition": {
+        "X": -0.9960361,
+        "Y": -0.15835491,
+        "Z": 2.0992613
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 30.378778,
+      "WorldPosition": {
+        "X": 808.09393,
+        "Y": 17.575006,
+        "Z": 1193.701
+      },
+      "RelPosition": {
+        "X": 0.98737746,
+        "Y": -0.16719398,
+        "Z": 2.4149034
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 0.40302584,
+      "WorldPosition": {
+        "X": 804.8885,
+        "Y": 17.50211,
+        "Z": 1196.9292
+      },
+      "RelPosition": {
+        "X": 0.9873798,
+        "Y": -0.16719405,
+        "Z": 2.4149473
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 0.31838956,
+      "WorldPosition": {
+        "X": 804.6429,
+        "Y": 17.497309,
+        "Z": 1197.1614
+      },
+      "RelPosition": {
+        "X": 0.9873989,
+        "Y": -0.16719505,
+        "Z": 2.414918
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 87.94463,
+      "WorldPosition": {
+        "X": 124.68745,
+        "Y": 20.891193,
+        "Z": 1462.8286
+      },
+      "RelPosition": {
+        "X": 0.9086609,
+        "Y": -0.18178266,
+        "Z": 2.5801172
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 4,
+      "Driver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "OtherCarId": 5,
+      "OtherDriver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "ImpactSpeed": 13.999497,
+      "WorldPosition": {
+        "X": 697.6082,
+        "Y": 5.6650515,
+        "Z": 611.27527
+      },
+      "RelPosition": {
+        "X": -0.9179023,
+        "Y": 0.097074606,
+        "Z": -2.1734436
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 4.4452715,
+      "WorldPosition": {
+        "X": 801.6788,
+        "Y": 17.471369,
+        "Z": 1199.8676
+      },
+      "RelPosition": {
+        "X": 0.980203,
+        "Y": -0.16735221,
+        "Z": 2.4252064
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_CAR",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": 4,
+      "OtherDriver": {
+        "Name": "Driver 05",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000005",
+        "GuidsList": [
+          "76561190000000005"
+        ]
+      },
+      "ImpactSpeed": 14.19137,
+      "WorldPosition": {
+        "X": 697.6192,
+        "Y": 5.6100955,
+        "Z": 611.2728
+      },
+      "RelPosition": {
+        "X": 0.58386457,
+        "Y": 0.033277586,
+        "Z": 2.7302709
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 2,
+      "Driver": {
+        "Name": "Driver 03",
+        "Team": "",
+        "Nation": "ARG",
+        "Guid": "76561190000000003",
+        "GuidsList": [
+          "76561190000000003"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 80.50664,
+      "WorldPosition": {
+        "X": -668.4257,
+        "Y": 46.61824,
+        "Z": 2220.147
+      },
+      "RelPosition": {
+        "X": 0.9840444,
+        "Y": -0.1371482,
+        "Z": 0.07545971
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 131.79532,
+      "WorldPosition": {
+        "X": 48.19082,
+        "Y": 19.77519,
+        "Z": 1053.1562
+      },
+      "RelPosition": {
+        "X": -0.909178,
+        "Y": -0.1262188,
+        "Z": -2.235239
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 3,
+      "Driver": {
+        "Name": "Driver 04",
+        "Team": "",
+        "Nation": "BFA",
+        "Guid": "76561190000000004",
+        "GuidsList": [
+          "76561190000000004"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 1.2300161,
+      "WorldPosition": {
+        "X": 8.113985,
+        "Y": 20.51024,
+        "Z": 1039.062
+      },
+      "RelPosition": {
+        "X": -0.9368662,
+        "Y": -0.16756307,
+        "Z": 2.4988453
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 27.780394,
+      "WorldPosition": {
+        "X": -554.796,
+        "Y": 35.802597,
+        "Z": 1964.1732
+      },
+      "RelPosition": {
+        "X": -0.92912704,
+        "Y": 0.8320003,
+        "Z": -2.2315557
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 0,
+      "Driver": {
+        "Name": "Driver 01",
+        "Team": "",
+        "Nation": "PLA",
+        "Guid": "76561190000000001",
+        "GuidsList": [
+          "76561190000000001"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 167.26599,
+      "WorldPosition": {
+        "X": -557.19946,
+        "Y": 34.477512,
+        "Z": 1952.846
+      },
+      "RelPosition": {
+        "X": -0.7193764,
+        "Y": 0.06460137,
+        "Z": 2.5901203
+      }
+    },
+    {
+      "Type": "COLLISION_WITH_ENV",
+      "CarId": 5,
+      "Driver": {
+        "Name": "Driver 06",
+        "Team": "",
+        "Nation": "ITA",
+        "Guid": "76561190000000006",
+        "GuidsList": [
+          "76561190000000006"
+        ]
+      },
+      "OtherCarId": -1,
+      "OtherDriver": {
+        "Name": "",
+        "Team": "",
+        "Nation": "",
+        "Guid": "",
+        "GuidsList": null
+      },
+      "ImpactSpeed": 163.25839,
+      "WorldPosition": {
+        "X": -496.6877,
+        "Y": 51.778843,
+        "Z": 2269.2815
+      },
+      "RelPosition": {
+        "X": 0.8496263,
+        "Y": -0.1422287,
+        "Z": 2.6019588
+      }
+    }
+  ]
+}

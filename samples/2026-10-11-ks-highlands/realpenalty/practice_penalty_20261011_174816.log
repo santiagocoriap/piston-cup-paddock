@@ -1,0 +1,332 @@
+2026-10-11 17:48:16.029581: ----------------------------------------------------
+2026-10-11 17:48:16.029581: Server name: League Server
+2026-10-11 17:48:16.029581: Track: ks_highlands / layout_long
+2026-10-11 17:48:16.029581: Name: Practice
+2026-10-11 17:48:16.029581: Type: 1
+2026-10-11 17:48:16.029581: Time: 16959
+2026-10-11 17:48:16.029581: Laps: 0
+2026-10-11 17:48:16.029581: ----------------------------------------------------
+2026-10-11 17:48:16.031098: ----------------------------------------------------
+2026-10-11 17:48:31.960932: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 17:55:42.676117: Teleport from Track - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - dsq: False - Lap: 1 - Norm.pos.: 0.17852 - World pos.: 56.275 / 21.103 / 1378.38 - Distance: 10111.969 - Speed: 372260
+2026-10-11 17:55:43.647932: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: False - lap: 1
+2026-10-11 17:55:57.833031: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 4.176 - lap: 1
+2026-10-11 17:56:03.858550: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 17:59:52.611810: Teleport from Track - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - dsq: False - Lap: 1 - Norm.pos.: 0.16912 - World pos.: 133.032 / 19.991 / 1448.687 - Distance: 10226.354 - Speed: 358751
+2026-10-11 17:59:53.568625: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: False - lap: 1
+2026-10-11 18:00:53.124834: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 2.303 - lap: 1
+2026-10-11 18:00:59.294471: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:07:11.535119: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:07:44.768060: Teleport from Track - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - dsq: False - Lap: 1 - Norm.pos.: 0.10586 - World pos.: 807.331 / 17.538 / 1191.239 - Distance: 10996.764 - Speed: 186697
+2026-10-11 18:07:45.717918: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: False - lap: 1
+2026-10-11 18:07:51.549816: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 4.077 - lap: 1
+2026-10-11 18:07:57.464932: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 1 - Tyres: Slick Hard (H)
+2026-10-11 18:11:21.458191: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:11:27.940293: Pit lane left - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:11:54.584780: Teleport from Track - Car ID: 0 - Name: Driver 01 - GUID: 76561190000000001 - dsq: False - Lap: 1 - Norm.pos.: 0.06593 - World pos.: 474.307 / 4.889 / 882.972 - Distance: 11500.74 - Speed: 148464
+2026-10-11 18:11:55.495830: Pit lane entered - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Correct way: False - lap: 1
+2026-10-11 18:11:56.512677: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.114 - lap: 1
+2026-10-11 18:12:01.172710: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.17152 - World pos.: 101.059 / 21.337 / 1453.269 - Distance: 10172.853 - Speed: 671841
+2026-10-11 18:12:02.184808: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:12:06.132719: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.366 - lap: 1
+2026-10-11 18:12:14.345364: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:12:34.090603: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.10221 - World pos.: 824.405 / 16.168 / 1145.724 - Distance: 11016.881 - Speed: 325591
+2026-10-11 18:12:35.103638: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:12:36.116710: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.222 - lap: 1
+2026-10-11 18:12:42.109241: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:13:02.652812: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.10376 - World pos.: 822.065 / 17.127 / 1166.745 - Distance: 10997.999 - Speed: 289557
+2026-10-11 18:13:03.598221: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:13:04.609820: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.21 - lap: 1
+2026-10-11 18:13:10.256337: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:13:30.217171: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.10305 - World pos.: 823.611 / 16.701 / 1157.114 - Distance: 11006.623 - Speed: 332339
+2026-10-11 18:13:31.226173: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:13:32.239804: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.219 - lap: 1
+2026-10-11 18:13:38.030567: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:13:39.024379: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.01873 - World pos.: 623.665 / 5.357 / 551.695 - Distance: 12033.294 - Speed: 64881
+2026-10-11 18:13:40.036491: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:13:40.981143: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.035 - lap: 1
+2026-10-11 18:13:46.618416: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:14:06.379910: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.10275 - World pos.: 823.632 / 16.489 / 1153.156 - Distance: 11010.172 - Speed: 395800
+2026-10-11 18:14:07.395059: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:14:08.409268: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.212 - lap: 1
+2026-10-11 18:14:14.204375: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:14:17.516784: Speeding - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - Speed: 137 - lap: 1
+2026-10-11 18:14:18.524696: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: True - lap: 1
+2026-10-11 18:14:24.848414: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.05852 - World pos.: 397.812 / 5.229 / 834.898 - Distance: 11548.801 - Speed: 205394
+2026-10-11 18:14:25.858276: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:14:27.797834: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 0.0 - lap: 1
+2026-10-11 18:14:28.806387: Pit stop - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Model: trr_lmdh_cadillac_v-series.r - Skin: lm23_3
+2026-10-11 18:14:33.244253: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.141 - lap: 1
+2026-10-11 18:14:43.293729: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:14:44.307593: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.01888 - World pos.: 622.012 / 5.36 / 552.057 - Distance: 12031.586 - Speed: 48072
+2026-10-11 18:14:45.234352: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:14:46.241560: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.045 - lap: 1
+2026-10-11 18:14:49.375111: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:14:52.108158: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:14:54.744892: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 3.944 - lap: 1
+2026-10-11 18:14:54.848370: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.02367 - World pos.: 564.29 / 5.453 / 559.036 - Distance: 11973.226 - Speed: 80836
+2026-10-11 18:14:55.862460: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:14:56.880282: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.041 - lap: 1
+2026-10-11 18:15:00.828308: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:15:02.554591: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:15:12.582741: Pit lane left - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:16:01.129434: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 1 - Norm.pos.: 0.20205 - World pos.: 70.524 / 19.246 / 1091.946 - Distance: 9794.111 - Speed: 474086
+2026-10-11 18:16:02.048047: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 1
+2026-10-11 18:16:03.038104: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.405 - lap: 1
+2026-10-11 18:16:10.136147: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:17:25.111543: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:18:20.388553: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: True - lap: 1
+2026-10-11 18:18:21.258467: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 1 - Norm.pos.: 0.49198 - World pos.: -1122.844 / -9.001 / 461.717 - Distance: 6268.964 - Speed: 938574
+2026-10-11 18:18:22.231546: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 1
+2026-10-11 18:18:23.295288: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 1.001 - lap: 1
+2026-10-11 18:18:29.705039: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:18:29.851955: Teleport from Pit Lane - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.0085 - World pos.: 698.607 / 5.607 / 597.25 - Distance: 19.257 - Speed: 7921
+2026-10-11 18:18:30.808234: Pit stop - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: w
+2026-10-11 18:18:35.510660: Teleport from Track - Car ID: 0 - Name: Driver 01 - GUID: 76561190000000001 - dsq: False - Lap: 1 - Norm.pos.: 0.01056 - World pos.: 706.546 / 5.912 / 568.891 - Distance: 12174.891 - Speed: 12134
+2026-10-11 18:18:36.484464: Pit lane entered - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Correct way: False - lap: 1
+2026-10-11 18:18:37.546192: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 1.968 - lap: 1
+2026-10-11 18:18:42.333325: Cutting - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - Lap: 1 - Norm.pos.: 0.04994 - World pos.: 353.77 / 4.996 / 741.961
+2026-10-11 18:18:49.359785: Teleport from Track - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - dsq: False - Lap: 1 - Norm.pos.: 0.14361 - World pos.: 358.333 / 7.32 / 1259.844 - Distance: 10537.064 - Speed: 262373
+2026-10-11 18:18:50.438228: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: False - lap: 1
+2026-10-11 18:18:55.858474: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 2.281 - lap: 1
+2026-10-11 18:19:02.728601: Pit lane left - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:19:03.268039: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:19:11.096648: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 1 - Norm.pos.: 0.17361 - World pos.: 87.357 / 20.557 / 1429.164 - Distance: 10139.826 - Speed: 525159
+2026-10-11 18:19:12.172649: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 1
+2026-10-11 18:19:12.400525: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 2.032 - lap: 1
+2026-10-11 18:19:13.271514: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.355 - lap: 1
+2026-10-11 18:19:19.588205: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:19:20.458842: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:20:45.629588: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 1 - Norm.pos.: 0.30526 - World pos.: -527.445 / 38.596 / 2026.695 - Distance: 8539.195 - Speed: 963037
+2026-10-11 18:20:46.581891: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 1
+2026-10-11 18:20:47.663640: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.652 - lap: 1
+2026-10-11 18:20:50.241354: Teleport from Track - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.92619 - World pos.: 1226.285 / 6.297 / 363.168 - Distance: 997.89 - Speed: 216645
+2026-10-11 18:20:50.986776: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: False - lap: 1
+2026-10-11 18:20:53.640327: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:21:02.219336: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.42434 - World pos.: -927.679 / 11.091 / 1259.443 - Distance: 7094.166 - Speed: 1188030
+2026-10-11 18:21:03.198328: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:21:04.273640: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.882 - lap: 1
+2026-10-11 18:21:10.724288: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:21:16.541031: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:21:50.204657: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.1744 - World pos.: 77.199 / 20.863 / 1424.756 - Distance: 10137.78 - Speed: 523023
+2026-10-11 18:21:51.308678: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:21:52.385338: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.358 - lap: 1
+2026-10-11 18:21:58.738419: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:21:59.812698: Teleport from Track - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.17496 - World pos.: 67.975 / 21.416 / 1422.901 - Distance: 10131.51 - Speed: 929513
+2026-10-11 18:22:00.591590: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: False - lap: 1
+2026-10-11 18:22:01.854826: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.355 - lap: 1
+2026-10-11 18:22:09.248601: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:22:27.808198: Teleport from Track - Car ID: 0 - Name: Driver 01 - GUID: 76561190000000001 - dsq: False - Lap: 1 - Norm.pos.: 0.01852 - World pos.: 622.558 / 5.444 / 533.447 - Distance: 12077.95 - Speed: 47290
+2026-10-11 18:22:28.798712: Pit lane entered - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Correct way: False - lap: 1
+2026-10-11 18:22:29.881162: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 1.996 - lap: 1
+2026-10-11 18:22:30.442849: Teleport from Track - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - dsq: False - Lap: 1 - Norm.pos.: 0.02565 - World pos.: 540.539 / 5.327 / 563.167 - Distance: 11973.517 - Speed: 50953
+2026-10-11 18:22:31.418738: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: False - lap: 1
+2026-10-11 18:22:39.828730: Teleport from Track - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.10891 - World pos.: 770.363 / 16.021 / 1201.892 - Distance: 10934.613 - Speed: 544538
+2026-10-11 18:22:40.596034: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: False - lap: 1
+2026-10-11 18:22:42.608328: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.212 - lap: 1
+2026-10-11 18:22:44.206123: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 1.965 - lap: 1
+2026-10-11 18:22:46.591909: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.20796 - World pos.: 14.146 / 20.488 / 1041.46 - Distance: 9729.142 - Speed: 445385
+2026-10-11 18:22:47.691740: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:22:48.770240: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.446 - lap: 1
+2026-10-11 18:22:50.590833: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.008 - lap: 1
+2026-10-11 18:22:55.368299: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:23:03.598720: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:23:17.565283: Pit lane left - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:23:47.579885: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.2161 - World pos.: -51.234 / 18.89 / 1106.652 - Distance: 9629.965 - Speed: 536075
+2026-10-11 18:23:48.662751: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:23:49.325843: Teleport from Track - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.18096 - World pos.: 64.881 / 20.304 / 1348.388 - Distance: 10058.571 - Speed: 1080843
+2026-10-11 18:23:49.759760: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.482 - lap: 1
+2026-10-11 18:23:50.102894: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: False - lap: 1
+2026-10-11 18:23:51.184884: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.344 - lap: 1
+2026-10-11 18:23:56.668964: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:23:57.767385: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.01787 - World pos.: 633.148 / 5.241 / 547.778 - Distance: 12043.874 - Speed: 45620
+2026-10-11 18:23:58.869013: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:23:59.241531: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.003 - lap: 1
+2026-10-11 18:23:59.885840: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.022 - lap: 1
+2026-10-11 18:24:00.964377: Teleport from Pit Lane - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.00787 - World pos.: 695.419 / 5.576 / 606.077 - Distance: 11.512 - Speed: 5129
+2026-10-11 18:24:02.038466: Pit stop - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: w
+2026-10-11 18:24:03.141341: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.008 - lap: 1
+2026-10-11 18:24:04.223002: Teleport from Pit Lane - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.00784 - World pos.: 695.525 / 5.559 / 606.46 - Distance: 11.17 - Speed: 4663
+2026-10-11 18:24:05.343424: Pit stop - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: w
+2026-10-11 18:24:06.446379: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.007 - lap: 1
+2026-10-11 18:24:07.403005: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:24:07.528425: Teleport from Pit Lane - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.0078 - World pos.: 695.528 / 5.555 / 606.931 - Distance: 10.7 - Speed: 4747
+2026-10-11 18:24:07.756226: Cutting - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - Lap: 1 - Norm.pos.: 0.79179 - World pos.: 638.262 / -25.352 / -801.84
+2026-10-11 18:24:08.651942: Pit stop - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: w
+2026-10-11 18:24:09.738265: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.008 - lap: 1
+2026-10-11 18:24:12.214574: Teleport from Pit Lane - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.00865 - World pos.: 691.705 / 5.577 / 597.479 - Distance: 21.019 - Speed: 8773
+2026-10-11 18:24:13.361629: Pit stop - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: w
+2026-10-11 18:24:14.422785: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.023 - lap: 1
+2026-10-11 18:24:15.297979: Pit stop - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Model: trr_lmdh_cadillac_v-series.r - Skin: wec 38 jota
+2026-10-11 18:24:16.086021: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.006 - lap: 1
+2026-10-11 18:24:16.620615: Teleport from Pit Lane - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.00842 - World pos.: 693.596 / 5.652 / 599.819 - Distance: 18.206 - Speed: 9924
+2026-10-11 18:24:17.702249: Pit stop - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: w
+2026-10-11 18:24:18.798234: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.02 - lap: 1
+2026-10-11 18:24:20.310348: Teleport from Pit Lane - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.00834 - World pos.: 693.395 / 5.555 / 600.879 - Distance: 17.273 - Speed: 10176
+2026-10-11 18:24:21.389097: Pit stop - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: w
+2026-10-11 18:24:22.470544: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.015 - lap: 1
+2026-10-11 18:24:25.353138: Teleport from Pit Lane - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.00927 - World pos.: 688.72 / 5.567 / 590.911 - Distance: 12.237 - Speed: 10826
+2026-10-11 18:24:27.430884: Pit stop - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Model: trr_lmdh_cadillac_v-series.r - Skin: wec 38 jota
+2026-10-11 18:24:27.451923: Teleport from Pit Lane - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.0081 - World pos.: 693.704 / 5.688 / 603.744 - Distance: 14.361 - Speed: 6358
+2026-10-11 18:24:28.534893: Pit stop - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: w
+2026-10-11 18:24:29.632886: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.01 - lap: 1
+2026-10-11 18:24:35.953550: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:24:43.404737: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:24:56.164396: Teleport from Track - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - dsq: False - Lap: 1 - Norm.pos.: 0.12128 - World pos.: 624.601 / 8.177 / 1233.271 - Distance: 10808.948 - Speed: 190308
+2026-10-11 18:24:57.267215: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: False - lap: 1
+2026-10-11 18:25:14.391958: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.17299 - World pos.: 83.835 / 21.488 / 1443.559 - Distance: 10154.904 - Speed: 493885
+2026-10-11 18:25:15.455056: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:25:16.653648: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.35 - lap: 1
+2026-10-11 18:25:22.609056: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:25:24.720168: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 1 - Norm.pos.: 0.00862 - World pos.: 710.644 / 5.734 / 592.449 - Distance: 12145.877 - Speed: 11507
+2026-10-11 18:25:25.715336: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 1
+2026-10-11 18:25:26.774487: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 2.091 - lap: 1
+2026-10-11 18:25:33.625036: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:25:34.642078: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 1 - Norm.pos.: 0.01785 - World pos.: 633.373 / 5.31 / 546.541 - Distance: 12033.683 - Speed: 35539
+2026-10-11 18:25:35.716161: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 1
+2026-10-11 18:25:36.774030: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.019 - lap: 1
+2026-10-11 18:25:41.948454: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:25:58.715068: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.16927 - World pos.: 128.902 / 20.979 / 1462.546 - Distance: 10200.172 - Speed: 665696
+2026-10-11 18:25:59.772967: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:26:00.854453: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.359 - lap: 1
+2026-10-11 18:26:05.686312: Teleport from Track - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.32881 - World pos.: -523.576 / 52.59 / 2284.644 - Distance: 8260.979 - Speed: 2493830
+2026-10-11 18:26:06.538171: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: False - lap: 1
+2026-10-11 18:26:07.615222: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.667 - lap: 1
+2026-10-11 18:26:08.262878: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:26:09.756423: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 0.33 - lap: 1
+2026-10-11 18:26:23.730565: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:26:33.548688: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:26:58.917589: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 1 - Norm.pos.: 0.30266 - World pos.: -533.056 / 36.747 / 1995.456 - Distance: 8570.77 - Speed: 952734
+2026-10-11 18:26:59.976895: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 1
+2026-10-11 18:27:01.054905: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.636 - lap: 1
+2026-10-11 18:27:03.952498: Teleport from Track - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - dsq: False - Lap: 1 - Norm.pos.: 0.10368 - World pos.: 815.216 / 16.469 / 1163.53 - Distance: 11023.257 - Speed: 178468
+2026-10-11 18:27:05.029090: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: False - lap: 1
+2026-10-11 18:27:06.958516: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:27:07.290504: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 0.252 - lap: 1
+2026-10-11 18:27:13.935162: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:27:17.135046: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.3008 - World pos.: -538.08 / 36.318 / 1975.547 - Distance: 8598.581 - Speed: 943899
+2026-10-11 18:27:18.213169: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:27:19.292751: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.639 - lap: 1
+2026-10-11 18:27:25.641948: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:27:34.868541: Teleport from Track - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - dsq: False - Lap: 1 - Norm.pos.: 0.07029 - World pos.: 526.146 / 5.145 / 899.239 - Distance: 11429.898 - Speed: 106395
+2026-10-11 18:27:35.986181: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: False - lap: 1
+2026-10-11 18:27:46.443143: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 1 - Norm.pos.: 0.17569 - World pos.: 63.0 / 21.438 / 1414.403 - Distance: 10114.598 - Speed: 460888
+2026-10-11 18:27:47.518951: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 1
+2026-10-11 18:27:48.583565: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.322 - lap: 1
+2026-10-11 18:27:50.332251: Teleport from Track - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.30271 - World pos.: -535.159 / 36.781 / 1996.639 - Distance: 8578.38 - Speed: 1679679
+2026-10-11 18:27:51.098974: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: False - lap: 1
+2026-10-11 18:27:53.019077: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.598 - lap: 1
+2026-10-11 18:27:54.433508: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:27:57.173117: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 0.101 - lap: 1
+2026-10-11 18:28:04.711546: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:28:05.660710: Cutting - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - Lap: 1 - Norm.pos.: 0.04859 - World pos.: 352.196 / 5.029 / 725.96
+2026-10-11 18:28:06.763012: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:28:16.243744: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.21318 - World pos.: -45.914 / 20.065 / 1068.927 - Distance: 9665.497 - Speed: 447400
+2026-10-11 18:28:17.223618: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:28:18.285081: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.448 - lap: 1
+2026-10-11 18:28:24.627061: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:28:51.492029: Cutting - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - Lap: 1 - Norm.pos.: 0.21534 - World pos.: -49.81 / 19.128 / 1096.238
+2026-10-11 18:29:06.019597: Teleport from Track - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.21538 - World pos.: -53.801 / 19.128 / 1094.501 - Distance: 9640.127 - Speed: 1074215
+2026-10-11 18:29:06.788671: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: False - lap: 1
+2026-10-11 18:29:07.746540: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.424 - lap: 1
+2026-10-11 18:29:15.251543: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:29:42.522168: Teleport from Track - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.10488 - World pos.: 816.208 / 17.449 / 1179.606 - Distance: 10983.634 - Speed: 531669
+2026-10-11 18:29:43.269769: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: False - lap: 1
+2026-10-11 18:29:44.354285: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.201 - lap: 1
+2026-10-11 18:29:51.098281: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:30:49.756135: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 1 - Norm.pos.: 0.69004 - World pos.: -352.252 / -22.899 / -1089.606 - Distance: 3860.914 - Speed: 1026861
+2026-10-11 18:30:50.711808: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 1
+2026-10-11 18:30:51.790740: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 1.396 - lap: 1
+2026-10-11 18:30:53.535348: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.68871 - World pos.: -367.352 / -22.436 / -1081.401 - Distance: 3874.908 - Speed: 1202638
+2026-10-11 18:30:54.613087: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:30:57.474838: Teleport from Track - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - dsq: False - Lap: 1 - Norm.pos.: 0.68716 - World pos.: -384.629 / -23.196 / -1074.219 - Distance: 3918.14 - Speed: 570523
+2026-10-11 18:30:58.463574: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: False - lap: 1
+2026-10-11 18:31:15.052016: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:31:37.383447: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 1.328 - lap: 1
+2026-10-11 18:31:45.492009: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:32:21.256507: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.16913 - World pos.: 130.806 / 20.933 / 1462.808 - Distance: 10201.943 - Speed: 610883
+2026-10-11 18:32:22.316362: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:32:23.392360: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.355 - lap: 1
+2026-10-11 18:32:25.094289: Teleport from Pit Lane - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.00848 - World pos.: 694.829 / 5.57 / 598.736 - Distance: 18.913 - Speed: 7473
+2026-10-11 18:32:26.193742: Pit stop - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: w
+2026-10-11 18:32:32.374275: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 1 - Norm.pos.: 0.30633 - World pos.: -524.431 / 39.379 / 2039.661 - Distance: 8526.224 - Speed: 846243
+2026-10-11 18:32:33.330407: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 1
+2026-10-11 18:32:34.411934: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.644 - lap: 1
+2026-10-11 18:32:40.362409: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:32:51.939931: Cutting - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - Lap: 1 - Norm.pos.: 0.04859 - World pos.: 352.255 / 5.029 / 725.962
+2026-10-11 18:33:15.116341: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.009 - lap: 1
+2026-10-11 18:33:22.993475: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:33:27.568241: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.03115 - World pos.: 475.569 / 5.338 / 579.949 - Distance: 11882.151 - Speed: 115943
+2026-10-11 18:33:28.684819: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:33:34.232365: Teleport from Track - Car ID: 0 - Name: Driver 01 - GUID: 76561190000000001 - dsq: False - Lap: 1 - Norm.pos.: 0.01241 - World pos.: 696.825 / 5.928 / 546.981 - Distance: 12152.438 - Speed: 10912
+2026-10-11 18:33:35.231717: Pit lane entered - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Correct way: False - lap: 1
+2026-10-11 18:33:36.306540: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 5.827 - lap: 1
+2026-10-11 18:33:41.217835: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.078 - lap: 1
+2026-10-11 18:33:49.245001: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:34:05.594330: Pit lane left - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:34:17.130342: Teleport from Track - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.06279 - World pos.: 449.309 / 4.586 / 851.051 - Distance: 11495.402 - Speed: 314223
+2026-10-11 18:34:17.921009: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: True - lap: 1
+2026-10-11 18:34:18.998086: Pit stop - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Model: trr_lmdh_cadillac_v-series.r - Skin: wec 38 jota
+2026-10-11 18:34:37.219755: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.20813 - World pos.: 11.897 / 20.535 / 1040.68 - Distance: 9727.028 - Speed: 446298
+2026-10-11 18:34:38.092311: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 1.362 - lap: 1
+2026-10-11 18:34:38.318962: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:34:39.393331: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.453 - lap: 1
+2026-10-11 18:34:42.504543: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.001 - lap: 1
+2026-10-11 18:34:46.018523: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:34:53.439480: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:34:57.693449: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.06038 - World pos.: 416.188 / 4.993 / 848.713 - Distance: 11526.119 - Speed: 216482
+2026-10-11 18:34:58.749908: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:34:59.826535: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.14 - lap: 1
+2026-10-11 18:35:06.397739: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:35:17.903429: Teleport from Track - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.10598 - World pos.: 806.239 / 17.454 / 1190.775 - Distance: 10970.2 - Speed: 539590
+2026-10-11 18:35:18.649800: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: False - lap: 1
+2026-10-11 18:35:20.060572: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.202 - lap: 1
+2026-10-11 18:35:24.333351: Pit stop - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Model: trr_lmdh_cadillac_v-series.r - Skin: wec 38 jota
+2026-10-11 18:35:26.178470: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.004 - lap: 1
+2026-10-11 18:35:39.075163: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:35:58.100502: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.21359 - World pos.: -46.544 / 20.76 / 1074.828 - Distance: 9660.574 - Speed: 483940
+2026-10-11 18:35:59.178848: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:36:00.256552: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.455 - lap: 1
+2026-10-11 18:36:06.704147: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:36:08.092534: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.02053 - World pos.: 601.145 / 5.457 / 549.184 - Distance: 12011.389 - Speed: 65614
+2026-10-11 18:36:09.175109: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:36:10.131938: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.042 - lap: 1
+2026-10-11 18:36:16.404957: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:36:47.024717: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:36:55.904988: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 1 - Norm.pos.: 0.10908 - World pos.: 772.167 / 16.361 / 1210.559 - Distance: 10924.455 - Speed: 363594
+2026-10-11 18:36:56.881717: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 1
+2026-10-11 18:36:57.938060: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 2.308 - lap: 1
+2026-10-11 18:37:03.306598: Teleport from Track - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.33338 - World pos.: -580.644 / 51.601 / 2283.522 - Distance: 8205.471 - Speed: 1902832
+2026-10-11 18:37:04.155119: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: False - lap: 1
+2026-10-11 18:37:05.234186: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.642 - lap: 1
+2026-10-11 18:37:07.564751: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.21362 - World pos.: -46.473 / 20.663 / 1075.434 - Distance: 9660.153 - Speed: 484081
+2026-10-11 18:37:08.662095: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:37:09.738448: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.463 - lap: 1
+2026-10-11 18:37:12.164715: Teleport from Pit Lane - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.00792 - World pos.: 695.414 / 5.566 / 605.444 - Distance: 12.203 - Speed: 5769
+2026-10-11 18:37:12.913102: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 1 - Tyres: Slick Medium (M)
+2026-10-11 18:37:13.287231: Pit stop - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: w
+2026-10-11 18:37:14.345056: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.004 - lap: 1
+2026-10-11 18:37:21.138429: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:37:24.934574: Pit stop - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: l
+2026-10-11 18:37:26.034569: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.119 - lap: 1
+2026-10-11 18:37:27.009770: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.03 - lap: 1
+2026-10-11 18:37:28.068347: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.038 - lap: 1
+2026-10-11 18:37:29.148657: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.035 - lap: 1
+2026-10-11 18:37:30.224237: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.037 - lap: 1
+2026-10-11 18:37:59.418088: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.17297 - World pos.: 85.259 / 21.352 / 1442.24 - Distance: 10155.113 - Speed: 615328
+2026-10-11 18:38:00.498117: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:38:01.366333: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 19.767 - lap: 1
+2026-10-11 18:38:01.595437: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.37 - lap: 1
+2026-10-11 18:38:02.711829: Pit stop - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: w
+2026-10-11 18:38:03.664300: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.002 - lap: 1
+2026-10-11 18:38:11.516227: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 18:38:16.295074: Teleport from Track - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - dsq: False - Lap: 1 - Norm.pos.: 0.36618 - World pos.: -761.518 / 21.977 / 1946.858 - Distance: 7826.839 - Speed: 588477
+2026-10-11 18:38:17.349932: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: False - lap: 1
+2026-10-11 18:38:41.684877: Teleport from Track - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.20849 - World pos.: 8.2 / 20.59 / 1041.661 - Distance: 9723.841 - Speed: 419001
+2026-10-11 18:38:42.434442: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: False - lap: 1
+2026-10-11 18:39:34.262201: Teleport from Track - Car ID: 0 - Name: Driver 01 - GUID: 76561190000000001 - dsq: False - Lap: 1 - Norm.pos.: 0.29917 - World pos.: -549.887 / 34.624 / 1958.131 - Distance: 8660.528 - Speed: 1333786
+2026-10-11 18:39:35.221225: Pit lane entered - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Correct way: False - lap: 1
+2026-10-11 18:39:36.305148: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 2.433 - lap: 1
+2026-10-11 18:39:38.234622: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 1 - Norm.pos.: 0.34793 - World pos.: -688.167 / 40.293 / 2154.991 - Distance: 8024.593 - Speed: 1144135
+2026-10-11 18:39:39.232739: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 1
+2026-10-11 18:39:44.658928: End session

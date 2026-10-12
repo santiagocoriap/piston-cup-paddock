@@ -1,0 +1,169 @@
+2026-10-11 19:27:31.884853: ----------------------------------------------------
+2026-10-11 19:27:31.884853: Server name: League Server
+2026-10-11 19:27:31.884853: Track: ks_highlands / layout_long
+2026-10-11 19:27:31.884853: Name: Race
+2026-10-11 19:27:31.884853: Type: 3
+2026-10-11 19:27:31.884853: Time: 30
+2026-10-11 19:27:31.884853: Laps: 0
+2026-10-11 19:27:31.884853: ----------------------------------------------------
+2026-10-11 19:27:31.884853: ----------------------------------------------------
+2026-10-11 19:30:04.432313: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 1.139 - lap: 1
+2026-10-11 19:30:05.204795: Teleport from Track - Car ID: 3 - Name: Driver 04 - GUID: 76561190000000004 - dsq: False - Lap: 1 - Norm.pos.: 0.5109 - World pos.: -1179.124 / -20.724 / 238.99 - Distance: 6047.109 - Speed: 275932
+2026-10-11 19:30:06.287413: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: False - lap: 1
+2026-10-11 19:34:49.603300: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: True - lap: 2
+2026-10-11 19:34:58.714631: Pit stop - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: w
+2026-10-11 19:34:59.815535: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.119 - lap: 3
+2026-10-11 19:35:00.869628: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.029 - lap: 3
+2026-10-11 19:35:01.947027: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.032 - lap: 3
+2026-10-11 19:35:02.923078: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.031 - lap: 3
+2026-10-11 19:35:03.986559: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.033 - lap: 3
+2026-10-11 19:35:05.066486: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.034 - lap: 3
+2026-10-11 19:35:06.153593: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.033 - lap: 3
+2026-10-11 19:35:07.205773: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.036 - lap: 3
+2026-10-11 19:35:08.292213: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.032 - lap: 3
+2026-10-11 19:35:09.375416: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.031 - lap: 3
+2026-10-11 19:35:10.455056: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.037 - lap: 3
+2026-10-11 19:35:11.514947: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 0.034 - lap: 3
+2026-10-11 19:35:39.945592: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 11.517 - lap: 3
+2026-10-11 19:35:47.012337: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 3 - Tyres: Slick Hard (H)
+2026-10-11 19:36:19.039831: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 3 - Norm.pos.: 0.29935 - World pos.: -552.606 / 34.737 / 1958.99 - Distance: 8611.095 - Speed: 1323943
+2026-10-11 19:36:19.995755: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 3
+2026-10-11 19:36:21.055254: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 4.749 - lap: 3
+2026-10-11 19:36:23.818646: Teleport from Track - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - dsq: False - Lap: 3 - Norm.pos.: 0.1312 - World pos.: 503.794 / 6.901 / 1232.669 - Distance: 10663.801 - Speed: 421178
+2026-10-11 19:36:24.899128: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: False - lap: 3
+2026-10-11 19:36:27.764923: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 3 - Tyres: Slick Hard (H)
+2026-10-11 19:36:29.573230: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 1 - Tyres: Slick Soft (S)
+2026-10-11 19:36:32.866546: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 3 - Tyres: Slick Hard (H)
+2026-10-11 19:37:11.368260: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 3 - Norm.pos.: 0.1186 - World pos.: 657.629 / 9.101 / 1216.22 - Distance: 10808.734 - Speed: 312684
+2026-10-11 19:37:12.323292: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: True - lap: 3
+2026-10-11 19:37:13.403073: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.226 - lap: 3
+2026-10-11 19:37:14.485223: Pit stop - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: l
+2026-10-11 19:38:25.615273: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 3 - Tyres: Slick Hard (H)
+2026-10-11 19:39:56.134909: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: True - lap: 1
+2026-10-11 19:40:16.764458: Pit stop - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Model: trr_lmdh_cadillac_v-series.r - Skin: wec 38 jota
+2026-10-11 19:40:17.764412: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.149 - lap: 2
+2026-10-11 19:40:18.821965: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.012 - lap: 2
+2026-10-11 19:40:19.880932: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.02 - lap: 2
+2026-10-11 19:40:20.964973: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.017 - lap: 2
+2026-10-11 19:40:22.039963: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.018 - lap: 2
+2026-10-11 19:41:06.075098: Pit lane entered - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Correct way: True - lap: 4
+2026-10-11 19:41:07.264767: New penalty - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - Penalty: Stop & go 5 seconds - Cause: speed - Other: ['105'] - Lap: 4 - Laps left: None - ID: 1 - False
+2026-10-11 19:41:08.337989: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: True - lap: 4
+2026-10-11 19:41:17.558070: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 4.784 - lap: 2
+2026-10-11 19:41:17.992826: Pit stop - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Model: trr_lmdh_acura_arx-06 - Skin: 2025_meyershankracing_93_test
+2026-10-11 19:41:18.555135: Pit stop - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Model: trr_lmdh_cadillac_v-series.r - Skin: lm23_3
+2026-10-11 19:41:19.113069: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.114 - lap: 5
+2026-10-11 19:41:19.674874: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 0.141 - lap: 5
+2026-10-11 19:41:20.218132: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.03 - lap: 5
+2026-10-11 19:41:20.782585: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 0.047 - lap: 5
+2026-10-11 19:41:21.322605: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.029 - lap: 5
+2026-10-11 19:41:21.884517: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 0.047 - lap: 5
+2026-10-11 19:41:22.444812: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.028 - lap: 5
+2026-10-11 19:41:22.984472: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 0.047 - lap: 5
+2026-10-11 19:41:23.524534: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.029 - lap: 5
+2026-10-11 19:41:24.064215: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 0.047 - lap: 5
+2026-10-11 19:41:24.626491: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.029 - lap: 5
+2026-10-11 19:41:25.169411: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 0.047 - lap: 5
+2026-10-11 19:41:25.709918: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.03 - lap: 5
+2026-10-11 19:41:26.295068: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 0.053 - lap: 5
+2026-10-11 19:41:26.727445: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.029 - lap: 5
+2026-10-11 19:41:27.807824: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.028 - lap: 5
+2026-10-11 19:41:28.887961: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.029 - lap: 5
+2026-10-11 19:41:29.965888: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.028 - lap: 5
+2026-10-11 19:41:31.024917: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.03 - lap: 5
+2026-10-11 19:41:32.105694: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.028 - lap: 5
+2026-10-11 19:41:33.184513: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.027 - lap: 5
+2026-10-11 19:41:34.264341: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.027 - lap: 5
+2026-10-11 19:41:35.340829: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 0.028 - lap: 5
+2026-10-11 19:41:36.320808: Car refuelled - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - Liters: 14.456 - lap: 5
+2026-10-11 19:41:37.383380: Pit lane left - Car: 0 - Driver: Driver 01 - GUID: 76561190000000001 - lap: 5 - Tyres: Slick Medium (M)
+2026-10-11 19:41:40.661053: Car refuelled - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Liters: 11.567 - lap: 5
+2026-10-11 19:41:46.991975: Set penalty laps left - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - Penalty: Stop & go 5 seconds - Lap: 5 - New laps_left 5 - ID: 1
+2026-10-11 19:41:48.070458: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 5 - Tyres: Slick Medium (M)
+2026-10-11 19:43:25.654468: Cutting Warning - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - Lap: 4 - Norm.pos.: 0.34877 - World pos.: -688.305 / 39.435 / 2144.986 - Cutting warning: 1/3
+2026-10-11 19:44:07.344896: Cutting Warning - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - Lap: 4 - Norm.pos.: 0.60377 - World pos.: -1338.026 / 15.775 / -865.498 - Cutting warning: 2/3
+2026-10-11 19:45:14.631300: Cutting Warning - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - Lap: 4 - Norm.pos.: 0.90701 - World pos.: 1282.448 / 11.609 / 166.708 - Cutting warning: 3/3
+2026-10-11 19:45:28.404893: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: True - lap: 5
+2026-10-11 19:45:32.637668: Set penalty laps left temp - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - Penalty: Stop & go 5 seconds - Lap: 6 - New laps_left 4 - ID: 1
+2026-10-11 19:45:39.298662: Car refuelled - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Liters: 0.0 - lap: 2
+2026-10-11 19:45:40.934676: Pit stop - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Model: trr_lmdh_cadillac_v-series.r - Skin: lm23_3
+2026-10-11 19:45:45.664339: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: True - lap: 4
+2026-10-11 19:45:57.530119: Pit stop - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: l
+2026-10-11 19:45:58.632688: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.084 - lap: 5
+2026-10-11 19:45:59.714110: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.016 - lap: 5
+2026-10-11 19:46:00.791955: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.026 - lap: 5
+2026-10-11 19:46:01.786580: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.028 - lap: 5
+2026-10-11 19:46:02.866018: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.027 - lap: 5
+2026-10-11 19:46:03.924983: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.027 - lap: 5
+2026-10-11 19:46:05.007046: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.025 - lap: 5
+2026-10-11 19:46:06.087196: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.025 - lap: 5
+2026-10-11 19:46:07.164660: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.025 - lap: 5
+2026-10-11 19:46:08.240797: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.026 - lap: 5
+2026-10-11 19:46:09.296501: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.026 - lap: 5
+2026-10-11 19:46:10.379642: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.026 - lap: 5
+2026-10-11 19:46:11.459961: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.025 - lap: 5
+2026-10-11 19:46:12.435131: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.027 - lap: 5
+2026-10-11 19:46:36.096191: Penalty wrong taken - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - Penalty: Stop & go 5 seconds - pit - Lap: 6 - ID: 1
+2026-10-11 19:46:36.096191: Set penalty laps left - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - Penalty: Stop & go 5 seconds - pit - Lap: 6 - New laps_left 4 - ID: 1
+2026-10-11 19:46:37.176375: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 6 - Tyres: Slick Medium (M)
+2026-10-11 19:47:01.962226: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 9.588 - lap: 5
+2026-10-11 19:47:10.016388: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 5 - Tyres: Slick Hard (H)
+2026-10-11 19:49:52.472530: Pit lane entered - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - Correct way: True - lap: 6
+2026-10-11 19:49:56.834902: Set penalty laps left temp - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - Penalty: Stop & go 5 seconds - Lap: 7 - New laps_left 3 - ID: 1
+2026-10-11 19:50:15.629404: Penalty Taken - Car ID: 2 - Name: Driver 03 - GUID: 76561190000000003 - Penalty: Stop & go 5 seconds - Lap: 7 - ID: 1
+2026-10-11 19:50:16.701059: Pit lane left - Car: 2 - Driver: Driver 03 - GUID: 76561190000000003 - lap: 7 - Tyres: Slick Medium (M)
+2026-10-11 19:50:22.642890: Pit lane entered - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Correct way: True - lap: 6
+2026-10-11 19:50:31.630372: Pit stop - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: w
+2026-10-11 19:51:22.722862: Car refuelled - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - Liters: 7.999 - lap: 7
+2026-10-11 19:51:29.598013: Pit lane left - Car: 5 - Driver: Driver 06 - GUID: 76561190000000006 - lap: 7 - Tyres: Slick Soft (S)
+2026-10-11 19:52:34.294421: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 6 - Norm.pos.: 0.49673 - World pos.: -1137.546 / -11.657 / 405.848 - Distance: 6211.195 - Speed: 1106992
+2026-10-11 19:52:35.269759: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 6
+2026-10-11 19:52:42.706253: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 6 - Tyres: Slick Hard (H)
+2026-10-11 19:52:43.787385: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 6 - Norm.pos.: 0.01817 - World pos.: 630.275 / 5.3 / 550.591 - Distance: 12029.726 - Speed: 63581
+2026-10-11 19:52:44.742744: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 6
+2026-10-11 19:52:45.801449: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.022 - lap: 6
+2026-10-11 19:52:50.885015: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 6 - Tyres: Slick Hard (H)
+2026-10-11 19:56:23.034822: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: True - lap: 6
+2026-10-11 19:56:32.817878: Pit stop - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: l
+2026-10-11 19:56:33.901639: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.127 - lap: 7
+2026-10-11 19:56:34.983028: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.022 - lap: 7
+2026-10-11 19:56:36.065234: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.034 - lap: 7
+2026-10-11 19:56:37.151966: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.029 - lap: 7
+2026-10-11 19:56:38.234630: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.032 - lap: 7
+2026-10-11 19:56:39.291445: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.029 - lap: 7
+2026-10-11 19:56:40.369226: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.03 - lap: 7
+2026-10-11 19:56:41.347246: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.029 - lap: 7
+2026-10-11 19:56:42.401254: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.028 - lap: 7
+2026-10-11 19:56:43.480196: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.028 - lap: 7
+2026-10-11 19:56:44.541290: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.029 - lap: 7
+2026-10-11 19:56:45.622787: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.03 - lap: 7
+2026-10-11 19:56:46.701143: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.029 - lap: 7
+2026-10-11 19:56:47.781731: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.033 - lap: 7
+2026-10-11 19:56:48.843648: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.03 - lap: 7
+2026-10-11 19:56:49.919999: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.029 - lap: 7
+2026-10-11 19:57:17.289714: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 9.431 - lap: 7
+2026-10-11 19:57:24.889996: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 7 - Tyres: Slick Hard (H)
+2026-10-11 19:58:48.457250: Teleport from Track - Car ID: 4 - Name: Driver 05 - GUID: 76561190000000005 - dsq: False - Lap: 7 - Norm.pos.: 0.27806 - World pos.: -421.251 / 23.874 / 1749.723 - Distance: 8869.946 - Speed: 957782
+2026-10-11 19:58:49.430437: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: False - lap: 7
+2026-10-11 19:59:15.982947: Cutting Warning - Car ID: 5 - Name: Driver 06 - GUID: 76561190000000006 - Lap: 9 - Norm.pos.: 0.10479 - World pos.: 807.076 / 16.619 / 1174.182 - Cutting warning: 1/3
+2026-10-11 20:03:32.206624: Teleport from Track - Car ID: 0 - Name: Driver 01 - GUID: 76561190000000001 - dsq: False - Lap: 11 - Norm.pos.: 0.11897 - World pos.: 652.428 / 9.575 / 1231.123 - Distance: 10854.709 - Speed: 159236
+2026-10-11 20:04:17.410075: Pit stop - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: l
+2026-10-11 20:04:32.451865: Pit lane left - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - lap: 2 - Tyres: Slick Soft (S)
+2026-10-11 20:04:33.368381: Pit lane entered - Car: 3 - Driver: Driver 04 - GUID: 76561190000000004 - Correct way: True - lap: 2
+2026-10-11 20:04:54.273438: Pit lane left - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - lap: 7 - Tyres: Slick Hard (H)
+2026-10-11 20:05:00.108374: Pit lane entered - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Correct way: True - lap: 7
+2026-10-11 20:05:10.076772: Pit stop - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Model: trr_lmh_vanwall_vandervell_680_p - Skin: l
+2026-10-11 20:05:11.140741: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.091 - lap: 7
+2026-10-11 20:05:12.218636: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.019 - lap: 7
+2026-10-11 20:05:13.300710: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.028 - lap: 7
+2026-10-11 20:05:14.360391: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.028 - lap: 7
+2026-10-11 20:05:15.459493: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.028 - lap: 7
+2026-10-11 20:05:16.543269: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.028 - lap: 7
+2026-10-11 20:05:17.621398: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.029 - lap: 7
+2026-10-11 20:05:18.681723: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.029 - lap: 7
+2026-10-11 20:05:19.656573: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.027 - lap: 7
+2026-10-11 20:05:20.754937: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.027 - lap: 7
+2026-10-11 20:05:21.838821: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.028 - lap: 7
+2026-10-11 20:05:22.895191: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.03 - lap: 7
+2026-10-11 20:05:23.976478: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.026 - lap: 7
+2026-10-11 20:05:25.058221: Car refuelled - Car: 4 - Driver: Driver 05 - GUID: 76561190000000005 - Liters: 0.074 - lap: 7
