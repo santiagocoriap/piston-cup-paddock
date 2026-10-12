@@ -1,5 +1,9 @@
 {
-  "app": { "name": "Piston Cup Paddock", "loading": "Loading…" },
+  "app": {
+    "name": "Piston Cup Paddock",
+    "loading": "Loading…",
+    "loadFailed": "The data did not load."
+  },
   "login": {
     "title": "Sign in",
     "username": "Username",
@@ -8,9 +12,107 @@
     "invalid": "Incorrect username or password.",
     "error": "Sign in failed. Try again."
   },
-  "home": {
-    "welcome": "Welcome, {{name}}",
-    "intro": "The paddock is ready. Seasons, races, and results come soon.",
+  "nav": {
+    "championships": "Championships",
+    "leagues": "Leagues",
+    "drivers": "Drivers",
+    "catalog": "Tracks and cars",
     "logout": "Sign out"
+  },
+  "common": {
+    "create": "Create",
+    "add": "Add",
+    "save": "Save",
+    "name": "Name",
+    "key": "AC folder",
+    "select": "Select an option"
+  },
+  "championships": {
+    "title": "Championships",
+    "empty": "You are not in a championship yet.",
+    "adminBadge": "Admin"
+  },
+  "championship": {
+    "seasons": "Seasons",
+    "noSeasons": "This championship has no seasons yet.",
+    "newSeason": "New season",
+    "seasonName": "Season name",
+    "plannedRounds": "Planned rounds",
+    "members": "Members",
+    "noMembers": "There are no members yet.",
+    "setMember": "Add or change a member",
+    "user": "User",
+    "role": "Role",
+    "roles": {
+      "admin": "Admin",
+      "driver": "Driver"
+    }
+  },
+  "season": {
+    "plannedRounds": "{{count}} planned rounds",
+    "calendar": "Calendar",
+    "noRounds": "There are no rounds yet.",
+    "round": "Round",
+    "track": "Track",
+    "date": "Date and time",
+    "origin": "Origin",
+    "origins": {
+      "fixed": "Fixed",
+      "voted": "Voted",
+      "manual": "Manual"
+    },
+    "addRound": "Add round",
+    "layout": "Track and layout",
+    "entries": "Entries",
+    "noEntries": "There are no entries yet.",
+    "number": "Number",
+    "driver": "Driver",
+    "car": "Car",
+    "team": "Team",
+    "addEntry": "Add entry"
+  },
+  "leagues": {
+    "title": "Leagues",
+    "empty": "There are no leagues yet.",
+    "newLeague": "New league",
+    "newChampionship": "New championship",
+    "league": "League"
+  },
+  "drivers": {
+    "title": "Drivers",
+    "empty": "There are no drivers yet.",
+    "newDriver": "New driver",
+    "displayName": "Display name",
+    "steamGuid": "Steam GUID (17 digits, optional)",
+    "account": "Account",
+    "noAccount": "No account",
+    "link": "Link"
+  },
+  "catalog": {
+    "title": "Tracks and cars",
+    "tracks": "Tracks",
+    "noTracks": "There are no tracks yet.",
+    "newTrack": "New track",
+    "newLayout": "New layout",
+    "layoutKeyHint": "Empty for the default layout",
+    "track": "Track",
+    "cars": "Cars",
+    "noCars": "There are no cars yet.",
+    "newCar": "New car"
+  },
+  "errors": {
+    "generic": "Something went wrong. Try again.",
+    "forbidden": "You do not have permission to do this.",
+    "not_found": "Not found.",
+    "league_exists": "A league with this name exists.",
+    "championship_exists": "A championship with this name exists in this league.",
+    "season_exists": "A season with this name exists.",
+    "entry_exists": "This driver or this number is already in the season.",
+    "round_number_exists": "A round with this number exists.",
+    "track_exists": "A track with this folder exists.",
+    "layout_exists": "This track already has a layout with this folder.",
+    "car_exists": "A car with this folder exists.",
+    "steam_guid_exists": "Another driver has this Steam GUID.",
+    "account_has_profile": "This account is already linked to another driver."
   }
 }

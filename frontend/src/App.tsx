@@ -1,6 +1,15 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { api, type Me } from './api/client'
+import { Layout } from './components/Layout'
+import { CatalogPage } from './pages/admin/CatalogPage'
+import { DriversPage } from './pages/admin/DriversPage'
+import { LeaguesPage } from './pages/admin/LeaguesPage'
+import { ChampionshipPage } from './pages/ChampionshipPage'
+import { ChampionshipsPage } from './pages/ChampionshipsPage'
+import { SeasonPage } from './pages/SeasonPage'
+import { SessionContext } from './session'
 
 type Session = { status: 'loading' } | { status: 'anonymous' } | { status: 'signed-in'; me: Me }
 
@@ -18,17 +27,41 @@ export default function App() {
     if (session.status === 'signed-in') void i18n.changeLanguage(session.me.language)
   }, [session, i18n])
 
+  async function signOut() {
+    await api.POST('/api/auth/logout')
+    setSession({ status: 'anonymous' })
+  }
+
+  if (session.status !== 'signed-in') {
+    return (
+      <div className="shell narrow">
+        <header className="brand">{t('app.name')}</header>
+        {session.status === 'loading' ? (
+          <p>{t('app.loading')}</p>
+        ) : (
+          <LoginForm onSignedIn={(me) => setSession({ status: 'signed-in', me })} />
+        )}
+      </div>
+    )
+  }
+
+  const isAdmin = session.me.is_admin
   return (
-    <main className="shell">
-      <header className="brand">{t('app.name')}</header>
-      {session.status === 'loading' && <p>{t('app.loading')}</p>}
-      {session.status === 'anonymous' && (
-        <LoginForm onSignedIn={(me) => setSession({ status: 'signed-in', me })} />
-      )}
-      {session.status === 'signed-in' && (
-        <Home me={session.me} onSignedOut={() => setSession({ status: 'anonymous' })} />
-      )}
-    </main>
+    <SessionContext.Provider value={session.me}>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout onSignOut={signOut} />}>
+            <Route index element={<ChampionshipsPage />} />
+            <Route path="championships/:championshipId" element={<ChampionshipPage />} />
+            <Route path="seasons/:seasonId" element={<SeasonPage />} />
+            {isAdmin && <Route path="admin/leagues" element={<LeaguesPage />} />}
+            {isAdmin && <Route path="admin/drivers" element={<DriversPage />} />}
+            {isAdmin && <Route path="admin/catalog" element={<CatalogPage />} />}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </SessionContext.Provider>
   )
 }
 
@@ -66,24 +99,5 @@ function LoginForm({ onSignedIn }: { onSignedIn: (me: Me) => void }) {
       )}
       <button type="submit">{t('login.submit')}</button>
     </form>
-  )
-}
-
-function Home({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
-  const { t } = useTranslation()
-
-  async function signOut() {
-    await api.POST('/api/auth/logout')
-    onSignedOut()
-  }
-
-  return (
-    <section className="card">
-      <h1>{t('home.welcome', { name: me.username })}</h1>
-      <p>{t('home.intro')}</p>
-      <button type="button" onClick={signOut}>
-        {t('home.logout')}
-      </button>
-    </section>
   )
 }

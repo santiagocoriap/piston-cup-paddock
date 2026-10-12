@@ -1,5 +1,9 @@
 {
-  "app": { "name": "Piston Cup Paddock", "loading": "Cargando…" },
+  "app": {
+    "name": "Piston Cup Paddock",
+    "loading": "Cargando…",
+    "loadFailed": "No se pudieron cargar los datos."
+  },
   "login": {
     "title": "Iniciar sesión",
     "username": "Usuario",
@@ -8,9 +12,107 @@
     "invalid": "Usuario o contraseña incorrectos.",
     "error": "No se pudo iniciar sesión. Intentá de nuevo."
   },
-  "home": {
-    "welcome": "Bienvenido, {{name}}",
-    "intro": "El paddock está listo. Las temporadas, las carreras y los resultados llegan pronto.",
+  "nav": {
+    "championships": "Campeonatos",
+    "leagues": "Ligas",
+    "drivers": "Pilotos",
+    "catalog": "Pistas y autos",
     "logout": "Cerrar sesión"
+  },
+  "common": {
+    "create": "Crear",
+    "add": "Agregar",
+    "save": "Guardar",
+    "name": "Nombre",
+    "key": "Carpeta en AC",
+    "select": "Elegí una opción"
+  },
+  "championships": {
+    "title": "Campeonatos",
+    "empty": "Todavía no participás en ningún campeonato.",
+    "adminBadge": "Admin"
+  },
+  "championship": {
+    "seasons": "Temporadas",
+    "noSeasons": "Este campeonato todavía no tiene temporadas.",
+    "newSeason": "Nueva temporada",
+    "seasonName": "Nombre de la temporada",
+    "plannedRounds": "Carreras previstas",
+    "members": "Miembros",
+    "noMembers": "Todavía no hay miembros.",
+    "setMember": "Agregar o cambiar miembro",
+    "user": "Usuario",
+    "role": "Rol",
+    "roles": {
+      "admin": "Admin",
+      "driver": "Piloto"
+    }
+  },
+  "season": {
+    "plannedRounds": "{{count}} carreras previstas",
+    "calendar": "Calendario",
+    "noRounds": "Todavía no hay fechas.",
+    "round": "Fecha",
+    "track": "Pista",
+    "date": "Día y hora",
+    "origin": "Origen",
+    "origins": {
+      "fixed": "Fija",
+      "voted": "Votada",
+      "manual": "Manual"
+    },
+    "addRound": "Agregar fecha",
+    "layout": "Pista y trazado",
+    "entries": "Pilotos inscriptos",
+    "noEntries": "Todavía no hay pilotos inscriptos.",
+    "number": "Número",
+    "driver": "Piloto",
+    "car": "Auto",
+    "team": "Equipo",
+    "addEntry": "Inscribir piloto"
+  },
+  "leagues": {
+    "title": "Ligas",
+    "empty": "Todavía no hay ligas.",
+    "newLeague": "Nueva liga",
+    "newChampionship": "Nuevo campeonato",
+    "league": "Liga"
+  },
+  "drivers": {
+    "title": "Pilotos",
+    "empty": "Todavía no hay pilotos.",
+    "newDriver": "Nuevo piloto",
+    "displayName": "Nombre visible",
+    "steamGuid": "Steam GUID (17 dígitos, opcional)",
+    "account": "Cuenta",
+    "noAccount": "Sin cuenta",
+    "link": "Vincular"
+  },
+  "catalog": {
+    "title": "Pistas y autos",
+    "tracks": "Pistas",
+    "noTracks": "Todavía no hay pistas.",
+    "newTrack": "Nueva pista",
+    "newLayout": "Nuevo trazado",
+    "layoutKeyHint": "Vacío para el trazado por defecto",
+    "track": "Pista",
+    "cars": "Autos",
+    "noCars": "Todavía no hay autos.",
+    "newCar": "Nuevo auto"
+  },
+  "errors": {
+    "generic": "Algo salió mal. Intentá de nuevo.",
+    "forbidden": "No tenés permiso para hacer esto.",
+    "not_found": "No se encontró.",
+    "league_exists": "Ya existe una liga con ese nombre.",
+    "championship_exists": "Ya existe un campeonato con ese nombre en esta liga.",
+    "season_exists": "Ya existe una temporada con ese nombre.",
+    "entry_exists": "Ese piloto o ese número ya está inscripto en la temporada.",
+    "round_number_exists": "Ya existe una fecha con ese número.",
+    "track_exists": "Ya existe una pista con esa carpeta.",
+    "layout_exists": "Esa pista ya tiene un trazado con esa carpeta.",
+    "car_exists": "Ya existe un auto con esa carpeta.",
+    "steam_guid_exists": "Otro piloto ya tiene ese Steam GUID.",
+    "account_has_profile": "Esa cuenta ya está vinculada a otro piloto."
   }
 }

@@ -92,6 +92,272 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/catalog/tracks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Tracks */
+        get: operations["apps_catalog_api_list_tracks"];
+        put?: never;
+        /** Create Track */
+        post: operations["apps_catalog_api_create_track"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/tracks/{track_id}/layouts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Layout */
+        post: operations["apps_catalog_api_create_layout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/cars": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Cars */
+        get: operations["apps_catalog_api_list_cars"];
+        put?: never;
+        /** Create Car */
+        post: operations["apps_catalog_api_create_car"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/drivers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Drivers */
+        get: operations["apps_identity_drivers_api_list_drivers"];
+        put?: never;
+        /** Create Driver */
+        post: operations["apps_identity_drivers_api_create_driver"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/drivers/{driver_id}/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Link Driver
+         * @description Link a driver profile to an account, or remove the link with user_id null.
+         */
+        post: operations["apps_identity_drivers_api_link_driver"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Users */
+        get: operations["apps_identity_drivers_api_list_users"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/leagues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Leagues */
+        get: operations["apps_competition_api_list_leagues"];
+        put?: never;
+        /** Create League */
+        post: operations["apps_competition_api_create_league"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/leagues/{league_id}/championships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Championship */
+        post: operations["apps_competition_api_create_championship"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/championships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Championships */
+        get: operations["apps_competition_api_list_championships"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/championships/{championship_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Championship */
+        get: operations["apps_competition_api_get_championship"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/championships/{championship_id}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Members */
+        get: operations["apps_competition_api_list_members"];
+        /**
+         * Set Member
+         * @description Add a user to the championship, or change the role of a member.
+         */
+        put: operations["apps_competition_api_set_member"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/championships/{championship_id}/seasons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Season */
+        post: operations["apps_competition_api_create_season"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seasons/{season_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Season */
+        get: operations["apps_competition_api_get_season"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seasons/{season_id}/entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Entry */
+        post: operations["apps_competition_api_create_entry"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seasons/{season_id}/rounds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Round */
+        post: operations["apps_competition_api_create_round"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -125,6 +391,249 @@ export interface components {
             username: string;
             /** Password */
             password: string;
+        };
+        /** LayoutOut */
+        LayoutOut: {
+            /** Id */
+            id: number;
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+        };
+        /** TrackOut */
+        TrackOut: {
+            /** Id */
+            id: number;
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** Layouts */
+            layouts: components["schemas"]["LayoutOut"][];
+        };
+        /** TrackIn */
+        TrackIn: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+        };
+        /** LayoutIn */
+        LayoutIn: {
+            /**
+             * Key
+             * @default
+             */
+            key: string;
+            /** Name */
+            name: string;
+        };
+        /** CarOut */
+        CarOut: {
+            /** Id */
+            id: number;
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+        };
+        /** CarIn */
+        CarIn: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+        };
+        /** DriverOut */
+        DriverOut: {
+            /** Id */
+            id: number;
+            /** Display Name */
+            display_name: string;
+            /** Steam Guid */
+            steam_guid: string | null;
+            /** User Id */
+            user_id: number | null;
+            /** Username */
+            username: string | null;
+        };
+        /** DriverIn */
+        DriverIn: {
+            /** Display Name */
+            display_name: string;
+            /** Steam Guid */
+            steam_guid?: string | null;
+        };
+        /** LinkIn */
+        LinkIn: {
+            /** User Id */
+            user_id: number | null;
+        };
+        /** UserOut */
+        UserOut: {
+            /** Id */
+            id: number;
+            /** Username */
+            username: string;
+        };
+        /** LeagueOut */
+        LeagueOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
+        /** NameIn */
+        NameIn: {
+            /** Name */
+            name: string;
+        };
+        /** ChampionshipOut */
+        ChampionshipOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** League Id */
+            league_id: number;
+            /** League Name */
+            league_name: string;
+            /** Can Manage */
+            can_manage: boolean;
+        };
+        /** ChampionshipDetail */
+        ChampionshipDetail: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** League Id */
+            league_id: number;
+            /** League Name */
+            league_name: string;
+            /** Can Manage */
+            can_manage: boolean;
+            /** Seasons */
+            seasons: components["schemas"]["SeasonSummary"][];
+        };
+        /** SeasonSummary */
+        SeasonSummary: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Planned Round Count */
+            planned_round_count: number;
+        };
+        /** MemberOut */
+        MemberOut: {
+            /** User Id */
+            user_id: number;
+            /** Username */
+            username: string;
+            /** Role */
+            role: string;
+        };
+        /** MemberIn */
+        MemberIn: {
+            /** User Id */
+            user_id: number;
+            role: components["schemas"]["Role"];
+        };
+        /**
+         * Role
+         * @enum {string}
+         */
+        Role: "admin" | "driver";
+        /** SeasonIn */
+        SeasonIn: {
+            /** Name */
+            name: string;
+            /** Planned Round Count */
+            planned_round_count: number;
+        };
+        /** EntryOut */
+        EntryOut: {
+            /** Id */
+            id: number;
+            /** Driver Id */
+            driver_id: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Car Id */
+            car_id: number;
+            /** Car Name */
+            car_name: string;
+            /** Number */
+            number: number;
+            /** Team */
+            team: string;
+        };
+        /** RoundOut */
+        RoundOut: {
+            /** Id */
+            id: number;
+            /** Number */
+            number: number;
+            /** Track Layout Id */
+            track_layout_id: number;
+            /** Track Name */
+            track_name: string;
+            /** Layout Name */
+            layout_name: string;
+            /**
+             * Scheduled At
+             * Format: date-time
+             */
+            scheduled_at: string;
+            /** Origin */
+            origin: string;
+        };
+        /** SeasonDetail */
+        SeasonDetail: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Planned Round Count */
+            planned_round_count: number;
+            /** Championship Id */
+            championship_id: number;
+            /** Championship Name */
+            championship_name: string;
+            /** Can Manage */
+            can_manage: boolean;
+            /** Entries */
+            entries: components["schemas"]["EntryOut"][];
+            /** Rounds */
+            rounds: components["schemas"]["RoundOut"][];
+        };
+        /** EntryIn */
+        EntryIn: {
+            /** Driver Id */
+            driver_id: number;
+            /** Car Id */
+            car_id: number;
+            /** Number */
+            number: number;
+            /**
+             * Team
+             * @default
+             */
+            team: string;
+        };
+        /** RoundIn */
+        RoundIn: {
+            /** Track Layout Id */
+            track_layout_id: number;
+            /**
+             * Scheduled At
+             * Format: date-time
+             */
+            scheduled_at: string;
+            /** Number */
+            number?: number | null;
         };
     };
     responses: never;
@@ -258,6 +767,470 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_list_tracks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackOut"][];
+                };
+            };
+        };
+    };
+    apps_catalog_api_create_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrackIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_create_layout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                track_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LayoutIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_list_cars: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarOut"][];
+                };
+            };
+        };
+    };
+    apps_catalog_api_create_car: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CarIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarOut"];
+                };
+            };
+        };
+    };
+    apps_identity_drivers_api_list_drivers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DriverOut"][];
+                };
+            };
+        };
+    };
+    apps_identity_drivers_api_create_driver: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DriverIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DriverOut"];
+                };
+            };
+        };
+    };
+    apps_identity_drivers_api_link_driver: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                driver_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LinkIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DriverOut"];
+                };
+            };
+        };
+    };
+    apps_identity_drivers_api_list_users: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserOut"][];
+                };
+            };
+        };
+    };
+    apps_competition_api_list_leagues: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeagueOut"][];
+                };
+            };
+        };
+    };
+    apps_competition_api_create_league: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NameIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeagueOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_create_championship: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NameIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChampionshipOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_list_championships: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChampionshipOut"][];
+                };
+            };
+        };
+    };
+    apps_competition_api_get_championship: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChampionshipDetail"];
+                };
+            };
+        };
+    };
+    apps_competition_api_list_members: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberOut"][];
+                };
+            };
+        };
+    };
+    apps_competition_api_set_member: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MemberIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_create_season: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SeasonIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonSummary"];
+                };
+            };
+        };
+    };
+    apps_competition_api_get_season: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonDetail"];
+                };
+            };
+        };
+    };
+    apps_competition_api_create_entry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EntryIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntryOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_create_round: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoundIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundOut"];
                 };
             };
         };

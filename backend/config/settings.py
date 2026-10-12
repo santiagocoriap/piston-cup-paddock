@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "procrastinate.contrib.django",
     "apps.identity",
     "apps.core",
+    "apps.catalog",
+    "apps.competition",
 ]
 
 MIDDLEWARE = [

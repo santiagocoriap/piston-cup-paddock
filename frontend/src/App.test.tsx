@@ -3,57 +3,41 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 import i18n from './i18n'
-
-const ME = { id: 1, username: 'santi', language: 'es', is_admin: true }
-
-function json(status: number, body?: unknown) {
-  return new Response(body === undefined ? null : JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  })
-}
-
-function mockApi(routes: Record<string, () => Response>) {
-  vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
-    const request = input as Request
-    const key = `${request.method} ${new URL(request.url).pathname}`
-    const handler = routes[key]
-    if (!handler) throw new Error(`No mock for ${key}`)
-    return handler()
-  })
-}
+import { ADMIN, json, mockApi } from './test-utils'
 
 afterEach(async () => {
   vi.restoreAllMocks()
   await i18n.changeLanguage('es')
 })
 
+const signedOut = {
+  'GET /api/auth/me': () => json(401, { detail: 'Unauthorized' }),
+  'GET /api/auth/csrf': () => new Response(null, { status: 204 }),
+}
+
 describe('App', () => {
   it('shows the login form in Spanish when nobody is signed in', async () => {
-    mockApi({ 'GET /api/auth/me': () => json(401, { detail: 'Unauthorized' }) })
+    mockApi(signedOut)
     render(<App />)
     expect(await screen.findByRole('heading', { name: 'Iniciar sesión' })).toBeInTheDocument()
   })
 
-  it('shows the home page after a correct login', async () => {
+  it('shows the championships after a correct login', async () => {
     mockApi({
-      'GET /api/auth/me': () => json(401, { detail: 'Unauthorized' }),
-      'GET /api/auth/csrf': () => new Response(null, { status: 204 }),
-      'POST /api/auth/login': () => json(200, ME),
+      ...signedOut,
+      'POST /api/auth/login': () => json(200, ADMIN),
+      'GET /api/championships': () => json(200, []),
     })
     render(<App />)
     await userEvent.type(await screen.findByLabelText('Usuario'), 'santi')
     await userEvent.type(screen.getByLabelText('Contraseña'), 'secret-pass')
     await userEvent.click(screen.getByRole('button', { name: 'Entrar' }))
-    expect(await screen.findByRole('heading', { name: 'Bienvenido, santi' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Campeonatos' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Ligas' })).toBeInTheDocument()
   })
 
   it('shows an error after a wrong password', async () => {
-    mockApi({
-      'GET /api/auth/me': () => json(401, { detail: 'Unauthorized' }),
-      'GET /api/auth/csrf': () => new Response(null, { status: 204 }),
-      'POST /api/auth/login': () => json(401, { detail: 'invalid_credentials' }),
-    })
+    mockApi({ ...signedOut, 'POST /api/auth/login': () => json(401, { detail: 'invalid_credentials' }) })
     render(<App />)
     await userEvent.type(await screen.findByLabelText('Usuario'), 'santi')
     await userEvent.type(screen.getByLabelText('Contraseña'), 'wrong')
@@ -62,8 +46,21 @@ describe('App', () => {
   })
 
   it('uses the language of the signed-in user', async () => {
-    mockApi({ 'GET /api/auth/me': () => json(200, { ...ME, language: 'en' }) })
+    mockApi({
+      'GET /api/auth/me': () => json(200, { ...ADMIN, language: 'en' }),
+      'GET /api/championships': () => json(200, []),
+    })
     render(<App />)
-    expect(await screen.findByRole('heading', { name: 'Welcome, santi' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Championships' })).toBeInTheDocument()
+  })
+
+  it('hides the admin links from a driver', async () => {
+    mockApi({
+      'GET /api/auth/me': () => json(200, { ...ADMIN, is_admin: false }),
+      'GET /api/championships': () => json(200, []),
+    })
+    render(<App />)
+    await screen.findByRole('heading', { name: 'Campeonatos' })
+    expect(screen.queryByRole('link', { name: 'Ligas' })).not.toBeInTheDocument()
   })
 })

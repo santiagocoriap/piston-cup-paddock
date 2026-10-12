@@ -1,17 +1,13 @@
 import { expect, test } from '@playwright/test'
 import { E2E_ADMIN } from '../fixtures'
+import { signIn } from './helpers'
 
-test('an admin signs in, sees the Spanish home page, and signs out', async ({ page }) => {
-  await page.goto('/')
-  await expect(page.getByRole('heading', { name: 'Iniciar sesión' })).toBeVisible()
-
-  await page.getByLabel('Usuario').fill(E2E_ADMIN.username)
-  await page.getByLabel('Contraseña').fill(E2E_ADMIN.password)
-  await page.getByRole('button', { name: 'Entrar' }).click()
-  await expect(page.getByRole('heading', { name: `Bienvenido, ${E2E_ADMIN.username}` })).toBeVisible()
+test('an admin signs in, stays signed in after a reload, and signs out', async ({ page }) => {
+  await signIn(page)
+  await expect(page.getByRole('heading', { name: 'Campeonatos' })).toBeVisible()
 
   await page.reload()
-  await expect(page.getByRole('heading', { name: `Bienvenido, ${E2E_ADMIN.username}` })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Campeonatos' })).toBeVisible()
 
   await page.getByRole('button', { name: 'Cerrar sesión' }).click()
   await expect(page.getByRole('heading', { name: 'Iniciar sesión' })).toBeVisible()
