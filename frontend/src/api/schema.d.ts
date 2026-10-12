@@ -1252,6 +1252,109 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/collector/ping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ping */
+        get: operations["apps_collectors_api_ping"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/collector/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload File */
+        post: operations["apps_collectors_api_upload_file"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/collector/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Events */
+        post: operations["apps_collectors_api_upload_events"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/championships/{championship_id}/collectors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Collectors */
+        get: operations["apps_collectors_api_list_collectors"];
+        put?: never;
+        /** New Collector */
+        post: operations["apps_collectors_api_new_collector"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/collectors/{collector_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke */
+        post: operations["apps_collectors_api_revoke"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/collector-files/{file_id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Assign File */
+        post: operations["apps_collectors_api_assign_file"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3098,6 +3201,159 @@ export interface components {
         ReadOut: {
             /** Ok */
             ok: boolean;
+        };
+        /** PingOut */
+        PingOut: {
+            /** Collector */
+            collector: string;
+            /** Championship */
+            championship: string;
+        };
+        /** FileReceivedOut */
+        FileReceivedOut: {
+            /** Id */
+            id: number;
+            /** Is New */
+            is_new: boolean;
+            /** Status */
+            status: string;
+            /** Round Id */
+            round_id: number | null;
+            /** Error */
+            error: string;
+        };
+        /** EventsOut */
+        EventsOut: {
+            /** New */
+            new: number;
+        };
+        /** EventIn */
+        EventIn: {
+            /** Seq */
+            seq: number;
+            /** Kind */
+            kind: string;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /**
+             * Data
+             * @default {}
+             */
+            data?: {
+                [key: string]: unknown;
+            };
+        };
+        /** EventsIn */
+        EventsIn: {
+            /** Run Id */
+            run_id: string;
+            /** Events */
+            events: components["schemas"]["EventIn"][];
+        };
+        /** CollectorFileOut */
+        CollectorFileOut: {
+            /** Id */
+            id: number;
+            /** Collector */
+            collector: string;
+            /** Kind */
+            kind: string;
+            /** Filename */
+            filename: string;
+            /** Session Type */
+            session_type: string;
+            /** Track */
+            track: string;
+            /** Session Time */
+            session_time: string | null;
+            /** Round Id */
+            round_id: number | null;
+            /** Status */
+            status: string;
+            /** Error */
+            error: string;
+            /**
+             * Received At
+             * Format: date-time
+             */
+            received_at: string;
+        };
+        /** CollectorOut */
+        CollectorOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Last Seen At */
+            last_seen_at: string | null;
+            /** Revoked */
+            revoked: boolean;
+            /** Files */
+            files: number;
+            /** Events */
+            events: number;
+        };
+        /** CollectorsOut */
+        CollectorsOut: {
+            /** Collectors */
+            collectors: components["schemas"]["CollectorOut"][];
+            /** Rounds */
+            rounds: components["schemas"]["RoundChoiceOut"][];
+            /** Files */
+            files: components["schemas"]["CollectorFileOut"][];
+        };
+        /** RoundChoiceOut */
+        RoundChoiceOut: {
+            /** Id */
+            id: number;
+            /** Season Name */
+            season_name: string;
+            /** Number */
+            number: number;
+            /** Track Name */
+            track_name: string;
+            /** Scheduled At */
+            scheduled_at: string | null;
+        };
+        /** CollectorCreatedOut */
+        CollectorCreatedOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Last Seen At */
+            last_seen_at: string | null;
+            /** Revoked */
+            revoked: boolean;
+            /** Files */
+            files: number;
+            /** Events */
+            events: number;
+            /** Key */
+            key: string;
+        };
+        /** CollectorIn */
+        CollectorIn: {
+            /** Name */
+            name: string;
+        };
+        /** AssignIn */
+        AssignIn: {
+            /** Round Id */
+            round_id: number;
         };
     };
     responses: never;
@@ -5190,6 +5446,181 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReadOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_api_ping: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PingOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_api_upload_file: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * Kind
+                     * @enum {string}
+                     */
+                    kind: "result" | "penalty_log";
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileReceivedOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_api_upload_events: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EventsIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventsOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_api_list_collectors: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectorsOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_api_new_collector: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CollectorIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectorCreatedOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_api_revoke: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collector_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectorsOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_api_assign_file: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                file_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectorsOut"];
                 };
             };
         };

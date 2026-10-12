@@ -5,6 +5,7 @@ import { ActionForm } from '../components/ActionForm'
 import { Loading } from '../components/Layout'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
+import { CollectorsSection } from './CollectorsSection'
 
 export function ChampionshipPage() {
   const { t } = useTranslation()
@@ -65,6 +66,7 @@ export function ChampionshipPage() {
           </ActionForm>
           <Members championshipId={championshipId} />
           <Roles championshipId={championshipId} />
+          <CollectorsSection championshipId={championshipId} />
         </div>
       )}
     </section>

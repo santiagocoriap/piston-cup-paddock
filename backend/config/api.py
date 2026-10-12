@@ -3,6 +3,7 @@ from ninja.security import django_auth
 
 from apps.audit.api import router as audit_router
 from apps.catalog.api import router as catalog_router
+from apps.collectors.api import router as collectors_router
 from apps.competition.api import router as competition_router
 from apps.core.api import router as core_router
 from apps.core.exports import router as exports_router
@@ -36,3 +37,4 @@ api.add_router("/", dashboard_router)
 api.add_router("/", exports_router)
 api.add_router("/", accounts_router)
 api.add_router("/", reports_router)
+api.add_router("/", collectors_router)

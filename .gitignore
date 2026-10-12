@@ -9,3 +9,7 @@ test-results/
 playwright-report/
 backend/media/
 backend/backups/
+
+# Server collector: local settings and data
+collector/collector.ini
+collector/spool/

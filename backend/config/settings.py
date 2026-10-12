@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "apps.voting",
     "apps.dashboard",
     "apps.reports",
+    "apps.collectors",
 ]
 
 MIDDLEWARE = [

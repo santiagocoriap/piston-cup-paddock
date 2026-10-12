@@ -3493,6 +3493,293 @@
           }
         ]
       }
+    },
+    "/api/collector/ping": {
+      "get": {
+        "operationId": "apps_collectors_api_ping",
+        "summary": "Ping",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PingOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collectors"
+        ],
+        "security": [
+          {
+            "CollectorAuth": []
+          }
+        ]
+      }
+    },
+    "/api/collector/files": {
+      "post": {
+        "operationId": "apps_collectors_api_upload_file",
+        "summary": "Upload File",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileReceivedOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collectors"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "title": "MultiPartBodyParams",
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "result",
+                      "penalty_log"
+                    ],
+                    "title": "Kind",
+                    "type": "string"
+                  },
+                  "file": {
+                    "format": "binary",
+                    "title": "File",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "file"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "CollectorAuth": []
+          }
+        ]
+      }
+    },
+    "/api/collector/events": {
+      "post": {
+        "operationId": "apps_collectors_api_upload_events",
+        "summary": "Upload Events",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collectors"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "CollectorAuth": []
+          }
+        ]
+      }
+    },
+    "/api/championships/{championship_id}/collectors": {
+      "get": {
+        "operationId": "apps_collectors_api_list_collectors",
+        "summary": "List Collectors",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "championship_id",
+            "schema": {
+              "title": "Championship Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectorsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collectors"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_collectors_api_new_collector",
+        "summary": "New Collector",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "championship_id",
+            "schema": {
+              "title": "Championship Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectorCreatedOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collectors"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CollectorIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/collectors/{collector_id}/revoke": {
+      "post": {
+        "operationId": "apps_collectors_api_revoke",
+        "summary": "Revoke",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collector_id",
+            "schema": {
+              "title": "Collector Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectorsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collectors"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/collector-files/{file_id}/assign": {
+      "post": {
+        "operationId": "apps_collectors_api_assign_file",
+        "summary": "Assign File",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "file_id",
+            "schema": {
+              "title": "File Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectorsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collectors"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -9119,6 +9406,422 @@
         ],
         "title": "ReadOut",
         "type": "object"
+      },
+      "PingOut": {
+        "properties": {
+          "collector": {
+            "title": "Collector",
+            "type": "string"
+          },
+          "championship": {
+            "title": "Championship",
+            "type": "string"
+          }
+        },
+        "required": [
+          "collector",
+          "championship"
+        ],
+        "title": "PingOut",
+        "type": "object"
+      },
+      "FileReceivedOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "is_new": {
+            "title": "Is New",
+            "type": "boolean"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "round_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Round Id"
+          },
+          "error": {
+            "title": "Error",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "is_new",
+          "status",
+          "round_id",
+          "error"
+        ],
+        "title": "FileReceivedOut",
+        "type": "object"
+      },
+      "EventsOut": {
+        "properties": {
+          "new": {
+            "title": "New",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "new"
+        ],
+        "title": "EventsOut",
+        "type": "object"
+      },
+      "EventIn": {
+        "properties": {
+          "seq": {
+            "minimum": 0,
+            "title": "Seq",
+            "type": "integer"
+          },
+          "kind": {
+            "maxLength": 30,
+            "title": "Kind",
+            "type": "string"
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "data": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Data",
+            "type": "object"
+          }
+        },
+        "required": [
+          "seq",
+          "kind",
+          "at"
+        ],
+        "title": "EventIn",
+        "type": "object"
+      },
+      "EventsIn": {
+        "properties": {
+          "run_id": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Run Id",
+            "type": "string"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EventIn"
+            },
+            "maxItems": 500,
+            "title": "Events",
+            "type": "array"
+          }
+        },
+        "required": [
+          "run_id",
+          "events"
+        ],
+        "title": "EventsIn",
+        "type": "object"
+      },
+      "CollectorFileOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "collector": {
+            "title": "Collector",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "session_type": {
+            "title": "Session Type",
+            "type": "string"
+          },
+          "track": {
+            "title": "Track",
+            "type": "string"
+          },
+          "session_time": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Time"
+          },
+          "round_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Round Id"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "error": {
+            "title": "Error",
+            "type": "string"
+          },
+          "received_at": {
+            "format": "date-time",
+            "title": "Received At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "collector",
+          "kind",
+          "filename",
+          "session_type",
+          "track",
+          "session_time",
+          "round_id",
+          "status",
+          "error",
+          "received_at"
+        ],
+        "title": "CollectorFileOut",
+        "type": "object"
+      },
+      "CollectorOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "last_seen_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Seen At"
+          },
+          "revoked": {
+            "title": "Revoked",
+            "type": "boolean"
+          },
+          "files": {
+            "title": "Files",
+            "type": "integer"
+          },
+          "events": {
+            "title": "Events",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "created_at",
+          "last_seen_at",
+          "revoked",
+          "files",
+          "events"
+        ],
+        "title": "CollectorOut",
+        "type": "object"
+      },
+      "CollectorsOut": {
+        "properties": {
+          "collectors": {
+            "items": {
+              "$ref": "#/components/schemas/CollectorOut"
+            },
+            "title": "Collectors",
+            "type": "array"
+          },
+          "rounds": {
+            "items": {
+              "$ref": "#/components/schemas/RoundChoiceOut"
+            },
+            "title": "Rounds",
+            "type": "array"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/CollectorFileOut"
+            },
+            "title": "Files",
+            "type": "array"
+          }
+        },
+        "required": [
+          "collectors",
+          "rounds",
+          "files"
+        ],
+        "title": "CollectorsOut",
+        "type": "object"
+      },
+      "RoundChoiceOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "season_name": {
+            "title": "Season Name",
+            "type": "string"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "track_name": {
+            "title": "Track Name",
+            "type": "string"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
+          }
+        },
+        "required": [
+          "id",
+          "season_name",
+          "number",
+          "track_name",
+          "scheduled_at"
+        ],
+        "title": "RoundChoiceOut",
+        "type": "object"
+      },
+      "CollectorCreatedOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "last_seen_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Seen At"
+          },
+          "revoked": {
+            "title": "Revoked",
+            "type": "boolean"
+          },
+          "files": {
+            "title": "Files",
+            "type": "integer"
+          },
+          "events": {
+            "title": "Events",
+            "type": "integer"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "created_at",
+          "last_seen_at",
+          "revoked",
+          "files",
+          "events",
+          "key"
+        ],
+        "title": "CollectorCreatedOut",
+        "type": "object"
+      },
+      "CollectorIn": {
+        "properties": {
+          "name": {
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "CollectorIn",
+        "type": "object"
+      },
+      "AssignIn": {
+        "properties": {
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "round_id"
+        ],
+        "title": "AssignIn",
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -9126,6 +9829,10 @@
         "type": "apiKey",
         "in": "cookie",
         "name": "sessionid"
+      },
+      "CollectorAuth": {
+        "type": "http",
+        "scheme": "bearer"
       }
     }
   },

@@ -846,3 +846,9 @@ tr.invalid-lap td:nth-last-child(-n + 3) {
   height: 0.75rem;
   border-radius: 2px;
 }
+
+button.link-button {
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.8rem;
+}

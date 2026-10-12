@@ -220,7 +220,9 @@
     "report_in_progress": "Ya se está generando un reporte.",
     "official_rounds_required": "La temporada necesita al menos una fecha con resultado oficial.",
     "role_name_taken": "Ya hay un rol con ese nombre.",
-    "custom_role_not_allowed": "Elegí un rol personalizado solo con el rol Rol personalizado."
+    "custom_role_not_allowed": "Elegí un rol personalizado solo con el rol Rol personalizado.",
+    "round_not_in_championship": "Esa fecha es de otro campeonato.",
+    "file_not_assignable": "Este archivo no se puede asignar."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -322,7 +324,10 @@
       "report.requested": "{{actor}} pidió el reporte {{report}} de la fecha {{number}} ({{track}}).",
       "report.season_requested": "{{actor}} pidió el reporte {{report}} de la temporada {{season}}.",
       "role.created": "{{actor}} creó el rol {{name}}: {{capabilities}}.",
-      "role.updated": "{{actor}} cambió el rol {{name}}: {{capabilities}}."
+      "role.updated": "{{actor}} cambió el rol {{name}}: {{capabilities}}.",
+      "collector.created": "{{actor}} creó el colector {{name}}.",
+      "collector.revoked": "{{actor}} desactivó el colector {{name}}.",
+      "collector.file_assigned": "{{actor}} asignó {{filename}} a la fecha {{number}}."
     },
     "fields": {
       "role": "Rol",
@@ -921,5 +926,39 @@
       "in_progress": "en curso"
     },
     "meta": "Temporada {{status}}, solo fechas oficiales · {{date}} · {{language}}"
+  },
+  "collectors": {
+    "title": "Colectores",
+    "help": "Un colector corre al lado del servidor de AC y manda los archivos de resultados y los logs de Real Penalty. Los archivos llegan como vista previa: un admin los aplica. Instrucciones en collector/README.md.",
+    "none": "Todavía no hay colectores.",
+    "revoked": "Desactivado",
+    "lastSeen": "visto {{date}}",
+    "neverSeen": "nunca se conectó",
+    "counts": "{{files}} archivos, {{events}} eventos",
+    "revoke": "Desactivar",
+    "keyFor": "Clave de {{name}}:",
+    "keyOnce": "Copiala ahora. La app no la muestra otra vez.",
+    "key": "Clave del colector",
+    "create": "Nuevo colector",
+    "createButton": "Crear clave",
+    "name": "Nombre",
+    "files": "Archivos recibidos",
+    "kind": {
+      "result": "resultado",
+      "penalty_log": "log de Real Penalty"
+    },
+    "status": {
+      "assigned": "en la fecha",
+      "unmatched": "sin fecha",
+      "replaced": "reemplazado",
+      "failed": "no se pudo leer"
+    },
+    "errors": {
+      "log_already_applied": "el log ya estaba aplicado",
+      "unknown_file_time": "el nombre no tiene la hora",
+      "not_readable": "formato desconocido"
+    },
+    "chooseRound": "Fecha para {{name}}",
+    "assign": "Asignar"
   }
 }

@@ -16,6 +16,7 @@ Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/age
 
 - `backend/`: Django project. One Django app for each module in `apps/`. Settings in `config/settings.py`.
 - `frontend/`: React with Vite. Text in `src/locales/es.json` and `src/locales/en.json`. Spanish is the default.
+- `collector/`: the server collector. Standard library Python only. Its tests are in `backend/tests/test_collector_program.py`.
 - `e2e/`: Playwright tests. They use a separate Compose project `paddock-e2e` on port 8421 and delete it after the run.
 - `samples/`: sanitized race data. Never commit files from `samples-raw/`.
 - `current-scripts/`: the league's earlier scripts. Reference only.
