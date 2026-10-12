@@ -1752,6 +1752,90 @@
           }
         ]
       }
+    },
+    "/api/seasons/{season_id}/handicaps": {
+      "get": {
+        "operationId": "apps_handicaps_api_get_handicaps",
+        "summary": "Get Handicaps",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonHandicapsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "handicaps"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seasons/{season_id}/handicaps/adjustments": {
+      "post": {
+        "operationId": "apps_handicaps_api_create_adjustment",
+        "summary": "Create Adjustment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonHandicapsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "handicaps"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdjustmentIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -4214,6 +4298,325 @@
         },
         "title": "ApplyIn",
         "type": "object"
+      },
+      "EntryHandicapsOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "rounds": {
+            "items": {
+              "$ref": "#/components/schemas/StepOut"
+            },
+            "title": "Rounds",
+            "type": "array"
+          },
+          "next_kg": {
+            "title": "Next Kg",
+            "type": "integer"
+          },
+          "next_pct": {
+            "title": "Next Pct",
+            "type": "integer"
+          },
+          "next_adjustment_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Adjustment Reason"
+          }
+        },
+        "required": [
+          "entry_id",
+          "number",
+          "driver_name",
+          "rounds",
+          "next_kg",
+          "next_pct",
+          "next_adjustment_reason"
+        ],
+        "title": "EntryHandicapsOut",
+        "type": "object"
+      },
+      "HandicapRulesOut": {
+        "properties": {
+          "ballast_steps": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Ballast Steps",
+            "type": "array"
+          },
+          "restrictor_steps": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Restrictor Steps",
+            "type": "array"
+          },
+          "ballast_cap": {
+            "title": "Ballast Cap",
+            "type": "integer"
+          },
+          "restrictor_cap": {
+            "title": "Restrictor Cap",
+            "type": "integer"
+          },
+          "ballast_reduction": {
+            "title": "Ballast Reduction",
+            "type": "integer"
+          },
+          "restrictor_reduction": {
+            "title": "Restrictor Reduction",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ballast_steps",
+          "restrictor_steps",
+          "ballast_cap",
+          "restrictor_cap",
+          "ballast_reduction",
+          "restrictor_reduction"
+        ],
+        "title": "HandicapRulesOut",
+        "type": "object"
+      },
+      "SeasonHandicapsOut": {
+        "properties": {
+          "next_round_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Round Id"
+          },
+          "next_round_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Round Number"
+          },
+          "can_manage": {
+            "title": "Can Manage",
+            "type": "boolean"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/HandicapRulesOut"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/EntryHandicapsOut"
+            },
+            "title": "Entries",
+            "type": "array"
+          }
+        },
+        "required": [
+          "next_round_id",
+          "next_round_number",
+          "can_manage",
+          "rules",
+          "entries"
+        ],
+        "title": "SeasonHandicapsOut",
+        "type": "object"
+      },
+      "StepOut": {
+        "properties": {
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "round_number": {
+            "title": "Round Number",
+            "type": "integer"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "outcome": {
+            "title": "Outcome",
+            "type": "string"
+          },
+          "season_wins": {
+            "title": "Season Wins",
+            "type": "integer"
+          },
+          "before_kg": {
+            "title": "Before Kg",
+            "type": "integer"
+          },
+          "before_pct": {
+            "title": "Before Pct",
+            "type": "integer"
+          },
+          "change_kg": {
+            "title": "Change Kg",
+            "type": "integer"
+          },
+          "change_pct": {
+            "title": "Change Pct",
+            "type": "integer"
+          },
+          "capped": {
+            "title": "Capped",
+            "type": "boolean"
+          },
+          "after_kg": {
+            "title": "After Kg",
+            "type": "integer"
+          },
+          "after_pct": {
+            "title": "After Pct",
+            "type": "integer"
+          },
+          "used_kg": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Used Kg"
+          },
+          "used_pct": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Used Pct"
+          },
+          "adjustment_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adjustment Reason"
+          }
+        },
+        "required": [
+          "round_id",
+          "round_number",
+          "position",
+          "status",
+          "outcome",
+          "season_wins",
+          "before_kg",
+          "before_pct",
+          "change_kg",
+          "change_pct",
+          "capped",
+          "after_kg",
+          "after_pct",
+          "used_kg",
+          "used_pct",
+          "adjustment_reason"
+        ],
+        "title": "StepOut",
+        "type": "object"
+      },
+      "AdjustmentIn": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "ballast_kg": {
+            "maximum": 500,
+            "minimum": 0,
+            "title": "Ballast Kg",
+            "type": "integer"
+          },
+          "restrictor_pct": {
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Restrictor Pct",
+            "type": "integer"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/Mode"
+          },
+          "reason": {
+            "maxLength": 500,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entry_id",
+          "round_id",
+          "ballast_kg",
+          "restrictor_pct",
+          "mode",
+          "reason"
+        ],
+        "title": "AdjustmentIn",
+        "type": "object"
+      },
+      "Mode": {
+        "enum": [
+          "temporary",
+          "persistent"
+        ],
+        "title": "Mode",
+        "type": "string"
       }
     },
     "securitySchemes": {

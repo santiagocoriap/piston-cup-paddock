@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "apps.audit",
     "apps.restarts",
     "apps.imports",
+    "apps.handicaps",
 ]
 
 MIDDLEWARE = [

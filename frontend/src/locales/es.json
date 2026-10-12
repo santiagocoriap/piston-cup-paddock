@@ -151,7 +151,8 @@
     "bad_guid": "El GUID no es válido.",
     "driver_has_other_guid": "Ese piloto ya tiene otro Steam GUID.",
     "guid_belongs_to_other_driver": "Ese GUID ya pertenece a otro piloto.",
-    "import_status_not_allowed": "Un archivo solo puede marcar Terminó o DNF."
+    "import_status_not_allowed": "Un archivo solo puede marcar Terminó o DNF.",
+    "above_cap": "El valor supera el máximo de las reglas."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -229,7 +230,8 @@
       "season.settings_changed": "{{actor}} cambió la configuración de la temporada {{season}}.",
       "import.uploaded": "{{actor}} subió el archivo {{file}} a la fecha {{number}} ({{track}}).",
       "import.applied": "{{actor}} aplicó el archivo {{file}} a la fecha {{number}} ({{track}}).",
-      "driver.guid_linked": "{{actor}} le asignó un Steam GUID al piloto {{driver}}."
+      "driver.guid_linked": "{{actor}} le asignó un Steam GUID al piloto {{driver}}.",
+      "handicap.adjusted": "{{actor}} ajustó el lastre y el restrictor de {{driver}} para la fecha {{number}} de {{season}}."
     },
     "fields": {
       "role": "Rol",
@@ -246,7 +248,10 @@
       "review_status": "Revisión",
       "status": "Estado",
       "protest_window_minutes": "Plazo de protestas (minutos)",
-      "ignored": "GUID ignorados"
+      "ignored": "GUID ignorados",
+      "ballast_kg": "Lastre (kg)",
+      "restrictor_pct": "Restrictor (%)",
+      "mode": "Alcance"
     },
     "none": "—",
     "pts": "{{count}} pts"
@@ -415,5 +420,33 @@
     "apply": "Aplicar el archivo",
     "applied": "Archivo aplicado.",
     "qualifyingNote": "Un archivo de clasificación o práctica guarda las vueltas, pero no cambia el resultado de carrera."
+  },
+  "handicaps": {
+    "title": "Lastre y restrictor",
+    "help": "Cada valor es lo que el piloto lleva a esa fecha. Abrí un piloto para ver la explicación.",
+    "next": "Fecha {{number}} (próxima)",
+    "noNext": "Sin próxima fecha",
+    "rules": "Victorias: +{{ballast}} kg y +{{restrictor}} %. 2.º o peor: −{{reduction_kg}} kg y −{{reduction_pct}} %. Máximo {{cap_kg}} kg y {{cap_pct}} %.",
+    "explain": "Explicación de {{name}}",
+    "outcome": {
+      "win": "victoria {{wins}}",
+      "loss": "{{place}}",
+      "absent": "no participó"
+    },
+    "stepLine": "Fecha {{number}}: lleva {{before}}, {{outcome}} → {{change}} = {{after}}",
+    "capped": "llegó al máximo",
+    "usedDiffers": "Corrió con {{used}}. Una corrección posterior cambió el cálculo.",
+    "adjusted": "Ajuste manual: {{reason}}",
+    "adjust": "Ajustar lastre y restrictor",
+    "round": "Fecha",
+    "driver": "Piloto",
+    "ballast": "Lastre (kg)",
+    "restrictor": "Restrictor (%)",
+    "mode": "Alcance",
+    "modes": {
+      "temporary": "Solo esta fecha",
+      "persistent": "Esta fecha y las siguientes"
+    },
+    "reason": "Motivo"
   }
 }

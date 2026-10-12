@@ -151,7 +151,8 @@
     "bad_guid": "The GUID is not valid.",
     "driver_has_other_guid": "This driver already has another Steam GUID.",
     "guid_belongs_to_other_driver": "This GUID belongs to another driver.",
-    "import_status_not_allowed": "A file can only set Finished or DNF."
+    "import_status_not_allowed": "A file can only set Finished or DNF.",
+    "above_cap": "The value is above the maximum of the rules."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -229,7 +230,8 @@
       "season.settings_changed": "{{actor}} changed the settings of the season {{season}}.",
       "import.uploaded": "{{actor}} uploaded the file {{file}} to round {{number}} ({{track}}).",
       "import.applied": "{{actor}} applied the file {{file}} to round {{number}} ({{track}}).",
-      "driver.guid_linked": "{{actor}} gave a Steam GUID to the driver {{driver}}."
+      "driver.guid_linked": "{{actor}} gave a Steam GUID to the driver {{driver}}.",
+      "handicap.adjusted": "{{actor}} adjusted the ballast and restrictor of {{driver}} for round {{number}} of {{season}}."
     },
     "fields": {
       "role": "Role",
@@ -246,7 +248,10 @@
       "review_status": "Review",
       "status": "Status",
       "protest_window_minutes": "Protest window (minutes)",
-      "ignored": "Ignored GUIDs"
+      "ignored": "Ignored GUIDs",
+      "ballast_kg": "Ballast (kg)",
+      "restrictor_pct": "Restrictor (%)",
+      "mode": "Scope"
     },
     "none": "—",
     "pts": "{{count}} pts"
@@ -415,5 +420,33 @@
     "apply": "Apply the file",
     "applied": "The file is applied.",
     "qualifyingNote": "A qualifying or practice file stores the laps, but it does not change the race result."
+  },
+  "handicaps": {
+    "title": "Ballast and restrictor",
+    "help": "Each value is what the driver carries into that round. Open a driver to see the explanation.",
+    "next": "Round {{number}} (next)",
+    "noNext": "No next round",
+    "rules": "Wins: +{{ballast}} kg and +{{restrictor}} %. 2nd or lower: −{{reduction_kg}} kg and −{{reduction_pct}} %. Maximum {{cap_kg}} kg and {{cap_pct}} %.",
+    "explain": "Explanation for {{name}}",
+    "outcome": {
+      "win": "win {{wins}}",
+      "loss": "{{place}}",
+      "absent": "did not take part"
+    },
+    "stepLine": "Round {{number}}: carries {{before}}, {{outcome}} → {{change}} = {{after}}",
+    "capped": "reached the maximum",
+    "usedDiffers": "Raced with {{used}}. A later correction changed the calculation.",
+    "adjusted": "Manual adjustment: {{reason}}",
+    "adjust": "Adjust ballast and restrictor",
+    "round": "Round",
+    "driver": "Driver",
+    "ballast": "Ballast (kg)",
+    "restrictor": "Restrictor (%)",
+    "mode": "Scope",
+    "modes": {
+      "temporary": "Only this round",
+      "persistent": "This round and the next rounds"
+    },
+    "reason": "Reason"
   }
 }

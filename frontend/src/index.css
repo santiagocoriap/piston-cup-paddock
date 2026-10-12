@@ -529,6 +529,33 @@ button.link {
   text-decoration-color: var(--accent);
 }
 
+.handicaps details summary {
+  cursor: pointer;
+}
+
+.explain {
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+  white-space: normal;
+  color: var(--muted);
+  font-size: 0.85rem;
+  min-width: 22rem;
+}
+
+.handicaps td.next,
+.handicaps th.next {
+  border-left: 2px solid var(--accent);
+}
+
+.handicaps td.differs {
+  color: #fbbf24;
+  cursor: help;
+}
+
+.handicaps td {
+  vertical-align: top;
+}
+
 .error {
   margin: 0;
   color: var(--error);

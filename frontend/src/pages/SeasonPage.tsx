@@ -6,6 +6,7 @@ import { Loading } from '../components/Layout'
 import { formatDateTime, localInputToIso } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
+import { HandicapsSection } from './HandicapsSection'
 
 export function SeasonPage() {
   const { t, i18n } = useTranslation()
@@ -83,6 +84,8 @@ export function SeasonPage() {
       {standings.data?.some((row) => row.rounds.some((r) => r.status !== null && !r.official)) && (
         <p className="muted">{t('season.provisionalNote')}</p>
       )}
+
+      <HandicapsSection seasonId={seasonId} rounds={data.rounds} adminView={adminView} />
 
       <h2>{t('season.calendar')}</h2>
       {data.rounds.length === 0 ? (

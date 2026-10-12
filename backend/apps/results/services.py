@@ -147,6 +147,10 @@ def save_result(round_: Round, lines: list[Line], user, reason: str = "") -> Rac
         if before is not None and _same_lines(entered_lines(before), lines):
             return result  # Nothing changed. A second save of the same lines adds nothing.
         if result is None:
+            # Keep the handicaps of this race before its first result counts.
+            from apps.handicaps.services import save_used_values
+
+            save_used_values(round_)
             result = RaceResult.objects.create(round=round_, published_at=timezone.now())
         kind = ResultVersion.Kind.ENTRY if before is None else ResultVersion.Kind.CORRECTION
         version = _write_version(result, lines, kind, user, reason)

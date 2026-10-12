@@ -647,6 +647,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/seasons/{season_id}/handicaps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Handicaps */
+        get: operations["apps_handicaps_api_get_handicaps"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seasons/{season_id}/handicaps/adjustments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Adjustment */
+        post: operations["apps_handicaps_api_create_adjustment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1514,6 +1548,104 @@ export interface components {
              */
             ignored_guids?: string[];
         };
+        /** EntryHandicapsOut */
+        EntryHandicapsOut: {
+            /** Entry Id */
+            entry_id: number;
+            /** Number */
+            number: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Rounds */
+            rounds: components["schemas"]["StepOut"][];
+            /** Next Kg */
+            next_kg: number;
+            /** Next Pct */
+            next_pct: number;
+            /** Next Adjustment Reason */
+            next_adjustment_reason: string | null;
+        };
+        /** HandicapRulesOut */
+        HandicapRulesOut: {
+            /** Ballast Steps */
+            ballast_steps: number[];
+            /** Restrictor Steps */
+            restrictor_steps: number[];
+            /** Ballast Cap */
+            ballast_cap: number;
+            /** Restrictor Cap */
+            restrictor_cap: number;
+            /** Ballast Reduction */
+            ballast_reduction: number;
+            /** Restrictor Reduction */
+            restrictor_reduction: number;
+        };
+        /** SeasonHandicapsOut */
+        SeasonHandicapsOut: {
+            /** Next Round Id */
+            next_round_id: number | null;
+            /** Next Round Number */
+            next_round_number: number | null;
+            /** Can Manage */
+            can_manage: boolean;
+            rules: components["schemas"]["HandicapRulesOut"];
+            /** Entries */
+            entries: components["schemas"]["EntryHandicapsOut"][];
+        };
+        /** StepOut */
+        StepOut: {
+            /** Round Id */
+            round_id: number;
+            /** Round Number */
+            round_number: number;
+            /** Position */
+            position: number | null;
+            /** Status */
+            status: string | null;
+            /** Outcome */
+            outcome: string;
+            /** Season Wins */
+            season_wins: number;
+            /** Before Kg */
+            before_kg: number;
+            /** Before Pct */
+            before_pct: number;
+            /** Change Kg */
+            change_kg: number;
+            /** Change Pct */
+            change_pct: number;
+            /** Capped */
+            capped: boolean;
+            /** After Kg */
+            after_kg: number;
+            /** After Pct */
+            after_pct: number;
+            /** Used Kg */
+            used_kg: number | null;
+            /** Used Pct */
+            used_pct: number | null;
+            /** Adjustment Reason */
+            adjustment_reason: string | null;
+        };
+        /** AdjustmentIn */
+        AdjustmentIn: {
+            /** Entry Id */
+            entry_id: number;
+            /** Round Id */
+            round_id: number;
+            /** Ballast Kg */
+            ballast_kg: number;
+            /** Restrictor Pct */
+            restrictor_pct: number;
+            mode: components["schemas"]["Mode"];
+            /** Reason */
+            reason: string;
+        };
+        /**
+         * Mode
+         * @enum {string}
+         */
+        Mode: "temporary" | "persistent";
     };
     responses: never;
     parameters: never;
@@ -2563,6 +2695,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ImportOut"];
+                };
+            };
+        };
+    };
+    apps_handicaps_api_get_handicaps: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonHandicapsOut"];
+                };
+            };
+        };
+    };
+    apps_handicaps_api_create_adjustment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdjustmentIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonHandicapsOut"];
                 };
             };
         };
