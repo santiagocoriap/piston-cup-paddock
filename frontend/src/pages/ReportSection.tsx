@@ -76,7 +76,10 @@ function ReportText({ report, open = false }: { report: Report; open?: boolean }
           language: t(`report.languages.${report.language}`),
         })}
       </p>
-      {report.text.split(/\n\s*\n/).map((paragraph, index) => (
+      {report.text
+        .split(/\n+/)
+        .filter((line) => line.trim())
+        .map((paragraph, index) => (
         <p key={index}>{paragraph}</p>
       ))}
       <p className="muted">{t('report.aiNote')}</p>
