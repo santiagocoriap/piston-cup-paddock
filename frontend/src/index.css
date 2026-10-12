@@ -860,3 +860,12 @@ td.slower {
 td.faster {
   color: var(--success);
 }
+
+.badge.health-running {
+  border-color: var(--success);
+}
+
+.badge.health-stopped,
+.badge.health-never {
+  border-color: var(--error);
+}

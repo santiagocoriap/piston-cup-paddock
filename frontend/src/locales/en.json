@@ -224,7 +224,8 @@
     "round_not_in_championship": "That round is in another championship.",
     "file_not_assignable": "This file cannot be assigned.",
     "no_driver_profile": "Your account has no driver.",
-    "lap_not_in_session": "That lap is not in this session."
+    "lap_not_in_session": "That lap is not in this session.",
+    "report_not_failed": "That report did not fail."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -329,7 +330,8 @@
       "role.updated": "{{actor}} changed the role {{name}}: {{capabilities}}.",
       "collector.created": "{{actor}} created the collector {{name}}.",
       "collector.revoked": "{{actor}} revoked the collector {{name}}.",
-      "collector.file_assigned": "{{actor}} assigned {{filename}} to round {{number}}."
+      "collector.file_assigned": "{{actor}} assigned {{filename}} to round {{number}}.",
+      "report.retried": "{{actor}} retried report {{report}} of {{season}}."
     },
     "fields": {
       "role": "Role",
@@ -1032,5 +1034,40 @@
       "different_cars": "The cars are different. The difference is not only driving.",
       "different_tyres": "The tyres are different."
     }
+  },
+  "health": {
+    "title": "Data health",
+    "collectors": "Collectors",
+    "noCollectors": "There are no collectors. Rounds are entered by hand.",
+    "status": {
+      "running": "running",
+      "stopped": "stopped",
+      "never": "never connected",
+      "revoked": "revoked"
+    },
+    "lastSeen": "seen {{date}}",
+    "lastFile": "last file {{date}}",
+    "lastEvent": "last event {{date}}",
+    "unmatched_one": "{{count}} file waits for a round (below, in Collectors).",
+    "unmatched_other": "{{count}} files wait for a round (below, in Collectors).",
+    "rounds": "Recent rounds",
+    "noRounds": "No round has run yet.",
+    "complete": "complete data",
+    "problems": {
+      "no_race_file": "No race file is applied.",
+      "missing_sectors": "{{laps_without_sectors}} laps have no sectors.",
+      "no_penalty_logs": "There are no Real Penalty logs.",
+      "collector_stopped": "The collector sent nothing that night: it was stopped or offline.",
+      "no_events": "Files came in, but no UDP event. Check the extra plugin in Content Manager.",
+      "partial_events": "Partial events: {{lap_events}} laps by UDP of {{laps}} in the file.",
+      "no_collector": "This championship has no collector."
+    },
+    "failed": "Failed tasks",
+    "noFailed": "There are no failed tasks.",
+    "kind": {
+      "report": "Report",
+      "job": "Worker task"
+    },
+    "retry": "Retry"
   }
 }

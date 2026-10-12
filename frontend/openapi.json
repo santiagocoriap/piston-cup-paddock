@@ -4097,6 +4097,126 @@
           }
         ]
       }
+    },
+    "/api/championships/{championship_id}/health": {
+      "get": {
+        "operationId": "apps_collectors_health_api_get_health",
+        "summary": "Get Health",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "championship_id",
+            "schema": {
+              "title": "Championship Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "health"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/reports/{report_id}/retry": {
+      "post": {
+        "operationId": "apps_collectors_health_api_retry_failed_report",
+        "summary": "Retry Failed Report",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "schema": {
+              "title": "Report Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "health"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/championships/{championship_id}/jobs/{job_id}/retry": {
+      "post": {
+        "operationId": "apps_collectors_health_api_retry_failed_job",
+        "summary": "Retry Failed Job",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "championship_id",
+            "schema": {
+              "title": "Championship Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "schema": {
+              "title": "Job Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "health"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -10737,6 +10857,203 @@
           "channels"
         ],
         "title": "LapDetailOut",
+        "type": "object"
+      },
+      "CollectorHealthOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "last_seen_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Seen At"
+          },
+          "last_file_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last File At"
+          },
+          "last_event_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Event At"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "status",
+          "last_seen_at",
+          "last_file_at",
+          "last_event_at"
+        ],
+        "title": "CollectorHealthOut",
+        "type": "object"
+      },
+      "FailedTaskOut": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "error": {
+            "title": "Error",
+            "type": "string"
+          },
+          "at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "At"
+          }
+        },
+        "required": [
+          "kind",
+          "id",
+          "label",
+          "error",
+          "at"
+        ],
+        "title": "FailedTaskOut",
+        "type": "object"
+      },
+      "HealthOut": {
+        "properties": {
+          "collectors": {
+            "items": {
+              "$ref": "#/components/schemas/CollectorHealthOut"
+            },
+            "title": "Collectors",
+            "type": "array"
+          },
+          "rounds": {
+            "items": {
+              "$ref": "#/components/schemas/RoundHealthOut"
+            },
+            "title": "Rounds",
+            "type": "array"
+          },
+          "failed": {
+            "items": {
+              "$ref": "#/components/schemas/FailedTaskOut"
+            },
+            "title": "Failed",
+            "type": "array"
+          },
+          "unmatched_files": {
+            "title": "Unmatched Files",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "collectors",
+          "rounds",
+          "failed",
+          "unmatched_files"
+        ],
+        "title": "HealthOut",
+        "type": "object"
+      },
+      "RoundHealthOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "season_name": {
+            "title": "Season Name",
+            "type": "string"
+          },
+          "track_name": {
+            "title": "Track Name",
+            "type": "string"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
+          },
+          "problems": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Problems",
+            "type": "array"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Counts",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "season_name",
+          "track_name",
+          "scheduled_at",
+          "problems",
+          "counts"
+        ],
+        "title": "RoundHealthOut",
         "type": "object"
       }
     },

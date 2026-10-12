@@ -6,6 +6,7 @@ import { Loading } from '../components/Layout'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { CollectorsSection } from './CollectorsSection'
+import { HealthSection } from './HealthSection'
 
 export function ChampionshipPage() {
   const { t } = useTranslation()
@@ -66,6 +67,7 @@ export function ChampionshipPage() {
           </ActionForm>
           <Members championshipId={championshipId} />
           <Roles championshipId={championshipId} />
+          <HealthSection championshipId={championshipId} />
           <CollectorsSection championshipId={championshipId} />
         </div>
       )}

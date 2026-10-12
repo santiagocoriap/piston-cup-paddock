@@ -224,7 +224,8 @@
     "round_not_in_championship": "Esa fecha es de otro campeonato.",
     "file_not_assignable": "Este archivo no se puede asignar.",
     "no_driver_profile": "Tu cuenta no tiene piloto.",
-    "lap_not_in_session": "Esa vuelta no es de esta sesión."
+    "lap_not_in_session": "Esa vuelta no es de esta sesión.",
+    "report_not_failed": "Ese reporte no falló."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -329,7 +330,8 @@
       "role.updated": "{{actor}} cambió el rol {{name}}: {{capabilities}}.",
       "collector.created": "{{actor}} creó el colector {{name}}.",
       "collector.revoked": "{{actor}} desactivó el colector {{name}}.",
-      "collector.file_assigned": "{{actor}} asignó {{filename}} a la fecha {{number}}."
+      "collector.file_assigned": "{{actor}} asignó {{filename}} a la fecha {{number}}.",
+      "report.retried": "{{actor}} reintentó el reporte {{report}} de {{season}}."
     },
     "fields": {
       "role": "Rol",
@@ -1032,5 +1034,40 @@
       "different_cars": "Los autos son distintos. La diferencia no es solo de manejo.",
       "different_tyres": "Los neumáticos son distintos."
     }
+  },
+  "health": {
+    "title": "Salud de los datos",
+    "collectors": "Colectores",
+    "noCollectors": "No hay colectores. Las fechas se cargan a mano.",
+    "status": {
+      "running": "funciona",
+      "stopped": "detenido",
+      "never": "nunca se conectó",
+      "revoked": "desactivado"
+    },
+    "lastSeen": "visto {{date}}",
+    "lastFile": "último archivo {{date}}",
+    "lastEvent": "último evento {{date}}",
+    "unmatched_one": "{{count}} archivo espera una fecha (abajo, en Colectores).",
+    "unmatched_other": "{{count}} archivos esperan una fecha (abajo, en Colectores).",
+    "rounds": "Últimas fechas",
+    "noRounds": "Todavía no hay fechas jugadas.",
+    "complete": "datos completos",
+    "problems": {
+      "no_race_file": "No hay archivo de carrera aplicado.",
+      "missing_sectors": "{{laps_without_sectors}} vueltas no tienen sectores.",
+      "no_penalty_logs": "No hay logs de Real Penalty.",
+      "collector_stopped": "El colector no mandó nada esa noche: estaba detenido o sin conexión.",
+      "no_events": "Llegaron archivos, pero ningún evento UDP. Revisá el plugin extra en Content Manager.",
+      "partial_events": "Eventos parciales: {{lap_events}} vueltas por UDP de {{laps}} en el archivo.",
+      "no_collector": "No hay colector en este campeonato."
+    },
+    "failed": "Tareas fallidas",
+    "noFailed": "No hay tareas fallidas.",
+    "kind": {
+      "report": "Reporte",
+      "job": "Tarea del worker"
+    },
+    "retry": "Reintentar"
   }
 }

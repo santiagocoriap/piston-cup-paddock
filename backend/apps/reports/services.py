@@ -111,6 +111,27 @@ def request_season_report(season: Season, user, *, language: str, tone: str) -> 
     return report
 
 
+def retry_report(report: RaceReport, user) -> RaceReport:
+    """Write a failed report again, with the same facts, prompt, and model."""
+    if report.status != RaceReport.State.FAILED:
+        raise ReportError("report_not_failed")
+    with transaction.atomic():
+        report.status = RaceReport.State.PENDING
+        report.error = ""
+        report.generated_at = None
+        report.save(update_fields=["status", "error", "generated_at"])
+        record(
+            user,
+            "report.retried",
+            "season",
+            report.season_id,
+            championship=report.season.championship,
+            params={"report": report.number, "season": report.season.name},
+        )
+        transaction.on_commit(lambda: _defer(report.id))
+    return report
+
+
 def _defer(report_id: int) -> None:
     from .tasks import generate_report
 

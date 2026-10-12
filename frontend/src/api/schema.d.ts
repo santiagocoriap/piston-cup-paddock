@@ -1491,6 +1491,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/championships/{championship_id}/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Health */
+        get: operations["apps_collectors_health_api_get_health"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reports/{report_id}/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retry Failed Report */
+        post: operations["apps_collectors_health_api_retry_failed_report"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/championships/{championship_id}/jobs/{job_id}/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retry Failed Job */
+        post: operations["apps_collectors_health_api_retry_failed_job"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3697,6 +3748,64 @@ export interface components {
             /** Channels */
             channels: {
                 [key: string]: number[];
+            };
+        };
+        /** CollectorHealthOut */
+        CollectorHealthOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Status */
+            status: string;
+            /** Last Seen At */
+            last_seen_at: string | null;
+            /** Last File At */
+            last_file_at: string | null;
+            /** Last Event At */
+            last_event_at: string | null;
+        };
+        /** FailedTaskOut */
+        FailedTaskOut: {
+            /** Kind */
+            kind: string;
+            /** Id */
+            id: number;
+            /** Label */
+            label: string;
+            /** Error */
+            error: string;
+            /** At */
+            at: string | null;
+        };
+        /** HealthOut */
+        HealthOut: {
+            /** Collectors */
+            collectors: components["schemas"]["CollectorHealthOut"][];
+            /** Rounds */
+            rounds: components["schemas"]["RoundHealthOut"][];
+            /** Failed */
+            failed: components["schemas"]["FailedTaskOut"][];
+            /** Unmatched Files */
+            unmatched_files: number;
+        };
+        /** RoundHealthOut */
+        RoundHealthOut: {
+            /** Id */
+            id: number;
+            /** Number */
+            number: number;
+            /** Season Name */
+            season_name: string;
+            /** Track Name */
+            track_name: string;
+            /** Scheduled At */
+            scheduled_at: string | null;
+            /** Problems */
+            problems: string[];
+            /** Counts */
+            counts: {
+                [key: string]: number;
             };
         };
     };
@@ -6143,6 +6252,73 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LapDetailOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_health_api_get_health: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_health_api_retry_failed_report: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_health_api_retry_failed_job: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+                job_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthOut"];
                 };
             };
         };

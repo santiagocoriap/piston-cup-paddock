@@ -39,6 +39,7 @@ log = logging.getLogger("paddock_collector")
 
 VERSION = "1.0.0"
 EVENT_BATCH = 200
+PING_SECONDS = 300  # The app shows a collector as stopped after 15 minutes without a ping.
 LOCAL_ADDRESSES = {"127.0.0.1", "::1", "::ffff:127.0.0.1"}
 
 # AC server UDP plugin protocol (from the Kunos SDK example).
@@ -269,6 +270,18 @@ class App:
             "/api/collector/files", body.getvalue(), f"multipart/form-data; boundary={boundary}"
         )
 
+    def ping(self) -> None:
+        """Tell the app that the collector runs, also when there is nothing to send."""
+        request = urllib.request.Request(
+            self.settings.app_url + "/api/collector/ping",
+            headers={
+                "Authorization": f"Bearer {self.settings.key}",
+                "User-Agent": f"paddock-collector/{VERSION}",
+            },
+        )
+        with urllib.request.urlopen(request, timeout=30) as response:
+            response.read()
+
     def send_events(self, run_id: str, events: list[dict]) -> dict:
         body = json.dumps({"run_id": run_id, "events": events}).encode()
         return self._request("/api/collector/events", body, "application/json")
@@ -468,10 +481,14 @@ def run(settings: Settings) -> None:
     if settings.udp_port:
         EventListener(settings.udp_port, state, uuid.uuid4().hex).start()
     wait = settings.poll_seconds
+    next_ping = 0.0
     while True:
         try:
             spool_files(settings, state, time.time())
             ok = upload_pending(app, state)
+            if time.time() >= next_ping:
+                app.ping()
+                next_ping = time.time() + PING_SECONDS
         except Exception:  # The loop must keep running. The log has the details.
             log.exception("Collector loop error")
             ok = False
