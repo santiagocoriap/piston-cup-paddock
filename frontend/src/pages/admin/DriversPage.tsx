@@ -40,6 +40,7 @@ export function DriversPage() {
                 <th scope="col">{t('drivers.displayName')}</th>
                 <th scope="col">Steam GUID</th>
                 <th scope="col">{t('drivers.account')}</th>
+                <th scope="col">{t('drivers.careerPoints')}</th>
               </tr>
             </thead>
             <tbody>
@@ -61,6 +62,7 @@ export function DriversPage() {
                       ))}
                     </select>
                   </td>
+                  <td>{driver.career_points}</td>
                 </tr>
               ))}
             </tbody>

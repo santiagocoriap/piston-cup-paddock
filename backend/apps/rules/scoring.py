@@ -128,3 +128,57 @@ def standings(
         same_as_previous = index > 0 and key(row) == key(ordered[index - 1])
         row.rank = ordered[index - 1].rank if same_as_previous else index + 1
     return ordered
+
+
+class PenaltyKind(StrEnum):
+    POSITIONS = "positions"  # Move the driver down by value places.
+    POINTS = "points"  # Take value points from the race points.
+    DSQ = "dsq"  # Disqualify the driver.
+
+
+@dataclass(frozen=True)
+class PenaltyRule:
+    entry_id: int
+    kind: PenaltyKind
+    value: int = 0
+
+
+def apply_penalties(lines: Sequence[Line], penalties: Sequence[PenaltyRule]) -> list[Line]:
+    """Give the classification after the penalties, in the order of the penalties.
+
+    The function always starts from the entered classification, so one penalty can never
+    count two times. Points penalties do not change the classification.
+    """
+    classified = sorted(
+        (line for line in lines if line.status in CLASSIFIED), key=lambda line: line.position
+    )
+    others = [line for line in lines if line.status not in CLASSIFIED]
+    for penalty in penalties:
+        index = next(
+            (i for i, line in enumerate(classified) if line.entry_id == penalty.entry_id), None
+        )
+        if index is None:
+            continue
+        if penalty.kind == PenaltyKind.DSQ:
+            line = classified.pop(index)
+            others.append(Line(line.entry_id, Status.DSQ, None, line.pole, line.fastest_lap))
+        elif penalty.kind == PenaltyKind.POSITIONS and penalty.value > 0:
+            line = classified.pop(index)
+            classified.insert(min(index + penalty.value, len(classified)), line)
+    renumbered = [
+        Line(line.entry_id, line.status, position, line.pole, line.fastest_lap)
+        for position, line in enumerate(classified, start=1)
+    ]
+    return renumbered + others
+
+
+def penalized_points(
+    lines: Sequence[Line], penalties: Sequence[PenaltyRule], rules: PointsRules
+) -> tuple[list[Line], dict[int, int]]:
+    """The classification and the points after all penalties."""
+    final = apply_penalties(lines, penalties)
+    points = race_points(final, rules)
+    for penalty in penalties:
+        if penalty.kind == PenaltyKind.POINTS and penalty.entry_id in points:
+            points[penalty.entry_id] -= penalty.value
+    return final, points

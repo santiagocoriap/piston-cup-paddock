@@ -353,6 +353,7 @@
             }
           }
         },
+        "description": "Career points are the official points of all seasons.",
         "tags": [
           "drivers"
         ],
@@ -923,6 +924,53 @@
         ]
       }
     },
+    "/api/seasons/{season_id}/settings": {
+      "patch": {
+        "operationId": "apps_competition_api_update_season_settings",
+        "summary": "Update Season Settings",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonSummary"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeasonSettingsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/rounds/{round_id}": {
       "get": {
         "operationId": "apps_results_api_get_round",
@@ -960,6 +1008,57 @@
         ]
       }
     },
+    "/api/rounds/{round_id}/result/versions/{number}": {
+      "get": {
+        "operationId": "apps_results_api_get_version",
+        "summary": "Get Version",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "number",
+            "schema": {
+              "title": "Number",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LineOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "The lines of an old version. Old versions stay for the history.",
+        "tags": [
+          "results"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/rounds/{round_id}/result": {
       "put": {
         "operationId": "apps_results_api_put_result",
@@ -987,7 +1086,7 @@
             }
           }
         },
-        "description": "Replace the race classification of the round and calculate the points.",
+        "description": "Enter or correct the race classification. Each save makes a new version.",
         "tags": [
           "results"
         ],
@@ -996,6 +1095,184 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ResultIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/result/approve": {
+      "post": {
+        "operationId": "apps_results_api_approve",
+        "summary": "Approve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "results"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/penalties": {
+      "post": {
+        "operationId": "apps_results_api_create_penalty",
+        "summary": "Create Penalty",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "results"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PenaltyIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/protests": {
+      "post": {
+        "operationId": "apps_results_api_create_protest",
+        "summary": "Create Protest",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "results"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProtestIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/protests/{protest_id}/decision": {
+      "post": {
+        "operationId": "apps_results_api_decide",
+        "summary": "Decide",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "protest_id",
+            "schema": {
+              "title": "Protest Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "results"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionIn"
               }
             }
           },
@@ -1506,6 +1783,11 @@
               }
             ],
             "title": "Username"
+          },
+          "career_points": {
+            "default": 0,
+            "title": "Career Points",
+            "type": "integer"
           }
         },
         "required": [
@@ -1703,12 +1985,17 @@
           "planned_round_count": {
             "title": "Planned Round Count",
             "type": "integer"
+          },
+          "protest_window_minutes": {
+            "title": "Protest Window Minutes",
+            "type": "integer"
           }
         },
         "required": [
           "id",
           "name",
-          "planned_round_count"
+          "planned_round_count",
+          "protest_window_minutes"
         ],
         "title": "SeasonSummary",
         "type": "object"
@@ -1773,6 +2060,13 @@
             "maximum": 50,
             "minimum": 1,
             "title": "Planned Round Count",
+            "type": "integer"
+          },
+          "protest_window_minutes": {
+            "default": 60,
+            "maximum": 10080,
+            "minimum": 0,
+            "title": "Protest Window Minutes",
             "type": "integer"
           }
         },
@@ -1884,6 +2178,10 @@
             "title": "Planned Round Count",
             "type": "integer"
           },
+          "protest_window_minutes": {
+            "title": "Protest Window Minutes",
+            "type": "integer"
+          },
           "championship_id": {
             "title": "Championship Id",
             "type": "integer"
@@ -1915,6 +2213,7 @@
           "id",
           "name",
           "planned_round_count",
+          "protest_window_minutes",
           "championship_id",
           "championship_name",
           "can_manage",
@@ -1985,6 +2284,21 @@
           "scheduled_at"
         ],
         "title": "RoundIn",
+        "type": "object"
+      },
+      "SeasonSettingsIn": {
+        "properties": {
+          "protest_window_minutes": {
+            "maximum": 10080,
+            "minimum": 0,
+            "title": "Protest Window Minutes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "protest_window_minutes"
+        ],
+        "title": "SeasonSettingsIn",
         "type": "object"
       },
       "EntryOption": {
@@ -2063,6 +2377,20 @@
           "points": {
             "title": "Points",
             "type": "integer"
+          },
+          "entered_status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "entered_position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entered Position"
           }
         },
         "required": [
@@ -2070,9 +2398,186 @@
           "status",
           "number",
           "driver_name",
-          "points"
+          "points",
+          "entered_status",
+          "entered_position"
         ],
         "title": "LineOut",
+        "type": "object"
+      },
+      "PenaltyOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "integer"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "attempt": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attempt"
+          },
+          "protest_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protest Id"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "entry_id",
+          "driver_name",
+          "kind",
+          "value",
+          "reason",
+          "source",
+          "attempt",
+          "protest_id",
+          "created_by",
+          "created_at"
+        ],
+        "title": "PenaltyOut",
+        "type": "object"
+      },
+      "ProtestOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "attempt": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attempt"
+          },
+          "submitted_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted By"
+          },
+          "involved": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Involved",
+            "type": "array"
+          },
+          "lap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "decision": {
+            "title": "Decision",
+            "type": "string"
+          },
+          "decided_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided By"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "attempt",
+          "submitted_by",
+          "involved",
+          "lap",
+          "description",
+          "status",
+          "decision",
+          "decided_by",
+          "created_at"
+        ],
+        "title": "ProtestOut",
         "type": "object"
       },
       "RoundDetail": {
@@ -2114,6 +2619,10 @@
             "title": "Can Manage",
             "type": "boolean"
           },
+          "can_protest": {
+            "title": "Can Protest",
+            "type": "boolean"
+          },
           "rules": {
             "$ref": "#/components/schemas/RulesOut"
           },
@@ -2123,6 +2632,68 @@
             },
             "title": "Entries",
             "type": "array"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "protest_deadline": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protest Deadline"
+          },
+          "protest_window_open": {
+            "title": "Protest Window Open",
+            "type": "boolean"
+          },
+          "approved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
           },
           "result": {
             "anyOf": [
@@ -2137,6 +2708,27 @@
               }
             ],
             "title": "Result"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/VersionOut"
+            },
+            "title": "Versions",
+            "type": "array"
+          },
+          "penalties": {
+            "items": {
+              "$ref": "#/components/schemas/PenaltyOut"
+            },
+            "title": "Penalties",
+            "type": "array"
+          },
+          "protests": {
+            "items": {
+              "$ref": "#/components/schemas/ProtestOut"
+            },
+            "title": "Protests",
+            "type": "array"
           }
         },
         "required": [
@@ -2149,9 +2741,19 @@
           "layout_name",
           "scheduled_at",
           "can_manage",
+          "can_protest",
           "rules",
           "entries",
-          "result"
+          "status",
+          "published_at",
+          "protest_deadline",
+          "protest_window_open",
+          "approved_at",
+          "version",
+          "result",
+          "versions",
+          "penalties",
+          "protests"
         ],
         "title": "RoundDetail",
         "type": "object"
@@ -2196,6 +2798,47 @@
         ],
         "title": "Status",
         "type": "string"
+      },
+      "VersionOut": {
+        "properties": {
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By"
+          }
+        },
+        "required": [
+          "number",
+          "kind",
+          "reason",
+          "created_at",
+          "created_by"
+        ],
+        "title": "VersionOut",
+        "type": "object"
       },
       "LineIn": {
         "properties": {
@@ -2259,6 +2902,141 @@
         "title": "ResultIn",
         "type": "object"
       },
+      "Kind": {
+        "enum": [
+          "positions",
+          "points",
+          "dsq"
+        ],
+        "title": "Kind",
+        "type": "string"
+      },
+      "PenaltyIn": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/Kind"
+          },
+          "value": {
+            "default": 0,
+            "maximum": 200,
+            "minimum": 0,
+            "title": "Value",
+            "type": "integer"
+          },
+          "reason": {
+            "maxLength": 500,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entry_id",
+          "kind",
+          "reason"
+        ],
+        "title": "PenaltyIn",
+        "type": "object"
+      },
+      "ProtestIn": {
+        "properties": {
+          "description": {
+            "maxLength": 2000,
+            "title": "Description",
+            "type": "string"
+          },
+          "entry_ids": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Entry Ids",
+            "type": "array"
+          },
+          "lap": {
+            "anyOf": [
+              {
+                "maximum": 999,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap"
+          }
+        },
+        "required": [
+          "description"
+        ],
+        "title": "ProtestIn",
+        "type": "object"
+      },
+      "DecisionIn": {
+        "properties": {
+          "outcome": {
+            "$ref": "#/components/schemas/State"
+          },
+          "decision": {
+            "maxLength": 2000,
+            "title": "Decision",
+            "type": "string"
+          },
+          "penalty": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PenaltyChoice"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "outcome",
+          "decision"
+        ],
+        "title": "DecisionIn",
+        "type": "object"
+      },
+      "PenaltyChoice": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/Kind"
+          },
+          "value": {
+            "default": 0,
+            "maximum": 200,
+            "minimum": 0,
+            "title": "Value",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "entry_id",
+          "kind"
+        ],
+        "title": "PenaltyChoice",
+        "type": "object"
+      },
+      "State": {
+        "enum": [
+          "open",
+          "upheld",
+          "dismissed"
+        ],
+        "title": "State",
+        "type": "string"
+      },
       "RoundScoreOut": {
         "properties": {
           "round_number": {
@@ -2290,13 +3068,18 @@
           "points": {
             "title": "Points",
             "type": "integer"
+          },
+          "official": {
+            "title": "Official",
+            "type": "boolean"
           }
         },
         "required": [
           "round_number",
           "status",
           "position",
-          "points"
+          "points",
+          "official"
         ],
         "title": "RoundScoreOut",
         "type": "object"

@@ -6,8 +6,19 @@ import { RoundPage } from './RoundPage'
 
 afterEach(() => vi.restoreAllMocks())
 
-function round(canManage: boolean, result: unknown = null) {
+function round(canManage: boolean, result: unknown = null, extra: Record<string, unknown> = {}) {
   return {
+    can_protest: false,
+    status: result ? 'provisional' : null,
+    published_at: result ? '2026-10-19T02:00:00Z' : null,
+    protest_deadline: result ? '2026-10-19T03:00:00Z' : null,
+    protest_window_open: Boolean(result),
+    approved_at: null,
+    version: result ? 1 : null,
+    versions: result ? [{ number: 1, kind: 'entry', reason: '', created_at: '2026-10-19T02:00:00Z', created_by: 'santi' }] : [],
+    penalties: [],
+    protests: [],
+    ...extra,
     id: 9,
     number: 1,
     season_id: 5,
@@ -45,9 +56,9 @@ describe('RoundPage', () => {
       ...noRestarts,
       'GET /api/rounds/9': () =>
         json(200, round(false, [
-          { entry_id: 1, status: 'finished', position: 1, pole: false, fastest_lap: false, number: 93, driver_name: 'Bing', points: 25 },
-          { entry_id: 2, status: 'dnf', position: 2, pole: false, fastest_lap: false, number: 7, driver_name: 'Vice', points: 18 },
-          { entry_id: 3, status: 'dns', position: null, pole: false, fastest_lap: false, number: 3, driver_name: 'Billy', points: 0 },
+          { entry_id: 1, status: 'finished', position: 1, entered_status: 'finished', entered_position: 1, pole: false, fastest_lap: false, number: 93, driver_name: 'Bing', points: 25 },
+          { entry_id: 2, status: 'dnf', position: 2, entered_status: 'dnf', entered_position: 2, pole: false, fastest_lap: false, number: 7, driver_name: 'Vice', points: 18 },
+          { entry_id: 3, status: 'dns', position: null, entered_status: 'dns', entered_position: null, pole: false, fastest_lap: false, number: 3, driver_name: 'Billy', points: 0 },
         ])),
     })
     show(DRIVER)
@@ -77,6 +88,7 @@ describe('RoundPage', () => {
         { entry_id: 1, status: 'finished', position: 1, pole: false, fastest_lap: false },
         { entry_id: 2, status: 'dnf', position: 2, pole: false, fastest_lap: false },
       ],
+      reason: '',
     })
   })
 
@@ -98,5 +110,49 @@ describe('RoundPage', () => {
     show()
     await userEvent.selectOptions(await screen.findByLabelText('Estado Bing'), 'dsq')
     expect(screen.getByLabelText('Pos. Bing')).toBeDisabled()
+  })
+
+  it('shows the state, the deadline, and a penalty mark', async () => {
+    mockApi({
+      ...noRestarts,
+      'GET /api/rounds/9': () =>
+        json(200, round(false, [
+          { entry_id: 2, status: 'finished', position: 1, entered_status: 'finished', entered_position: 2, pole: false, fastest_lap: false, number: 2, driver_name: 'Vice', points: 25 },
+          { entry_id: 1, status: 'finished', position: 2, entered_status: 'finished', entered_position: 1, pole: false, fastest_lap: false, number: 1, driver_name: 'Bing', points: 18 },
+        ], { penalties: [{ id: 4, entry_id: 1, driver_name: 'Bing', kind: 'positions', value: 1, reason: 'Corte', source: 'steward', attempt: 1, protest_id: null, created_by: 'santi', created_at: '2026-10-19T02:30:00Z' }] })),
+    })
+    show(DRIVER)
+    expect(await screen.findByText('Provisional')).toBeInTheDocument()
+    expect(screen.getByText(/Protestas hasta/)).toBeInTheDocument()
+    const bing = screen.getAllByRole('row', { name: /Bing/ })[0]
+    expect(within(bing).getByText('Sanción')).toHaveAttribute('title', 'Cargado: 1')
+    expect(screen.getByText(/−1 posiciones/)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Aprobar como oficial' })).not.toBeInTheDocument()
+  })
+
+  it('lets an admin approve the result', async () => {
+    const calls = mockApi({
+      ...noRestarts,
+      'GET /api/rounds/9': () => json(200, round(true, [{ entry_id: 1, status: 'finished', position: 1, entered_status: 'finished', entered_position: 1, pole: false, fastest_lap: false, number: 1, driver_name: 'Bing', points: 25 }])),
+      'POST /api/rounds/9/result/approve': () => json(200, round(true, [], { status: 'official' })),
+    })
+    show()
+    await userEvent.click(await screen.findByRole('button', { name: 'Aprobar como oficial' }))
+    expect(calls.some((call) => call.key === 'POST /api/rounds/9/result/approve')).toBe(true)
+  })
+
+  it('lets a driver send a protest inside the window', async () => {
+    const calls = mockApi({
+      ...noRestarts,
+      'GET /api/rounds/9': () => json(200, round(false, [{ entry_id: 1, status: 'finished', position: 1, entered_status: 'finished', entered_position: 1, pole: false, fastest_lap: false, number: 1, driver_name: 'Bing', points: 25 }], { can_protest: true })),
+      'POST /api/rounds/9/protests': () => json(200, round(false, [], { can_protest: true })),
+    })
+    show(DRIVER)
+    const form = await screen.findByRole('form', { name: 'Presentar protesta' })
+    await userEvent.type(within(form).getByLabelText('Qué pasó'), 'Me chocó en la T1')
+    await userEvent.click(within(form).getByLabelText('Vice'))
+    await userEvent.click(within(form).getByRole('button', { name: 'Enviar protesta' }))
+    const body = calls.find((call) => call.key === 'POST /api/rounds/9/protests')!.body
+    expect(body).toEqual({ description: 'Me chocó en la T1', entry_ids: [2], lap: null })
   })
 })

@@ -53,6 +53,7 @@ class Season(models.Model):
     championship = models.ForeignKey(Championship, on_delete=models.PROTECT, related_name="seasons")
     name = models.CharField(max_length=100)
     planned_round_count = models.PositiveSmallIntegerField()
+    protest_window_minutes = models.PositiveIntegerField(default=60)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -71,7 +71,10 @@
     "driver": "Piloto",
     "car": "Auto",
     "team": "Equipo",
-    "addEntry": "Inscribir piloto"
+    "addEntry": "Inscribir piloto",
+    "protestWindow": "Plazo de protestas (minutos)",
+    "settings": "Configuración de la temporada",
+    "provisionalNote": "Las celdas en cursiva son resultados provisionales."
   },
   "leagues": {
     "title": "Ligas",
@@ -88,7 +91,8 @@
     "steamGuid": "Steam GUID (17 dígitos, opcional)",
     "account": "Cuenta",
     "noAccount": "Sin cuenta",
-    "link": "Vincular"
+    "link": "Vincular",
+    "careerPoints": "Puntos de carrera"
   },
   "catalog": {
     "title": "Pistas y autos",
@@ -127,7 +131,17 @@
     "drivers_required": "Elegí al menos un piloto responsable.",
     "drivers_not_allowed": "Solo la opción 'Uno o más pilotos' lleva pilotos.",
     "race_already_accepted": "La carrera ya tiene un resultado. No se puede registrar otro reinicio.",
-    "driver_not_found": "No se encontró el piloto."
+    "driver_not_found": "No se encontró el piloto.",
+    "reason_required": "Escribí un motivo.",
+    "no_result": "Primero cargá el resultado.",
+    "open_protests": "Hay protestas abiertas. Decidilas antes de aprobar.",
+    "result_is_official": "El resultado ya es oficial.",
+    "protest_window_closed": "El plazo de protestas terminó.",
+    "protest_already_decided": "Esa protesta ya tiene una decisión.",
+    "penalty_needs_upheld_protest": "Solo una protesta aceptada puede llevar sanción.",
+    "penalty_value_required": "Escribí una cantidad mayor que 0.",
+    "description_required": "Contá qué pasó.",
+    "outcome_required": "Elegí aceptar o rechazar."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -197,7 +211,12 @@
       "car.created": "{{actor}} creó el auto {{name}}.",
       "unknown": "{{actor}} hizo un cambio ({{action}}).",
       "restart.recorded": "{{actor}} registró un reinicio en la fecha {{number}} ({{track}}) después de la largada {{attempt}}.",
-      "restart.reviewed": "{{actor}} revisó la responsabilidad del reinicio de la largada {{attempt}} en la fecha {{number}} ({{track}})."
+      "restart.reviewed": "{{actor}} revisó la responsabilidad del reinicio de la largada {{attempt}} en la fecha {{number}} ({{track}}).",
+      "result.approved": "{{actor}} aprobó como oficial el resultado de la fecha {{number}} ({{track}}).",
+      "penalty.added": "{{actor}} sancionó a {{driver}} en la fecha {{number}} ({{track}}).",
+      "protest.submitted": "{{actor}} presentó la protesta #{{protest}} en la fecha {{number}} ({{track}}).",
+      "protest.decided": "{{actor}} decidió la protesta #{{protest}} en la fecha {{number}} ({{track}}).",
+      "season.settings_changed": "{{actor}} cambió la configuración de la temporada {{season}}."
     },
     "fields": {
       "role": "Rol",
@@ -211,7 +230,9 @@
       "account": "Cuenta",
       "responsibility": "Responsabilidad",
       "responsible_drivers": "Pilotos responsables",
-      "review_status": "Revisión"
+      "review_status": "Revisión",
+      "status": "Estado",
+      "protest_window_minutes": "Plazo de protestas (minutos)"
     },
     "none": "—",
     "pts": "{{count}} pts"
@@ -271,5 +292,67 @@
     "changeReason": "Motivo del cambio",
     "sharedBadge": "Compartida",
     "startsColumn": "Largada → siguiente"
+  },
+  "review": {
+    "status": {
+      "provisional": "Provisional",
+      "under_review": "En revisión",
+      "official": "Oficial"
+    },
+    "statusLine": "Versión {{version}}",
+    "deadline": "Protestas hasta {{date}}",
+    "deadlinePassed": "El plazo de protestas terminó el {{date}}",
+    "approvedAt": "Oficial desde {{date}}",
+    "approve": "Aprobar como oficial",
+    "approveHelp": "El resultado oficial cuenta para los puntos de carrera. Después, cada cambio necesita un motivo.",
+    "reason": "Motivo del cambio",
+    "reasonRequired": "Motivo del cambio (obligatorio en un resultado oficial)",
+    "penaltyMark": "Sanción",
+    "entered": "Cargado: {{value}}",
+    "versions": "Versiones del resultado",
+    "versionKinds": {
+      "entry": "Primera carga",
+      "correction": "Corrección",
+      "penalty": "Sanción"
+    },
+    "show": "Ver",
+    "hide": "Ocultar",
+    "current": "actual",
+    "penalties": "Sanciones",
+    "noPenalties": "Sin sanciones.",
+    "addPenalty": "Agregar sanción",
+    "penaltyKinds": {
+      "positions": "Pierde posiciones",
+      "points": "Pierde puntos",
+      "dsq": "Descalificación"
+    },
+    "value": "Cantidad",
+    "penaltyText": {
+      "positions": "−{{value}} posiciones",
+      "points": "−{{value}} puntos",
+      "dsq": "DSQ"
+    },
+    "fromProtest": "por la protesta #{{id}}",
+    "attemptN": "largada {{number}}",
+    "protests": "Protestas",
+    "noProtests": "Sin protestas.",
+    "newProtest": "Presentar protesta",
+    "description": "Qué pasó",
+    "involved": "Pilotos involucrados",
+    "lap": "Vuelta",
+    "send": "Enviar protesta",
+    "protestStatus": {
+      "open": "Abierta",
+      "upheld": "Aceptada",
+      "dismissed": "Rechazada"
+    },
+    "by": "por {{name}}",
+    "decide": "Decidir",
+    "outcome": "Decisión",
+    "decision": "Explicación de la decisión",
+    "addPenaltyToo": "Aplicar sanción",
+    "penaltyDriver": "Piloto sancionado",
+    "save": "Guardar decisión",
+    "kind": "Tipo de sanción"
   }
 }

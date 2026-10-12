@@ -31,12 +31,18 @@ class LeagueOut(Schema):
 class SeasonIn(Schema):
     name: str = Field(min_length=1, max_length=100)
     planned_round_count: int = Field(ge=1, le=50)
+    protest_window_minutes: int = Field(60, ge=0, le=10080)
+
+
+class SeasonSettingsIn(Schema):
+    protest_window_minutes: int = Field(ge=0, le=10080)
 
 
 class SeasonSummary(Schema):
     id: int
     name: str
     planned_round_count: int
+    protest_window_minutes: int
 
 
 class ChampionshipOut(Schema):
@@ -164,6 +170,7 @@ def _season_detail(user, season: Season) -> SeasonDetail:
         id=season.id,
         name=season.name,
         planned_round_count=season.planned_round_count,
+        protest_window_minutes=season.protest_window_minutes,
         championship_id=season.championship_id,
         championship_name=season.championship.name,
         can_manage=can_manage(user, season.championship),
@@ -341,3 +348,23 @@ def create_round(request, season_id: int, payload: RoundIn):
             ],
         )
     return Status(201, _round_out(round_))
+
+
+@router.patch("/seasons/{season_id}/settings", response=SeasonSummary)
+def update_season_settings(request, season_id: int, payload: SeasonSettingsIn):
+    season = _visible_season(request.user, season_id)
+    require(can_manage(request.user, season.championship))
+    old = season.protest_window_minutes
+    with transaction.atomic():
+        season.protest_window_minutes = payload.protest_window_minutes
+        season.save(update_fields=["protest_window_minutes"])
+        record(
+            request.user,
+            "season.settings_changed",
+            "season",
+            season.id,
+            championship=season.championship,
+            params={"season": season.name},
+            changes=[change("protest_window_minutes", old, season.protest_window_minutes)],
+        )
+    return season

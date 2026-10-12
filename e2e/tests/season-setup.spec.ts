@@ -83,6 +83,9 @@ test('an admin sets up a season without voting and enters a result', async ({ pa
   await page.getByRole('button', { name: 'Guardar resultado' }).click()
   await expect(page.getByRole('status')).toContainText('Resultado guardado.')
   await expect(page.getByText('Largada 2: aceptada')).toBeVisible()
+  await expect(page.getByText('Provisional', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Aprobar como oficial' }).click()
+  await expect(page.getByText('Oficial', { exact: true })).toBeVisible()
   await expect(page.getByRole('table').first().getByRole('row', { name: new RegExp(names.driver) })).toContainText('25')
 
   await page.getByRole('link', { name: '2026' }).click()

@@ -21,6 +21,7 @@ class DriverOut(Schema):
     steam_guid: str | None
     user_id: int | None
     username: str | None
+    career_points: int = 0
 
     @staticmethod
     def resolve_username(profile: DriverProfile) -> str | None:
@@ -38,7 +39,14 @@ class UserOut(Schema):
 
 @router.get("/drivers", response=list[DriverOut])
 def list_drivers(request):
-    return DriverProfile.objects.select_related("user")
+    """Career points are the official points of all seasons."""
+    from apps.results.services import career_points
+
+    profiles = list(DriverProfile.objects.select_related("user"))
+    totals = career_points([p.id for p in profiles])
+    for profile in profiles:
+        profile.career_points = totals[profile.id]
+    return profiles
 
 
 @router.post("/drivers", response={201: DriverOut})

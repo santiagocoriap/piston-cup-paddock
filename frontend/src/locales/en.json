@@ -71,7 +71,10 @@
     "driver": "Driver",
     "car": "Car",
     "team": "Team",
-    "addEntry": "Add entry"
+    "addEntry": "Add entry",
+    "protestWindow": "Protest window (minutes)",
+    "settings": "Season settings",
+    "provisionalNote": "Cells in italics are provisional results."
   },
   "leagues": {
     "title": "Leagues",
@@ -88,7 +91,8 @@
     "steamGuid": "Steam GUID (17 digits, optional)",
     "account": "Account",
     "noAccount": "No account",
-    "link": "Link"
+    "link": "Link",
+    "careerPoints": "Career points"
   },
   "catalog": {
     "title": "Tracks and cars",
@@ -127,7 +131,17 @@
     "drivers_required": "Select at least one responsible driver.",
     "drivers_not_allowed": "Only the option 'One or more drivers' has drivers.",
     "race_already_accepted": "The race already has a result. You cannot record another restart.",
-    "driver_not_found": "The driver was not found."
+    "driver_not_found": "The driver was not found.",
+    "reason_required": "Type a reason.",
+    "no_result": "Enter the result first.",
+    "open_protests": "Some protests are open. Decide them before the approval.",
+    "result_is_official": "The result is already official.",
+    "protest_window_closed": "The protest window is closed.",
+    "protest_already_decided": "This protest already has a decision.",
+    "penalty_needs_upheld_protest": "Only an upheld protest can have a penalty.",
+    "penalty_value_required": "Type an amount of 1 or more.",
+    "description_required": "Tell what happened.",
+    "outcome_required": "Select upheld or dismissed."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -197,7 +211,12 @@
       "car.created": "{{actor}} made the car {{name}}.",
       "unknown": "{{actor}} made a change ({{action}}).",
       "restart.recorded": "{{actor}} recorded a restart in round {{number}} ({{track}}) after start {{attempt}}.",
-      "restart.reviewed": "{{actor}} reviewed the responsibility for the restart of start {{attempt}} in round {{number}} ({{track}})."
+      "restart.reviewed": "{{actor}} reviewed the responsibility for the restart of start {{attempt}} in round {{number}} ({{track}}).",
+      "result.approved": "{{actor}} approved the result of round {{number}} ({{track}}) as official.",
+      "penalty.added": "{{actor}} gave a penalty to {{driver}} in round {{number}} ({{track}}).",
+      "protest.submitted": "{{actor}} sent protest #{{protest}} in round {{number}} ({{track}}).",
+      "protest.decided": "{{actor}} decided protest #{{protest}} in round {{number}} ({{track}}).",
+      "season.settings_changed": "{{actor}} changed the settings of the season {{season}}."
     },
     "fields": {
       "role": "Role",
@@ -211,7 +230,9 @@
       "account": "Account",
       "responsibility": "Responsibility",
       "responsible_drivers": "Responsible drivers",
-      "review_status": "Review"
+      "review_status": "Review",
+      "status": "Status",
+      "protest_window_minutes": "Protest window (minutes)"
     },
     "none": "—",
     "pts": "{{count}} pts"
@@ -271,5 +292,67 @@
     "changeReason": "Reason for the change",
     "sharedBadge": "Shared",
     "startsColumn": "Start → next"
+  },
+  "review": {
+    "status": {
+      "provisional": "Provisional",
+      "under_review": "Under review",
+      "official": "Official"
+    },
+    "statusLine": "Version {{version}}",
+    "deadline": "Protests until {{date}}",
+    "deadlinePassed": "The protest window closed on {{date}}",
+    "approvedAt": "Official since {{date}}",
+    "approve": "Approve as official",
+    "approveHelp": "The official result counts for the career points. After the approval, each change needs a reason.",
+    "reason": "Reason for the change",
+    "reasonRequired": "Reason for the change (required for an official result)",
+    "penaltyMark": "Penalty",
+    "entered": "Entered: {{value}}",
+    "versions": "Result versions",
+    "versionKinds": {
+      "entry": "First entry",
+      "correction": "Correction",
+      "penalty": "Penalty"
+    },
+    "show": "Show",
+    "hide": "Hide",
+    "current": "current",
+    "penalties": "Penalties",
+    "noPenalties": "No penalties.",
+    "addPenalty": "Add a penalty",
+    "penaltyKinds": {
+      "positions": "Loses positions",
+      "points": "Loses points",
+      "dsq": "Disqualification"
+    },
+    "value": "Amount",
+    "penaltyText": {
+      "positions": "−{{value}} positions",
+      "points": "−{{value}} points",
+      "dsq": "DSQ"
+    },
+    "fromProtest": "from protest #{{id}}",
+    "attemptN": "start {{number}}",
+    "protests": "Protests",
+    "noProtests": "No protests.",
+    "newProtest": "Send a protest",
+    "description": "What happened",
+    "involved": "Drivers involved",
+    "lap": "Lap",
+    "send": "Send the protest",
+    "protestStatus": {
+      "open": "Open",
+      "upheld": "Upheld",
+      "dismissed": "Dismissed"
+    },
+    "by": "by {{name}}",
+    "decide": "Decide",
+    "outcome": "Decision",
+    "decision": "Explanation of the decision",
+    "addPenaltyToo": "Add a penalty",
+    "penaltyDriver": "Driver with the penalty",
+    "save": "Save the decision",
+    "kind": "Penalty type"
   }
 }

@@ -61,7 +61,10 @@ export function SeasonPage() {
                     <td>{row.driver_name}</td>
                     <td className="muted">{row.car_name}</td>
                     {row.rounds.map((score) => (
-                      <td key={score.round_number} className="muted">
+                      <td
+                        key={score.round_number}
+                        className={`muted ${score.status !== null && !score.official ? 'provisional' : ''}`}
+                      >
                         {score.status === null
                           ? '·'
                           : (score.position ?? t(`round.short.${score.status}`))}
@@ -75,6 +78,10 @@ export function SeasonPage() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {standings.data?.some((row) => row.rounds.some((r) => r.status !== null && !r.official)) && (
+        <p className="muted">{t('season.provisionalNote')}</p>
       )}
 
       <h2>{t('season.calendar')}</h2>
@@ -140,6 +147,34 @@ export function SeasonPage() {
       )}
 
       {adminView && <SeasonForms seasonId={seasonId} onChange={season.reload} />}
+      {adminView && (
+        <div className="forms">
+          <ActionForm
+            title={t('season.settings')}
+            submitLabel={t('common.save')}
+            onSubmit={async (form) => {
+              const { error } = await api.PATCH('/api/seasons/{season_id}/settings', {
+                params: { path },
+                body: { protest_window_minutes: Number(form.get('protest_window_minutes')) },
+              })
+              if (!error) season.reload()
+              return error
+            }}
+          >
+            <label>
+              {t('season.protestWindow')}
+              <input
+                name="protest_window_minutes"
+                type="number"
+                min={0}
+                max={10080}
+                required
+                defaultValue={data.protest_window_minutes}
+              />
+            </label>
+          </ActionForm>
+        </div>
+      )}
     </section>
   )
 }

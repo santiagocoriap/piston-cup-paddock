@@ -8,7 +8,9 @@ import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
+import { penaltyChanged } from '../lib/results'
 import { RestartsSection } from './RestartsSection'
+import { ApproveButton, Penalties, Protests, ResultStatus, Versions } from './ResultReview'
 
 type RoundDetail = components['schemas']['RoundDetail']
 type Status = components['schemas']['LineIn']['status']
@@ -30,6 +32,10 @@ export function RoundPage() {
   const adminView = useAdminView(data?.can_manage ?? false)
   if (!data) return <Loading failed={round.failed} />
   const rules = data.rules
+  const changed = () => {
+    round.reload()
+    setSaves((n) => n + 1)
+  }
   return (
     <section>
       <p className="muted">
@@ -41,6 +47,8 @@ export function RoundPage() {
       <p className="muted">{formatDateTime(data.scheduled_at, i18n.language)}</p>
 
       <h2>{t('round.result')}</h2>
+      <ResultStatus round={data} />
+      {adminView && <ApproveButton round={data} onChange={changed} />}
       {data.result === null || data.result === undefined ? (
         <p>{t('round.noResult')}</p>
       ) : (
@@ -62,6 +70,16 @@ export function RoundPage() {
                   <td>
                     {line.driver_name}
                     {line.status === 'dnf' && <span className="badge">DNF</span>}
+                    {penaltyChanged(line) && (
+                      <span
+                        className="badge penalty"
+                        title={t('review.entered', {
+                          value: line.entered_position ?? t(`round.short.${line.entered_status}`),
+                        })}
+                      >
+                        {t('review.penaltyMark')}
+                      </span>
+                    )}
                     {line.pole && rules.pole_bonus > 0 && <span className="badge">{t('round.pole')}</span>}
                     {line.fastest_lap && rules.fastest_lap_bonus > 0 && (
                       <span className="badge">{t('round.fastestLap')}</span>
@@ -80,15 +98,11 @@ export function RoundPage() {
           t('round.bonuses', { pole: rules.pole_bonus, fastest: rules.fastest_lap_bonus })}
       </p>
 
-      {adminView && (
-        <ResultForm
-          round={data}
-          onSaved={() => {
-            round.reload()
-            setSaves((n) => n + 1)
-          }}
-        />
-      )}
+      {adminView && <ResultForm round={data} onSaved={changed} />}
+
+      <Penalties round={data} adminView={adminView} onChange={changed} />
+      <Protests round={data} adminView={adminView} onChange={changed} />
+      <Versions round={data} />
 
       <RestartsSection roundId={data.id} entries={data.entries} adminView={adminView} refresh={saves} />
     </section>
@@ -101,8 +115,8 @@ function initialRows(round: RoundDetail): Record<number, Row> {
     const line = round.result?.find((l) => l.entry_id === entry.entry_id)
     rows[entry.entry_id] = line
       ? {
-          status: line.status,
-          position: line.position ? String(line.position) : '',
+          status: line.entered_status,
+          position: line.entered_position ? String(line.entered_position) : '',
           pole: line.pole ?? false,
           fastest_lap: line.fastest_lap ?? false,
         }
@@ -115,6 +129,8 @@ function ResultForm({ round, onSaved }: { round: RoundDetail; onSaved: () => voi
   const { t } = useTranslation()
   const [rows, setRows] = useState(() => initialRows(round))
   const [message, setMessage] = useState<{ kind: 'error' | 'saved'; text: string } | null>(null)
+  const [reason, setReason] = useState('')
+  const official = round.status === 'official'
   const showPole = round.rules.pole_bonus > 0
   const showFastest = round.rules.fastest_lap_bonus > 0
 
@@ -135,10 +151,11 @@ function ResultForm({ round, onSaved }: { round: RoundDetail; onSaved: () => voi
       }))
     const { error } = await api.PUT('/api/rounds/{round_id}/result', {
       params: { path: { round_id: round.id } },
-      body: { lines },
+      body: { lines, reason },
     })
     if (error) setMessage({ kind: 'error', text: errorMessage(t, error) })
     else {
+      setReason('')
       setMessage({ kind: 'saved', text: t('round.saved') })
       onSaved()
     }
@@ -218,6 +235,17 @@ function ResultForm({ round, onSaved }: { round: RoundDetail; onSaved: () => voi
           </tbody>
         </table>
       </div>
+      {round.status && (
+        <label>
+          {official ? t('review.reasonRequired') : t('review.reason')}
+          <input
+            value={reason}
+            required={official}
+            maxLength={500}
+            onChange={(event) => setReason(event.target.value)}
+          />
+        </label>
+      )}
       {message && (
         <p role={message.kind === 'error' ? 'alert' : 'status'} className={message.kind === 'error' ? 'error' : 'success'}>
           {message.text}

@@ -152,7 +152,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Drivers */
+        /**
+         * List Drivers
+         * @description Career points are the official points of all seasons.
+         */
         get: operations["apps_identity_drivers_api_list_drivers"];
         put?: never;
         /** Create Driver */
@@ -358,6 +361,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/seasons/{season_id}/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Season Settings */
+        patch: operations["apps_competition_api_update_season_settings"];
+        trace?: never;
+    };
     "/api/rounds/{round_id}": {
         parameters: {
             query?: never;
@@ -367,6 +387,26 @@ export interface paths {
         };
         /** Get Round */
         get: operations["apps_results_api_get_round"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/result/versions/{number}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Version
+         * @description The lines of an old version. Old versions stay for the history.
+         */
+        get: operations["apps_results_api_get_version"];
         put?: never;
         post?: never;
         delete?: never;
@@ -385,10 +425,78 @@ export interface paths {
         get?: never;
         /**
          * Put Result
-         * @description Replace the race classification of the round and calculate the points.
+         * @description Enter or correct the race classification. Each save makes a new version.
          */
         put: operations["apps_results_api_put_result"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/result/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve */
+        post: operations["apps_results_api_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/penalties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Penalty */
+        post: operations["apps_results_api_create_penalty"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/protests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Protest */
+        post: operations["apps_results_api_create_protest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/protests/{protest_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide */
+        post: operations["apps_results_api_decide"];
         delete?: never;
         options?: never;
         head?: never;
@@ -568,6 +676,11 @@ export interface components {
             user_id: number | null;
             /** Username */
             username: string | null;
+            /**
+             * Career Points
+             * @default 0
+             */
+            career_points?: number;
         };
         /** DriverIn */
         DriverIn: {
@@ -636,6 +749,8 @@ export interface components {
             name: string;
             /** Planned Round Count */
             planned_round_count: number;
+            /** Protest Window Minutes */
+            protest_window_minutes: number;
         };
         /** MemberOut */
         MemberOut: {
@@ -663,6 +778,11 @@ export interface components {
             name: string;
             /** Planned Round Count */
             planned_round_count: number;
+            /**
+             * Protest Window Minutes
+             * @default 60
+             */
+            protest_window_minutes?: number;
         };
         /** EntryOut */
         EntryOut: {
@@ -709,6 +829,8 @@ export interface components {
             name: string;
             /** Planned Round Count */
             planned_round_count: number;
+            /** Protest Window Minutes */
+            protest_window_minutes: number;
             /** Championship Id */
             championship_id: number;
             /** Championship Name */
@@ -746,6 +868,11 @@ export interface components {
             /** Number */
             number?: number | null;
         };
+        /** SeasonSettingsIn */
+        SeasonSettingsIn: {
+            /** Protest Window Minutes */
+            protest_window_minutes: number;
+        };
         /** EntryOption */
         EntryOption: {
             /** Entry Id */
@@ -782,6 +909,63 @@ export interface components {
             driver_name: string;
             /** Points */
             points: number;
+            entered_status: components["schemas"]["Status"];
+            /** Entered Position */
+            entered_position: number | null;
+        };
+        /** PenaltyOut */
+        PenaltyOut: {
+            /** Id */
+            id: number;
+            /** Entry Id */
+            entry_id: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Kind */
+            kind: string;
+            /** Value */
+            value: number;
+            /** Reason */
+            reason: string;
+            /** Source */
+            source: string;
+            /** Attempt */
+            attempt: number | null;
+            /** Protest Id */
+            protest_id: number | null;
+            /** Created By */
+            created_by: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** ProtestOut */
+        ProtestOut: {
+            /** Id */
+            id: number;
+            /** Attempt */
+            attempt: number | null;
+            /** Submitted By */
+            submitted_by: string | null;
+            /** Involved */
+            involved: string[];
+            /** Lap */
+            lap: number | null;
+            /** Description */
+            description: string;
+            /** Status */
+            status: string;
+            /** Decision */
+            decision: string;
+            /** Decided By */
+            decided_by: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** RoundDetail */
         RoundDetail: {
@@ -806,11 +990,31 @@ export interface components {
             scheduled_at: string;
             /** Can Manage */
             can_manage: boolean;
+            /** Can Protest */
+            can_protest: boolean;
             rules: components["schemas"]["RulesOut"];
             /** Entries */
             entries: components["schemas"]["EntryOption"][];
+            /** Status */
+            status: string | null;
+            /** Published At */
+            published_at: string | null;
+            /** Protest Deadline */
+            protest_deadline: string | null;
+            /** Protest Window Open */
+            protest_window_open: boolean;
+            /** Approved At */
+            approved_at: string | null;
+            /** Version */
+            version: number | null;
             /** Result */
             result: components["schemas"]["LineOut"][] | null;
+            /** Versions */
+            versions: components["schemas"]["VersionOut"][];
+            /** Penalties */
+            penalties: components["schemas"]["PenaltyOut"][];
+            /** Protests */
+            protests: components["schemas"]["ProtestOut"][];
         };
         /** RulesOut */
         RulesOut: {
@@ -828,6 +1032,22 @@ export interface components {
          * @enum {string}
          */
         Status: "finished" | "dnf" | "dns" | "dsq";
+        /** VersionOut */
+        VersionOut: {
+            /** Number */
+            number: number;
+            /** Kind */
+            kind: string;
+            /** Reason */
+            reason: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By */
+            created_by: string | null;
+        };
         /** LineIn */
         LineIn: {
             /** Entry Id */
@@ -856,6 +1076,59 @@ export interface components {
              */
             reason?: string;
         };
+        /**
+         * Kind
+         * @enum {string}
+         */
+        Kind: "positions" | "points" | "dsq";
+        /** PenaltyIn */
+        PenaltyIn: {
+            /** Entry Id */
+            entry_id: number;
+            kind: components["schemas"]["Kind"];
+            /**
+             * Value
+             * @default 0
+             */
+            value?: number;
+            /** Reason */
+            reason: string;
+        };
+        /** ProtestIn */
+        ProtestIn: {
+            /** Description */
+            description: string;
+            /**
+             * Entry Ids
+             * @default []
+             */
+            entry_ids?: number[];
+            /** Lap */
+            lap?: number | null;
+        };
+        /** DecisionIn */
+        DecisionIn: {
+            outcome: components["schemas"]["State"];
+            /** Decision */
+            decision: string;
+            penalty?: components["schemas"]["PenaltyChoice"] | null;
+        };
+        /** PenaltyChoice */
+        PenaltyChoice: {
+            /** Entry Id */
+            entry_id: number;
+            kind: components["schemas"]["Kind"];
+            /**
+             * Value
+             * @default 0
+             */
+            value?: number;
+        };
+        /**
+         * State
+         * @enum {string}
+         */
+        State: "open" | "upheld" | "dismissed";
         /** RoundScoreOut */
         RoundScoreOut: {
             /** Round Number */
@@ -866,6 +1139,8 @@ export interface components {
             position: number | null;
             /** Points */
             points: number;
+            /** Official */
+            official: boolean;
         };
         /** StandingOut */
         StandingOut: {
@@ -1671,6 +1946,32 @@ export interface operations {
             };
         };
     };
+    apps_competition_api_update_season_settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SeasonSettingsIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonSummary"];
+                };
+            };
+        };
+    };
     apps_results_api_get_round: {
         parameters: {
             query?: never;
@@ -1693,6 +1994,29 @@ export interface operations {
             };
         };
     };
+    apps_results_api_get_version: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+                number: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LineOut"][];
+                };
+            };
+        };
+    };
     apps_results_api_put_result: {
         parameters: {
             query?: never;
@@ -1705,6 +2029,106 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["ResultIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundDetail"];
+                };
+            };
+        };
+    };
+    apps_results_api_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundDetail"];
+                };
+            };
+        };
+    };
+    apps_results_api_create_penalty: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PenaltyIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundDetail"];
+                };
+            };
+        };
+    };
+    apps_results_api_create_protest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProtestIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundDetail"];
+                };
+            };
+        };
+    };
+    apps_results_api_decide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                protest_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionIn"];
             };
         };
         responses: {
