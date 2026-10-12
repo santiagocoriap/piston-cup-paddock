@@ -81,3 +81,18 @@ describe('App', () => {
     expect(screen.queryByRole('button', { name: 'Modo admin' })).not.toBeInTheDocument()
   })
 })
+
+describe('login limit', () => {
+  it('shows the wait message after too many wrong passwords', async () => {
+    mockApi({
+      'GET /api/auth/me': () => json(401, { detail: 'Unauthorized' }),
+      'GET /api/auth/csrf': () => new Response(null, { status: 204 }),
+      'POST /api/auth/login': () => json(429, { detail: 'too_many_attempts' }),
+    })
+    render(<App />)
+    await userEvent.type(await screen.findByLabelText('Usuario'), 'santi')
+    await userEvent.type(screen.getByLabelText('Contraseña'), 'wrong')
+    await userEvent.click(screen.getByRole('button', { name: 'Entrar' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('Esperá 15 minutos')
+  })
+})

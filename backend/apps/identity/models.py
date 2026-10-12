@@ -34,3 +34,14 @@ class DriverProfile(models.Model):
 
     def __str__(self):
         return self.display_name
+
+
+class LoginFailure(models.Model):
+    """One wrong password. The login limit counts these rows. The password is never stored."""
+
+    username = models.CharField(max_length=150, db_index=True)
+    ip = models.CharField(max_length=45, blank=True, db_index=True)
+    failed_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    def __str__(self):
+        return f"{self.username} from {self.ip} at {self.failed_at:%Y-%m-%d %H:%M}"

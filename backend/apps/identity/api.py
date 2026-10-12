@@ -9,6 +9,7 @@ from apps.common.timezones import is_timezone
 from apps.competition.permissions import manages_any_championship
 
 from .models import User
+from .throttle import clear_failures, client_ip, is_blocked, record_failure
 
 router = Router(tags=["auth"])
 
@@ -49,13 +50,18 @@ def csrf(request: HttpRequest):
     return Status(204, None)
 
 
-@router.post("/login", response={200: Me, 401: Error, 403: Error}, auth=None)
+@router.post("/login", response={200: Me, 401: Error, 403: Error, 429: Error}, auth=None)
 def login_view(request: HttpRequest, credentials: Credentials):
     if check_csrf(request) is not None:
         return Status(403, Error(detail="csrf"))
+    ip = client_ip(request)
+    if is_blocked(credentials.username, ip):
+        return Status(429, Error(detail="too_many_attempts"))
     user = authenticate(request, username=credentials.username, password=credentials.password)
     if user is None:
+        record_failure(credentials.username, ip)
         return Status(401, Error(detail="invalid_credentials"))
+    clear_failures(credentials.username)
     login(request, user)
     return Status(200, _me(user))
 

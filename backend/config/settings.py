@@ -134,5 +134,8 @@ SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SAMESITE = "Lax"
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+# The number of proxies in front of the app that add to X-Forwarded-For. Coolify: 1.
+# Keep 0 without a proxy, or a client can fake the address that the login limit uses.
+TRUSTED_PROXY_COUNT = int(env("TRUSTED_PROXY_COUNT", "0"))
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

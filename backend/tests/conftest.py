@@ -24,6 +24,12 @@ class Api:
         return self.client.put(f"/api{path}", data, content_type="application/json")
 
 
+@pytest.fixture(autouse=True)
+def fast_passwords(settings):
+    """A fast hash for tests only. Production keeps the strong default hash."""
+    settings.PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+
+
 @pytest.fixture
 def api():
     return Api

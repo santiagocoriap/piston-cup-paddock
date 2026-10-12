@@ -10,7 +10,8 @@
     "password": "Contraseña",
     "submit": "Entrar",
     "invalid": "Usuario o contraseña incorrectos.",
-    "error": "No se pudo iniciar sesión. Intentá de nuevo."
+    "error": "No se pudo iniciar sesión. Intentá de nuevo.",
+    "tooMany": "Demasiados intentos con contraseña incorrecta. Esperá 15 minutos y probá de nuevo."
   },
   "nav": {
     "championships": "Campeonatos",
@@ -183,7 +184,8 @@
     "selection_limit_too_small": "El límite tiene que ser 1 o más.",
     "bad_power": "El valor del voto no es válido.",
     "bad_prior_season": "La temporada anterior tiene que ser de este campeonato.",
-    "bad_timezone": "La zona horaria no es válida."
+    "bad_timezone": "La zona horaria no es válida.",
+    "too_many_attempts": "Demasiados intentos con contraseña incorrecta. Esperá 15 minutos y probá de nuevo."
   },
   "standings": {
     "title": "Campeonato de pilotos",

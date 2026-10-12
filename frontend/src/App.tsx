@@ -105,6 +105,7 @@ function LoginForm({ onSignedIn }: { onSignedIn: (me: Me) => void }) {
       body: { username: String(form.get('username')), password: String(form.get('password')) },
     })
     if (data && 'username' in data) onSignedIn(data)
+    else if (response.status === 429) setError(t('login.tooMany'))
     else setError(response.status === 401 ? t('login.invalid') : t('login.error'))
   }
 

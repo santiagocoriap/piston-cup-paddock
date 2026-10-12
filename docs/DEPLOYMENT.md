@@ -16,7 +16,8 @@ The `media-data` volume keeps the uploaded result files.
 2. Set the environment variables from `.env.example` in Coolify. Use new random values for `DJANGO_SECRET_KEY` and `POSTGRES_PASSWORD`.
 3. Set `DJANGO_ALLOWED_HOSTS` to the domain, for example `paddock.example.com`.
 4. Set `DJANGO_CSRF_TRUSTED_ORIGINS` to the full URL, for example `https://paddock.example.com`.
-5. Give the `web` service the domain on port 8000. Coolify then gives HTTPS through its proxy.
+5. Set `TRUSTED_PROXY_COUNT` to `1`. The login limit then uses the real client address behind the Coolify proxy.
+6. Give the `web` service the domain on port 8000. Coolify then gives HTTPS through its proxy.
 
 After the first deploy, make the first admin account from the Coolify terminal of the `web` service:
 
@@ -34,6 +35,11 @@ python manage.py create_first_admin --username <name>
 | `DJANGO_CSRF_TRUSTED_ORIGINS` | Yes | Full URLs of the app, separated by commas |
 | `POSTGRES_DB`, `POSTGRES_USER` | No | Default `paddock` |
 | `POSTGRES_PASSWORD` | Yes | A long random value |
+| `TRUSTED_PROXY_COUNT` | Yes behind a proxy | `1` behind Coolify. `0` with no proxy. A wrong value lets a client fake the address for the login limit |
+
+## Login limit
+
+After 5 wrong passwords for one username in 15 minutes, the login refuses that username for 15 minutes. After 20 wrong passwords from one address in 15 minutes, the login refuses that address for 15 minutes. A correct login clears the count of the username.
 
 With `DJANGO_DEBUG=false`, the session and CSRF cookies need HTTPS. Browsers accept them on `http://localhost` only.
 
