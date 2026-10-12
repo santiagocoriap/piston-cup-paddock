@@ -22,6 +22,8 @@ WORKDIR /app/backend
 COPY backend/pyproject.toml backend/uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 COPY backend/ ./
+# Sanitized race data for the load_sample_night command.
+COPY samples/ /app/samples/
 COPY --from=frontend /app/frontend/dist /app/frontend-dist
 RUN DJANGO_SECRET_KEY=build-only POSTGRES_PASSWORD=build-only python manage.py collectstatic --noinput
 RUN useradd --create-home paddock && mkdir -p /app/media /app/backend/backups && chown -R paddock /app
