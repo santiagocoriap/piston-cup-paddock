@@ -10,6 +10,7 @@ import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { penaltyChanged } from '../lib/results'
 import { ImportSection } from './ImportSection'
+import { PenaltyLogsSection } from './PenaltyLogsSection'
 import { Briefing } from './Briefing'
 import { RestartsSection } from './RestartsSection'
 import { ApproveButton, Penalties, Protests, ResultStatus, Versions } from './ResultReview'
@@ -114,6 +115,7 @@ export function RoundPage() {
           }}
         />
       )}
+      {adminView && <PenaltyLogsSection roundId={data.id} onApplied={changed} />}
       {adminView && <ResultForm key={imports} round={data} onSaved={changed} />}
 
       <Penalties round={data} adminView={adminView} onChange={changed} />

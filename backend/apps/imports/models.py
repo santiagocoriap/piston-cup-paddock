@@ -69,3 +69,36 @@ class ImportedLap(models.Model):
 
     def __str__(self):
         return f"{self.guid} lap {self.lap_number}"
+
+
+def penalty_log_path(instance, filename):
+    return f"realpenalty/round-{instance.round_id}/{instance.sha256[:16]}-{filename}"
+
+
+class PenaltyLogFile(models.Model):
+    """One uploaded Real Penalty log. Real Penalty writes one log for each session start."""
+
+    round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name="penalty_logs")
+    file = models.FileField(upload_to=penalty_log_path)
+    filename = models.CharField(max_length=255)
+    sha256 = models.CharField(max_length=64)
+    session_type = models.CharField(max_length=12)
+    started_at = models.DateTimeField()
+    ended_at = models.DateTimeField()
+    status = models.CharField(
+        max_length=10, choices=ResultImport.State.choices, default=ResultImport.State.PREVIEW
+    )
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    applied_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["started_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["round", "sha256"], name="unique_log_per_round")
+        ]
+
+    def __str__(self):
+        return self.filename

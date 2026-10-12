@@ -692,6 +692,44 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/penalty-logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Penalty Logs */
+        get: operations["apps_imports_api_list_penalty_logs"];
+        put?: never;
+        /**
+         * Upload Penalty Logs
+         * @description Upload one or more Real Penalty logs. A file that the round already has adds nothing.
+         */
+        post: operations["apps_imports_api_upload_penalty_logs"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/penalty-logs/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply Penalty Logs */
+        post: operations["apps_imports_api_apply_penalty_logs"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/seasons/{season_id}/handicaps": {
         parameters: {
             query?: never;
@@ -1698,7 +1736,7 @@ export interface components {
          * Kind
          * @enum {string}
          */
-        Kind: "positions" | "points" | "dsq";
+        Kind: "positions" | "points" | "dsq" | "time" | "served";
         /** PenaltyIn */
         PenaltyIn: {
             /** Entry Id */
@@ -2059,6 +2097,106 @@ export interface components {
              * @default []
              */
             ignored_guids?: string[];
+        };
+        /** PenaltyLogOut */
+        PenaltyLogOut: {
+            /** Id */
+            id: number;
+            /** Filename */
+            filename: string;
+            /** Session Type */
+            session_type: string;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /**
+             * Ended At
+             * Format: date-time
+             */
+            ended_at: string;
+            /** Status */
+            status: string;
+        };
+        /** PenaltyLogsOut */
+        PenaltyLogsOut: {
+            /** Files */
+            files: components["schemas"]["PenaltyLogOut"][];
+            /**
+             * New Files
+             * @default 0
+             */
+            new_files?: number;
+            /** Logs */
+            logs: number;
+            /** Final Log */
+            final_log: string | null;
+            /** Starts */
+            starts: components["schemas"]["PlannedStartOut"][];
+            /** Existing Restarts */
+            existing_restarts: number;
+            /** Penalties */
+            penalties: components["schemas"]["PlannedPenaltyOut"][];
+            /** Ignored Penalties */
+            ignored_penalties: number;
+            /** Invalid Laps */
+            invalid_laps: components["schemas"]["PlannedLapOut"][];
+            /** Warnings */
+            warnings: string[];
+        };
+        /** PlannedLapOut */
+        PlannedLapOut: {
+            /** Guid */
+            guid: string;
+            /** Name */
+            name: string;
+            /** Lap Time Ms */
+            lap_time_ms: number;
+            /** Lap Id */
+            lap_id: number | null;
+        };
+        /** PlannedPenaltyOut */
+        PlannedPenaltyOut: {
+            /** Key */
+            key: string;
+            /** Kind */
+            kind: string;
+            /** Guid */
+            guid: string;
+            /** Name */
+            name: string;
+            /** Entry Id */
+            entry_id: number | null;
+            /** Driver Name */
+            driver_name: string | null;
+            /** Penalty */
+            penalty: string;
+            /** Cause */
+            cause: string;
+            /** Lap */
+            lap: number | null;
+            /** Seconds */
+            seconds: number;
+            /** Already */
+            already: boolean;
+        };
+        /** PlannedStartOut */
+        PlannedStartOut: {
+            /** Filename */
+            filename: string;
+            /** Seconds */
+            seconds: number;
+            /** New */
+            new: boolean;
+        };
+        /** ApplyLogsIn */
+        ApplyLogsIn: {
+            /**
+             * Penalty Keys
+             * @default []
+             */
+            penalty_keys?: string[];
         };
         /** EntryHandicapsOut */
         EntryHandicapsOut: {
@@ -3770,6 +3908,83 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ImportOut"];
+                };
+            };
+        };
+    };
+    apps_imports_api_list_penalty_logs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PenaltyLogsOut"];
+                };
+            };
+        };
+    };
+    apps_imports_api_upload_penalty_logs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Files */
+                    files: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PenaltyLogsOut"];
+                };
+            };
+        };
+    };
+    apps_imports_api_apply_penalty_logs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyLogsIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PenaltyLogsOut"];
                 };
             };
         };

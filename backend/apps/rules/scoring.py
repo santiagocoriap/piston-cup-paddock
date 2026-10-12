@@ -5,7 +5,7 @@ The rules come from docs/LEAGUE_RULES.md.
 
 from collections import Counter
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from enum import StrEnum
 
 LEAGUE_POINTS: tuple[int, ...] = (25, 18, 15, 12, 10, 8, 6, 4, 2, 1)
@@ -41,6 +41,8 @@ class Line:
     position: int | None
     pole: bool = False
     fastest_lap: bool = False
+    laps: int | None = None  # From a result file. Time penalties need laps and total time.
+    total_ms: int | None = None
 
 
 class ResultError(ValueError):
@@ -134,6 +136,8 @@ class PenaltyKind(StrEnum):
     POSITIONS = "positions"  # Move the driver down by value places.
     POINTS = "points"  # Take value points from the race points.
     DSQ = "dsq"  # Disqualify the driver.
+    TIME = "time"  # Add value seconds to the total time. Needs laps and times for all drivers.
+    SERVED = "served"  # Served in the race, for example a drive-through. No change after the race.
 
 
 @dataclass(frozen=True)
@@ -153,6 +157,7 @@ def apply_penalties(lines: Sequence[Line], penalties: Sequence[PenaltyRule]) -> 
         (line for line in lines if line.status in CLASSIFIED), key=lambda line: line.position
     )
     others = [line for line in lines if line.status not in CLASSIFIED]
+    added_ms: dict[int, int] = {}
     for penalty in penalties:
         index = next(
             (i for i, line in enumerate(classified) if line.entry_id == penalty.entry_id), None
@@ -161,15 +166,28 @@ def apply_penalties(lines: Sequence[Line], penalties: Sequence[PenaltyRule]) -> 
             continue
         if penalty.kind == PenaltyKind.DSQ:
             line = classified.pop(index)
-            others.append(Line(line.entry_id, Status.DSQ, None, line.pole, line.fastest_lap))
+            others.append(replace(line, status=Status.DSQ, position=None))
         elif penalty.kind == PenaltyKind.POSITIONS and penalty.value > 0:
             line = classified.pop(index)
             classified.insert(min(index + penalty.value, len(classified)), line)
+        elif penalty.kind == PenaltyKind.TIME and has_times(classified):
+            added_ms[penalty.entry_id] = added_ms.get(penalty.entry_id, 0) + penalty.value * 1000
+            # More laps first, then the shorter total time with all time penalties so far.
+            classified.sort(
+                key=lambda line: (-line.laps, line.total_ms + added_ms.get(line.entry_id, 0))
+            )
     renumbered = [
-        Line(line.entry_id, line.status, position, line.pole, line.fastest_lap)
-        for position, line in enumerate(classified, start=1)
+        replace(line, position=position) for position, line in enumerate(classified, start=1)
     ]
     return renumbered + others
+
+
+def has_times(lines: Sequence[Line]) -> bool:
+    """True when every classified line has laps and a total time, so time penalties can work."""
+    classified = [line for line in lines if line.status in CLASSIFIED]
+    return bool(classified) and all(
+        line.laps is not None and line.total_ms is not None for line in classified
+    )
 
 
 def penalized_points(

@@ -220,7 +220,15 @@ def apply(
                 status = Status(statuses.get(driver.entry_id, Status.FINISHED))
                 if status not in (Status.FINISHED, Status.DNF):
                     raise ResultError("import_status_not_allowed")
-                lines.append(Line(driver.entry_id, status, position))
+                lines.append(
+                    Line(
+                        driver.entry_id,
+                        status,
+                        position,
+                        laps=driver.laps,
+                        total_ms=driver.total_time_ms,
+                    )
+                )
             save_result(round_, lines, user, reason=f"Import: {result_import.filename}")
 
         result_import.session = session

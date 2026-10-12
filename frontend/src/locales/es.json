@@ -193,7 +193,11 @@
     "link_not_valid": "Este link no sirve: ya se usó o venció.",
     "passwords_differ": "Las dos contraseñas no coinciden.",
     "weak_password": "La contraseña es muy débil.",
-    "wrong_current_password": "La contraseña actual no es correcta."
+    "wrong_current_password": "La contraseña actual no es correcta.",
+    "not_a_penalty_log": "Este archivo no es un log de Real Penalty.",
+    "result_required": "Primero cargá o importá el resultado de la carrera.",
+    "not_served_needs_decision": "Una sanción sin cumplir necesita la decisión de un admin.",
+    "time_penalty_needs_times": "Una sanción de tiempo necesita los tiempos del archivo de AC."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -288,7 +292,10 @@
       "account.created": "{{actor}} creó la cuenta {{username}}.",
       "account.link_created": "{{actor}} creó un link de acceso para {{username}}.",
       "account.password_set": "{{username}} eligió su contraseña.",
-      "account.password_changed": "{{username}} cambió su contraseña."
+      "account.password_changed": "{{username}} cambió su contraseña.",
+      "penalty_logs.applied": "{{actor}} aplicó los logs de Real Penalty en la fecha {{number}} ({{track}}): {{restarts}} reinicios, {{penalties}} sanciones.",
+      "restart.imported": "{{actor}} importó {{count}} reinicios en la fecha {{number}} ({{track}}).",
+      "penalty.served": "{{actor}} registró una sanción cumplida de {{driver}} en la fecha {{number}} ({{track}})."
     },
     "fields": {
       "role": "Rol",
@@ -409,13 +416,17 @@
     "penaltyKinds": {
       "positions": "Pierde posiciones",
       "points": "Pierde puntos",
-      "dsq": "Descalificación"
+      "dsq": "Descalificación",
+      "time": "Segundos al tiempo final",
+      "served": "Cumplida en carrera"
     },
     "value": "Cantidad",
     "penaltyText": {
       "positions": "−{{value}} posiciones",
       "points": "−{{value}} puntos",
-      "dsq": "DSQ"
+      "dsq": "DSQ",
+      "time": "+{{value}} s",
+      "served": "cumplida en carrera"
     },
     "fromProtest": "por la protesta #{{id}}",
     "attemptN": "largada {{number}}",
@@ -741,5 +752,39 @@
     "new": "Contraseña nueva",
     "again": "Repetí la contraseña nueva",
     "saved": "Contraseña cambiada."
+  },
+  "penaltyLogs": {
+    "title": "Importar logs de Real Penalty",
+    "help": "Subí todos los logs de la noche (carpeta realpenalty/logs del servidor). Cada largada tiene su propio log.",
+    "files": "Logs de Real Penalty",
+    "upload": "Subir y revisar",
+    "sameFiles": "Los logs ya estaban subidos. No se agregó nada.",
+    "final": "La carrera que cuenta: {{file}}",
+    "starts": "Largadas abandonadas: {{count}}",
+    "newStarts": "Se agregan {{count}} reinicios antes de la carrera que cuenta.",
+    "noNewStarts": "No hay reinicios nuevos para agregar.",
+    "existing": "Reinicios ya cargados: {{count}}",
+    "penalties": "Sanciones de la carrera que cuenta",
+    "noPenalties": "La carrera que cuenta no tiene sanciones.",
+    "ignored": "Se ignoran {{count}} líneas de sanciones de largadas abandonadas.",
+    "kind": {
+      "served": "Cumplida en carrera (no cambia el resultado)",
+      "time": "Segundos al tiempo final",
+      "dsq": "Descalificación",
+      "not_served": "Sin cumplir (solo informativo)"
+    },
+    "already": "Ya importada",
+    "seconds": "+{{count}} s",
+    "invalidLaps": "Vueltas de clasificación inválidas",
+    "lapFound": "se marca como inválida",
+    "lapMissing": "no está en el archivo de clasificación",
+    "warnings": {
+      "some_restarts_recorded": "Ya hay reinicios cargados a mano. Solo se agregan los que faltan.",
+      "more_restarts_than_logs": "Hay más reinicios cargados que logs abandonados.",
+      "unmatched_drivers": "Algunos pilotos no tienen Steam GUID. Sus sanciones no se pueden importar."
+    },
+    "timeHint": "Revisá que el archivo de AC no incluya ya estos segundos.",
+    "apply": "Aplicar los logs",
+    "applied": "Logs aplicados."
   }
 }

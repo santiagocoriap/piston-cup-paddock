@@ -12,6 +12,10 @@ from apps.rules.scoring import ResultError
 
 from .ac_results import ResultFileError
 from .models import ResultImport
+from .penalty_services import apply as apply_logs
+from .penalty_services import preview as penalty_preview
+from .penalty_services import upload_log
+from .real_penalty import PenaltyLogError
 from .services import apply, link_guid, preview, upload
 
 router = Router(tags=["imports"])
@@ -147,3 +151,103 @@ def apply_import(request, import_id: int, payload: ApplyIn):
     )
     result_import.refresh_from_db()
     return _run(lambda: _out(result_import, with_preview=True))
+
+
+# Real Penalty logs
+
+
+class PlannedStartOut(Schema):
+    filename: str
+    seconds: int
+    new: bool
+
+
+class PlannedPenaltyOut(Schema):
+    key: str
+    kind: str
+    guid: str
+    name: str
+    entry_id: int | None
+    driver_name: str | None
+    penalty: str
+    cause: str
+    lap: int | None
+    seconds: int
+    already: bool
+
+
+class PlannedLapOut(Schema):
+    guid: str
+    name: str
+    lap_time_ms: int
+    lap_id: int | None
+
+
+class PenaltyLogOut(Schema):
+    id: int
+    filename: str
+    session_type: str
+    started_at: datetime
+    ended_at: datetime
+    status: str
+
+
+class PenaltyLogsOut(Schema):
+    files: list[PenaltyLogOut]
+    new_files: int = 0
+    logs: int
+    final_log: str | None
+    starts: list[PlannedStartOut]
+    existing_restarts: int
+    penalties: list[PlannedPenaltyOut]
+    ignored_penalties: int
+    invalid_laps: list[PlannedLapOut]
+    warnings: list[str]
+
+
+class ApplyLogsIn(Schema):
+    penalty_keys: list[str] = []
+
+
+def _logs_out(round_: Round, new_files: int = 0) -> PenaltyLogsOut:
+    view = penalty_preview(round_)
+    data = {key: value for key, value in vars(view).items()}
+    return PenaltyLogsOut(
+        files=[PenaltyLogOut.from_orm(f) for f in round_.penalty_logs.all()],
+        new_files=new_files,
+        **data,
+    )
+
+
+def _run_logs(action):
+    try:
+        return action()
+    except (PenaltyLogError, ResultError) as error:
+        raise HttpError(422, error.code) from error
+
+
+@router.get("/rounds/{round_id}/penalty-logs", response=PenaltyLogsOut)
+def list_penalty_logs(request, round_id: int):
+    round_ = _round(request.user, round_id)
+    return _run_logs(lambda: _logs_out(round_))
+
+
+@router.post("/rounds/{round_id}/penalty-logs", response=PenaltyLogsOut)
+def upload_penalty_logs(request, round_id: int, files: File[list[UploadedFile]]):
+    """Upload one or more Real Penalty logs. A file that the round already has adds nothing."""
+    round_ = _round(request.user, round_id)
+    new = 0
+    for item in files:
+        content = item.read()
+        _, is_new = _run_logs(
+            lambda item=item, content=content: upload_log(round_, item.name, content, request.user)
+        )
+        new += int(is_new)
+    return _run_logs(lambda: _logs_out(round_, new))
+
+
+@router.post("/rounds/{round_id}/penalty-logs/apply", response=PenaltyLogsOut)
+def apply_penalty_logs(request, round_id: int, payload: ApplyLogsIn):
+    round_ = _round(request.user, round_id)
+    _run_logs(lambda: apply_logs(round_, request.user, penalty_keys=payload.penalty_keys))
+    return _run_logs(lambda: _logs_out(round_))

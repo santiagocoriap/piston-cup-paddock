@@ -1,7 +1,12 @@
 import { expect, test, type Page } from '@playwright/test'
+import { readdirSync } from 'node:fs'
+import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { signIn } from './helpers'
 
+const LOG_FOLDER = fileURLToPath(
+  new URL('../../samples/2026-10-11-ks-highlands/realpenalty/', import.meta.url),
+)
 const RACE_FILE = fileURLToPath(
   new URL('../../samples/2026-10-11-ks-highlands/2026_10_11_20_7_RACE.json', import.meta.url),
 )
@@ -59,7 +64,7 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
   await page.getByRole('button', { name: 'Modo admin' }).click()
   await page.goto(`/rounds/${round.id}`)
   await page.getByLabel('Archivo de resultados', { exact: true }).setInputFiles(RACE_FILE)
-  await page.getByRole('button', { name: 'Subir y revisar' }).click()
+  await page.getByRole('form', { name: 'Importar archivo de resultados' }).getByRole('button', { name: 'Subir y revisar' }).click()
 
   const preview = page.getByRole('region', { name: 'Revisión del archivo' })
   await expect(preview.getByText(/Se aplica a la largada 1/)).toBeVisible()
@@ -72,9 +77,18 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
   await expect(result.getByRole('row', { name: /Driver 01/ })).toContainText('25')
   await expect(result.getByRole('row', { name: /Driver 04/ })).toContainText('DNF')
 
+  // The Real Penalty logs of the night add the 20 abandoned starts as restarts.
+  const logFiles = readdirSync(LOG_FOLDER).filter((name) => name.endsWith('.log')).map((name) => join(LOG_FOLDER, name))
+  await page.getByLabel('Logs de Real Penalty', { exact: true }).setInputFiles(logFiles)
+  await page.getByRole('form', { name: 'Importar logs de Real Penalty' }).getByRole('button', { name: 'Subir y revisar' }).click()
+  await expect(page.getByText('Se agregan 20 reinicios antes de la carrera que cuenta.')).toBeVisible()
+  await page.getByRole('button', { name: 'Aplicar los logs' }).click()
+  await expect(page.getByText('Logs aplicados.')).toBeVisible()
+  await expect(page.getByText('20 reinicios antes de la largada aceptada')).toBeVisible()
+
   // The same file again adds nothing.
   await page.getByLabel('Archivo de resultados', { exact: true }).setInputFiles(RACE_FILE)
-  await page.getByRole('button', { name: 'Subir y revisar' }).click()
+  await page.getByRole('form', { name: 'Importar archivo de resultados' }).getByRole('button', { name: 'Subir y revisar' }).click()
   await expect(page.getByText('Este archivo ya estaba subido. No se agregó nada.')).toBeVisible()
 
   // The winner carries the first win step into the next round.

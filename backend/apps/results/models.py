@@ -76,6 +76,9 @@ class ResultLine(models.Model):
     pole = models.BooleanField(default=False)
     fastest_lap = models.BooleanField(default=False)
     points = models.SmallIntegerField()
+    # From a result file. Time penalties need them. Manual results have none.
+    laps = models.PositiveSmallIntegerField(null=True, blank=True)
+    total_ms = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         constraints = [
@@ -124,10 +127,13 @@ class Penalty(models.Model):
         POSITIONS = PenaltyKind.POSITIONS, _("Lose positions")
         POINTS = PenaltyKind.POINTS, _("Lose points")
         DSQ = PenaltyKind.DSQ, _("Disqualification")
+        TIME = PenaltyKind.TIME, _("Time penalty")
+        SERVED = PenaltyKind.SERVED, _("Served in the race")
 
     class Source(models.TextChoices):
         STEWARD = "steward", _("Steward decision")
         IMPORTED = "imported", _("Imported")
+        REAL_PENALTY = "real_penalty", _("Real Penalty")
 
     result = models.ForeignKey(RaceResult, on_delete=models.CASCADE, related_name="penalties")
     attempt = models.ForeignKey(Attempt, null=True, blank=True, on_delete=models.SET_NULL)
@@ -135,7 +141,7 @@ class Penalty(models.Model):
     kind = models.CharField(max_length=10, choices=Kind.choices)
     value = models.PositiveSmallIntegerField(default=0)
     reason = models.TextField()
-    source = models.CharField(max_length=10, choices=Source.choices, default=Source.STEWARD)
+    source = models.CharField(max_length=12, choices=Source.choices, default=Source.STEWARD)
     # NULL, not "", so the unique check skips penalties without a source ID.
     external_id = models.CharField(max_length=100, null=True, blank=True)  # noqa: DJ001
     protest = models.ForeignKey(

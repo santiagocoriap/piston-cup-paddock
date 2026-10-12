@@ -68,3 +68,34 @@ def test_penalty_for_a_driver_without_a_position_changes_nothing():
     final, points = penalized_points(lines, [PenaltyRule(2, PenaltyKind.POSITIONS, 3)], RULES)
     assert positions(final) == positions(lines)
     assert points == {1: 25, 2: 0}
+
+
+def timed(entry_id, position, laps, total_ms, status=Status.FINISHED):
+    return Line(entry_id, status, position, laps=laps, total_ms=total_ms)
+
+
+TIMED = [timed(1, 1, 10, 1_000_000), timed(2, 2, 10, 1_005_000), timed(3, 3, 9, 990_000)]
+
+
+def test_time_penalty_changes_the_order_on_total_time():
+    final, points = penalized_points(TIMED, [PenaltyRule(1, PenaltyKind.TIME, 10)], RULES)
+    assert positions(final)[2] == (Status.FINISHED, 1)
+    assert positions(final)[1] == (Status.FINISHED, 2)
+    assert (points[1], points[2]) == (18, 25)
+
+
+def test_time_penalty_cannot_move_a_driver_behind_one_with_fewer_laps():
+    final, _ = penalized_points(TIMED, [PenaltyRule(1, PenaltyKind.TIME, 600)], RULES)
+    assert positions(final)[1] == (Status.FINISHED, 2)
+    assert positions(final)[3] == (Status.FINISHED, 3)
+
+
+def test_time_penalty_without_times_changes_nothing():
+    final, _ = penalized_points(RESULT, [PenaltyRule(1, PenaltyKind.TIME, 30)], RULES)
+    assert positions(final) == positions(RESULT)
+
+
+def test_served_penalty_changes_nothing():
+    final, points = penalized_points(TIMED, [PenaltyRule(1, PenaltyKind.SERVED)], RULES)
+    assert positions(final) == positions(TIMED)
+    assert points[1] == 25

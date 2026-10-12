@@ -157,3 +157,59 @@ def summarize(restarts: list[Restart]) -> RestartSummary:
     summary.unknown = kinds[Restart.Responsibility.UNKNOWN]
     summary.caused = sorted(caused.values(), key=lambda c: (-c.total, c.driver_name))
     return summary
+
+
+def insert_abandoned_starts(round_: Round, starts: list[dict], user) -> list[Restart]:
+    """Add abandoned starts before the current start, for restarts that nobody recorded.
+
+    Each item of `starts` has "seconds" (how long the start lasted) and "explanation". The
+    current start stays the last one, also when it is already accepted. Earlier restarts keep
+    their place, and the new starts come after them.
+    """
+    if not starts:
+        return []
+    session = race_session(round_)
+    with transaction.atomic():
+        attempts = list(session.attempts.order_by("number"))
+        final = current_attempt(session) if not attempts else attempts[-1]
+        earlier = [a for a in attempts if a.pk != final.pk]
+        new = [Attempt(session=session, number=0, status=Attempt.Status.ABANDONED) for _ in starts]
+        # Free the numbers first, because each number must be unique in the session.
+        for offset, attempt in enumerate(earlier + [final], start=1000):
+            attempt.number = offset
+            attempt.save(update_fields=["number"])
+        ordered = earlier + new + [final]
+        for number, attempt in enumerate(ordered, start=1):
+            attempt.number = number
+            attempt.save()
+        if earlier:
+            last_restart = Restart.objects.filter(abandoned_attempt=earlier[-1]).first()
+            if last_restart:
+                last_restart.replacement_attempt = new[0]
+                last_restart.save(update_fields=["replacement_attempt"])
+        created = []
+        for index, (attempt, item) in enumerate(zip(new, starts, strict=True)):
+            replacement = ordered[len(earlier) + index + 1]
+            created.append(
+                Restart.objects.create(
+                    abandoned_attempt=attempt,
+                    replacement_attempt=replacement,
+                    elapsed_seconds=item.get("seconds"),
+                    reason=Restart.Reason.OTHER,
+                    explanation=item.get("explanation", ""),
+                    logged_by=user,
+                )
+            )
+        record(
+            user,
+            "restart.imported",
+            "round",
+            round_.id,
+            championship=round_.season.championship,
+            params={
+                "number": round_.number,
+                "track": str(round_.track_layout),
+                "count": len(created),
+            },
+        )
+    return created

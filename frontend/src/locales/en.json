@@ -193,7 +193,11 @@
     "link_not_valid": "This link does not work: it was used or it ended.",
     "passwords_differ": "The two passwords are not the same.",
     "weak_password": "The password is too weak.",
-    "wrong_current_password": "The current password is not correct."
+    "wrong_current_password": "The current password is not correct.",
+    "not_a_penalty_log": "This file is not a Real Penalty log.",
+    "result_required": "Enter or import the race result first.",
+    "not_served_needs_decision": "A penalty that was not served needs an admin decision.",
+    "time_penalty_needs_times": "A time penalty needs the times from the AC file."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -288,7 +292,10 @@
       "account.created": "{{actor}} made the account {{username}}.",
       "account.link_created": "{{actor}} made an access link for {{username}}.",
       "account.password_set": "{{username}} chose a password.",
-      "account.password_changed": "{{username}} changed the password."
+      "account.password_changed": "{{username}} changed the password.",
+      "penalty_logs.applied": "{{actor}} applied the Real Penalty logs in round {{number}} ({{track}}): {{restarts}} restarts, {{penalties}} penalties.",
+      "restart.imported": "{{actor}} imported {{count}} restarts in round {{number}} ({{track}}).",
+      "penalty.served": "{{actor}} recorded a served penalty of {{driver}} in round {{number}} ({{track}})."
     },
     "fields": {
       "role": "Role",
@@ -409,13 +416,17 @@
     "penaltyKinds": {
       "positions": "Loses positions",
       "points": "Loses points",
-      "dsq": "Disqualification"
+      "dsq": "Disqualification",
+      "time": "Seconds to the final time",
+      "served": "Served in the race"
     },
     "value": "Amount",
     "penaltyText": {
       "positions": "−{{value}} positions",
       "points": "−{{value}} points",
-      "dsq": "DSQ"
+      "dsq": "DSQ",
+      "time": "+{{value}} s",
+      "served": "served in the race"
     },
     "fromProtest": "from protest #{{id}}",
     "attemptN": "start {{number}}",
@@ -741,5 +752,39 @@
     "new": "New password",
     "again": "Type the new password again",
     "saved": "The password is changed."
+  },
+  "penaltyLogs": {
+    "title": "Import Real Penalty logs",
+    "help": "Upload all logs of the night (the realpenalty/logs folder of the server). Each start has its own log.",
+    "files": "Real Penalty logs",
+    "upload": "Upload and check",
+    "sameFiles": "The logs were already uploaded. Nothing changed.",
+    "final": "The race that counts: {{file}}",
+    "starts": "Abandoned starts: {{count}}",
+    "newStarts": "{{count}} restarts go before the race that counts.",
+    "noNewStarts": "There are no new restarts to add.",
+    "existing": "Restarts already recorded: {{count}}",
+    "penalties": "Penalties of the race that counts",
+    "noPenalties": "The race that counts has no penalties.",
+    "ignored": "The app ignores {{count}} penalty lines of abandoned starts.",
+    "kind": {
+      "served": "Served in the race (the result does not change)",
+      "time": "Seconds to the final time",
+      "dsq": "Disqualification",
+      "not_served": "Not served (information only)"
+    },
+    "already": "Already imported",
+    "seconds": "+{{count}} s",
+    "invalidLaps": "Invalid qualifying laps",
+    "lapFound": "is marked as invalid",
+    "lapMissing": "is not in the qualifying file",
+    "warnings": {
+      "some_restarts_recorded": "Some restarts are already recorded by hand. Only the missing ones are added.",
+      "more_restarts_than_logs": "There are more recorded restarts than abandoned logs.",
+      "unmatched_drivers": "Some drivers have no Steam GUID. Their penalties cannot be imported."
+    },
+    "timeHint": "Check that the AC file does not already include these seconds.",
+    "apply": "Apply the logs",
+    "applied": "The logs are applied."
   }
 }

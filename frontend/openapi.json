@@ -1905,6 +1905,150 @@
         ]
       }
     },
+    "/api/rounds/{round_id}/penalty-logs": {
+      "get": {
+        "operationId": "apps_imports_api_list_penalty_logs",
+        "summary": "List Penalty Logs",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PenaltyLogsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "imports"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_imports_api_upload_penalty_logs",
+        "summary": "Upload Penalty Logs",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PenaltyLogsOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Upload one or more Real Penalty logs. A file that the round already has adds nothing.",
+        "tags": [
+          "imports"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "files": {
+                    "items": {
+                      "format": "binary",
+                      "type": "string"
+                    },
+                    "title": "Files",
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "files"
+                ],
+                "title": "FileParams",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/penalty-logs/apply": {
+      "post": {
+        "operationId": "apps_imports_api_apply_penalty_logs",
+        "summary": "Apply Penalty Logs",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PenaltyLogsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "imports"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyLogsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/seasons/{season_id}/handicaps": {
       "get": {
         "operationId": "apps_handicaps_api_get_handicaps",
@@ -4647,7 +4791,9 @@
         "enum": [
           "positions",
           "points",
-          "dsq"
+          "dsq",
+          "time",
+          "served"
         ],
         "title": "Kind",
         "type": "string"
@@ -5715,6 +5861,282 @@
           }
         },
         "title": "ApplyIn",
+        "type": "object"
+      },
+      "PenaltyLogOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "session_type": {
+            "title": "Session Type",
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "ended_at": {
+            "format": "date-time",
+            "title": "Ended At",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "filename",
+          "session_type",
+          "started_at",
+          "ended_at",
+          "status"
+        ],
+        "title": "PenaltyLogOut",
+        "type": "object"
+      },
+      "PenaltyLogsOut": {
+        "properties": {
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/PenaltyLogOut"
+            },
+            "title": "Files",
+            "type": "array"
+          },
+          "new_files": {
+            "default": 0,
+            "title": "New Files",
+            "type": "integer"
+          },
+          "logs": {
+            "title": "Logs",
+            "type": "integer"
+          },
+          "final_log": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Log"
+          },
+          "starts": {
+            "items": {
+              "$ref": "#/components/schemas/PlannedStartOut"
+            },
+            "title": "Starts",
+            "type": "array"
+          },
+          "existing_restarts": {
+            "title": "Existing Restarts",
+            "type": "integer"
+          },
+          "penalties": {
+            "items": {
+              "$ref": "#/components/schemas/PlannedPenaltyOut"
+            },
+            "title": "Penalties",
+            "type": "array"
+          },
+          "ignored_penalties": {
+            "title": "Ignored Penalties",
+            "type": "integer"
+          },
+          "invalid_laps": {
+            "items": {
+              "$ref": "#/components/schemas/PlannedLapOut"
+            },
+            "title": "Invalid Laps",
+            "type": "array"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "files",
+          "logs",
+          "final_log",
+          "starts",
+          "existing_restarts",
+          "penalties",
+          "ignored_penalties",
+          "invalid_laps",
+          "warnings"
+        ],
+        "title": "PenaltyLogsOut",
+        "type": "object"
+      },
+      "PlannedLapOut": {
+        "properties": {
+          "guid": {
+            "title": "Guid",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "lap_time_ms": {
+            "title": "Lap Time Ms",
+            "type": "integer"
+          },
+          "lap_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap Id"
+          }
+        },
+        "required": [
+          "guid",
+          "name",
+          "lap_time_ms",
+          "lap_id"
+        ],
+        "title": "PlannedLapOut",
+        "type": "object"
+      },
+      "PlannedPenaltyOut": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "guid": {
+            "title": "Guid",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "entry_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry Id"
+          },
+          "driver_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Name"
+          },
+          "penalty": {
+            "title": "Penalty",
+            "type": "string"
+          },
+          "cause": {
+            "title": "Cause",
+            "type": "string"
+          },
+          "lap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap"
+          },
+          "seconds": {
+            "title": "Seconds",
+            "type": "integer"
+          },
+          "already": {
+            "title": "Already",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "key",
+          "kind",
+          "guid",
+          "name",
+          "entry_id",
+          "driver_name",
+          "penalty",
+          "cause",
+          "lap",
+          "seconds",
+          "already"
+        ],
+        "title": "PlannedPenaltyOut",
+        "type": "object"
+      },
+      "PlannedStartOut": {
+        "properties": {
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "seconds": {
+            "title": "Seconds",
+            "type": "integer"
+          },
+          "new": {
+            "title": "New",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "filename",
+          "seconds",
+          "new"
+        ],
+        "title": "PlannedStartOut",
+        "type": "object"
+      },
+      "ApplyLogsIn": {
+        "properties": {
+          "penalty_keys": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Penalty Keys",
+            "type": "array"
+          }
+        },
+        "title": "ApplyLogsIn",
         "type": "object"
       },
       "EntryHandicapsOut": {

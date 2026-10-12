@@ -41,6 +41,11 @@ function round(canManage: boolean, result: unknown = null, extra: Record<string,
 }
 
 const noRestarts = {
+  'GET /api/rounds/9/penalty-logs': () =>
+    json(200, {
+      files: [], new_files: 0, logs: 0, final_log: null, starts: [], existing_restarts: 0, penalties: [],
+      ignored_penalties: 0, invalid_laps: [], warnings: [],
+    }),
   'GET /api/rounds/9/imports': () => json(200, []),
   'GET /api/rounds/9/restarts': () =>
     json(200, {

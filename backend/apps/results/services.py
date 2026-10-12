@@ -17,6 +17,7 @@ from apps.rules.scoring import (
     PenaltyRule,
     ResultError,
     Status,
+    has_times,
     penalized_points,
     standings,
     validate,
@@ -38,6 +39,8 @@ def entered_lines(version: ResultVersion) -> list[Line]:
             row.entered_position,
             row.pole,
             row.fastest_lap,
+            row.laps,
+            row.total_ms,
         )
         for row in version.lines.all()
     ]
@@ -106,6 +109,8 @@ def _write_version(
             pole=line.pole,
             fastest_lap=line.fastest_lap,
             points=points[line.entry_id],
+            laps=line.laps,
+            total_ms=line.total_ms,
         )
         for line in lines
     )
@@ -183,7 +188,7 @@ def add_penalty(
     """Add a penalty and make a new version. A known external ID gives back the stored penalty."""
     if not reason.strip():
         raise ResultError("reason_required")
-    if kind in (PenaltyKind.POSITIONS, PenaltyKind.POINTS) and value < 1:
+    if kind in (PenaltyKind.POSITIONS, PenaltyKind.POINTS, PenaltyKind.TIME) and value < 1:
         raise ResultError("penalty_value_required")
     if entry.season_id != result.round.season_id:
         raise ResultError("entry_not_in_season")
@@ -194,18 +199,32 @@ def add_penalty(
             if existing:
                 return existing
         before = result.current_version
+        if kind == PenaltyKind.TIME and not has_times(entered_lines(before)):
+            raise ResultError("time_penalty_needs_times")
         penalty = Penalty.objects.create(
             result=result,
             attempt=current_attempt(race_session(result.round)),
             entry=entry,
             kind=kind,
-            value=value if kind != PenaltyKind.DSQ else 0,
+            value=value if kind not in (PenaltyKind.DSQ, PenaltyKind.SERVED) else 0,
             reason=reason,
             source=source,
             external_id=external_id,
             protest=protest,
             created_by=user,
         )
+        if kind == PenaltyKind.SERVED:
+            # A served penalty is history only. The result does not change, so no new version.
+            record(
+                user,
+                "penalty.served",
+                "round",
+                result.round_id,
+                championship=result.round.season.championship,
+                params={**_audit_params(result.round), "driver": entry.driver.display_name},
+                reason=reason,
+            )
+            return penalty
         version = _write_version(
             result, entered_lines(before), ResultVersion.Kind.PENALTY, user, reason
         )
