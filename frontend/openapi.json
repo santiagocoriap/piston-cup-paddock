@@ -3070,6 +3070,125 @@
           }
         ]
       }
+    },
+    "/api/rounds/{round_id}/reports": {
+      "get": {
+        "operationId": "apps_reports_api_list_reports",
+        "summary": "List Reports",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_reports_api_create_report",
+        "summary": "Create Report",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/reports/{report_id}/read": {
+      "post": {
+        "operationId": "apps_reports_api_read_report",
+        "summary": "Read Report",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "schema": {
+              "title": "Report Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -7598,6 +7717,29 @@
         "title": "DashboardOut",
         "type": "object"
       },
+      "NewReportOut": {
+        "properties": {
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "round_number": {
+            "title": "Round Number",
+            "type": "integer"
+          },
+          "track_name": {
+            "title": "Track Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "round_id",
+          "round_number",
+          "track_name"
+        ],
+        "title": "NewReportOut",
+        "type": "object"
+      },
       "NextRoundOut": {
         "properties": {
           "round_id": {
@@ -7757,6 +7899,13 @@
                 "type": "null"
               }
             ]
+          },
+          "new_reports": {
+            "items": {
+              "$ref": "#/components/schemas/NewReportOut"
+            },
+            "title": "New Reports",
+            "type": "array"
           }
         },
         "required": [
@@ -7771,7 +7920,8 @@
           "wins",
           "leader_points",
           "recent",
-          "next_round"
+          "next_round",
+          "new_reports"
         ],
         "title": "SeasonCardOut",
         "type": "object"
@@ -8013,6 +8163,181 @@
           "new_again"
         ],
         "title": "PasswordIn",
+        "type": "object"
+      },
+      "ReportOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "tone": {
+            "title": "Tone",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "prompt_version": {
+            "title": "Prompt Version",
+            "type": "string"
+          },
+          "source_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Version"
+          },
+          "result_status": {
+            "title": "Result Status",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "generated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generated At"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "unread": {
+            "title": "Unread",
+            "type": "boolean"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "facts": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facts"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "status",
+          "language",
+          "tone",
+          "model",
+          "prompt_version",
+          "source_version",
+          "result_status",
+          "created_at",
+          "generated_at",
+          "text",
+          "unread"
+        ],
+        "title": "ReportOut",
+        "type": "object"
+      },
+      "ReportsOut": {
+        "properties": {
+          "can_generate": {
+            "title": "Can Generate",
+            "type": "boolean"
+          },
+          "ai_configured": {
+            "title": "Ai Configured",
+            "type": "boolean"
+          },
+          "reports": {
+            "items": {
+              "$ref": "#/components/schemas/ReportOut"
+            },
+            "title": "Reports",
+            "type": "array"
+          }
+        },
+        "required": [
+          "can_generate",
+          "ai_configured",
+          "reports"
+        ],
+        "title": "ReportsOut",
+        "type": "object"
+      },
+      "ReportIn": {
+        "properties": {
+          "language": {
+            "default": "es",
+            "enum": [
+              "es",
+              "en"
+            ],
+            "title": "Language",
+            "type": "string"
+          },
+          "tone": {
+            "default": "friendly",
+            "enum": [
+              "friendly",
+              "roast"
+            ],
+            "title": "Tone",
+            "type": "string"
+          }
+        },
+        "title": "ReportIn",
+        "type": "object"
+      },
+      "ReadOut": {
+        "properties": {
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok"
+        ],
+        "title": "ReadOut",
         "type": "object"
       }
     },

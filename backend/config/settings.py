@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "apps.records",
     "apps.voting",
     "apps.dashboard",
+    "apps.reports",
 ]
 
 MIDDLEWARE = [
@@ -137,5 +138,9 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # The number of proxies in front of the app that add to X-Forwarded-For. Coolify: 1.
 # Keep 0 without a proxy, or a client can fake the address that the login limit uses.
 TRUSTED_PROXY_COUNT = int(env("TRUSTED_PROXY_COUNT", "0"))
+
+# AI race reports. LiteLLM reads the provider key, for example ANTHROPIC_API_KEY.
+# Without a key the app works, and report requests fail with "ai_not_configured".
+AI_REPORT_MODEL = env("AI_REPORT_MODEL", "anthropic/claude-sonnet-5-5")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

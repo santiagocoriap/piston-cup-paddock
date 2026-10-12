@@ -197,7 +197,8 @@
     "not_a_penalty_log": "This file is not a Real Penalty log.",
     "result_required": "Enter or import the race result first.",
     "not_served_needs_decision": "A penalty that was not served needs an admin decision.",
-    "time_penalty_needs_times": "A time penalty needs the times from the AC file."
+    "time_penalty_needs_times": "A time penalty needs the times from the AC file.",
+    "report_in_progress": "A report is already in progress."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -295,7 +296,8 @@
       "account.password_changed": "{{username}} changed the password.",
       "penalty_logs.applied": "{{actor}} applied the Real Penalty logs in round {{number}} ({{track}}): {{restarts}} restarts, {{penalties}} penalties.",
       "restart.imported": "{{actor}} imported {{count}} restarts in round {{number}} ({{track}}).",
-      "penalty.served": "{{actor}} recorded a served penalty of {{driver}} in round {{number}} ({{track}})."
+      "penalty.served": "{{actor}} recorded a served penalty of {{driver}} in round {{number}} ({{track}}).",
+      "report.requested": "{{actor}} requested report {{report}} of round {{number}} ({{track}})."
     },
     "fields": {
       "role": "Role",
@@ -673,7 +675,8 @@
     "noNext": "There is no next round.",
     "handicap": "Your ballast and restrictor",
     "briefing": "See the briefing",
-    "car": "#{{number}} · {{car}}"
+    "car": "#{{number}} · {{car}}",
+    "newReports": "New reports"
   },
   "briefing": {
     "title": "Briefing",
@@ -786,5 +789,33 @@
     "timeHint": "Check that the AC file does not already include these seconds.",
     "apply": "Apply the logs",
     "applied": "The logs are applied."
+  },
+  "report": {
+    "title": "Race report",
+    "none": "There is no report yet.",
+    "version": "Report {{number}}",
+    "new": "New",
+    "older": "Earlier versions ({{count}})",
+    "meta": "{{status}} result, version {{version}} · {{date}} · {{language}}",
+    "aiNote": "AI wrote this text from the calculated data. The table shows the official results.",
+    "generate": "Generate report",
+    "generateButton": "Generate",
+    "notConfigured": "The AI has no key. The report fails until an admin adds the key on the server.",
+    "language": "Language",
+    "languages": {
+      "es": "Spanish",
+      "en": "English"
+    },
+    "tone": "Tone",
+    "tones": {
+      "friendly": "Friendly",
+      "roast": "Roast"
+    },
+    "status": {
+      "pending": "Generating",
+      "ready": "Ready",
+      "failed": "Failed"
+    },
+    "facts": "Facts used"
   }
 }

@@ -377,14 +377,18 @@ class SeasonStanding:
     rounds: list[RoundScore]
 
 
-def season_standings(season: Season) -> list[SeasonStanding]:
-    """The standings from the current version of each round result."""
-    rounds = list(season.rounds.order_by("number"))
+def season_standings(season: Season, up_to_round: int | None = None) -> list[SeasonStanding]:
+    """The standings from the current version of each round result. With up_to_round, only
+    the rounds with that number or lower count."""
+    rounds = season.rounds.order_by("number")
+    lines = current_lines(version__result__round__season=season)
+    if up_to_round is not None:
+        rounds = rounds.filter(number__lte=up_to_round)
+        lines = lines.filter(version__result__round__number__lte=up_to_round)
+    rounds = list(rounds)
     results = {r.round_id: r for r in RaceResult.objects.filter(round__season=season)}
     lines_by_round: dict[int, list[ResultLine]] = {r.id: [] for r in rounds}
-    for row in current_lines(version__result__round__season=season).select_related(
-        "version__result"
-    ):
+    for row in lines.select_related("version__result"):
         lines_by_round[row.version.result.round_id].append(row)
 
     races = [

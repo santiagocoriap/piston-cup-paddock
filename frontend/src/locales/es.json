@@ -197,7 +197,8 @@
     "not_a_penalty_log": "Este archivo no es un log de Real Penalty.",
     "result_required": "Primero cargá o importá el resultado de la carrera.",
     "not_served_needs_decision": "Una sanción sin cumplir necesita la decisión de un admin.",
-    "time_penalty_needs_times": "Una sanción de tiempo necesita los tiempos del archivo de AC."
+    "time_penalty_needs_times": "Una sanción de tiempo necesita los tiempos del archivo de AC.",
+    "report_in_progress": "Ya se está generando un reporte."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -295,7 +296,8 @@
       "account.password_changed": "{{username}} cambió su contraseña.",
       "penalty_logs.applied": "{{actor}} aplicó los logs de Real Penalty en la fecha {{number}} ({{track}}): {{restarts}} reinicios, {{penalties}} sanciones.",
       "restart.imported": "{{actor}} importó {{count}} reinicios en la fecha {{number}} ({{track}}).",
-      "penalty.served": "{{actor}} registró una sanción cumplida de {{driver}} en la fecha {{number}} ({{track}})."
+      "penalty.served": "{{actor}} registró una sanción cumplida de {{driver}} en la fecha {{number}} ({{track}}).",
+      "report.requested": "{{actor}} pidió el reporte {{report}} de la fecha {{number}} ({{track}})."
     },
     "fields": {
       "role": "Rol",
@@ -673,7 +675,8 @@
     "noNext": "No hay próxima fecha.",
     "handicap": "Tu lastre y restrictor",
     "briefing": "Ver briefing",
-    "car": "#{{number}} · {{car}}"
+    "car": "#{{number}} · {{car}}",
+    "newReports": "Reportes nuevos"
   },
   "briefing": {
     "title": "Briefing",
@@ -786,5 +789,33 @@
     "timeHint": "Revisá que el archivo de AC no incluya ya estos segundos.",
     "apply": "Aplicar los logs",
     "applied": "Logs aplicados."
+  },
+  "report": {
+    "title": "Reporte de carrera",
+    "none": "Todavía no hay reporte.",
+    "version": "Reporte {{number}}",
+    "new": "Nuevo",
+    "older": "Versiones anteriores ({{count}})",
+    "meta": "Resultado {{status}}, versión {{version}} · {{date}} · {{language}}",
+    "aiNote": "Texto escrito por IA a partir de los datos calculados. Los resultados oficiales son los de la tabla.",
+    "generate": "Generar reporte",
+    "generateButton": "Generar",
+    "notConfigured": "La IA no tiene clave. El reporte va a fallar hasta que un admin agregue la clave en el servidor.",
+    "language": "Idioma",
+    "languages": {
+      "es": "Español",
+      "en": "English"
+    },
+    "tone": "Tono",
+    "tones": {
+      "friendly": "Amistoso",
+      "roast": "Más picante"
+    },
+    "status": {
+      "pending": "Generando",
+      "ready": "Listo",
+      "failed": "Falló"
+    },
+    "facts": "Datos usados"
   }
 }

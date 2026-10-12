@@ -58,6 +58,22 @@ function SeasonCard({ card }: { card: Card }) {
         </div>
       </div>
 
+      {card.new_reports.length > 0 && (
+        <>
+          <h3>{t('dashboard.newReports')}</h3>
+          <ul className="recent">
+            {card.new_reports.map((report) => (
+              <li key={report.round_id}>
+                <Link to={`/rounds/${report.round_id}`}>
+                  R{report.round_number} · {report.track_name}
+                </Link>
+                <span className="badge">{t('report.new')}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
       <h3>{t('dashboard.recent')}</h3>
       {card.recent.length === 0 ? (
         <p className="muted">{t('dashboard.noRecent')}</p>

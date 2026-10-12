@@ -7,6 +7,7 @@ dependencies = [
     "django>=6.1.2",
     "django-ninja>=1.7.1",
     "gunicorn>=26.2.0",
+    "litellm>=1.80",
     "procrastinate[django]>=3.10.0",
     "psycopg[binary]>=3.3.6",
     "whitenoise>=6.12.0",

@@ -1130,6 +1130,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Reports */
+        get: operations["apps_reports_api_list_reports"];
+        put?: never;
+        /** Create Report */
+        post: operations["apps_reports_api_create_report"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reports/{report_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Read Report */
+        post: operations["apps_reports_api_read_report"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2627,6 +2662,15 @@ export interface components {
             /** Seasons */
             seasons: components["schemas"]["SeasonCardOut"][];
         };
+        /** NewReportOut */
+        NewReportOut: {
+            /** Round Id */
+            round_id: number;
+            /** Round Number */
+            round_number: number;
+            /** Track Name */
+            track_name: string;
+        };
         /** NextRoundOut */
         NextRoundOut: {
             /** Round Id */
@@ -2686,6 +2730,8 @@ export interface components {
             /** Recent */
             recent: components["schemas"]["RecentOut"][];
             next_round: components["schemas"]["NextRoundOut"] | null;
+            /** New Reports */
+            new_reports: components["schemas"]["NewReportOut"][];
         };
         /** AccountOut */
         AccountOut: {
@@ -2764,6 +2810,73 @@ export interface components {
             new: string;
             /** New Again */
             new_again: string;
+        };
+        /** ReportOut */
+        ReportOut: {
+            /** Id */
+            id: number;
+            /** Number */
+            number: number;
+            /** Status */
+            status: string;
+            /** Language */
+            language: string;
+            /** Tone */
+            tone: string;
+            /** Model */
+            model: string;
+            /** Prompt Version */
+            prompt_version: string;
+            /** Source Version */
+            source_version: number | null;
+            /** Result Status */
+            result_status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Generated At */
+            generated_at: string | null;
+            /** Text */
+            text: string;
+            /** Unread */
+            unread: boolean;
+            /** Error */
+            error?: string | null;
+            /** Facts */
+            facts?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** ReportsOut */
+        ReportsOut: {
+            /** Can Generate */
+            can_generate: boolean;
+            /** Ai Configured */
+            ai_configured: boolean;
+            /** Reports */
+            reports: components["schemas"]["ReportOut"][];
+        };
+        /** ReportIn */
+        ReportIn: {
+            /**
+             * Language
+             * @default es
+             * @enum {string}
+             */
+            language?: "es" | "en";
+            /**
+             * Tone
+             * @default friendly
+             * @enum {string}
+             */
+            tone?: "friendly" | "roast";
+        };
+        /** ReadOut */
+        ReadOut: {
+            /** Ok */
+            ok: boolean;
         };
     };
     responses: never;
@@ -4618,6 +4731,76 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AccountErrorOut"];
+                };
+            };
+        };
+    };
+    apps_reports_api_list_reports: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportsOut"];
+                };
+            };
+        };
+    };
+    apps_reports_api_create_report: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportsOut"];
+                };
+            };
+        };
+    };
+    apps_reports_api_read_report: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadOut"];
                 };
             };
         };

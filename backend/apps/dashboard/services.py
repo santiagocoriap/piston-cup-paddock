@@ -7,6 +7,7 @@ from apps.competition.models import Round, SeasonEntry
 from apps.competition.permissions import can_view
 from apps.handicaps.models import UsedHandicap
 from apps.handicaps.services import season_handicaps
+from apps.reports.services import latest_ready, read_ids
 from apps.results.services import season_standings
 
 
@@ -18,6 +19,13 @@ class RecentResult:
     status: str
     position: int | None
     points: int
+
+
+@dataclass
+class NewReport:
+    round_id: int
+    round_number: int
+    track_name: str
 
 
 @dataclass
@@ -46,6 +54,7 @@ class SeasonCard:
     leader_points: int
     recent: list[RecentResult] = field(default_factory=list)
     next_round: NextRound | None = None
+    new_reports: list[NewReport] = field(default_factory=list)
 
 
 def driver_dashboard(user) -> list[SeasonCard]:
@@ -90,6 +99,15 @@ def driver_dashboard(user) -> list[SeasonCard]:
             leader_points=table[0].points if table else 0,
             recent=recent,
         )
+        reports = latest_ready(rounds.keys())
+        read = read_ids(user, reports.values())
+        card.new_reports = [
+            NewReport(
+                r.round_id, rounds[r.round_id].number, rounds[r.round_id].track_layout.track.name
+            )
+            for r in sorted(reports.values(), key=lambda r: -rounds[r.round_id].number)
+            if r.id not in read
+        ]
         handicaps = season_handicaps(season)
         if handicaps.next_round_id:
             next_round = rounds[handicaps.next_round_id]

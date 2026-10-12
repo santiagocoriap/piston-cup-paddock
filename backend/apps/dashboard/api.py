@@ -27,6 +27,12 @@ class NextRoundOut(Schema):
     restrictor_pct: int
 
 
+class NewReportOut(Schema):
+    round_id: int
+    round_number: int
+    track_name: str
+
+
 class SeasonCardOut(Schema):
     season_id: int
     season_name: str
@@ -40,6 +46,7 @@ class SeasonCardOut(Schema):
     leader_points: int
     recent: list[RecentOut]
     next_round: NextRoundOut | None
+    new_reports: list[NewReportOut]
 
 
 class DashboardOut(Schema):

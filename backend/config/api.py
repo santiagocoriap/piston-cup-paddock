@@ -13,6 +13,7 @@ from apps.identity.api import router as auth_router
 from apps.identity.drivers_api import router as drivers_router
 from apps.imports.api import router as imports_router
 from apps.records.api import router as records_router
+from apps.reports.api import router as reports_router
 from apps.restarts.api import router as restarts_router
 from apps.results.api import router as results_router
 from apps.voting.api import router as voting_router
@@ -34,3 +35,4 @@ api.add_router("/", voting_router)
 api.add_router("/", dashboard_router)
 api.add_router("/", exports_router)
 api.add_router("/", accounts_router)
+api.add_router("/", reports_router)

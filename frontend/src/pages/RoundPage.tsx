@@ -11,6 +11,7 @@ import { useAdminView } from '../session'
 import { penaltyChanged } from '../lib/results'
 import { ImportSection } from './ImportSection'
 import { PenaltyLogsSection } from './PenaltyLogsSection'
+import { ReportSection } from './ReportSection'
 import { Briefing } from './Briefing'
 import { RestartsSection } from './RestartsSection'
 import { ApproveButton, Penalties, Protests, ResultStatus, Versions } from './ResultReview'
@@ -123,6 +124,8 @@ export function RoundPage() {
       <Versions round={data} />
 
       <RestartsSection roundId={data.id} entries={data.entries} adminView={adminView} refresh={saves} />
+
+      <ReportSection roundId={data.id} adminView={adminView} />
     </section>
   )
 }

@@ -10,6 +10,7 @@ from pydantic import AwareDatetime
 from apps.competition.models import ChampionshipMember, Round, Season, SeasonEntry
 from apps.competition.permissions import can_manage, can_view
 from apps.dashboard.services import my_handicap
+from apps.reports.services import auto_request
 from apps.rules.models import RulesVersion
 from apps.rules.scoring import Line, ResultError, Status
 
@@ -407,6 +408,8 @@ def approve(request, round_id: int):
     _require_manage(request.user, round_)
     result = _result_of(round_)
     _run(lambda: approve_result(result, request.user))
+    # The report is extra. It runs in the worker, so it cannot block the approval.
+    auto_request(round_, request.user)
     return _round_detail(request.user, round_)
 
 

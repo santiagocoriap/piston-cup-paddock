@@ -86,6 +86,10 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
   await expect(page.getByText('Logs aplicados.')).toBeVisible()
   await expect(page.getByText('20 reinicios antes de la largada aceptada')).toBeVisible()
 
+  // The worker writes the race report. Without an AI key it fails, and the results stay.
+  await page.getByRole('form', { name: 'Generar reporte' }).getByRole('button', { name: 'Generar' }).click()
+  await expect(page.getByText(/Reporte 1 · (Falló|Listo)/)).toBeVisible({ timeout: 30_000 })
+
   // The same file again adds nothing.
   await page.getByLabel('Archivo de resultados', { exact: true }).setInputFiles(RACE_FILE)
   await page.getByRole('form', { name: 'Importar archivo de resultados' }).getByRole('button', { name: 'Subir y revisar' }).click()

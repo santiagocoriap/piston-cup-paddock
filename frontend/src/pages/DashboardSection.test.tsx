@@ -8,6 +8,7 @@ afterEach(() => vi.restoreAllMocks())
 const card = {
   season_id: 5, season_name: '2026', championship_name: 'LMDh', entry_number: 7, car_name: 'Acura',
   rank: 2, entries: 10, points: 43, wins: 1, leader_points: 50,
+  new_reports: [{ round_id: 3, round_number: 1, track_name: 'Spa' }],
   recent: [
     { round_id: 2, round_number: 2, track_name: 'Monza', status: 'dnf', position: 4, points: 12 },
     { round_id: 1, round_number: 1, track_name: 'Spa', status: 'finished', position: 1, points: 25 },
