@@ -4,6 +4,7 @@ import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { formatLapTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { CompareSection } from './CompareSection'
 
 type RoundLaps = components['schemas']['RoundLapsOut']
 type DriverLaps = components['schemas']['DriverLapsOut']
@@ -45,6 +46,7 @@ export function LapsSection({ roundId }: { roundId: number }) {
       {data.drivers.map((driver) => (
         <DriverTable key={driver.entry_id} driver={driver} hasSectors={data.has_sectors} />
       ))}
+      <CompareSection roundId={roundId} sessions={data.sessions} />
     </section>
   )
 }

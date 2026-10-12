@@ -223,7 +223,8 @@
     "custom_role_not_allowed": "Choose a custom role only with the role Custom role.",
     "round_not_in_championship": "That round is in another championship.",
     "file_not_assignable": "This file cannot be assigned.",
-    "no_driver_profile": "Your account has no driver."
+    "no_driver_profile": "Your account has no driver.",
+    "lap_not_in_session": "That lap is not in this session."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -995,5 +996,41 @@
     "speed": "speed (max {{max}} km/h)",
     "pedals": "green: throttle, red: brake",
     "noInputs": "no pedals: the driver does not share them"
+  },
+  "compare": {
+    "title": "Compare laps",
+    "lapA": "Lap A (reference)",
+    "lapB": "Lap B",
+    "sign": "Difference = B − A. A positive number (+) means that B is slower.",
+    "notEnough": "At least two valid laps of two drivers are needed.",
+    "table": "Comparison of the two laps",
+    "time": "Time",
+    "car": "Car",
+    "ballast": "Ballast",
+    "restrictor": "Restrictor",
+    "tyre": "Tyre",
+    "telemetry": "Telemetry",
+    "telemetryLevel": {
+      "full": "full",
+      "laps": "lap times and speed",
+      "hidden": "the driver does not share it",
+      "none": "no data"
+    },
+    "difference": "B − A",
+    "conditions": "Announced conditions",
+    "chart": "Time difference along the track",
+    "behind": "B behind {{value}} s",
+    "ahead": "B ahead {{value}} s",
+    "chartHelp": "White line: the difference at the same point of the track (by distance, not by time). Above the middle line, B loses time. Color lines: speed of A (blue) and B (yellow). It covers {{coverage}} % of the lap.",
+    "gaps": {
+      "no_laps": "This session has no imported laps.",
+      "not_enough_laps": "At least two valid laps are needed.",
+      "no_sectors": "The file has no sectors.",
+      "no_telemetry": "No telemetry for both laps: no difference along the track. Sectors only.",
+      "no_map": "This track has no map yet.",
+      "different_handicaps": "The ballast or restrictor is different. The difference is not only driving.",
+      "different_cars": "The cars are different. The difference is not only driving.",
+      "different_tyres": "The tyres are different."
+    }
   }
 }

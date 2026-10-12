@@ -852,3 +852,11 @@ button.link-button {
   padding: 0.1rem 0.5rem;
   font-size: 0.8rem;
 }
+
+td.slower {
+  color: var(--error);
+}
+
+td.faster {
+  color: var(--success);
+}

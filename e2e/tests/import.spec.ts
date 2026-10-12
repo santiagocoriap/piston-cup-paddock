@@ -92,6 +92,7 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
   await expect(laps.getByText('Teórica').first()).toBeVisible()
   await laps.getByText(/Driver 06 · \d+ vueltas/).click()
   await expect(laps.getByRole('table', { name: 'Vueltas de Driver 06' }).getByText('Salida')).toBeVisible()
+  await expect(page.getByRole('table', { name: 'Comparación de las dos vueltas' })).toBeVisible()
 
   // The worker writes the race report. Without an AI key it fails, and the results stay.
   await page.getByRole('form', { name: 'Generar reporte' }).getByRole('button', { name: 'Generar' }).click()

@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import datetime
 from typing import Literal
 
@@ -12,6 +13,7 @@ from apps.competition.permissions import can, can_view
 from apps.rules.scoring import ResultError
 
 from .ac_results import ResultFileError
+from .comparison import CompareError, compare
 from .lap_services import round_laps
 from .models import ResultImport
 from .penalty_services import apply as apply_logs
@@ -335,3 +337,63 @@ def get_laps(request, round_id: int, session: Literal["race", "qualifying", "pra
             for info, laps in data.drivers
         ],
     )
+
+
+# Lap comparison
+
+
+class CompareLapOut(Schema):
+    id: int
+    entry_id: int
+    driver_name: str
+    lap_number: int
+    lap_time_ms: int
+    valid: bool
+    sectors_ms: list[int]
+    car: str
+    ballast_kg: int
+    restrictor: int
+    tyre: str
+    telemetry: str
+
+
+class DeltaOut(Schema):
+    pos: list[float]
+    delta_ms: list[int]
+    coverage: float
+
+
+class SpeedOut(Schema):
+    pos: list[float]
+    speed_kmh: list[float]
+
+
+class ComparisonOut(Schema):
+    session: str
+    choices: list[CompareLapOut]
+    a: CompareLapOut | None
+    b: CompareLapOut | None
+    sector_diff_ms: list[int | None]
+    delta: DeltaOut | None
+    speed_a: SpeedOut | None
+    speed_b: SpeedOut | None
+    conditions: dict
+    gaps: list[str]
+
+
+@router.get("/rounds/{round_id}/compare", response=ComparisonOut)
+def compare_laps(
+    request,
+    round_id: int,
+    session: Literal["race", "qualifying", "practice"] = "race",
+    a: int | None = None,
+    b: int | None = None,
+):
+    round_ = get_object_or_404(Round.objects.select_related("season__championship"), pk=round_id)
+    if not can_view(request.user, round_.season.championship):
+        raise Http404
+    try:
+        data = compare(request.user, round_, session, a, b)
+    except CompareError as error:
+        raise HttpError(422, str(error)) from error
+    return ComparisonOut(**asdict(data))

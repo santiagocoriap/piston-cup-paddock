@@ -223,7 +223,8 @@
     "custom_role_not_allowed": "Elegí un rol personalizado solo con el rol Rol personalizado.",
     "round_not_in_championship": "Esa fecha es de otro campeonato.",
     "file_not_assignable": "Este archivo no se puede asignar.",
-    "no_driver_profile": "Tu cuenta no tiene piloto."
+    "no_driver_profile": "Tu cuenta no tiene piloto.",
+    "lap_not_in_session": "Esa vuelta no es de esta sesión."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -995,5 +996,41 @@
     "speed": "velocidad (máx. {{max}} km/h)",
     "pedals": "verde: acelerador, rojo: freno",
     "noInputs": "sin pedales: el piloto no los comparte"
+  },
+  "compare": {
+    "title": "Comparar vueltas",
+    "lapA": "Vuelta A (referencia)",
+    "lapB": "Vuelta B",
+    "sign": "Diferencia = B − A. Un número positivo (+) quiere decir que B es más lenta.",
+    "notEnough": "Hacen falta al menos dos vueltas válidas de pilotos distintos.",
+    "table": "Comparación de las dos vueltas",
+    "time": "Tiempo",
+    "car": "Auto",
+    "ballast": "Lastre",
+    "restrictor": "Restrictor",
+    "tyre": "Neumático",
+    "telemetry": "Telemetría",
+    "telemetryLevel": {
+      "full": "completa",
+      "laps": "tiempos y velocidad",
+      "hidden": "el piloto no la comparte",
+      "none": "sin datos"
+    },
+    "difference": "B − A",
+    "conditions": "Condiciones anunciadas",
+    "chart": "Diferencia de tiempo a lo largo de la pista",
+    "behind": "B atrás {{value}} s",
+    "ahead": "B adelante {{value}} s",
+    "chartHelp": "Línea blanca: diferencia en el mismo punto de la pista (por distancia, no por tiempo). Arriba de la línea del medio, B pierde tiempo. Líneas de color: velocidad de A (celeste) y B (amarillo). Cubre el {{coverage}} % de la vuelta.",
+    "gaps": {
+      "no_laps": "Esta sesión no tiene vueltas importadas.",
+      "not_enough_laps": "Hacen falta al menos dos vueltas válidas.",
+      "no_sectors": "El archivo no tiene sectores.",
+      "no_telemetry": "Sin telemetría de las dos vueltas: no hay diferencia a lo largo de la pista. Solo sectores.",
+      "no_map": "Esta pista todavía no tiene mapa.",
+      "different_handicaps": "Los lastres o restrictores son distintos. La diferencia no es solo de manejo.",
+      "different_cars": "Los autos son distintos. La diferencia no es solo de manejo.",
+      "different_tyres": "Los neumáticos son distintos."
+    }
   }
 }

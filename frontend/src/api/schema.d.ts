@@ -799,6 +799,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/compare": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Compare Laps */
+        get: operations["apps_imports_api_compare_laps"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/seasons/{season_id}/handicaps": {
         parameters: {
             query?: never;
@@ -2675,6 +2692,69 @@ export interface components {
             clean_rules: string[];
             /** Drivers */
             drivers: components["schemas"]["DriverLapsOut"][];
+        };
+        /** CompareLapOut */
+        CompareLapOut: {
+            /** Id */
+            id: number;
+            /** Entry Id */
+            entry_id: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Lap Number */
+            lap_number: number;
+            /** Lap Time Ms */
+            lap_time_ms: number;
+            /** Valid */
+            valid: boolean;
+            /** Sectors Ms */
+            sectors_ms: number[];
+            /** Car */
+            car: string;
+            /** Ballast Kg */
+            ballast_kg: number;
+            /** Restrictor */
+            restrictor: number;
+            /** Tyre */
+            tyre: string;
+            /** Telemetry */
+            telemetry: string;
+        };
+        /** ComparisonOut */
+        ComparisonOut: {
+            /** Session */
+            session: string;
+            /** Choices */
+            choices: components["schemas"]["CompareLapOut"][];
+            a: components["schemas"]["CompareLapOut"] | null;
+            b: components["schemas"]["CompareLapOut"] | null;
+            /** Sector Diff Ms */
+            sector_diff_ms: (number | null)[];
+            delta: components["schemas"]["DeltaOut"] | null;
+            speed_a: components["schemas"]["SpeedOut"] | null;
+            speed_b: components["schemas"]["SpeedOut"] | null;
+            /** Conditions */
+            conditions: {
+                [key: string]: unknown;
+            };
+            /** Gaps */
+            gaps: string[];
+        };
+        /** DeltaOut */
+        DeltaOut: {
+            /** Pos */
+            pos: number[];
+            /** Delta Ms */
+            delta_ms: number[];
+            /** Coverage */
+            coverage: number;
+        };
+        /** SpeedOut */
+        SpeedOut: {
+            /** Pos */
+            pos: number[];
+            /** Speed Kmh */
+            speed_kmh: number[];
         };
         /** EntryHandicapsOut */
         EntryHandicapsOut: {
@@ -4959,6 +5039,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoundLapsOut"];
+                };
+            };
+        };
+    };
+    apps_imports_api_compare_laps: {
+        parameters: {
+            query?: {
+                session?: "race" | "qualifying" | "practice";
+                a?: number | null;
+                b?: number | null;
+            };
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComparisonOut"];
                 };
             };
         };

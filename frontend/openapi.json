@@ -2271,6 +2271,90 @@
         ]
       }
     },
+    "/api/rounds/{round_id}/compare": {
+      "get": {
+        "operationId": "apps_imports_api_compare_laps",
+        "summary": "Compare Laps",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "session",
+            "schema": {
+              "default": "race",
+              "enum": [
+                "race",
+                "qualifying",
+                "practice"
+              ],
+              "title": "Session",
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "a",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "A"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "b",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "B"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComparisonOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "imports"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/seasons/{season_id}/handicaps": {
       "get": {
         "operationId": "apps_handicaps_api_get_handicaps",
@@ -7555,6 +7639,235 @@
           "drivers"
         ],
         "title": "RoundLapsOut",
+        "type": "object"
+      },
+      "CompareLapOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "lap_number": {
+            "title": "Lap Number",
+            "type": "integer"
+          },
+          "lap_time_ms": {
+            "title": "Lap Time Ms",
+            "type": "integer"
+          },
+          "valid": {
+            "title": "Valid",
+            "type": "boolean"
+          },
+          "sectors_ms": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Sectors Ms",
+            "type": "array"
+          },
+          "car": {
+            "title": "Car",
+            "type": "string"
+          },
+          "ballast_kg": {
+            "title": "Ballast Kg",
+            "type": "integer"
+          },
+          "restrictor": {
+            "title": "Restrictor",
+            "type": "integer"
+          },
+          "tyre": {
+            "title": "Tyre",
+            "type": "string"
+          },
+          "telemetry": {
+            "title": "Telemetry",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "entry_id",
+          "driver_name",
+          "lap_number",
+          "lap_time_ms",
+          "valid",
+          "sectors_ms",
+          "car",
+          "ballast_kg",
+          "restrictor",
+          "tyre",
+          "telemetry"
+        ],
+        "title": "CompareLapOut",
+        "type": "object"
+      },
+      "ComparisonOut": {
+        "properties": {
+          "session": {
+            "title": "Session",
+            "type": "string"
+          },
+          "choices": {
+            "items": {
+              "$ref": "#/components/schemas/CompareLapOut"
+            },
+            "title": "Choices",
+            "type": "array"
+          },
+          "a": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CompareLapOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "b": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CompareLapOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sector_diff_ms": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Sector Diff Ms",
+            "type": "array"
+          },
+          "delta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DeltaOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "speed_a": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SpeedOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "speed_b": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SpeedOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conditions": {
+            "additionalProperties": true,
+            "title": "Conditions",
+            "type": "object"
+          },
+          "gaps": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Gaps",
+            "type": "array"
+          }
+        },
+        "required": [
+          "session",
+          "choices",
+          "a",
+          "b",
+          "sector_diff_ms",
+          "delta",
+          "speed_a",
+          "speed_b",
+          "conditions",
+          "gaps"
+        ],
+        "title": "ComparisonOut",
+        "type": "object"
+      },
+      "DeltaOut": {
+        "properties": {
+          "pos": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Pos",
+            "type": "array"
+          },
+          "delta_ms": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Delta Ms",
+            "type": "array"
+          },
+          "coverage": {
+            "title": "Coverage",
+            "type": "number"
+          }
+        },
+        "required": [
+          "pos",
+          "delta_ms",
+          "coverage"
+        ],
+        "title": "DeltaOut",
+        "type": "object"
+      },
+      "SpeedOut": {
+        "properties": {
+          "pos": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Pos",
+            "type": "array"
+          },
+          "speed_kmh": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Speed Kmh",
+            "type": "array"
+          }
+        },
+        "required": [
+          "pos",
+          "speed_kmh"
+        ],
+        "title": "SpeedOut",
         "type": "object"
       },
       "EntryHandicapsOut": {
