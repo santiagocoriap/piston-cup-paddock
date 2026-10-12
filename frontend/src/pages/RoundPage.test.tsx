@@ -39,6 +39,7 @@ function round(canManage: boolean, result: unknown = null, extra: Record<string,
 }
 
 const noRestarts = {
+  'GET /api/rounds/9/imports': () => json(200, []),
   'GET /api/rounds/9/restarts': () =>
     json(200, {
       attempts: [],

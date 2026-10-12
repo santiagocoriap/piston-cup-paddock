@@ -8,6 +8,8 @@ The app runs as one Docker Compose stack with three services:
 | `web` | Django and the built React app on port 8000. Runs the database migrations at each start |
 | `worker` | Runs the background tasks |
 
+The `media-data` volume keeps the uploaded result files.
+
 ## Deploy with Coolify
 
 1. In Coolify, add a new resource of the type "Docker Compose" from this Git repository.
@@ -45,4 +47,7 @@ Deploy the new version. The `web` service runs the migrations before it starts.
 
 ## Backup
 
-Ticket #18 adds a backup and restore command. Until then, use the backup feature of Coolify for the `db-data` volume.
+Ticket #18 adds a backup and restore command. Until then, use the backup feature of Coolify for 2 volumes:
+
+- `db-data`: the database.
+- `media-data`: the uploaded result files, which are the evidence for the results.

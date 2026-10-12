@@ -16,7 +16,8 @@ export async function submitForm(
   fields: Record<string, string>,
   selects: Record<string, string> = {},
 ) {
-  const form = page.getByRole('form', { name: title })
+  const form = page.getByRole('form', { name: title, exact: true })
+  await form.waitFor() // count() does not wait, so wait for the form first.
   // A select takes the text of its options into its name, so an exact match can miss it.
   const field = async (label: string) => {
     const exact = form.getByLabel(label, { exact: true })

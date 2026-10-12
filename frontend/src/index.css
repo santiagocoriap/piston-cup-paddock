@@ -480,6 +480,55 @@ button.small {
   font-style: italic;
 }
 
+.import {
+  margin-bottom: 1.5rem;
+}
+
+.import h4,
+.import h5 {
+  margin: 1rem 0 0.5rem;
+}
+
+.upload {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.preview {
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+}
+
+.warning {
+  margin: 0.25rem 0;
+  color: #fbbf24;
+}
+
+.badge.warn {
+  border-color: #fbbf24;
+  color: #fbbf24;
+  cursor: help;
+}
+
+label.inline {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: 0.75rem;
+}
+
+button.link {
+  padding: 0;
+  background: none;
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+}
+
 .error {
   margin: 0;
   color: var(--error);

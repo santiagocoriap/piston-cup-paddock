@@ -25,6 +25,9 @@ services:
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: "5432"
+      MEDIA_ROOT: /app/media
+    volumes:
+      - media-data:/app/media
     depends_on:
       db:
         condition: service_healthy
@@ -43,9 +46,13 @@ services:
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: "5432"
+      MEDIA_ROOT: /app/media
+    volumes:
+      - media-data:/app/media
     depends_on:
       web:
         condition: service_healthy
 
 volumes:
   db-data:
+  media-data:

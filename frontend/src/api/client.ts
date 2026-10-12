@@ -3,7 +3,7 @@ import type { paths } from './schema'
 
 const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
 
-function readCookie(name: string): string | undefined {
+export function readCookie(name: string): string | undefined {
   return document.cookie
     .split('; ')
     .find((part) => part.startsWith(`${name}=`))

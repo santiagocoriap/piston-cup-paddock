@@ -141,7 +141,17 @@
     "penalty_needs_upheld_protest": "Only an upheld protest can have a penalty.",
     "penalty_value_required": "Type an amount of 1 or more.",
     "description_required": "Tell what happened.",
-    "outcome_required": "Select upheld or dismissed."
+    "outcome_required": "Select upheld or dismissed.",
+    "not_a_result_file": "This file is not an AC result file.",
+    "not_json": "The file is not JSON.",
+    "unknown_session_type": "The file has an unknown session type.",
+    "file_too_large": "The file is larger than 5 MB.",
+    "already_applied": "This file is already applied.",
+    "unmatched_drivers": "Some drivers have no match. Link or ignore them.",
+    "bad_guid": "The GUID is not valid.",
+    "driver_has_other_guid": "This driver already has another Steam GUID.",
+    "guid_belongs_to_other_driver": "This GUID belongs to another driver.",
+    "import_status_not_allowed": "A file can only set Finished or DNF."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -216,7 +226,10 @@
       "penalty.added": "{{actor}} gave a penalty to {{driver}} in round {{number}} ({{track}}).",
       "protest.submitted": "{{actor}} sent protest #{{protest}} in round {{number}} ({{track}}).",
       "protest.decided": "{{actor}} decided protest #{{protest}} in round {{number}} ({{track}}).",
-      "season.settings_changed": "{{actor}} changed the settings of the season {{season}}."
+      "season.settings_changed": "{{actor}} changed the settings of the season {{season}}.",
+      "import.uploaded": "{{actor}} uploaded the file {{file}} to round {{number}} ({{track}}).",
+      "import.applied": "{{actor}} applied the file {{file}} to round {{number}} ({{track}}).",
+      "driver.guid_linked": "{{actor}} gave a Steam GUID to the driver {{driver}}."
     },
     "fields": {
       "role": "Role",
@@ -232,7 +245,8 @@
       "responsible_drivers": "Responsible drivers",
       "review_status": "Review",
       "status": "Status",
-      "protest_window_minutes": "Protest window (minutes)"
+      "protest_window_minutes": "Protest window (minutes)",
+      "ignored": "Ignored GUIDs"
     },
     "none": "—",
     "pts": "{{count}} pts"
@@ -354,5 +368,52 @@
     "penaltyDriver": "Driver with the penalty",
     "save": "Save the decision",
     "kind": "Penalty type"
+  },
+  "imports": {
+    "title": "Import a result file",
+    "help": "Upload the JSON file from the results folder of the AC server. The file stays as evidence.",
+    "file": "Result file",
+    "upload": "Upload and check",
+    "sameFile": "This file was already uploaded. Nothing changed.",
+    "previous": "Uploaded files",
+    "session": {
+      "race": "Race",
+      "qualifying": "Qualifying",
+      "practice": "Practice"
+    },
+    "status": {
+      "preview": "Not applied",
+      "applied": "Applied"
+    },
+    "preview": "File check",
+    "attempt": "Applies to start {{number}}",
+    "matched": "Drivers found by Steam GUID",
+    "unmatched": "Drivers with no match",
+    "unmatchedHelp": "Link each GUID to an entered driver, or ignore it for a guest.",
+    "laps": "Laps",
+    "totalTime": "Total time",
+    "bestLap": "Best lap",
+    "handicap": "Ballast / restrictor",
+    "finalStatus": "Final status",
+    "link": "Link",
+    "ignore": "Ignore",
+    "linkTo": "Link to",
+    "missing": "Data that the file does not have",
+    "missingFields": {
+      "conditions": "Track and weather conditions",
+      "penalties": "Penalties",
+      "cuts": "Track cuts",
+      "sectors": "Sectors",
+      "collisions": "Collisions"
+    },
+    "warnings": {
+      "track_differs": "The track in the file is not the track of the round.",
+      "guid_differs_in_result": "The GUID in the result table is not the GUID of the laps. The app uses the GUID of the laps.",
+      "car_differs": "The car in the file is not the entered car.",
+      "fewer_laps": "Fewer laps than the winner: check for a DNF."
+    },
+    "apply": "Apply the file",
+    "applied": "The file is applied.",
+    "qualifyingNote": "A qualifying or practice file stores the laps, but it does not change the race result."
   }
 }

@@ -1513,6 +1513,245 @@
           }
         ]
       }
+    },
+    "/api/rounds/{round_id}/imports": {
+      "get": {
+        "operationId": "apps_imports_api_list_imports",
+        "summary": "List Imports",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ImportOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "imports"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_imports_api_create_import",
+        "summary": "Create Import",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportOut"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Upload a result file. The same file again gives the stored import and adds nothing.",
+        "tags": [
+          "imports"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "format": "binary",
+                    "title": "File",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "file"
+                ],
+                "title": "FileParams",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/imports/{import_id}": {
+      "get": {
+        "operationId": "apps_imports_api_get_import",
+        "summary": "Get Import",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "import_id",
+            "schema": {
+              "title": "Import Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "imports"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/imports/{import_id}/link": {
+      "post": {
+        "operationId": "apps_imports_api_link",
+        "summary": "Link",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "import_id",
+            "schema": {
+              "title": "Import Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "imports"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuidLinkIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/imports/{import_id}/apply": {
+      "post": {
+        "operationId": "apps_imports_api_apply_import",
+        "summary": "Apply Import",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "import_id",
+            "schema": {
+              "title": "Import Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "imports"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -3696,6 +3935,284 @@
           "review_status"
         ],
         "title": "ResponsibilityIn",
+        "type": "object"
+      },
+      "ImportOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "sha256": {
+            "title": "Sha256",
+            "type": "string"
+          },
+          "session_type": {
+            "title": "Session Type",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "uploaded_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uploaded By"
+          },
+          "uploaded_at": {
+            "format": "date-time",
+            "title": "Uploaded At",
+            "type": "string"
+          },
+          "applied_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied At"
+          },
+          "is_new": {
+            "default": false,
+            "title": "Is New",
+            "type": "boolean"
+          },
+          "preview": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PreviewOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "filename",
+          "sha256",
+          "session_type",
+          "status",
+          "uploaded_by",
+          "uploaded_at",
+          "applied_at"
+        ],
+        "title": "ImportOut",
+        "type": "object"
+      },
+      "MatchedOut": {
+        "properties": {
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "guid": {
+            "title": "Guid",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "car_model": {
+            "title": "Car Model",
+            "type": "string"
+          },
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          },
+          "total_time_ms": {
+            "title": "Total Time Ms",
+            "type": "integer"
+          },
+          "best_lap_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Lap Ms"
+          },
+          "ballast_kg": {
+            "title": "Ballast Kg",
+            "type": "integer"
+          },
+          "restrictor": {
+            "title": "Restrictor",
+            "type": "integer"
+          },
+          "entry_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry Id"
+          },
+          "driver_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Name"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "position",
+          "guid",
+          "name",
+          "car_model",
+          "laps",
+          "total_time_ms",
+          "best_lap_ms",
+          "ballast_kg",
+          "restrictor",
+          "entry_id",
+          "driver_name",
+          "warnings"
+        ],
+        "title": "MatchedOut",
+        "type": "object"
+      },
+      "PreviewOut": {
+        "properties": {
+          "session_type": {
+            "title": "Session Type",
+            "type": "string"
+          },
+          "track": {
+            "title": "Track",
+            "type": "string"
+          },
+          "layout": {
+            "title": "Layout",
+            "type": "string"
+          },
+          "attempt": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attempt"
+          },
+          "drivers": {
+            "items": {
+              "$ref": "#/components/schemas/MatchedOut"
+            },
+            "title": "Drivers",
+            "type": "array"
+          },
+          "unmatched": {
+            "items": {
+              "$ref": "#/components/schemas/MatchedOut"
+            },
+            "title": "Unmatched",
+            "type": "array"
+          },
+          "missing": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing",
+            "type": "array"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "session_type",
+          "track",
+          "layout",
+          "attempt",
+          "drivers",
+          "unmatched",
+          "missing",
+          "warnings"
+        ],
+        "title": "PreviewOut",
+        "type": "object"
+      },
+      "GuidLinkIn": {
+        "properties": {
+          "guid": {
+            "title": "Guid",
+            "type": "string"
+          },
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "guid",
+          "entry_id"
+        ],
+        "title": "GuidLinkIn",
+        "type": "object"
+      },
+      "ApplyIn": {
+        "properties": {
+          "statuses": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "title": "Statuses",
+            "type": "object"
+          },
+          "ignored_guids": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Ignored Guids",
+            "type": "array"
+          }
+        },
+        "title": "ApplyIn",
         "type": "object"
       }
     },

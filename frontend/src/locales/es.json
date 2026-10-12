@@ -141,7 +141,17 @@
     "penalty_needs_upheld_protest": "Solo una protesta aceptada puede llevar sanción.",
     "penalty_value_required": "Escribí una cantidad mayor que 0.",
     "description_required": "Contá qué pasó.",
-    "outcome_required": "Elegí aceptar o rechazar."
+    "outcome_required": "Elegí aceptar o rechazar.",
+    "not_a_result_file": "Este archivo no es un archivo de resultados de AC.",
+    "not_json": "El archivo no es JSON.",
+    "unknown_session_type": "El archivo tiene un tipo de sesión desconocido.",
+    "file_too_large": "El archivo pesa más de 5 MB.",
+    "already_applied": "Este archivo ya está aplicado.",
+    "unmatched_drivers": "Hay pilotos sin coincidencia. Vinculalos o ignoralos.",
+    "bad_guid": "El GUID no es válido.",
+    "driver_has_other_guid": "Ese piloto ya tiene otro Steam GUID.",
+    "guid_belongs_to_other_driver": "Ese GUID ya pertenece a otro piloto.",
+    "import_status_not_allowed": "Un archivo solo puede marcar Terminó o DNF."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -216,7 +226,10 @@
       "penalty.added": "{{actor}} sancionó a {{driver}} en la fecha {{number}} ({{track}}).",
       "protest.submitted": "{{actor}} presentó la protesta #{{protest}} en la fecha {{number}} ({{track}}).",
       "protest.decided": "{{actor}} decidió la protesta #{{protest}} en la fecha {{number}} ({{track}}).",
-      "season.settings_changed": "{{actor}} cambió la configuración de la temporada {{season}}."
+      "season.settings_changed": "{{actor}} cambió la configuración de la temporada {{season}}.",
+      "import.uploaded": "{{actor}} subió el archivo {{file}} a la fecha {{number}} ({{track}}).",
+      "import.applied": "{{actor}} aplicó el archivo {{file}} a la fecha {{number}} ({{track}}).",
+      "driver.guid_linked": "{{actor}} le asignó un Steam GUID al piloto {{driver}}."
     },
     "fields": {
       "role": "Rol",
@@ -232,7 +245,8 @@
       "responsible_drivers": "Pilotos responsables",
       "review_status": "Revisión",
       "status": "Estado",
-      "protest_window_minutes": "Plazo de protestas (minutos)"
+      "protest_window_minutes": "Plazo de protestas (minutos)",
+      "ignored": "GUID ignorados"
     },
     "none": "—",
     "pts": "{{count}} pts"
@@ -354,5 +368,52 @@
     "penaltyDriver": "Piloto sancionado",
     "save": "Guardar decisión",
     "kind": "Tipo de sanción"
+  },
+  "imports": {
+    "title": "Importar archivo de resultados",
+    "help": "Subí el archivo JSON de la carpeta results del servidor de AC. El archivo queda guardado como prueba.",
+    "file": "Archivo de resultados",
+    "upload": "Subir y revisar",
+    "sameFile": "Este archivo ya estaba subido. No se agregó nada.",
+    "previous": "Archivos subidos",
+    "session": {
+      "race": "Carrera",
+      "qualifying": "Clasificación",
+      "practice": "Práctica"
+    },
+    "status": {
+      "preview": "Sin aplicar",
+      "applied": "Aplicado"
+    },
+    "preview": "Revisión del archivo",
+    "attempt": "Se aplica a la largada {{number}}",
+    "matched": "Pilotos encontrados por Steam GUID",
+    "unmatched": "Pilotos sin coincidencia",
+    "unmatchedHelp": "Vinculá cada GUID con un piloto inscripto, o ignoralo si fue un invitado.",
+    "laps": "Vueltas",
+    "totalTime": "Tiempo total",
+    "bestLap": "Mejor vuelta",
+    "handicap": "Lastre / restrictor",
+    "finalStatus": "Estado final",
+    "link": "Vincular",
+    "ignore": "Ignorar",
+    "linkTo": "Vincular con",
+    "missing": "Datos que el archivo no trae",
+    "missingFields": {
+      "conditions": "Condiciones de pista y clima",
+      "penalties": "Sanciones",
+      "cuts": "Cortes de pista",
+      "sectors": "Sectores",
+      "collisions": "Choques"
+    },
+    "warnings": {
+      "track_differs": "La pista del archivo no coincide con la pista de la fecha.",
+      "guid_differs_in_result": "El GUID de la tabla de resultados no coincide con el de las vueltas. Se usa el de las vueltas.",
+      "car_differs": "El auto del archivo no coincide con el auto inscripto.",
+      "fewer_laps": "Menos vueltas que el ganador: revisá si fue DNF."
+    },
+    "apply": "Aplicar el archivo",
+    "applied": "Archivo aplicado.",
+    "qualifyingNote": "Un archivo de clasificación o práctica guarda las vueltas, pero no cambia el resultado de carrera."
   }
 }

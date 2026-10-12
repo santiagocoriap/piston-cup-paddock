@@ -575,6 +575,78 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Imports */
+        get: operations["apps_imports_api_list_imports"];
+        put?: never;
+        /**
+         * Create Import
+         * @description Upload a result file. The same file again gives the stored import and adds nothing.
+         */
+        post: operations["apps_imports_api_create_import"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/imports/{import_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Import */
+        get: operations["apps_imports_api_get_import"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/imports/{import_id}/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Link */
+        post: operations["apps_imports_api_link"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/imports/{import_id}/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply Import */
+        post: operations["apps_imports_api_apply_import"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1345,6 +1417,102 @@ export interface components {
              * @default
              */
             reason?: string;
+        };
+        /** ImportOut */
+        ImportOut: {
+            /** Id */
+            id: number;
+            /** Filename */
+            filename: string;
+            /** Sha256 */
+            sha256: string;
+            /** Session Type */
+            session_type: string;
+            /** Status */
+            status: string;
+            /** Uploaded By */
+            uploaded_by: string | null;
+            /**
+             * Uploaded At
+             * Format: date-time
+             */
+            uploaded_at: string;
+            /** Applied At */
+            applied_at: string | null;
+            /**
+             * Is New
+             * @default false
+             */
+            is_new?: boolean;
+            preview?: components["schemas"]["PreviewOut"] | null;
+        };
+        /** MatchedOut */
+        MatchedOut: {
+            /** Position */
+            position: number;
+            /** Guid */
+            guid: string;
+            /** Name */
+            name: string;
+            /** Car Model */
+            car_model: string;
+            /** Laps */
+            laps: number;
+            /** Total Time Ms */
+            total_time_ms: number;
+            /** Best Lap Ms */
+            best_lap_ms: number | null;
+            /** Ballast Kg */
+            ballast_kg: number;
+            /** Restrictor */
+            restrictor: number;
+            /** Entry Id */
+            entry_id: number | null;
+            /** Driver Name */
+            driver_name: string | null;
+            /** Warnings */
+            warnings: string[];
+        };
+        /** PreviewOut */
+        PreviewOut: {
+            /** Session Type */
+            session_type: string;
+            /** Track */
+            track: string;
+            /** Layout */
+            layout: string;
+            /** Attempt */
+            attempt: number | null;
+            /** Drivers */
+            drivers: components["schemas"]["MatchedOut"][];
+            /** Unmatched */
+            unmatched: components["schemas"]["MatchedOut"][];
+            /** Missing */
+            missing: string[];
+            /** Warnings */
+            warnings: string[];
+        };
+        /** GuidLinkIn */
+        GuidLinkIn: {
+            /** Guid */
+            guid: string;
+            /** Entry Id */
+            entry_id: number;
+        };
+        /** ApplyIn */
+        ApplyIn: {
+            /**
+             * Statuses
+             * @default {}
+             */
+            statuses?: {
+                [key: string]: string;
+            };
+            /**
+             * Ignored Guids
+             * @default []
+             */
+            ignored_guids?: string[];
         };
     };
     responses: never;
@@ -2258,6 +2426,143 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoundRestartsOut"];
+                };
+            };
+        };
+    };
+    apps_imports_api_list_imports: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportOut"][];
+                };
+            };
+        };
+    };
+    apps_imports_api_create_import: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportOut"];
+                };
+            };
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportOut"];
+                };
+            };
+        };
+    };
+    apps_imports_api_get_import: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                import_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportOut"];
+                };
+            };
+        };
+    };
+    apps_imports_api_link: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                import_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuidLinkIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportOut"];
+                };
+            };
+        };
+    };
+    apps_imports_api_apply_import: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                import_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportOut"];
                 };
             };
         };

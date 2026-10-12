@@ -126,6 +126,12 @@ def _changes(round_: Round, before: ResultVersion | None, after: ResultVersion) 
     return changes
 
 
+def _same_lines(old: list[Line], new: list[Line]) -> bool:
+    return sorted(old, key=lambda line: line.entry_id) == sorted(
+        new, key=lambda line: line.entry_id
+    )
+
+
 def save_result(round_: Round, lines: list[Line], user, reason: str = "") -> RaceResult:
     """Enter or correct the classification. A correction of an official result needs a reason."""
     entry_ids = set(round_.season.entries.values_list("id", flat=True))
@@ -138,6 +144,8 @@ def save_result(round_: Round, lines: list[Line], user, reason: str = "") -> Rac
         if result and result.status == State.OFFICIAL and not reason.strip():
             raise ResultError("reason_required")
         before = result.current_version if result else None
+        if before is not None and _same_lines(entered_lines(before), lines):
+            return result  # Nothing changed. A second save of the same lines adds nothing.
         if result is None:
             result = RaceResult.objects.create(round=round_, published_at=timezone.now())
         kind = ResultVersion.Kind.ENTRY if before is None else ResultVersion.Kind.CORRECTION

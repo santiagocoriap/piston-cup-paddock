@@ -139,10 +139,16 @@ def test_penalty_survives_a_later_correction_and_applies_once(admin, grid, round
         f"/rounds/{round_.id}/penalties",
         {"entry_id": grid[0].id, "kind": "points", "value": 5, "reason": "Conducta"},
     )
-    detail = enter(admin, round_, grid, reason="Reenvío del mismo resultado").json()
-    detail = enter(admin, round_, grid, reason="Otra vez").json()
+    detail = enter(admin, round_, grid, order=(1, 0, 2, 3), reason="Orden mal cargado").json()
+    detail = enter(admin, round_, grid, order=(0, 1, 2, 3), reason="Volver al orden").json()
     assert points(detail)["Ana"] == 20
     assert detail["version"] == 4
+
+
+def test_saving_the_same_lines_again_makes_no_new_version(admin, grid, round_):
+    enter(admin, round_, grid)
+    detail = enter(admin, round_, grid, reason="Mismo resultado").json()
+    assert detail["version"] == 1
 
 
 def test_same_imported_penalty_never_applies_twice(champ_admin, admin, grid, round_):

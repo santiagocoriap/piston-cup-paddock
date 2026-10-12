@@ -9,6 +9,7 @@ import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { penaltyChanged } from '../lib/results'
+import { ImportSection } from './ImportSection'
 import { RestartsSection } from './RestartsSection'
 import { ApproveButton, Penalties, Protests, ResultStatus, Versions } from './ResultReview'
 
@@ -28,6 +29,8 @@ export function RoundPage() {
 
   // A saved result accepts the current start, so the restarts section loads again.
   const [saves, setSaves] = useState(0)
+  // An applied file changes the entered result, so the result form starts again from it.
+  const [imports, setImports] = useState(0)
   const data = round.data
   const adminView = useAdminView(data?.can_manage ?? false)
   if (!data) return <Loading failed={round.failed} />
@@ -98,7 +101,17 @@ export function RoundPage() {
           t('round.bonuses', { pole: rules.pole_bonus, fastest: rules.fastest_lap_bonus })}
       </p>
 
-      {adminView && <ResultForm round={data} onSaved={changed} />}
+      {adminView && (
+        <ImportSection
+          roundId={data.id}
+          entries={data.entries}
+          onApplied={() => {
+            changed()
+            setImports((n) => n + 1)
+          }}
+        />
+      )}
+      {adminView && <ResultForm key={imports} round={data} onSaved={changed} />}
 
       <Penalties round={data} adminView={adminView} onChange={changed} />
       <Protests round={data} adminView={adminView} onChange={changed} />

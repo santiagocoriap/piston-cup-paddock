@@ -7,6 +7,7 @@ from apps.competition.api import router as competition_router
 from apps.core.api import router as core_router
 from apps.identity.api import router as auth_router
 from apps.identity.drivers_api import router as drivers_router
+from apps.imports.api import router as imports_router
 from apps.restarts.api import router as restarts_router
 from apps.results.api import router as results_router
 
@@ -20,3 +21,4 @@ api.add_router("/", competition_router)
 api.add_router("/", results_router)
 api.add_router("/", audit_router)
 api.add_router("/", restarts_router)
+api.add_router("/", imports_router)

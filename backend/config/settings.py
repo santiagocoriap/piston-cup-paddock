@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "apps.results",
     "apps.audit",
     "apps.restarts",
+    "apps.imports",
 ]
 
 MIDDLEWARE = [
@@ -108,6 +109,12 @@ LOCALE_PATHS = [BASE_DIR / "locale"]
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
+
+# Uploaded evidence, for example result files. Docker keeps it in the media-data volume.
+MEDIA_ROOT = Path(env("MEDIA_ROOT", str(BASE_DIR / "media")))
+MEDIA_URL = "/media/"
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
