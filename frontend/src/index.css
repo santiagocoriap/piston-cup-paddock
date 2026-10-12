@@ -763,6 +763,15 @@ fieldset.vote {
   margin: 1rem 0;
 }
 
+.link-box input {
+  width: 100%;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+
+.narrow-section form + form {
+  margin-top: 1rem;
+}
+
 .error {
   margin: 0;
   color: var(--error);

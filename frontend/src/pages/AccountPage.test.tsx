@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -26,7 +26,8 @@ describe('AccountPage', () => {
     )
     await userEvent.selectOptions(screen.getByLabelText('Idioma'), 'en')
     await userEvent.selectOptions(screen.getByLabelText('Zona horaria'), 'Europe/Madrid')
-    await userEvent.click(screen.getByRole('button', { name: 'Guardar' }))
+    const settings = screen.getByRole('form', { name: 'Mi cuenta' })
+    await userEvent.click(within(settings).getByRole('button', { name: 'Guardar' }))
 
     expect(await screen.findByRole('status')).toHaveTextContent('The changes are saved.')
     expect(calls.find((c) => c.key === 'PATCH /api/auth/me')!.body).toEqual({

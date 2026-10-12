@@ -83,6 +83,57 @@ export function AccountPage() {
         )}
         <button type="submit">{t('common.save')}</button>
       </form>
+      <PasswordForm />
     </section>
+  )
+}
+
+function PasswordForm() {
+  const { t } = useTranslation()
+  const [message, setMessage] = useState<{ kind: 'error' | 'saved'; text: string } | null>(null)
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setMessage(null)
+    const element = event.currentTarget
+    const form = new FormData(element)
+    const { error } = await api.POST('/api/auth/password', {
+      body: {
+        current: String(form.get('current') ?? ''),
+        new: String(form.get('new') ?? ''),
+        new_again: String(form.get('new_again') ?? ''),
+      },
+    })
+    if (error) {
+      const messages = (error as { messages?: string[] }).messages ?? []
+      setMessage({ kind: 'error', text: [errorMessage(t, error), ...messages].join(' ') })
+      return
+    }
+    element.reset()
+    setMessage({ kind: 'saved', text: t('password.saved') })
+  }
+
+  return (
+    <form className="card" onSubmit={submit} aria-label={t('password.title')}>
+      <h2>{t('password.title')}</h2>
+      <label>
+        {t('password.current')}
+        <input name="current" type="password" autoComplete="current-password" required />
+      </label>
+      <label>
+        {t('password.new')}
+        <input name="new" type="password" autoComplete="new-password" required minLength={8} />
+      </label>
+      <label>
+        {t('password.again')}
+        <input name="new_again" type="password" autoComplete="new-password" required minLength={8} />
+      </label>
+      {message && (
+        <p role={message.kind === 'error' ? 'alert' : 'status'} className={message.kind === 'error' ? 'error' : 'success'}>
+          {message.text}
+        </p>
+      )}
+      <button type="submit">{t('common.save')}</button>
+    </form>
   )
 }

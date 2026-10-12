@@ -89,6 +89,16 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -2560,6 +2570,356 @@
         "tags": [
           "dashboard"
         ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seasons/{season_id}/export/results.csv": {
+      "get": {
+        "operationId": "apps_core_exports_export_results",
+        "summary": "Export Results",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "exports"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seasons/{season_id}/export/standings.csv": {
+      "get": {
+        "operationId": "apps_core_exports_export_standings",
+        "summary": "Export Standings",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "exports"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seasons/{season_id}/export/restarts.csv": {
+      "get": {
+        "operationId": "apps_core_exports_export_restarts",
+        "summary": "Export Restarts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "exports"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/records/export.csv": {
+      "get": {
+        "operationId": "apps_core_exports_export_records",
+        "summary": "Export Records",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "exports"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/accounts": {
+      "get": {
+        "operationId": "apps_identity_accounts_api_list_accounts",
+        "summary": "List Accounts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AccountOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "accounts"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_identity_accounts_api_create",
+        "summary": "Create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "accounts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/accounts/{user_id}/link": {
+      "post": {
+        "operationId": "apps_identity_accounts_api_reset_link",
+        "summary": "Reset Link",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "title": "User Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "A new one-time link, for a forgotten password. Older links stop working.",
+        "tags": [
+          "accounts"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/auth/invite/check": {
+      "post": {
+        "operationId": "apps_identity_accounts_api_check_link",
+        "summary": "Check Link",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "accounts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/auth/invite/accept": {
+      "post": {
+        "operationId": "apps_identity_accounts_api_accept_link",
+        "summary": "Accept Link",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "accounts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/auth/password": {
+      "post": {
+        "operationId": "apps_identity_accounts_api_set_password",
+        "summary": "Set Password",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "accounts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordIn"
+              }
+            }
+          },
+          "required": true
+        },
         "security": [
           {
             "SessionAuth": []
@@ -6992,6 +7352,245 @@
           "next_round"
         ],
         "title": "SeasonCardOut",
+        "type": "object"
+      },
+      "AccountOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          },
+          "driver_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Name"
+          },
+          "championships": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Championships",
+            "type": "array"
+          },
+          "has_password": {
+            "title": "Has Password",
+            "type": "boolean"
+          },
+          "open_link": {
+            "title": "Open Link",
+            "type": "boolean"
+          },
+          "last_login": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Login"
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "driver_name",
+          "championships",
+          "has_password",
+          "open_link",
+          "last_login"
+        ],
+        "title": "AccountOut",
+        "type": "object"
+      },
+      "LinkOut": {
+        "properties": {
+          "account": {
+            "$ref": "#/components/schemas/AccountOut"
+          },
+          "link_path": {
+            "title": "Link Path",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account",
+          "link_path",
+          "expires_at"
+        ],
+        "title": "LinkOut",
+        "type": "object"
+      },
+      "AccountIn": {
+        "properties": {
+          "username": {
+            "maxLength": 150,
+            "minLength": 1,
+            "pattern": "^[\\w.@+-]+$",
+            "title": "Username",
+            "type": "string"
+          },
+          "driver_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Id"
+          },
+          "championship_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Championship Id"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Role"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "username"
+        ],
+        "title": "AccountIn",
+        "type": "object"
+      },
+      "LinkInfo": {
+        "properties": {
+          "username": {
+            "title": "Username",
+            "type": "string"
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "purpose"
+        ],
+        "title": "LinkInfo",
+        "type": "object"
+      },
+      "AccountErrorOut": {
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "messages": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Messages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "title": "AccountErrorOut",
+        "type": "object"
+      },
+      "TokenIn": {
+        "properties": {
+          "token": {
+            "maxLength": 100,
+            "minLength": 10,
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "title": "TokenIn",
+        "type": "object"
+      },
+      "AcceptIn": {
+        "properties": {
+          "token": {
+            "maxLength": 100,
+            "minLength": 10,
+            "title": "Token",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 128,
+            "title": "Password",
+            "type": "string"
+          },
+          "password_again": {
+            "maxLength": 128,
+            "title": "Password Again",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token",
+          "password",
+          "password_again"
+        ],
+        "title": "AcceptIn",
+        "type": "object"
+      },
+      "PasswordIn": {
+        "properties": {
+          "current": {
+            "maxLength": 128,
+            "title": "Current",
+            "type": "string"
+          },
+          "new": {
+            "maxLength": 128,
+            "title": "New",
+            "type": "string"
+          },
+          "new_again": {
+            "maxLength": 128,
+            "title": "New Again",
+            "type": "string"
+          }
+        },
+        "required": [
+          "current",
+          "new",
+          "new_again"
+        ],
+        "title": "PasswordIn",
         "type": "object"
       }
     },

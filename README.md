@@ -18,6 +18,7 @@ You need Docker.
    ```
 
 5. Open http://localhost:8420 and sign in.
+6. To add drivers, switch to the admin mode, open **Cuentas**, and make an account. Send the invite link to the driver.
 
 ## Develop
 

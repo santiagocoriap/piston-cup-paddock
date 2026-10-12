@@ -23,7 +23,8 @@
     "audit": "Historial",
     "records": "Récords",
     "home": "Mi paddock",
-    "account": "Mi cuenta"
+    "account": "Mi cuenta",
+    "accounts": "Cuentas"
   },
   "common": {
     "create": "Crear",
@@ -185,7 +186,14 @@
     "bad_power": "El valor del voto no es válido.",
     "bad_prior_season": "La temporada anterior tiene que ser de este campeonato.",
     "bad_timezone": "La zona horaria no es válida.",
-    "too_many_attempts": "Demasiados intentos con contraseña incorrecta. Esperá 15 minutos y probá de nuevo."
+    "too_many_attempts": "Demasiados intentos con contraseña incorrecta. Esperá 15 minutos y probá de nuevo.",
+    "username_required": "Escribí un usuario.",
+    "username_exists": "Ese usuario ya existe.",
+    "championship_required": "Elegí un campeonato que administres.",
+    "link_not_valid": "Este link no sirve: ya se usó o venció.",
+    "passwords_differ": "Las dos contraseñas no coinciden.",
+    "weak_password": "La contraseña es muy débil.",
+    "wrong_current_password": "La contraseña actual no es correcta."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -276,7 +284,11 @@
       "ballot.decided_by_admin": "{{actor}} eligió a mano en {{ballot}}.",
       "ballot.decided": "La votación {{ballot}} quedó decidida.",
       "round.fixed": "{{actor}} reservó {{track}} como pista fija de {{season}}.",
-      "round.changed": "{{actor}} cambió la fecha {{number}} ({{track}}) de {{season}}."
+      "round.changed": "{{actor}} cambió la fecha {{number}} ({{track}}) de {{season}}.",
+      "account.created": "{{actor}} creó la cuenta {{username}}.",
+      "account.link_created": "{{actor}} creó un link de acceso para {{username}}.",
+      "account.password_set": "{{username}} eligió su contraseña.",
+      "account.password_changed": "{{username}} cambió su contraseña."
     },
     "fields": {
       "role": "Rol",
@@ -303,7 +315,9 @@
       "selected": "Elegidas",
       "runoff": "Desempate",
       "allow_repeat_layouts": "Repetir pistas fijas",
-      "announced_conditions": "Condiciones anunciadas"
+      "announced_conditions": "Condiciones anunciadas",
+      "username": "Usuario",
+      "driver": "Piloto"
     },
     "none": "—",
     "pts": "{{count}} pts"
@@ -685,5 +699,47 @@
     "standings": "Campeonato",
     "restarts": "Reinicios",
     "records": "Exportar récords (CSV)"
+  },
+  "accounts": {
+    "title": "Cuentas",
+    "help": "La app no manda emails. Copiá el link y mandalo por el chat de la liga. El link sirve una sola vez y vence en 7 días.",
+    "new": "Nueva cuenta",
+    "username": "Usuario",
+    "driver": "Piloto (opcional)",
+    "noDriver": "Sin piloto",
+    "championship": "Campeonato (opcional)",
+    "noChampionship": "Sin campeonato",
+    "role": "Rol",
+    "create": "Crear cuenta",
+    "link": "Link para {{name}}",
+    "copy": "Copiar link",
+    "copied": "Link copiado.",
+    "expires": "Vence el {{date}}.",
+    "newLink": "Nuevo link",
+    "status": "Estado",
+    "active": "Activa",
+    "pending": "Esperando que elija contraseña",
+    "openLink": "Tiene un link sin usar",
+    "lastLogin": "Último ingreso",
+    "never": "Nunca",
+    "championships": "Campeonatos"
+  },
+  "invite": {
+    "title": "Elegí tu contraseña",
+    "welcome": "Hola, {{name}}. Elegí una contraseña para entrar al paddock.",
+    "resetWelcome": "Hola, {{name}}. Elegí una contraseña nueva.",
+    "password": "Contraseña",
+    "again": "Repetí la contraseña",
+    "submit": "Guardar y entrar",
+    "checking": "Revisando el link…",
+    "invalid": "Este link no sirve: ya se usó o venció. Pedile uno nuevo a un admin.",
+    "rules": "Al menos 8 caracteres, y no solo números."
+  },
+  "password": {
+    "title": "Cambiar contraseña",
+    "current": "Contraseña actual",
+    "new": "Contraseña nueva",
+    "again": "Repetí la contraseña nueva",
+    "saved": "Contraseña cambiada."
   }
 }

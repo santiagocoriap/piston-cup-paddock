@@ -45,3 +45,22 @@ class LoginFailure(models.Model):
 
     def __str__(self):
         return f"{self.username} from {self.ip} at {self.failed_at:%Y-%m-%d %H:%M}"
+
+
+class AccountLink(models.Model):
+    """A one-time link to set a password. The database keeps only the SHA-256 hash of the token."""
+
+    class Purpose(models.TextChoices):
+        INVITE = "invite", _("Invite")
+        RESET = "reset", _("Password reset")
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="account_links")
+    token_hash = models.CharField(max_length=64, unique=True)
+    purpose = models.CharField(max_length=10, choices=Purpose.choices)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name="+")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.purpose} link for {self.user}"

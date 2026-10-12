@@ -4,6 +4,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { api, type Me } from './api/client'
 import { Layout } from './components/Layout'
 import { AccountPage } from './pages/AccountPage'
+import { AccountsPage } from './pages/admin/AccountsPage'
 import { AuditPage } from './pages/admin/AuditPage'
 import { CatalogPage } from './pages/admin/CatalogPage'
 import { DriversPage } from './pages/admin/DriversPage'
@@ -11,6 +12,7 @@ import { LeaguesPage } from './pages/admin/LeaguesPage'
 import { BallotPage } from './pages/BallotPage'
 import { ChampionshipPage } from './pages/ChampionshipPage'
 import { ChampionshipsPage } from './pages/ChampionshipsPage'
+import { InvitePage } from './pages/InvitePage'
 import { RecordsPage } from './pages/RecordsPage'
 import { RoundPage } from './pages/RoundPage'
 import { SeasonPage } from './pages/SeasonPage'
@@ -23,10 +25,15 @@ export default function App() {
   const { t, i18n } = useTranslation()
   const [session, setSession] = useState<Session>({ status: 'loading' })
 
-  useEffect(() => {
+  const [onInvite, setOnInvite] = useState(() => window.location.pathname === '/invite')
+
+  const loadSession = () =>
     api.GET('/api/auth/me').then(({ data }) => {
       setSession(data ? { status: 'signed-in', me: data } : { status: 'anonymous' })
     })
+
+  useEffect(() => {
+    void loadSession()
   }, [])
 
   useEffect(() => {
@@ -36,6 +43,20 @@ export default function App() {
   async function signOut() {
     await api.POST('/api/auth/logout')
     setSession({ status: 'anonymous' })
+  }
+
+  if (onInvite) {
+    return (
+      <div className="shell narrow">
+        <header className="brand">{t('app.name')}</header>
+        <InvitePage
+          onSignedIn={() => {
+            setOnInvite(false)
+            void loadSession()
+          }}
+        />
+      </div>
+    )
   }
 
   if (session.status !== 'signed-in') {
@@ -86,6 +107,7 @@ function AppRoutes({
         {adminPages && <Route path="admin/drivers" element={<DriversPage />} />}
         {adminPages && <Route path="admin/catalog" element={<CatalogPage />} />}
         {managerPages && <Route path="admin/audit" element={<AuditPage />} />}
+        {managerPages && <Route path="admin/accounts" element={<AccountsPage />} />}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

@@ -23,7 +23,8 @@
     "audit": "History",
     "records": "Records",
     "home": "My paddock",
-    "account": "My account"
+    "account": "My account",
+    "accounts": "Accounts"
   },
   "common": {
     "create": "Create",
@@ -185,7 +186,14 @@
     "bad_power": "The vote value is not valid.",
     "bad_prior_season": "The earlier season must be in this championship.",
     "bad_timezone": "The timezone is not valid.",
-    "too_many_attempts": "Too many wrong passwords. Wait 15 minutes and try again."
+    "too_many_attempts": "Too many wrong passwords. Wait 15 minutes and try again.",
+    "username_required": "Type a username.",
+    "username_exists": "This username already exists.",
+    "championship_required": "Select a championship that you manage.",
+    "link_not_valid": "This link does not work: it was used or it ended.",
+    "passwords_differ": "The two passwords are not the same.",
+    "weak_password": "The password is too weak.",
+    "wrong_current_password": "The current password is not correct."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -276,7 +284,11 @@
       "ballot.decided_by_admin": "{{actor}} chose manually in {{ballot}}.",
       "ballot.decided": "The ballot {{ballot}} is decided.",
       "round.fixed": "{{actor}} reserved {{track}} as a fixed track of {{season}}.",
-      "round.changed": "{{actor}} changed round {{number}} ({{track}}) of {{season}}."
+      "round.changed": "{{actor}} changed round {{number}} ({{track}}) of {{season}}.",
+      "account.created": "{{actor}} made the account {{username}}.",
+      "account.link_created": "{{actor}} made an access link for {{username}}.",
+      "account.password_set": "{{username}} chose a password.",
+      "account.password_changed": "{{username}} changed the password."
     },
     "fields": {
       "role": "Role",
@@ -303,7 +315,9 @@
       "selected": "Selected",
       "runoff": "Runoff",
       "allow_repeat_layouts": "Repeat fixed tracks",
-      "announced_conditions": "Announced conditions"
+      "announced_conditions": "Announced conditions",
+      "username": "Username",
+      "driver": "Driver"
     },
     "none": "—",
     "pts": "{{count}} pts"
@@ -685,5 +699,47 @@
     "standings": "Standings",
     "restarts": "Restarts",
     "records": "Export records (CSV)"
+  },
+  "accounts": {
+    "title": "Accounts",
+    "help": "The app sends no email. Copy the link and send it in the league chat. The link works one time and ends after 7 days.",
+    "new": "New account",
+    "username": "Username",
+    "driver": "Driver (optional)",
+    "noDriver": "No driver",
+    "championship": "Championship (optional)",
+    "noChampionship": "No championship",
+    "role": "Role",
+    "create": "Create the account",
+    "link": "Link for {{name}}",
+    "copy": "Copy the link",
+    "copied": "Link copied.",
+    "expires": "Ends on {{date}}.",
+    "newLink": "New link",
+    "status": "Status",
+    "active": "Active",
+    "pending": "Waiting for a password",
+    "openLink": "Has an unused link",
+    "lastLogin": "Last sign-in",
+    "never": "Never",
+    "championships": "Championships"
+  },
+  "invite": {
+    "title": "Choose your password",
+    "welcome": "Hello, {{name}}. Choose a password to enter the paddock.",
+    "resetWelcome": "Hello, {{name}}. Choose a new password.",
+    "password": "Password",
+    "again": "Type the password again",
+    "submit": "Save and enter",
+    "checking": "Checking the link…",
+    "invalid": "This link does not work: it was used or it ended. Ask an admin for a new one.",
+    "rules": "At least 8 characters, and not only numbers."
+  },
+  "password": {
+    "title": "Change the password",
+    "current": "Current password",
+    "new": "New password",
+    "again": "Type the new password again",
+    "saved": "The password is changed."
   }
 }

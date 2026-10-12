@@ -8,6 +8,7 @@ from apps.core.api import router as core_router
 from apps.core.exports import router as exports_router
 from apps.dashboard.api import router as dashboard_router
 from apps.handicaps.api import router as handicaps_router
+from apps.identity.accounts_api import router as accounts_router
 from apps.identity.api import router as auth_router
 from apps.identity.drivers_api import router as drivers_router
 from apps.imports.api import router as imports_router
@@ -32,3 +33,4 @@ api.add_router("/", records_router)
 api.add_router("/", voting_router)
 api.add_router("/", dashboard_router)
 api.add_router("/", exports_router)
+api.add_router("/", accounts_router)
