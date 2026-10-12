@@ -8315,8 +8315,9 @@
             "type": "string"
           },
           "tone": {
-            "default": "friendly",
+            "default": "sarcastic",
             "enum": [
+              "sarcastic",
               "friendly",
               "roast"
             ],

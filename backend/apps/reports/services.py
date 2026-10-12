@@ -85,7 +85,7 @@ def auto_request(round_: Round, user) -> RaceReport | None:
     if not ai_configured():
         return None
     try:
-        return request_report(round_, user, language=settings.LANGUAGE_CODE, tone="friendly")
+        return request_report(round_, user, language=settings.LANGUAGE_CODE, tone="sarcastic")
     except ReportError:
         return None
 

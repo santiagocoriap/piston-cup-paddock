@@ -41,7 +41,7 @@ class ReportsOut(Schema):
 
 class ReportIn(Schema):
     language: Literal["es", "en"] = "es"
-    tone: Literal["friendly", "roast"] = "friendly"
+    tone: Literal["sarcastic", "friendly", "roast"] = "sarcastic"
 
 
 class ReadOut(Schema):

@@ -803,11 +803,12 @@
     "notConfigured": "The AI has no key. The report fails until an admin adds the key on the server.",
     "language": "Language",
     "languages": {
-      "es": "Spanish",
+      "es": "Spanish (Argentina)",
       "en": "English"
     },
     "tone": "Tone",
     "tones": {
+      "sarcastic": "Sarcastic (heavy humor)",
       "friendly": "Friendly",
       "roast": "Roast"
     },

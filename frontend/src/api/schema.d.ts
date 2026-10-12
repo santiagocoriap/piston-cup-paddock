@@ -2868,10 +2868,10 @@ export interface components {
             language?: "es" | "en";
             /**
              * Tone
-             * @default friendly
+             * @default sarcastic
              * @enum {string}
              */
-            tone?: "friendly" | "roast";
+            tone?: "sarcastic" | "friendly" | "roast";
         };
         /** ReadOut */
         ReadOut: {

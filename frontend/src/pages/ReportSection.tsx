@@ -7,6 +7,7 @@ import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
 
 type Report = components['schemas']['ReportOut']
+type Tone = 'sarcastic' | 'friendly' | 'roast'
 
 /** The AI race report. The AI writes only the text. The facts come from the app. */
 export function ReportSection({ roundId, adminView }: { roundId: number; adminView: boolean }) {
@@ -101,7 +102,7 @@ function ReportAdmin({
   const { t, i18n } = useTranslation()
   const [error, setError] = useState<string | null>(null)
   const [language, setLanguage] = useState<'es' | 'en'>(i18n.language === 'en' ? 'en' : 'es')
-  const [tone, setTone] = useState<'friendly' | 'roast'>('friendly')
+  const [tone, setTone] = useState<Tone>('sarcastic')
 
   async function submit(event: FormEvent) {
     event.preventDefault()
@@ -128,7 +129,8 @@ function ReportAdmin({
         </label>
         <label>
           {t('report.tone')}
-          <select value={tone} onChange={(e) => setTone(e.target.value as 'friendly' | 'roast')}>
+          <select value={tone} onChange={(e) => setTone(e.target.value as Tone)}>
+            <option value="sarcastic">{t('report.tones.sarcastic')}</option>
             <option value="friendly">{t('report.tones.friendly')}</option>
             <option value="roast">{t('report.tones.roast')}</option>
           </select>

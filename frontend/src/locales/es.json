@@ -803,11 +803,12 @@
     "notConfigured": "La IA no tiene clave. El reporte va a fallar hasta que un admin agregue la clave en el servidor.",
     "language": "Idioma",
     "languages": {
-      "es": "Español",
+      "es": "Español (Argentina)",
       "en": "English"
     },
     "tone": "Tono",
     "tones": {
+      "sarcastic": "Sarcástico (mucho humor)",
       "friendly": "Amistoso",
       "roast": "Más picante"
     },

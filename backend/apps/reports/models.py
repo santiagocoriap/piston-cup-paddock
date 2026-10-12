@@ -16,6 +16,7 @@ class RaceReport(models.Model):
         FAILED = "failed", _("Failed")
 
     class Tone(models.TextChoices):
+        SARCASTIC = "sarcastic", _("Sarcastic")
         FRIENDLY = "friendly", _("Friendly")
         ROAST = "roast", _("Roast")
 
@@ -26,7 +27,7 @@ class RaceReport(models.Model):
     )
     result_status = models.CharField(max_length=14)
     language = models.CharField(max_length=5, choices=settings.LANGUAGES)
-    tone = models.CharField(max_length=10, choices=Tone.choices, default=Tone.FRIENDLY)
+    tone = models.CharField(max_length=10, choices=Tone.choices, default=Tone.SARCASTIC)
     prompt_version = models.CharField(max_length=20)
     model = models.CharField(max_length=100)
     facts = models.JSONField()

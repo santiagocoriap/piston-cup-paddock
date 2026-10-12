@@ -2,11 +2,23 @@
 
 import json
 
-PROMPT_VERSION = "race-1"
+PROMPT_VERSION = "race-2"
 
-LANGUAGE_NAMES = {"es": "Spanish", "en": "English"}
+LANGUAGE_NAMES = {
+    "es": (
+        "Argentine Spanish (Rioplatense). Use voseo (vos tenés, vos ganaste), Argentine words, "
+        "and the style of an Argentine racing commentator"
+    ),
+    "en": "English",
+}
 
 TONES = {
+    "sarcastic": (
+        "Heavy humor and a lot of sarcasm, like friends who make fun of each other after the race. "
+        "Exaggerate, use irony, and tease each driver about the facts: slow laps, few laps, "
+        "penalties, last places, and the number of restarts. Even the winner gets a joke. "
+        "Joke only about the racing. Never about real-life topics, and never insult a person."
+    ),
     "friendly": "Friendly and fun, like a commentator for a group of friends. Light jokes only.",
     "roast": (
         "A stronger roast. Tease the drivers about their results, but never insult a person "
