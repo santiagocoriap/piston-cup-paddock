@@ -16,6 +16,7 @@ export function Layout({ onSignOut }: { onSignOut: () => void }) {
           <NavLink to="/" end>
             {t('nav.championships')}
           </NavLink>
+          <NavLink to="/records">{t('nav.records')}</NavLink>
           {adminMode && me.is_admin && (
             <>
               <NavLink to="/admin/leagues">{t('nav.leagues')}</NavLink>

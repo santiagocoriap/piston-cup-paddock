@@ -224,9 +224,11 @@ def apply(
             save_result(round_, lines, user, reason=f"Import: {result_import.filename}")
 
         result_import.session = session
+        if parsed.session_type == "race":
+            result_import.attempt = current_attempt(race_session(round_))
         result_import.status = ResultImport.State.APPLIED
         result_import.applied_at = timezone.now()
-        result_import.save(update_fields=["session", "status", "applied_at"])
+        result_import.save(update_fields=["session", "attempt", "status", "applied_at"])
         record(
             user,
             "import.applied",

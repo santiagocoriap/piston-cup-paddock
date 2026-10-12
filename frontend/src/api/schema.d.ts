@@ -681,6 +681,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/records": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Records */
+        get: operations["apps_records_api_get_records"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/laps/{lap_id}/invalidate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Invalidate */
+        post: operations["apps_records_api_invalidate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1646,6 +1680,94 @@ export interface components {
          * @enum {string}
          */
         Mode: "temporary" | "persistent";
+        /** BoardOut */
+        BoardOut: {
+            /** Layout Id */
+            layout_id: number;
+            /** Track Name */
+            track_name: string;
+            /** Layout Name */
+            layout_name: string;
+            /** Car Id */
+            car_id: number;
+            /** Car Name */
+            car_name: string;
+            /** Category */
+            category: string;
+            /** Record Ms */
+            record_ms: number | null;
+            /** Holders */
+            holders: components["schemas"]["RecordLapOut"][];
+            /** History */
+            history: components["schemas"]["HistoryOut"][];
+        };
+        /** HistoryOut */
+        HistoryOut: {
+            /** Kind */
+            kind: string;
+            lap: components["schemas"]["RecordLapOut"];
+        };
+        /** LayoutOption */
+        LayoutOption: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
+        /** RecordLapOut */
+        RecordLapOut: {
+            /** Lap Id */
+            lap_id: number;
+            /** Lap Time Ms */
+            lap_time_ms: number;
+            /** Driver Name */
+            driver_name: string;
+            /**
+             * Date
+             * Format: date-time
+             */
+            date: string;
+            /** Round Id */
+            round_id: number;
+            /** Round Number */
+            round_number: number;
+            /** Season Name */
+            season_name: string;
+            /** Championship Name */
+            championship_name: string;
+            /** Lap Number */
+            lap_number: number;
+            /** Sectors Ms */
+            sectors_ms: number[];
+            /** Tyre */
+            tyre: string;
+            /** Ballast Kg */
+            ballast_kg: number;
+            /** Restrictor */
+            restrictor: number;
+            /** Conditions */
+            conditions: string | null;
+            /** Source File */
+            source_file: string;
+            /** Uploaded By */
+            uploaded_by: string | null;
+            /** Ineligible Reason */
+            ineligible_reason: string | null;
+            /** Can Invalidate */
+            can_invalidate: boolean;
+        };
+        /** RecordsOut */
+        RecordsOut: {
+            /** Layouts */
+            layouts: components["schemas"]["LayoutOption"][];
+            /** Boards */
+            boards: components["schemas"]["BoardOut"][];
+        };
+        /** InvalidateIn */
+        InvalidateIn: {
+            /** Reason */
+            reason: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -2744,6 +2866,52 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["SeasonHandicapsOut"];
                 };
+            };
+        };
+    };
+    apps_records_api_get_records: {
+        parameters: {
+            query?: {
+                layout_id?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordsOut"];
+                };
+            };
+        };
+    };
+    apps_records_api_invalidate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lap_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvalidateIn"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

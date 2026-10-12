@@ -81,4 +81,13 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
   await page.goto(`/seasons/${season.id}`)
   const handicapRow = page.locator('table.handicaps tr').filter({ hasText: 'Driver 01' })
   await expect(handicapRow).toContainText('10 kg · 2 %')
+
+  // An official result makes the race laps into track records.
+  await page.goto(`/rounds/${round.id}`)
+  await page.getByRole('button', { name: 'Aprobar como oficial' }).click()
+  await expect(page.getByText('Oficial', { exact: true })).toBeVisible()
+  await page.getByRole('link', { name: 'Récords' }).click()
+  const raceBoard = page.getByRole('article', { name: /Récord de carrera: Highlands · Long · Acura/ })
+  await expect(raceBoard).toContainText('3:09.296')
+  await expect(raceBoard).toContainText('Driver 01')
 })

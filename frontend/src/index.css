@@ -556,6 +556,53 @@ button.link {
   vertical-align: top;
 }
 
+.boards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+  gap: 1rem;
+}
+
+.board-title {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-size: 0.95rem;
+}
+
+.record-time {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.lap-details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.lap-details dt {
+  color: var(--muted);
+}
+
+.lap-details dd {
+  margin: 0;
+}
+
+.record-history {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.history-removed {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
 .error {
   margin: 0;
   color: var(--error);

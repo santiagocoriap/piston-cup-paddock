@@ -19,7 +19,8 @@
     "catalog": "Pistas y autos",
     "logout": "Cerrar sesión",
     "main": "Navegación principal",
-    "audit": "Historial"
+    "audit": "Historial",
+    "records": "Récords"
   },
   "common": {
     "create": "Crear",
@@ -231,7 +232,8 @@
       "import.uploaded": "{{actor}} subió el archivo {{file}} a la fecha {{number}} ({{track}}).",
       "import.applied": "{{actor}} aplicó el archivo {{file}} a la fecha {{number}} ({{track}}).",
       "driver.guid_linked": "{{actor}} le asignó un Steam GUID al piloto {{driver}}.",
-      "handicap.adjusted": "{{actor}} ajustó el lastre y el restrictor de {{driver}} para la fecha {{number}} de {{season}}."
+      "handicap.adjusted": "{{actor}} ajustó el lastre y el restrictor de {{driver}} para la fecha {{number}} de {{season}}.",
+      "lap.invalidated": "{{actor}} anuló la vuelta {{lap}} de {{driver}} en la fecha {{number}} ({{track}})."
     },
     "fields": {
       "role": "Rol",
@@ -448,5 +450,41 @@
       "persistent": "Esta fecha y las siguientes"
     },
     "reason": "Motivo"
+  },
+  "records": {
+    "title": "Récords de pista",
+    "help": "Solo cuentan vueltas de resultados oficiales: la clasificación y la largada aceptada de la carrera.",
+    "empty": "Todavía no hay récords. Aparecen cuando una fecha importada tiene resultado oficial.",
+    "layout": "Pista",
+    "all": "Todas las pistas",
+    "category": {
+      "qualifying": "Récord de clasificación",
+      "race": "Récord de carrera"
+    },
+    "shared": "Récord compartido",
+    "holder": "Piloto",
+    "date": "Fecha",
+    "round": "Fecha {{number}} · {{season}}",
+    "conditions": "Condiciones",
+    "unknown": "Desconocidas",
+    "handicap": "Lastre / restrictor",
+    "tyre": "Neumático",
+    "source": "Origen",
+    "sourceText": "Archivo {{file}}, subido por {{user}}",
+    "sectors": "Sectores",
+    "history": "Historial del récord",
+    "kind": {
+      "record": "Nuevo récord",
+      "equal": "Igualó el récord",
+      "removed": "Ya no cuenta"
+    },
+    "reason": {
+      "invalid": "vuelta anulada",
+      "cut": "corte de pista",
+      "abandoned_attempt": "largada abandonada",
+      "dsq": "piloto descalificado"
+    },
+    "invalidate": "Anular vuelta",
+    "invalidateReason": "Motivo para anular la vuelta"
   }
 }

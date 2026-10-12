@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from apps.competition.models import Round, SeasonEntry, Session
+from apps.competition.models import Attempt, Round, SeasonEntry, Session
 
 
 def evidence_path(instance, filename):
@@ -19,6 +19,10 @@ class ResultImport(models.Model):
     round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name="imports")
     session = models.ForeignKey(
         Session, null=True, blank=True, on_delete=models.SET_NULL, related_name="imports"
+    )
+    # The race start that the file belongs to. Records use only laps of the accepted start.
+    attempt = models.ForeignKey(
+        Attempt, null=True, blank=True, on_delete=models.SET_NULL, related_name="imports"
     )
     file = models.FileField(upload_to=evidence_path)
     filename = models.CharField(max_length=255)
@@ -57,6 +61,8 @@ class ImportedLap(models.Model):
     ballast_kg = models.PositiveSmallIntegerField(default=0)
     restrictor = models.PositiveSmallIntegerField(default=0)
     timestamp_ms = models.PositiveBigIntegerField(default=0)
+    # An admin marks a lap as invalid with a reason. An invalid lap cannot be a record.
+    invalid_reason = models.TextField(blank=True)
 
     class Meta:
         ordering = ["result_import", "guid", "lap_number"]

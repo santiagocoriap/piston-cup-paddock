@@ -9,6 +9,7 @@ import { DriversPage } from './pages/admin/DriversPage'
 import { LeaguesPage } from './pages/admin/LeaguesPage'
 import { ChampionshipPage } from './pages/ChampionshipPage'
 import { ChampionshipsPage } from './pages/ChampionshipsPage'
+import { RecordsPage } from './pages/RecordsPage'
 import { RoundPage } from './pages/RoundPage'
 import { SeasonPage } from './pages/SeasonPage'
 import { useMode } from './session'
@@ -76,6 +77,7 @@ function AppRoutes({
         <Route path="championships/:championshipId" element={<ChampionshipPage />} />
         <Route path="seasons/:seasonId" element={<SeasonPage />} />
         <Route path="rounds/:roundId" element={<RoundPage />} />
+        <Route path="records" element={<RecordsPage />} />
         {adminPages && <Route path="admin/leagues" element={<LeaguesPage />} />}
         {adminPages && <Route path="admin/drivers" element={<DriversPage />} />}
         {adminPages && <Route path="admin/catalog" element={<CatalogPage />} />}

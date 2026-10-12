@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "apps.restarts",
     "apps.imports",
     "apps.handicaps",
+    "apps.records",
 ]
 
 MIDDLEWARE = [

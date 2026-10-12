@@ -90,3 +90,6 @@ Examples for a driver who only wins:
 - Qualifying records and race records are separate boards.
 - A race record comes only from the accepted race start, after the results are official.
 - Laps from abandoned starts do not become records.
+- A qualifying lap counts after the race result of the same round is official.
+- An invalid lap (a cut, or a lap that an admin marks as invalid) and the race laps of a DSQ driver do not become records. They stay in the record history with the reason.
+- Equal times give a shared record.

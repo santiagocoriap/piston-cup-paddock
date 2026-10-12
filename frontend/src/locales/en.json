@@ -19,7 +19,8 @@
     "catalog": "Tracks and cars",
     "logout": "Sign out",
     "main": "Main navigation",
-    "audit": "History"
+    "audit": "History",
+    "records": "Records"
   },
   "common": {
     "create": "Create",
@@ -231,7 +232,8 @@
       "import.uploaded": "{{actor}} uploaded the file {{file}} to round {{number}} ({{track}}).",
       "import.applied": "{{actor}} applied the file {{file}} to round {{number}} ({{track}}).",
       "driver.guid_linked": "{{actor}} gave a Steam GUID to the driver {{driver}}.",
-      "handicap.adjusted": "{{actor}} adjusted the ballast and restrictor of {{driver}} for round {{number}} of {{season}}."
+      "handicap.adjusted": "{{actor}} adjusted the ballast and restrictor of {{driver}} for round {{number}} of {{season}}.",
+      "lap.invalidated": "{{actor}} invalidated lap {{lap}} of {{driver}} in round {{number}} ({{track}})."
     },
     "fields": {
       "role": "Role",
@@ -448,5 +450,41 @@
       "persistent": "This round and the next rounds"
     },
     "reason": "Reason"
+  },
+  "records": {
+    "title": "Track records",
+    "help": "Only laps from official results count: qualifying and the accepted race start.",
+    "empty": "There are no records yet. They show when an imported round has an official result.",
+    "layout": "Track",
+    "all": "All tracks",
+    "category": {
+      "qualifying": "Qualifying record",
+      "race": "Race record"
+    },
+    "shared": "Shared record",
+    "holder": "Driver",
+    "date": "Date",
+    "round": "Round {{number}} · {{season}}",
+    "conditions": "Conditions",
+    "unknown": "Unknown",
+    "handicap": "Ballast / restrictor",
+    "tyre": "Tyre",
+    "source": "Source",
+    "sourceText": "File {{file}}, uploaded by {{user}}",
+    "sectors": "Sectors",
+    "history": "Record history",
+    "kind": {
+      "record": "New record",
+      "equal": "Equalled the record",
+      "removed": "Does not count any more"
+    },
+    "reason": {
+      "invalid": "lap invalidated",
+      "cut": "track cut",
+      "abandoned_attempt": "abandoned start",
+      "dsq": "driver disqualified"
+    },
+    "invalidate": "Invalidate the lap",
+    "invalidateReason": "Reason to invalidate the lap"
   }
 }

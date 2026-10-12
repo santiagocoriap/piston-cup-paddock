@@ -1836,6 +1836,90 @@
           }
         ]
       }
+    },
+    "/api/records": {
+      "get": {
+        "operationId": "apps_records_api_get_records",
+        "summary": "Get Records",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "layout_id",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Layout Id"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "records"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/laps/{lap_id}/invalidate": {
+      "post": {
+        "operationId": "apps_records_api_invalidate",
+        "summary": "Invalidate",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lap_id",
+            "schema": {
+              "title": "Lap Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "records"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvalidateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -4617,6 +4701,269 @@
         ],
         "title": "Mode",
         "type": "string"
+      },
+      "BoardOut": {
+        "properties": {
+          "layout_id": {
+            "title": "Layout Id",
+            "type": "integer"
+          },
+          "track_name": {
+            "title": "Track Name",
+            "type": "string"
+          },
+          "layout_name": {
+            "title": "Layout Name",
+            "type": "string"
+          },
+          "car_id": {
+            "title": "Car Id",
+            "type": "integer"
+          },
+          "car_name": {
+            "title": "Car Name",
+            "type": "string"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "record_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Record Ms"
+          },
+          "holders": {
+            "items": {
+              "$ref": "#/components/schemas/RecordLapOut"
+            },
+            "title": "Holders",
+            "type": "array"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryOut"
+            },
+            "title": "History",
+            "type": "array"
+          }
+        },
+        "required": [
+          "layout_id",
+          "track_name",
+          "layout_name",
+          "car_id",
+          "car_name",
+          "category",
+          "record_ms",
+          "holders",
+          "history"
+        ],
+        "title": "BoardOut",
+        "type": "object"
+      },
+      "HistoryOut": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "lap": {
+            "$ref": "#/components/schemas/RecordLapOut"
+          }
+        },
+        "required": [
+          "kind",
+          "lap"
+        ],
+        "title": "HistoryOut",
+        "type": "object"
+      },
+      "LayoutOption": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "LayoutOption",
+        "type": "object"
+      },
+      "RecordLapOut": {
+        "properties": {
+          "lap_id": {
+            "title": "Lap Id",
+            "type": "integer"
+          },
+          "lap_time_ms": {
+            "title": "Lap Time Ms",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "date": {
+            "format": "date-time",
+            "title": "Date",
+            "type": "string"
+          },
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "round_number": {
+            "title": "Round Number",
+            "type": "integer"
+          },
+          "season_name": {
+            "title": "Season Name",
+            "type": "string"
+          },
+          "championship_name": {
+            "title": "Championship Name",
+            "type": "string"
+          },
+          "lap_number": {
+            "title": "Lap Number",
+            "type": "integer"
+          },
+          "sectors_ms": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Sectors Ms",
+            "type": "array"
+          },
+          "tyre": {
+            "title": "Tyre",
+            "type": "string"
+          },
+          "ballast_kg": {
+            "title": "Ballast Kg",
+            "type": "integer"
+          },
+          "restrictor": {
+            "title": "Restrictor",
+            "type": "integer"
+          },
+          "conditions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conditions"
+          },
+          "source_file": {
+            "title": "Source File",
+            "type": "string"
+          },
+          "uploaded_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uploaded By"
+          },
+          "ineligible_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ineligible Reason"
+          },
+          "can_invalidate": {
+            "title": "Can Invalidate",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "lap_id",
+          "lap_time_ms",
+          "driver_name",
+          "date",
+          "round_id",
+          "round_number",
+          "season_name",
+          "championship_name",
+          "lap_number",
+          "sectors_ms",
+          "tyre",
+          "ballast_kg",
+          "restrictor",
+          "conditions",
+          "source_file",
+          "uploaded_by",
+          "ineligible_reason",
+          "can_invalidate"
+        ],
+        "title": "RecordLapOut",
+        "type": "object"
+      },
+      "RecordsOut": {
+        "properties": {
+          "layouts": {
+            "items": {
+              "$ref": "#/components/schemas/LayoutOption"
+            },
+            "title": "Layouts",
+            "type": "array"
+          },
+          "boards": {
+            "items": {
+              "$ref": "#/components/schemas/BoardOut"
+            },
+            "title": "Boards",
+            "type": "array"
+          }
+        },
+        "required": [
+          "layouts",
+          "boards"
+        ],
+        "title": "RecordsOut",
+        "type": "object"
+      },
+      "InvalidateIn": {
+        "properties": {
+          "reason": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "InvalidateIn",
+        "type": "object"
       }
     },
     "securitySchemes": {
