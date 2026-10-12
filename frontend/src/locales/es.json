@@ -1140,5 +1140,21 @@
       "fuel": "combustible",
       "track_conditions": "condiciones de pista"
     }
+  },
+  "safety": {
+    "title": "Rating de seguridad",
+    "rules": "Reglas {{version}}: empieza en 3,00. +0,01 por vuelta, −0,05 por punto de incidente. Muro 1 punto, contacto con auto 2 puntos para cada auto, impacto de más de 100 km/h el doble. Provisional hasta {{laps}} vueltas. Los puntos no son culpa: las decisiones de los comisarios van aparte.",
+    "rating": "Rating",
+    "laps": "Vueltas",
+    "points": "Puntos de incidente",
+    "per100": "Puntos cada 100 vueltas",
+    "status": {
+      "unknown": "sin datos",
+      "provisional": "provisional",
+      "rated": "con rating"
+    },
+    "history": "Cambios de {{name}}",
+    "unknownRound": "sin eventos del colector: sin cambio (no cuenta como carrera limpia).",
+    "change": "{{laps}} vueltas {{up}}, {{points}} puntos {{down}} = {{total}} → {{after}}"
   }
 }

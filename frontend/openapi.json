@@ -4377,6 +4377,43 @@
           }
         ]
       }
+    },
+    "/api/seasons/{season_id}/safety": {
+      "get": {
+        "operationId": "apps_collectors_safety_api_season_safety",
+        "summary": "Season Safety",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SafetyOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "safety"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -11606,6 +11643,147 @@
           "outcome"
         ],
         "title": "ReviewIn",
+        "type": "object"
+      },
+      "ChangeOut": {
+        "properties": {
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "change": {
+            "title": "Change",
+            "type": "number"
+          },
+          "rating_after": {
+            "title": "Rating After",
+            "type": "number"
+          },
+          "explanation": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Explanation",
+            "type": "array"
+          }
+        },
+        "required": [
+          "round_id",
+          "label",
+          "status",
+          "laps",
+          "points",
+          "change",
+          "rating_after",
+          "explanation"
+        ],
+        "title": "ChangeOut",
+        "type": "object"
+      },
+      "DriverSafetyOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "rating": {
+            "title": "Rating",
+            "type": "number"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "per_100_laps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Per 100 Laps"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/ChangeOut"
+            },
+            "title": "History",
+            "type": "array"
+          }
+        },
+        "required": [
+          "entry_id",
+          "driver_name",
+          "rating",
+          "status",
+          "laps",
+          "points",
+          "per_100_laps",
+          "history"
+        ],
+        "title": "DriverSafetyOut",
+        "type": "object"
+      },
+      "SafetyOut": {
+        "properties": {
+          "rules_version": {
+            "title": "Rules Version",
+            "type": "string"
+          },
+          "provisional_laps": {
+            "title": "Provisional Laps",
+            "type": "integer"
+          },
+          "computed_at": {
+            "format": "date-time",
+            "title": "Computed At",
+            "type": "string"
+          },
+          "drivers": {
+            "items": {
+              "$ref": "#/components/schemas/DriverSafetyOut"
+            },
+            "title": "Drivers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "rules_version",
+          "provisional_laps",
+          "computed_at",
+          "drivers"
+        ],
+        "title": "SafetyOut",
         "type": "object"
       }
     },

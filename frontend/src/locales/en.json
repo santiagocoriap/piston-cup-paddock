@@ -1140,5 +1140,21 @@
       "fuel": "fuel",
       "track_conditions": "track conditions"
     }
+  },
+  "safety": {
+    "title": "Safety rating",
+    "rules": "Rules {{version}}: starts at 3.00. +0.01 for each lap, −0.05 for each incident point. Wall 1 point, car contact 2 points for each car, an impact faster than 100 km/h double. Provisional until {{laps}} laps. Points are not blame: steward decisions stay separate.",
+    "rating": "Rating",
+    "laps": "Laps",
+    "points": "Incident points",
+    "per100": "Points per 100 laps",
+    "status": {
+      "unknown": "no data",
+      "provisional": "provisional",
+      "rated": "rated"
+    },
+    "history": "Changes of {{name}}",
+    "unknownRound": "no collector events: no change (it does not count as a clean race).",
+    "change": "{{laps}} laps {{up}}, {{points}} points {{down}} = {{total}} → {{after}}"
   }
 }

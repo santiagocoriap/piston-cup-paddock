@@ -93,3 +93,20 @@ Examples for a driver who only wins:
 - A qualifying lap counts after the race result of the same round is official.
 - An invalid lap (a cut, or a lap that an admin marks as invalid) and the race laps of a DSQ driver do not become records. They stay in the record history with the reason.
 - Equal times give a shared record.
+
+## Safety rating
+
+The league agreed to these rules on 2026-10-12 (rules version `safety-1`).
+
+- Only the accepted race start of each round counts. Practice, qualifying, and abandoned starts do not count.
+- Incidents come from the collision events of the server collector, grouped as in "Incidents" (3 seconds, shared car).
+- Incident points for each driver in an incident:
+  - Contact with the track or a wall: 1 point.
+  - Contact with another car: 2 points for each car in the contact.
+  - An impact faster than 100 km/h counts double.
+- Exposure is laps driven, from the race result file. The page also shows points per 100 laps.
+- The rating starts at 3.00. It stays between 0.00 and 5.00.
+- Each round changes the rating: +0.01 for each lap driven, and −0.05 for each incident point. The page shows this sum for each round.
+- A driver is provisional until 50 rated laps.
+- A round without collector events gives no change. Its status is unknown, not zero incidents.
+- Incident points are not blame. Steward decisions and restarts caused stay separate.

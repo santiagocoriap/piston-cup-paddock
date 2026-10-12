@@ -1593,6 +1593,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/seasons/{season_id}/safety": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Season Safety */
+        get: operations["apps_collectors_safety_api_season_safety"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3991,6 +4008,58 @@ export interface components {
              * @default
              */
             note?: string;
+        };
+        /** ChangeOut */
+        ChangeOut: {
+            /** Round Id */
+            round_id: number;
+            /** Label */
+            label: string;
+            /** Status */
+            status: string;
+            /** Laps */
+            laps: number;
+            /** Points */
+            points: number;
+            /** Change */
+            change: number;
+            /** Rating After */
+            rating_after: number;
+            /** Explanation */
+            explanation: string[];
+        };
+        /** DriverSafetyOut */
+        DriverSafetyOut: {
+            /** Entry Id */
+            entry_id: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Rating */
+            rating: number;
+            /** Status */
+            status: string;
+            /** Laps */
+            laps: number;
+            /** Points */
+            points: number;
+            /** Per 100 Laps */
+            per_100_laps: number | null;
+            /** History */
+            history: components["schemas"]["ChangeOut"][];
+        };
+        /** SafetyOut */
+        SafetyOut: {
+            /** Rules Version */
+            rules_version: string;
+            /** Provisional Laps */
+            provisional_laps: number;
+            /**
+             * Computed At
+             * Format: date-time
+             */
+            computed_at: string;
+            /** Drivers */
+            drivers: components["schemas"]["DriverSafetyOut"][];
         };
     };
     responses: never;
@@ -6578,6 +6647,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["IncidentsOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_safety_api_season_safety: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SafetyOut"];
                 };
             };
         };

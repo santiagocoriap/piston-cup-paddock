@@ -9,6 +9,7 @@ import { useAdminView } from '../session'
 import { BallotsSection } from './BallotsSection'
 import { CalendarAdmin } from './CalendarAdmin'
 import { ReportSection } from './ReportSection'
+import { SafetySection } from './SafetySection'
 import { TitleSection } from './TitleSection'
 import { HandicapsSection } from './HandicapsSection'
 
@@ -90,6 +91,7 @@ export function SeasonPage() {
       )}
 
       <TitleSection seasonId={seasonId} />
+      <SafetySection seasonId={seasonId} />
 
       <ReportSection target={{ kind: 'season', id: seasonId }} adminView={adminView} />
 
