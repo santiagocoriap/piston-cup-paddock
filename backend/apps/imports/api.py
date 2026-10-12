@@ -8,7 +8,7 @@ from ninja.errors import HttpError
 from ninja.files import UploadedFile
 
 from apps.competition.models import Round
-from apps.competition.permissions import can_manage, can_view
+from apps.competition.permissions import can, can_view
 from apps.rules.scoring import ResultError
 
 from .ac_results import ResultFileError
@@ -78,7 +78,7 @@ def _round(user, round_id: int) -> Round:
     )
     if not can_view(user, round_.season.championship):
         raise Http404
-    if not can_manage(user, round_.season.championship):
+    if not can(user, round_.season.championship, "results"):
         raise HttpError(403, "forbidden")
     return round_
 

@@ -37,6 +37,7 @@ def test_login_with_correct_password_starts_a_session(user):
         "language": "es",
         "is_admin": False,
         "can_admin": False,
+        "can_manage": False,
         "timezone": "",
     }
     assert client.get("/api/auth/me").json()["username"] == "driver"

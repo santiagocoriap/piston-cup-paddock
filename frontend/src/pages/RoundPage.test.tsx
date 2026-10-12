@@ -30,6 +30,7 @@ function round(canManage: boolean, result: unknown = null, extra: Record<string,
     scheduled_at: '2026-10-19T00:30:00Z',
     event_timezone: 'America/Argentina/Buenos_Aires',
     can_manage: canManage,
+    capabilities: canManage ? ['penalties', 'records', 'reports', 'restarts', 'results'] : [],
     rules: { version: 1, points_by_position: [25, 18, 15], pole_bonus: 0, fastest_lap_bonus: 0 },
     entries: [
       { entry_id: 1, driver_id: 11, number: 93, driver_name: 'Bing', car_name: 'Acura' },
@@ -147,6 +148,18 @@ describe('RoundPage', () => {
     show()
     await userEvent.click(await screen.findByRole('button', { name: 'Aprobar como oficial' }))
     expect(calls.some((call) => call.key === 'POST /api/rounds/9/result/approve')).toBe(true)
+  })
+
+  it('shows a steward only the penalty and restart tools', async () => {
+    const line = { entry_id: 1, status: 'finished', position: 1, entered_status: 'finished', entered_position: 1, pole: false, fastest_lap: false, number: 1, driver_name: 'Bing', points: 25 }
+    mockApi({
+      ...noRestarts,
+      'GET /api/rounds/9': () => json(200, { ...round(false, [line]), capabilities: ['penalties', 'restarts'] }),
+    })
+    show({ ...DRIVER, can_admin: true })
+    expect((await screen.findAllByText('Agregar sanción')).length).toBeGreaterThan(0)
+    expect(screen.queryByRole('button', { name: 'Aprobar como oficial' })).not.toBeInTheDocument()
+    expect(screen.queryByText('Importar archivo de resultados')).not.toBeInTheDocument()
   })
 
   it('lets a driver send a protest inside the window', async () => {

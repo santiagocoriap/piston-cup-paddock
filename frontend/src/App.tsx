@@ -75,7 +75,7 @@ export default function App() {
   return (
     <SessionProvider me={session.me} onMeChange={(me) => setSession({ status: 'signed-in', me })}>
       <BrowserRouter>
-        <AppRoutes isAdmin={session.me.is_admin} canAdmin={session.me.can_admin} onSignOut={signOut} />
+        <AppRoutes isAdmin={session.me.is_admin} canAdmin={session.me.can_manage} onSignOut={signOut} />
       </BrowserRouter>
     </SessionProvider>
   )

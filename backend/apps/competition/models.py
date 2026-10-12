@@ -29,18 +29,42 @@ class Championship(models.Model):
         return self.name
 
 
+class ChampionshipRole(models.Model):
+    """A custom role of one championship with selected capabilities. The capabilities are in
+    apps.competition.permissions.CAPABILITIES."""
+
+    championship = models.ForeignKey(Championship, on_delete=models.CASCADE, related_name="roles")
+    name = models.CharField(max_length=60)
+    capabilities = models.JSONField(default=list)
+
+    class Meta:
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(fields=["championship", "name"], name="unique_role_name")
+        ]
+
+    def __str__(self):
+        return f"{self.championship} - {self.name}"
+
+
 class ChampionshipMember(models.Model):
     """Gives a user a role in one championship. Roles never reach other championships."""
 
     class Role(models.TextChoices):
         ADMIN = "admin", _("Admin")
         DRIVER = "driver", _("Driver")
+        STEWARD = "steward", _("Steward")
+        CUSTOM = "custom", _("Custom role")
 
     championship = models.ForeignKey(Championship, on_delete=models.CASCADE, related_name="members")
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="championship_roles"
     )
     role = models.CharField(max_length=10, choices=Role.choices)
+    # Only for the custom role. The role must belong to the same championship.
+    custom_role = models.ForeignKey(
+        ChampionshipRole, null=True, blank=True, on_delete=models.PROTECT, related_name="members"
+    )
 
     class Meta:
         constraints = [

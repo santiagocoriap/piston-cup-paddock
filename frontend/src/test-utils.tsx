@@ -6,8 +6,8 @@ import type { Me } from './api/client'
 import type { Mode } from './session'
 import { SessionProvider } from './SessionProvider'
 
-export const ADMIN: Me = { id: 1, username: 'santi', language: 'es', timezone: '', is_admin: true, can_admin: true }
-export const DRIVER: Me = { id: 2, username: 'racer', language: 'es', timezone: '', is_admin: false, can_admin: false }
+export const ADMIN: Me = { id: 1, username: 'santi', language: 'es', timezone: '', is_admin: true, can_admin: true, can_manage: true }
+export const DRIVER: Me = { id: 2, username: 'racer', language: 'es', timezone: '', is_admin: false, can_admin: false, can_manage: false }
 
 export function json(status: number, body?: unknown) {
   return new Response(body === undefined ? null : JSON.stringify(body), {

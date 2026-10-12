@@ -52,7 +52,26 @@
     "role": "Role",
     "roles": {
       "admin": "Admin",
-      "driver": "Driver"
+      "driver": "Driver",
+      "steward": "Steward",
+      "custom": "Custom role"
+    },
+    "customRole": "Custom role (only for that role)",
+    "customRoles": "Custom roles",
+    "rolesHelp": "A steward reviews penalties, protests, and restarts. A custom role has only what you select, and only in this championship.",
+    "noRoles": "There are no custom roles yet.",
+    "editRole_one": "{{name}} ({{count}} member)",
+    "editRole_other": "{{name}} ({{count}} members)",
+    "newRole": "New role",
+    "createRole": "Create role",
+    "roleName": "Name",
+    "capabilities": "Can",
+    "capability": {
+      "results": "Enter and import results and approve them",
+      "penalties": "Give penalties and decide protests",
+      "restarts": "Record restarts and decide responsibility",
+      "reports": "Generate AI reports",
+      "records": "Invalidate record laps"
     }
   },
   "season": {
@@ -199,7 +218,9 @@
     "not_served_needs_decision": "A penalty that was not served needs an admin decision.",
     "time_penalty_needs_times": "A time penalty needs the times from the AC file.",
     "report_in_progress": "A report is already in progress.",
-    "official_rounds_required": "The season needs at least one round with an official result."
+    "official_rounds_required": "The season needs at least one round with an official result.",
+    "role_name_taken": "A role with this name already exists.",
+    "custom_role_not_allowed": "Choose a custom role only with the role Custom role."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -299,7 +320,9 @@
       "restart.imported": "{{actor}} imported {{count}} restarts in round {{number}} ({{track}}).",
       "penalty.served": "{{actor}} recorded a served penalty of {{driver}} in round {{number}} ({{track}}).",
       "report.requested": "{{actor}} requested report {{report}} of round {{number}} ({{track}}).",
-      "report.season_requested": "{{actor}} requested report {{report}} of season {{season}}."
+      "report.season_requested": "{{actor}} requested report {{report}} of season {{season}}.",
+      "role.created": "{{actor}} created the role {{name}}: {{capabilities}}.",
+      "role.updated": "{{actor}} changed the role {{name}}: {{capabilities}}."
     },
     "fields": {
       "role": "Role",

@@ -52,7 +52,26 @@
     "role": "Rol",
     "roles": {
       "admin": "Admin",
-      "driver": "Piloto"
+      "driver": "Piloto",
+      "steward": "Comisario",
+      "custom": "Rol personalizado"
+    },
+    "customRole": "Rol personalizado (solo para ese rol)",
+    "customRoles": "Roles personalizados",
+    "rolesHelp": "Un comisario revisa sanciones, protestas y reinicios. Un rol personalizado tiene solo lo que marques, y solo en este campeonato.",
+    "noRoles": "Todavía no hay roles personalizados.",
+    "editRole_one": "{{name}} ({{count}} miembro)",
+    "editRole_other": "{{name}} ({{count}} miembros)",
+    "newRole": "Nuevo rol",
+    "createRole": "Crear rol",
+    "roleName": "Nombre",
+    "capabilities": "Puede",
+    "capability": {
+      "results": "Cargar e importar resultados y aprobarlos",
+      "penalties": "Poner sanciones y decidir protestas",
+      "restarts": "Registrar reinicios y decidir responsables",
+      "reports": "Generar reportes con IA",
+      "records": "Invalidar vueltas de récords"
     }
   },
   "season": {
@@ -199,7 +218,9 @@
     "not_served_needs_decision": "Una sanción sin cumplir necesita la decisión de un admin.",
     "time_penalty_needs_times": "Una sanción de tiempo necesita los tiempos del archivo de AC.",
     "report_in_progress": "Ya se está generando un reporte.",
-    "official_rounds_required": "La temporada necesita al menos una fecha con resultado oficial."
+    "official_rounds_required": "La temporada necesita al menos una fecha con resultado oficial.",
+    "role_name_taken": "Ya hay un rol con ese nombre.",
+    "custom_role_not_allowed": "Elegí un rol personalizado solo con el rol Rol personalizado."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -299,7 +320,9 @@
       "restart.imported": "{{actor}} importó {{count}} reinicios en la fecha {{number}} ({{track}}).",
       "penalty.served": "{{actor}} registró una sanción cumplida de {{driver}} en la fecha {{number}} ({{track}}).",
       "report.requested": "{{actor}} pidió el reporte {{report}} de la fecha {{number}} ({{track}}).",
-      "report.season_requested": "{{actor}} pidió el reporte {{report}} de la temporada {{season}}."
+      "report.season_requested": "{{actor}} pidió el reporte {{report}} de la temporada {{season}}.",
+      "role.created": "{{actor}} creó el rol {{name}}: {{capabilities}}.",
+      "role.updated": "{{actor}} cambió el rol {{name}}: {{capabilities}}."
     },
     "fields": {
       "role": "Rol",

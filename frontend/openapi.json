@@ -802,6 +802,139 @@
         ]
       }
     },
+    "/api/championships/{championship_id}/roles": {
+      "get": {
+        "operationId": "apps_competition_api_list_roles",
+        "summary": "List Roles",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "championship_id",
+            "schema": {
+              "title": "Championship Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RoleOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_competition_api_create_role",
+        "summary": "Create Role",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "championship_id",
+            "schema": {
+              "title": "Championship Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/roles/{role_id}": {
+      "put": {
+        "operationId": "apps_competition_api_update_role",
+        "summary": "Update Role",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "role_id",
+            "schema": {
+              "title": "Role Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/championships/{championship_id}/seasons": {
       "post": {
         "operationId": "apps_competition_api_create_season",
@@ -3407,6 +3540,10 @@
           "can_admin": {
             "title": "Can Admin",
             "type": "boolean"
+          },
+          "can_manage": {
+            "title": "Can Manage",
+            "type": "boolean"
           }
         },
         "required": [
@@ -3415,7 +3552,8 @@
           "language",
           "timezone",
           "is_admin",
-          "can_admin"
+          "can_admin",
+          "can_manage"
         ],
         "title": "Me",
         "type": "object"
@@ -3937,6 +4075,28 @@
           "role": {
             "title": "Role",
             "type": "string"
+          },
+          "custom_role_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Role Id"
+          },
+          "custom_role_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Role Name"
           }
         },
         "required": [
@@ -3955,6 +4115,17 @@
           },
           "role": {
             "$ref": "#/components/schemas/Role"
+          },
+          "custom_role_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Role Id"
           }
         },
         "required": [
@@ -3967,10 +4138,73 @@
       "Role": {
         "enum": [
           "admin",
-          "driver"
+          "driver",
+          "steward",
+          "custom"
         ],
         "title": "Role",
         "type": "string"
+      },
+      "RoleOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "capabilities": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Capabilities",
+            "type": "array"
+          },
+          "members": {
+            "title": "Members",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "capabilities",
+          "members"
+        ],
+        "title": "RoleOut",
+        "type": "object"
+      },
+      "RoleIn": {
+        "properties": {
+          "name": {
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "capabilities": {
+            "items": {
+              "enum": [
+                "results",
+                "penalties",
+                "restarts",
+                "reports",
+                "records"
+              ],
+              "type": "string"
+            },
+            "title": "Capabilities",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "capabilities"
+        ],
+        "title": "RoleIn",
+        "type": "object"
       },
       "SeasonIn": {
         "properties": {
@@ -4789,6 +5023,13 @@
             "title": "Can Manage",
             "type": "boolean"
           },
+          "capabilities": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Capabilities",
+            "type": "array"
+          },
           "can_protest": {
             "title": "Can Protest",
             "type": "boolean"
@@ -4915,6 +5156,7 @@
           "scheduled_at",
           "event_timezone",
           "can_manage",
+          "capabilities",
           "can_protest",
           "briefing",
           "rules",

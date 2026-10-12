@@ -6,7 +6,7 @@ from ninja import Field, Router, Schema, Status
 from ninja.errors import HttpError
 
 from apps.catalog.models import Car, TrackLayout
-from apps.competition.permissions import can_manage, can_view
+from apps.competition.permissions import can, can_view
 from apps.imports.models import ImportedLap
 
 from .services import invalidate_lap, record_boards
@@ -89,7 +89,7 @@ def _lap_out(user, item, details) -> RecordLapOut:
         if lap.result_import.uploaded_by
         else None,
         ineligible_reason=item.ineligible_reason,
-        can_invalidate=can_manage(user, round_.season.championship) and not lap.invalid_reason,
+        can_invalidate=can(user, round_.season.championship, "records") and not lap.invalid_reason,
     )
 
 
@@ -137,7 +137,7 @@ def invalidate(request, lap_id: int, payload: InvalidateIn):
     championship = lap.result_import.round.season.championship
     if not can_view(request.user, championship):
         raise Http404
-    if not can_manage(request.user, championship):
+    if not can(request.user, championship, "records"):
         raise HttpError(403, "forbidden")
     invalidate_lap(lap, payload.reason, request.user)
     return Status(204, None)

@@ -6,7 +6,7 @@ from ninja.security import django_auth
 from ninja.utils import check_csrf
 
 from apps.common.timezones import is_timezone
-from apps.competition.permissions import manages_any_championship
+from apps.competition.permissions import has_any_staff_role, manages_any_championship
 
 from .models import User
 from .throttle import clear_failures, client_ip, is_blocked, record_failure
@@ -26,6 +26,7 @@ class Me(Schema):
     timezone: str
     is_admin: bool
     can_admin: bool  # True when the user can manage something, so the admin mode is useful.
+    can_manage: bool  # True for a championship admin. A steward or custom role is False.
 
 
 class Error(Schema):
@@ -39,7 +40,8 @@ def _me(user) -> Me:
         language=user.language,
         timezone=user.timezone,
         is_admin=user.is_staff,
-        can_admin=manages_any_championship(user),
+        can_admin=has_any_staff_role(user),
+        can_manage=manages_any_championship(user),
     )
 
 

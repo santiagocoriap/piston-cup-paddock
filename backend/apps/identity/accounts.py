@@ -138,7 +138,7 @@ def can_manage_user(admin, user: User) -> bool:
     if user.pk == admin.pk or user.is_staff:
         return False
     roles = ChampionshipMember.objects.filter(user=user)
-    if roles.filter(role=ChampionshipMember.Role.ADMIN).exists():
+    if roles.exclude(role=ChampionshipMember.Role.DRIVER).exists():
         return False
     managed = set(
         ChampionshipMember.objects.filter(

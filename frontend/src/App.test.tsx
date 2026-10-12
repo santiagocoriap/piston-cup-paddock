@@ -73,7 +73,7 @@ describe('App', () => {
 
   it('shows no mode switch to a driver', async () => {
     mockApi({
-      'GET /api/auth/me': () => json(200, { ...ADMIN, is_admin: false, can_admin: false }),
+      'GET /api/auth/me': () => json(200, { ...ADMIN, is_admin: false, can_admin: false, can_manage: false }),
       'GET /api/championships': () => json(200, []),
     })
     render(<App />)

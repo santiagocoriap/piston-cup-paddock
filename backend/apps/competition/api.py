@@ -1,3 +1,5 @@
+from typing import Literal
+
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -13,7 +15,15 @@ from apps.identity.models import DriverProfile, User
 from apps.rules.models import RulesVersion
 
 from .calendar import fixed_layout_ids, next_round_number, voted_slots
-from .models import Championship, ChampionshipMember, League, Round, Season, SeasonEntry
+from .models import (
+    Championship,
+    ChampionshipMember,
+    ChampionshipRole,
+    League,
+    Round,
+    Season,
+    SeasonEntry,
+)
 from .permissions import can_manage, can_view, is_league_admin, visible_championships
 
 router = Router(tags=["competition"])
@@ -93,12 +103,30 @@ class ChampionshipDetail(ChampionshipOut):
 class MemberIn(Schema):
     user_id: int
     role: ChampionshipMember.Role
+    custom_role_id: int | None = None
 
 
 class MemberOut(Schema):
     user_id: int
     username: str
     role: str
+    custom_role_id: int | None = None
+    custom_role_name: str | None = None
+
+
+Capability = Literal["results", "penalties", "restarts", "reports", "records"]
+
+
+class RoleIn(Schema):
+    name: str = Field(min_length=1, max_length=60)
+    capabilities: list[Capability]
+
+
+class RoleOut(Schema):
+    id: int
+    name: str
+    capabilities: list[str]
+    members: int
 
 
 class EntryIn(Schema):
@@ -283,8 +311,18 @@ def get_championship(request, championship_id: int):
 def list_members(request, championship_id: int):
     championship = _visible_championship(request.user, championship_id)
     require(can_manage(request.user, championship))
-    members = championship.members.select_related("user").order_by("user__username")
-    return [MemberOut(user_id=m.user_id, username=m.user.username, role=m.role) for m in members]
+    members = championship.members.select_related("user", "custom_role").order_by("user__username")
+    return [_member_out(m) for m in members]
+
+
+def _member_out(member: ChampionshipMember) -> MemberOut:
+    return MemberOut(
+        user_id=member.user_id,
+        username=member.user.username,
+        role=member.role,
+        custom_role_id=member.custom_role_id,
+        custom_role_name=member.custom_role.name if member.custom_role else None,
+    )
 
 
 @router.put("/championships/{championship_id}/members", response=MemberOut)
@@ -293,10 +331,20 @@ def set_member(request, championship_id: int, payload: MemberIn):
     championship = _visible_championship(request.user, championship_id)
     require(can_manage(request.user, championship))
     user = get_object_or_404(User, pk=payload.user_id)
+    custom_role = None
+    if payload.role == ChampionshipMember.Role.CUSTOM:
+        # Only a role of this championship. A role of another championship gives a 404.
+        custom_role = get_object_or_404(
+            ChampionshipRole, pk=payload.custom_role_id, championship=championship
+        )
+    elif payload.custom_role_id is not None:
+        raise HttpError(422, "custom_role_not_allowed")
     old = ChampionshipMember.objects.filter(championship=championship, user=user).first()
     with transaction.atomic():
-        ChampionshipMember.objects.update_or_create(
-            championship=championship, user=user, defaults={"role": payload.role}
+        member, _ = ChampionshipMember.objects.update_or_create(
+            championship=championship,
+            user=user,
+            defaults={"role": payload.role, "custom_role": custom_role},
         )
         record(
             request.user,
@@ -304,10 +352,74 @@ def set_member(request, championship_id: int, payload: MemberIn):
             "championship",
             championship.id,
             championship=championship,
-            params={"username": user.username, "role": payload.role},
-            changes=[change("role", old.role if old else None, payload.role)],
+            params={"username": user.username, "role": _role_label(member)},
+            changes=[change("role", _role_label(old) if old else None, _role_label(member))],
         )
-    return MemberOut(user_id=user.id, username=user.username, role=payload.role)
+    return _member_out(member)
+
+
+def _role_label(member: ChampionshipMember) -> str:
+    return member.custom_role.name if member.custom_role else member.role
+
+
+def _role_out(role: ChampionshipRole) -> RoleOut:
+    return RoleOut(
+        id=role.id, name=role.name, capabilities=role.capabilities, members=role.members.count()
+    )
+
+
+@router.get("/championships/{championship_id}/roles", response=list[RoleOut])
+def list_roles(request, championship_id: int):
+    championship = _visible_championship(request.user, championship_id)
+    require(can_manage(request.user, championship))
+    return [_role_out(role) for role in championship.roles.all()]
+
+
+@router.post("/championships/{championship_id}/roles", response={201: RoleOut})
+def create_role(request, championship_id: int, payload: RoleIn):
+    championship = _visible_championship(request.user, championship_id)
+    require(can_manage(request.user, championship))
+    if championship.roles.filter(name=payload.name).exists():
+        raise HttpError(422, "role_name_taken")
+    with transaction.atomic():
+        role = ChampionshipRole.objects.create(
+            championship=championship,
+            name=payload.name,
+            capabilities=sorted(set(payload.capabilities)),
+        )
+        record(
+            request.user,
+            "role.created",
+            "championship",
+            championship.id,
+            championship=championship,
+            params={"name": role.name, "capabilities": ", ".join(role.capabilities)},
+        )
+    return Status(201, _role_out(role))
+
+
+@router.put("/roles/{role_id}", response=RoleOut)
+def update_role(request, role_id: int, payload: RoleIn):
+    role = get_object_or_404(ChampionshipRole.objects.select_related("championship"), pk=role_id)
+    championship = _visible_championship(request.user, role.championship_id)
+    require(can_manage(request.user, championship))
+    if championship.roles.filter(name=payload.name).exclude(pk=role.pk).exists():
+        raise HttpError(422, "role_name_taken")
+    old = ", ".join(role.capabilities)
+    with transaction.atomic():
+        role.name = payload.name
+        role.capabilities = sorted(set(payload.capabilities))
+        role.save(update_fields=["name", "capabilities"])
+        record(
+            request.user,
+            "role.updated",
+            "championship",
+            championship.id,
+            championship=championship,
+            params={"name": role.name, "capabilities": ", ".join(role.capabilities)},
+            changes=[change("capabilities", old, ", ".join(role.capabilities))],
+        )
+    return _role_out(role)
 
 
 @router.post("/championships/{championship_id}/seasons", response={201: SeasonSummary})

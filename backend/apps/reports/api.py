@@ -7,7 +7,7 @@ from ninja import Router, Schema
 from ninja.errors import HttpError
 
 from apps.competition.models import Round, Season
-from apps.competition.permissions import can_manage, can_view
+from apps.competition.permissions import can, can_view
 
 from .models import RaceReport
 from .services import (
@@ -66,7 +66,7 @@ def _round(user, round_id: int) -> Round:
 
 
 def _reports_out(user, reports, championship) -> ReportsOut:
-    admin = can_manage(user, championship)
+    admin = can(user, championship, "reports")
     reports = reports.select_related("source_version")
     if not admin:
         reports = reports.filter(status=RaceReport.State.READY)
@@ -107,7 +107,7 @@ def list_reports(request, round_id: int):
 @router.post("/rounds/{round_id}/reports", response=ReportsOut)
 def create_report(request, round_id: int, payload: ReportIn):
     round_ = _round(request.user, round_id)
-    if not can_manage(request.user, round_.season.championship):
+    if not can(request.user, round_.season.championship, "reports"):
         raise HttpError(403, "forbidden")
     try:
         request_report(round_, request.user, language=payload.language, tone=payload.tone)
@@ -136,7 +136,7 @@ def list_season_reports(request, season_id: int):
 @router.post("/seasons/{season_id}/reports", response=ReportsOut)
 def create_season_report(request, season_id: int, payload: ReportIn):
     season = _season(request.user, season_id)
-    if not can_manage(request.user, season.championship):
+    if not can(request.user, season.championship, "reports"):
         raise HttpError(403, "forbidden")
     try:
         request_season_report(season, request.user, language=payload.language, tone=payload.tone)

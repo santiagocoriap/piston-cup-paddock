@@ -64,6 +64,7 @@ export function ChampionshipPage() {
             </label>
           </ActionForm>
           <Members championshipId={championshipId} />
+          <Roles championshipId={championshipId} />
         </div>
       )}
     </section>
@@ -78,6 +79,10 @@ function Members({ championshipId }: { championshipId: number }) {
     [championshipId],
   )
   const users = useLoad(() => api.GET('/api/users'), [])
+  const roles = useLoad(
+    () => api.GET('/api/championships/{championship_id}/roles', { params: { path } }),
+    [championshipId],
+  )
 
   return (
     <div className="card">
@@ -86,7 +91,8 @@ function Members({ championshipId }: { championshipId: number }) {
       <ul className="list">
         {members.data?.map((member) => (
           <li key={member.user_id}>
-            {member.username} <span className="badge">{t(`championship.roles.${member.role}`)}</span>
+            {member.username}{' '}
+            <span className="badge">{member.custom_role_name ?? t(`championship.roles.${member.role}`)}</span>
           </li>
         ))}
       </ul>
@@ -98,7 +104,8 @@ function Members({ championshipId }: { championshipId: number }) {
             params: { path },
             body: {
               user_id: Number(form.get('user_id')),
-              role: form.get('role') as 'admin' | 'driver',
+              role: form.get('role') as 'admin' | 'driver' | 'steward' | 'custom',
+              custom_role_id: form.get('role') === 'custom' ? Number(form.get('custom_role_id')) || null : null,
             },
           })
           if (!error) members.reload()
@@ -122,10 +129,97 @@ function Members({ championshipId }: { championshipId: number }) {
           {t('championship.role')}
           <select name="role" defaultValue="driver">
             <option value="driver">{t('championship.roles.driver')}</option>
+            <option value="steward">{t('championship.roles.steward')}</option>
+            <option value="custom">{t('championship.roles.custom')}</option>
             <option value="admin">{t('championship.roles.admin')}</option>
+          </select>
+        </label>
+        <label>
+          {t('championship.customRole')}
+          <select name="custom_role_id" defaultValue="">
+            <option value="">—</option>
+            {roles.data?.map((role) => (
+              <option key={role.id} value={role.id}>
+                {role.name}
+              </option>
+            ))}
           </select>
         </label>
       </ActionForm>
     </div>
+  )
+}
+
+const CAPABILITIES = ['results', 'penalties', 'restarts', 'reports', 'records'] as const
+type Capability = (typeof CAPABILITIES)[number]
+
+/** Custom roles of this championship. A role works only in this championship. */
+function Roles({ championshipId }: { championshipId: number }) {
+  const { t } = useTranslation()
+  const path = { championship_id: championshipId }
+  const roles = useLoad(
+    () => api.GET('/api/championships/{championship_id}/roles', { params: { path } }),
+    [championshipId],
+  )
+  const chosen = (form: FormData): Capability[] => CAPABILITIES.filter((c) => form.get(c) === 'on')
+
+  return (
+    <div className="card">
+      <h3>{t('championship.customRoles')}</h3>
+      <p className="muted">{t('championship.rolesHelp')}</p>
+      {roles.data?.length === 0 && <p>{t('championship.noRoles')}</p>}
+      {roles.data?.map((role) => (
+        <ActionForm
+          key={role.id}
+          title={t('championship.editRole', { name: role.name, count: role.members })}
+          submitLabel={t('common.save')}
+          onSubmit={async (form) => {
+            const { error } = await api.PUT('/api/roles/{role_id}', {
+              params: { path: { role_id: role.id } },
+              body: { name: String(form.get('name')), capabilities: chosen(form) },
+            })
+            if (!error) roles.reload()
+            return error
+          }}
+        >
+          <RoleFields name={role.name} capabilities={role.capabilities} />
+        </ActionForm>
+      ))}
+      <ActionForm
+        title={t('championship.newRole')}
+        submitLabel={t('championship.createRole')}
+        onSubmit={async (form) => {
+          const { error } = await api.POST('/api/championships/{championship_id}/roles', {
+            params: { path },
+            body: { name: String(form.get('name')), capabilities: chosen(form) },
+          })
+          if (!error) roles.reload()
+          return error
+        }}
+      >
+        <RoleFields name="" capabilities={[]} />
+      </ActionForm>
+    </div>
+  )
+}
+
+function RoleFields({ name, capabilities }: { name: string; capabilities: string[] }) {
+  const { t } = useTranslation()
+  return (
+    <>
+      <label>
+        {t('championship.roleName')}
+        <input name="name" defaultValue={name} required maxLength={60} />
+      </label>
+      <fieldset>
+        <legend>{t('championship.capabilities')}</legend>
+        {CAPABILITIES.map((capability) => (
+          <label key={capability} className="check">
+            <input type="checkbox" name={capability} defaultChecked={capabilities.includes(capability)} />
+            {t(`championship.capability.${capability}`)}
+          </label>
+        ))}
+      </fieldset>
+    </>
   )
 }

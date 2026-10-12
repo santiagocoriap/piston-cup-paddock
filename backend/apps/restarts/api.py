@@ -5,7 +5,7 @@ from ninja.errors import HttpError
 
 from apps.competition.attempts import race_session
 from apps.competition.models import Round
-from apps.competition.permissions import can_manage, can_view
+from apps.competition.permissions import can, can_view
 
 from .models import Restart
 from .services import RestartError, record_restart, summarize, update_responsibility
@@ -146,7 +146,7 @@ def get_restarts(request, round_id: int):
 @router.post("/rounds/{round_id}/restarts", response={201: RoundRestartsOut})
 def create_restart(request, round_id: int, payload: RestartIn):
     round_ = _round(request.user, round_id)
-    if not can_manage(request.user, round_.season.championship):
+    if not can(request.user, round_.season.championship, "restarts"):
         raise HttpError(403, "forbidden")
     fields = payload.dict(exclude={"driver_entry_ids"})
     try:
@@ -167,7 +167,7 @@ def set_responsibility(request, restart_id: int, payload: ResponsibilityIn):
     round_ = restart.abandoned_attempt.session.round
     if not can_view(request.user, round_.season.championship):
         raise Http404
-    if not can_manage(request.user, round_.season.championship):
+    if not can(request.user, round_.season.championship, "restarts"):
         raise HttpError(403, "forbidden")
     try:
         update_responsibility(

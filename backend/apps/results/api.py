@@ -8,7 +8,7 @@ from ninja.errors import HttpError
 from pydantic import AwareDatetime
 
 from apps.competition.models import ChampionshipMember, Round, Season, SeasonEntry
-from apps.competition.permissions import can_manage, can_view
+from apps.competition.permissions import can, can_manage, can_view, capabilities
 from apps.dashboard.services import my_handicap
 from apps.reports.services import auto_request
 from apps.rules.models import RulesVersion
@@ -128,6 +128,7 @@ class RoundDetail(Schema):
     scheduled_at: AwareDatetime | None
     event_timezone: str
     can_manage: bool
+    capabilities: list[str]
     can_protest: bool
     briefing: BriefingOut
     rules: RulesOut
@@ -205,8 +206,8 @@ def _visible_round(user, round_id: int) -> Round:
     return round_
 
 
-def _require_manage(user, round_: Round) -> None:
-    if not can_manage(user, round_.season.championship):
+def _require(user, round_: Round, capability: str) -> None:
+    if not can(user, round_.season.championship, capability):
         raise HttpError(403, "forbidden")
 
 
@@ -292,6 +293,7 @@ def _round_detail(user, round_: Round) -> RoundDetail:
         scheduled_at=round_.scheduled_at,
         event_timezone=season.championship.league.timezone,
         can_manage=can_manage(user, season.championship),
+        capabilities=sorted(capabilities(user, season.championship)),
         can_protest=_can_protest(user, round_, result),
         briefing=BriefingOut(
             announced_conditions=round_.announced_conditions,
@@ -394,7 +396,7 @@ def get_version(request, round_id: int, number: int):
 def put_result(request, round_id: int, payload: ResultIn):
     """Enter or correct the race classification. Each save makes a new version."""
     round_ = _visible_round(request.user, round_id)
-    _require_manage(request.user, round_)
+    _require(request.user, round_, "results")
     lines = [
         Line(line.entry_id, line.status, line.position, line.pole, line.fastest_lap)
         for line in payload.lines
@@ -406,7 +408,7 @@ def put_result(request, round_id: int, payload: ResultIn):
 @router.post("/rounds/{round_id}/result/approve", response=RoundDetail)
 def approve(request, round_id: int):
     round_ = _visible_round(request.user, round_id)
-    _require_manage(request.user, round_)
+    _require(request.user, round_, "results")
     result = _result_of(round_)
     _run(lambda: approve_result(result, request.user))
     # The report is extra. It runs in the worker, so it cannot block the approval.
@@ -417,7 +419,7 @@ def approve(request, round_id: int):
 @router.post("/rounds/{round_id}/penalties", response=RoundDetail)
 def create_penalty(request, round_id: int, payload: PenaltyIn):
     round_ = _visible_round(request.user, round_id)
-    _require_manage(request.user, round_)
+    _require(request.user, round_, "penalties")
     result = _result_of(round_)
     entry = get_object_or_404(SeasonEntry, pk=payload.entry_id)
     _run(
@@ -458,7 +460,7 @@ def decide(request, protest_id: int, payload: DecisionIn):
         Protest.objects.select_related("result__round__season__championship"), pk=protest_id
     )
     round_ = _visible_round(request.user, protest.result.round_id)
-    _require_manage(request.user, round_)
+    _require(request.user, round_, "penalties")
     if payload.outcome == Protest.State.OPEN:
         raise HttpError(422, "outcome_required")
     penalty = payload.penalty.dict() if payload.penalty else None

@@ -36,8 +36,10 @@ export function RoundPage() {
   // An applied file changes the entered result, so the result form starts again from it.
   const [imports, setImports] = useState(0)
   const data = round.data
-  const adminView = useAdminView(data?.can_manage ?? false)
+  // A steward or a custom role gets only the tools of its capabilities.
+  const staffView = useAdminView((data?.capabilities.length ?? 0) > 0)
   if (!data) return <Loading failed={round.failed} />
+  const may = (capability: string) => staffView && data.capabilities.includes(capability)
   const rules = data.rules
   const changed = () => {
     round.reload()
@@ -57,7 +59,7 @@ export function RoundPage() {
 
       <h2>{t('round.result')}</h2>
       <ResultStatus round={data} />
-      {adminView && <ApproveButton round={data} onChange={changed} />}
+      {may('results') && <ApproveButton round={data} onChange={changed} />}
       {data.result === null || data.result === undefined ? (
         <p>{t('round.noResult')}</p>
       ) : (
@@ -107,7 +109,7 @@ export function RoundPage() {
           t('round.bonuses', { pole: rules.pole_bonus, fastest: rules.fastest_lap_bonus })}
       </p>
 
-      {adminView && (
+      {may('results') && (
         <ImportSection
           roundId={data.id}
           entries={data.entries}
@@ -117,18 +119,18 @@ export function RoundPage() {
           }}
         />
       )}
-      {adminView && <PenaltyLogsSection roundId={data.id} onApplied={changed} />}
-      {adminView && <ResultForm key={imports} round={data} onSaved={changed} />}
+      {may('results') && <PenaltyLogsSection roundId={data.id} onApplied={changed} />}
+      {may('results') && <ResultForm key={imports} round={data} onSaved={changed} />}
 
       <LapsSection key={`${imports}-${saves}`} roundId={data.id} />
 
-      <Penalties round={data} adminView={adminView} onChange={changed} />
-      <Protests round={data} adminView={adminView} onChange={changed} />
+      <Penalties round={data} adminView={may('penalties')} onChange={changed} />
+      <Protests round={data} adminView={may('penalties')} onChange={changed} />
       <Versions round={data} />
 
-      <RestartsSection roundId={data.id} entries={data.entries} adminView={adminView} refresh={saves} />
+      <RestartsSection roundId={data.id} entries={data.entries} adminView={may('restarts')} refresh={saves} />
 
-      <ReportSection target={{ kind: 'round', id: data.id }} adminView={adminView} />
+      <ReportSection target={{ kind: 'round', id: data.id }} adminView={may('reports')} />
     </section>
   )
 }

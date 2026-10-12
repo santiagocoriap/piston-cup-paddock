@@ -298,6 +298,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/championships/{championship_id}/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Roles */
+        get: operations["apps_competition_api_list_roles"];
+        put?: never;
+        /** Create Role */
+        post: operations["apps_competition_api_create_role"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/roles/{role_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Role */
+        put: operations["apps_competition_api_update_role"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/championships/{championship_id}/seasons": {
         parameters: {
             query?: never;
@@ -1242,6 +1277,8 @@ export interface components {
             is_admin: boolean;
             /** Can Admin */
             can_admin: boolean;
+            /** Can Manage */
+            can_manage: boolean;
         };
         /** Error */
         Error: {
@@ -1431,18 +1468,42 @@ export interface components {
             username: string;
             /** Role */
             role: string;
+            /** Custom Role Id */
+            custom_role_id?: number | null;
+            /** Custom Role Name */
+            custom_role_name?: string | null;
         };
         /** MemberIn */
         MemberIn: {
             /** User Id */
             user_id: number;
             role: components["schemas"]["Role"];
+            /** Custom Role Id */
+            custom_role_id?: number | null;
         };
         /**
          * Role
          * @enum {string}
          */
-        Role: "admin" | "driver";
+        Role: "admin" | "driver" | "steward" | "custom";
+        /** RoleOut */
+        RoleOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Capabilities */
+            capabilities: string[];
+            /** Members */
+            members: number;
+        };
+        /** RoleIn */
+        RoleIn: {
+            /** Name */
+            name: string;
+            /** Capabilities */
+            capabilities: ("results" | "penalties" | "restarts" | "reports" | "records")[];
+        };
         /** SeasonIn */
         SeasonIn: {
             /** Name */
@@ -1732,6 +1793,8 @@ export interface components {
             event_timezone: string;
             /** Can Manage */
             can_manage: boolean;
+            /** Capabilities */
+            capabilities: string[];
             /** Can Protest */
             can_protest: boolean;
             briefing: components["schemas"]["BriefingOut"];
@@ -3574,6 +3637,80 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MemberOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_list_roles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleOut"][];
+                };
+            };
+        };
+    };
+    apps_competition_api_create_role: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoleIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_update_role: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                role_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoleIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleOut"];
                 };
             };
         };
