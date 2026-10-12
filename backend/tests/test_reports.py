@@ -108,6 +108,13 @@ def test_worker_writes_the_text_and_stores_how(api, champ_admin, raced, ai, sett
     assert "English" in sent[1]["content"] and "Driver 1" in sent[1]["content"]
 
 
+def test_workspace_id_goes_as_a_header(api, champ_admin, raced, ai, settings):
+    settings.ANTHROPIC_WORKSPACE_ID = "wrkspc_1"
+    request(api, champ_admin, raced)
+    generate(RaceReport.objects.get().id)
+    assert ai.calls[0]["extra_headers"] == {"anthropic-workspace-id": "wrkspc_1"}
+
+
 def test_no_api_key_fails_the_report_but_not_the_results(api, champ_admin, raced, ai):
     ai.configured = False
     request(api, champ_admin, raced)

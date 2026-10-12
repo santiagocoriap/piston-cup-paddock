@@ -10,6 +10,7 @@ dependencies = [
     "litellm>=1.80",
     "procrastinate[django]>=3.10.0",
     "psycopg[binary]>=3.3.6",
+    "tenacity>=9.2.1",
     "whitenoise>=6.12.0",
 ]
 

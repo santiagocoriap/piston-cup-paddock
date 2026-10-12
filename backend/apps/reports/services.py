@@ -103,11 +103,12 @@ def generate(report_id: int) -> RaceReport:
             max_tokens=MAX_TOKENS,
             timeout=120,
             num_retries=2,
+            extra_headers=_headers(),
         )
         text = (response.choices[0].message.content or "").strip()
     except Exception as error:  # Any provider error only fails this report.
         logger.warning("Report %s failed: %s", report.id, error)
-        return _fail(report, f"ai_error: {type(error).__name__}")
+        return _fail(report, f"ai_error: {type(error).__name__}: {str(error)[:200]}")
     if not text:
         return _fail(report, "ai_empty_text")
     report.text = text
@@ -115,6 +116,12 @@ def generate(report_id: int) -> RaceReport:
     report.generated_at = timezone.now()
     report.save(update_fields=["text", "status", "generated_at"])
     return report
+
+
+def _headers() -> dict[str, str] | None:
+    if settings.ANTHROPIC_WORKSPACE_ID:
+        return {"anthropic-workspace-id": settings.ANTHROPIC_WORKSPACE_ID}
+    return None
 
 
 def _fail(report: RaceReport, error: str) -> RaceReport:

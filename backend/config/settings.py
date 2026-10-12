@@ -142,5 +142,7 @@ TRUSTED_PROXY_COUNT = int(env("TRUSTED_PROXY_COUNT", "0"))
 # AI race reports. LiteLLM reads the provider key, for example ANTHROPIC_API_KEY.
 # Without a key the app works, and report requests fail with "ai_not_configured".
 AI_REPORT_MODEL = env("AI_REPORT_MODEL", "anthropic/claude-sonnet-5-5")
+# Only for an Anthropic key that has no workspace. The app sends it as a header.
+ANTHROPIC_WORKSPACE_ID = env("ANTHROPIC_WORKSPACE_ID", "")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
