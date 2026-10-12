@@ -17,11 +17,16 @@ export async function submitForm(
   selects: Record<string, string> = {},
 ) {
   const form = page.getByRole('form', { name: title })
+  // A select takes the text of its options into its name, so an exact match can miss it.
+  const field = async (label: string) => {
+    const exact = form.getByLabel(label, { exact: true })
+    return (await exact.count()) > 0 ? exact : form.getByLabel(label)
+  }
   for (const [label, value] of Object.entries(selects)) {
-    await form.getByLabel(label).selectOption({ label: value })
+    await (await field(label)).selectOption({ label: value })
   }
   for (const [label, value] of Object.entries(fields)) {
-    await form.getByLabel(label).fill(value)
+    await (await field(label)).fill(value)
   }
-  await form.getByRole('button').click()
+  await form.locator('button[type=submit]').click()
 }

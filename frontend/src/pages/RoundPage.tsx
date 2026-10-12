@@ -8,6 +8,7 @@ import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
+import { RestartsSection } from './RestartsSection'
 
 type RoundDetail = components['schemas']['RoundDetail']
 type Status = components['schemas']['LineIn']['status']
@@ -23,6 +24,8 @@ export function RoundPage() {
     [roundId],
   )
 
+  // A saved result accepts the current start, so the restarts section loads again.
+  const [saves, setSaves] = useState(0)
   const data = round.data
   const adminView = useAdminView(data?.can_manage ?? false)
   if (!data) return <Loading failed={round.failed} />
@@ -77,7 +80,17 @@ export function RoundPage() {
           t('round.bonuses', { pole: rules.pole_bonus, fastest: rules.fastest_lap_bonus })}
       </p>
 
-      {adminView && <ResultForm round={data} onSaved={round.reload} />}
+      {adminView && (
+        <ResultForm
+          round={data}
+          onSaved={() => {
+            round.reload()
+            setSaves((n) => n + 1)
+          }}
+        />
+      )}
+
+      <RestartsSection roundId={data.id} entries={data.entries} adminView={adminView} refresh={saves} />
     </section>
   )
 }

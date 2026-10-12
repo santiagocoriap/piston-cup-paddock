@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from django.db import transaction
 
 from apps.audit.services import change, record
+from apps.competition.attempts import accept_current_attempt
 from apps.competition.models import Round, Season
 from apps.rules.models import RulesVersion
 from apps.rules.scoring import Line, ResultError, Status, race_points, standings, validate
@@ -42,6 +43,7 @@ def save_result(round_: Round, lines: list[Line], user, reason: str = "") -> Rac
             )
             for line in lines
         )
+        accept_current_attempt(round_)  # Points come only from the accepted attempt.
         _audit_result(round_, user, reason, before, lines, points)
     return result
 

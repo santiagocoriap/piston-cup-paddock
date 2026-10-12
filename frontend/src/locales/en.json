@@ -123,7 +123,11 @@
     "one_pole_only": "Only one driver can have the pole.",
     "one_fastest_lap_only": "Only one driver can have the fastest lap.",
     "dns_has_no_bonus": "A driver who did not start cannot have a bonus.",
-    "entry_not_in_season": "A driver is not in this season."
+    "entry_not_in_season": "A driver is not in this season.",
+    "drivers_required": "Select at least one responsible driver.",
+    "drivers_not_allowed": "Only the option 'One or more drivers' has drivers.",
+    "race_already_accepted": "The race already has a result. You cannot record another restart.",
+    "driver_not_found": "The driver was not found."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -191,7 +195,9 @@
       "track.created": "{{actor}} made the track {{name}}.",
       "layout.created": "{{actor}} made the layout {{name}} of {{track}}.",
       "car.created": "{{actor}} made the car {{name}}.",
-      "unknown": "{{actor}} made a change ({{action}})."
+      "unknown": "{{actor}} made a change ({{action}}).",
+      "restart.recorded": "{{actor}} recorded a restart in round {{number}} ({{track}}) after start {{attempt}}.",
+      "restart.reviewed": "{{actor}} reviewed the responsibility for the restart of start {{attempt}} in round {{number}} ({{track}})."
     },
     "fields": {
       "role": "Role",
@@ -202,9 +208,68 @@
       "track_layout": "Track",
       "scheduled_at": "Date and time",
       "steam_guid": "Steam GUID",
-      "account": "Account"
+      "account": "Account",
+      "responsibility": "Responsibility",
+      "responsible_drivers": "Responsible drivers",
+      "review_status": "Review"
     },
     "none": "—",
     "pts": "{{count}} pts"
+  },
+  "restarts": {
+    "title": "Starts and restarts",
+    "none": "No restarts in this race.",
+    "count_one": "1 restart before the accepted start",
+    "count_other": "{{count}} restarts before the accepted start",
+    "attempt": "Start {{number}}",
+    "attemptStatus": {
+      "active": "running",
+      "completed": "completed",
+      "abandoned": "abandoned",
+      "accepted": "accepted",
+      "invalidated": "invalidated"
+    },
+    "caused": "Restarts caused (confirmed)",
+    "noCaused": "No driver has confirmed restarts.",
+    "shared": "{{count}} shared",
+    "sharedNote": "A restart with more than one responsible driver adds one to each driver, so the sum can be more than the total.",
+    "others": "No driver to blame: {{pending}} pending or disputed, {{incident}} racing incident, {{technical}} technical, {{unknown}} unknown.",
+    "lap": "Lap",
+    "elapsed": "Race seconds",
+    "location": "Location",
+    "reason": "Reason",
+    "explanation": "Explanation",
+    "requestedBy": "Requested by",
+    "executedBy": "Executed by",
+    "loggedBy": "Logged by",
+    "responsibility": "Responsibility",
+    "responsibleDrivers": "Responsible drivers",
+    "review": "Review",
+    "nobody": "Nobody",
+    "reasons": {
+      "first_lap_crash": "First-lap crash",
+      "technical_issue": "Technical issue",
+      "server_problem": "Server problem",
+      "wrong_configuration": "Wrong configuration",
+      "false_start": "False start",
+      "other": "Other"
+    },
+    "responsibilities": {
+      "drivers": "One or more drivers",
+      "racing_incident": "Racing incident",
+      "technical": "Technical cause",
+      "unknown": "Unknown"
+    },
+    "reviews": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "disputed": "Disputed"
+    },
+    "record": "Record a restart",
+    "edit": "Edit responsibility",
+    "save": "Save",
+    "changeReason": "Reason for the change",
+    "sharedBadge": "Shared",
+    "startsColumn": "Start → next"
   }
 }

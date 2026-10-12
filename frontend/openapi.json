@@ -1107,6 +1107,135 @@
           }
         ]
       }
+    },
+    "/api/rounds/{round_id}/restarts": {
+      "get": {
+        "operationId": "apps_restarts_api_get_restarts",
+        "summary": "Get Restarts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundRestartsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "restarts"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_restarts_api_create_restart",
+        "summary": "Create Restart",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundRestartsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "restarts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestartIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/restarts/{restart_id}/responsibility": {
+      "put": {
+        "operationId": "apps_restarts_api_set_responsibility",
+        "summary": "Set Responsibility",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "restart_id",
+            "schema": {
+              "title": "Restart Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundRestartsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "restarts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResponsibilityIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1864,6 +1993,10 @@
             "title": "Entry Id",
             "type": "integer"
           },
+          "driver_id": {
+            "title": "Driver Id",
+            "type": "integer"
+          },
           "number": {
             "title": "Number",
             "type": "integer"
@@ -1879,6 +2012,7 @@
         },
         "required": [
           "entry_id",
+          "driver_id",
           "number",
           "driver_name",
           "car_name"
@@ -2366,6 +2500,419 @@
           "reason"
         ],
         "title": "AuditEntryOut",
+        "type": "object"
+      },
+      "AttemptOut": {
+        "properties": {
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "number",
+          "status"
+        ],
+        "title": "AttemptOut",
+        "type": "object"
+      },
+      "CausedOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "shared": {
+            "title": "Shared",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "entry_id",
+          "driver_name",
+          "total",
+          "shared"
+        ],
+        "title": "CausedOut",
+        "type": "object"
+      },
+      "ResponsibleOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entry_id",
+          "driver_name"
+        ],
+        "title": "ResponsibleOut",
+        "type": "object"
+      },
+      "RestartOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "abandoned_attempt": {
+            "title": "Abandoned Attempt",
+            "type": "integer"
+          },
+          "replacement_attempt": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replacement Attempt"
+          },
+          "lap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap"
+          },
+          "elapsed_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elapsed Seconds"
+          },
+          "location": {
+            "title": "Location",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "requested_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested By"
+          },
+          "executed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Executed By"
+          },
+          "logged_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logged By"
+          },
+          "responsibility": {
+            "title": "Responsibility",
+            "type": "string"
+          },
+          "responsible": {
+            "items": {
+              "$ref": "#/components/schemas/ResponsibleOut"
+            },
+            "title": "Responsible",
+            "type": "array"
+          },
+          "review_status": {
+            "title": "Review Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "abandoned_attempt",
+          "replacement_attempt",
+          "lap",
+          "elapsed_seconds",
+          "location",
+          "reason",
+          "explanation",
+          "requested_by",
+          "executed_by",
+          "logged_by",
+          "responsibility",
+          "responsible",
+          "review_status"
+        ],
+        "title": "RestartOut",
+        "type": "object"
+      },
+      "RoundRestartsOut": {
+        "properties": {
+          "attempts": {
+            "items": {
+              "$ref": "#/components/schemas/AttemptOut"
+            },
+            "title": "Attempts",
+            "type": "array"
+          },
+          "restarts": {
+            "items": {
+              "$ref": "#/components/schemas/RestartOut"
+            },
+            "title": "Restarts",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/SummaryOut"
+          }
+        },
+        "required": [
+          "attempts",
+          "restarts",
+          "summary"
+        ],
+        "title": "RoundRestartsOut",
+        "type": "object"
+      },
+      "SummaryOut": {
+        "properties": {
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "caused": {
+            "items": {
+              "$ref": "#/components/schemas/CausedOut"
+            },
+            "title": "Caused",
+            "type": "array"
+          },
+          "pending_or_disputed": {
+            "title": "Pending Or Disputed",
+            "type": "integer"
+          },
+          "racing_incident": {
+            "title": "Racing Incident",
+            "type": "integer"
+          },
+          "technical": {
+            "title": "Technical",
+            "type": "integer"
+          },
+          "unknown": {
+            "title": "Unknown",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "caused",
+          "pending_or_disputed",
+          "racing_incident",
+          "technical",
+          "unknown"
+        ],
+        "title": "SummaryOut",
+        "type": "object"
+      },
+      "Reason": {
+        "enum": [
+          "first_lap_crash",
+          "technical_issue",
+          "server_problem",
+          "wrong_configuration",
+          "false_start",
+          "other"
+        ],
+        "title": "Reason",
+        "type": "string"
+      },
+      "Responsibility": {
+        "enum": [
+          "drivers",
+          "racing_incident",
+          "technical",
+          "unknown"
+        ],
+        "title": "Responsibility",
+        "type": "string"
+      },
+      "RestartIn": {
+        "properties": {
+          "lap": {
+            "anyOf": [
+              {
+                "maximum": 999,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap"
+          },
+          "elapsed_seconds": {
+            "anyOf": [
+              {
+                "maximum": 86400,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elapsed Seconds"
+          },
+          "location": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Location",
+            "type": "string"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/Reason"
+          },
+          "explanation": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Explanation",
+            "type": "string"
+          },
+          "requested_by_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested By Id"
+          },
+          "executed_by_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Executed By Id"
+          },
+          "responsibility": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Responsibility"
+              }
+            ],
+            "default": "unknown"
+          },
+          "driver_entry_ids": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Driver Entry Ids",
+            "type": "array"
+          },
+          "review_status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Review"
+              }
+            ],
+            "default": "pending"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "RestartIn",
+        "type": "object"
+      },
+      "Review": {
+        "enum": [
+          "pending",
+          "confirmed",
+          "disputed"
+        ],
+        "title": "Review",
+        "type": "string"
+      },
+      "ResponsibilityIn": {
+        "properties": {
+          "responsibility": {
+            "$ref": "#/components/schemas/Responsibility"
+          },
+          "driver_entry_ids": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Driver Entry Ids",
+            "type": "array"
+          },
+          "review_status": {
+            "$ref": "#/components/schemas/Review"
+          },
+          "reason": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "responsibility",
+          "review_status"
+        ],
+        "title": "ResponsibilityIn",
         "type": "object"
       }
     },

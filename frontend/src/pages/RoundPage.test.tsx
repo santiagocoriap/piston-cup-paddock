@@ -19,12 +19,21 @@ function round(canManage: boolean, result: unknown = null) {
     can_manage: canManage,
     rules: { version: 1, points_by_position: [25, 18, 15], pole_bonus: 0, fastest_lap_bonus: 0 },
     entries: [
-      { entry_id: 1, number: 93, driver_name: 'Bing', car_name: 'Acura' },
-      { entry_id: 2, number: 7, driver_name: 'Vice', car_name: 'Vanwall' },
-      { entry_id: 3, number: 3, driver_name: 'Billy', car_name: 'Cadillac' },
+      { entry_id: 1, driver_id: 11, number: 93, driver_name: 'Bing', car_name: 'Acura' },
+      { entry_id: 2, driver_id: 12, number: 7, driver_name: 'Vice', car_name: 'Vanwall' },
+      { entry_id: 3, driver_id: 13, number: 3, driver_name: 'Billy', car_name: 'Cadillac' },
     ],
     result,
   }
+}
+
+const noRestarts = {
+  'GET /api/rounds/9/restarts': () =>
+    json(200, {
+      attempts: [],
+      restarts: [],
+      summary: { total: 0, caused: [], pending_or_disputed: 0, racing_incident: 0, technical: 0, unknown: 0 },
+    }),
 }
 
 const show = (me = undefined as typeof DRIVER | undefined) =>
@@ -33,6 +42,7 @@ const show = (me = undefined as typeof DRIVER | undefined) =>
 describe('RoundPage', () => {
   it('shows the result with points and the DNF mark', async () => {
     mockApi({
+      ...noRestarts,
       'GET /api/rounds/9': () =>
         json(200, round(false, [
           { entry_id: 1, status: 'finished', position: 1, pole: false, fastest_lap: false, number: 93, driver_name: 'Bing', points: 25 },
@@ -49,6 +59,7 @@ describe('RoundPage', () => {
 
   it('sends only the drivers who took part, with their positions', async () => {
     const calls = mockApi({
+      ...noRestarts,
       'GET /api/rounds/9': () => json(200, round(true)),
       'PUT /api/rounds/9/result': () => json(200, round(true, [])),
     })
@@ -71,6 +82,7 @@ describe('RoundPage', () => {
 
   it('shows the rule that a result breaks', async () => {
     mockApi({
+      ...noRestarts,
       'GET /api/rounds/9': () => json(200, round(true)),
       'PUT /api/rounds/9/result': () => json(422, { detail: 'positions_not_continuous' }),
     })
@@ -82,7 +94,7 @@ describe('RoundPage', () => {
   })
 
   it('disables the position for DNS and DSQ', async () => {
-    mockApi({ 'GET /api/rounds/9': () => json(200, round(true)) })
+    mockApi({ ...noRestarts, 'GET /api/rounds/9': () => json(200, round(true)) })
     show()
     await userEvent.selectOptions(await screen.findByLabelText('Estado Bing'), 'dsq')
     expect(screen.getByLabelText('Pos. Bing')).toBeDisabled()

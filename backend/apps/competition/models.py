@@ -103,3 +103,51 @@ class Round(models.Model):
 
     def __str__(self):
         return f"Round {self.number} - {self.track_layout}"
+
+
+class Session(models.Model):
+    """Practice, qualifying, or race of one round.
+
+    Only race sessions give points and count restarts.
+    """
+
+    class Kind(models.TextChoices):
+        PRACTICE = "practice", _("Practice")
+        QUALIFYING = "qualifying", _("Qualifying")
+        RACE = "race", _("Race")
+
+    round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name="sessions")
+    kind = models.CharField(max_length=12, choices=Kind.choices)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["round", "kind"], name="unique_session_kind")
+        ]
+
+    def __str__(self):
+        return f"{self.round} {self.kind}"
+
+
+class Attempt(models.Model):
+    """One actual start of a session. A restart ends one attempt and starts the next."""
+
+    class Status(models.TextChoices):
+        ACTIVE = "active", _("Active")
+        COMPLETED = "completed", _("Completed")
+        ABANDONED = "abandoned", _("Abandoned")
+        ACCEPTED = "accepted", _("Accepted")
+        INVALIDATED = "invalidated", _("Invalidated")
+
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name="attempts")
+    number = models.PositiveSmallIntegerField()
+    status = models.CharField(max_length=12, choices=Status.choices, default=Status.ACTIVE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["number"]
+        constraints = [
+            models.UniqueConstraint(fields=["session", "number"], name="unique_attempt_number")
+        ]
+
+    def __str__(self):
+        return f"{self.session} attempt {self.number}"

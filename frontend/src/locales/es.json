@@ -123,7 +123,11 @@
     "one_pole_only": "Solo un piloto puede tener la pole.",
     "one_fastest_lap_only": "Solo un piloto puede tener la vuelta rápida.",
     "dns_has_no_bonus": "Un piloto que no largó no puede tener bonus.",
-    "entry_not_in_season": "Un piloto no está inscripto en esta temporada."
+    "entry_not_in_season": "Un piloto no está inscripto en esta temporada.",
+    "drivers_required": "Elegí al menos un piloto responsable.",
+    "drivers_not_allowed": "Solo la opción 'Uno o más pilotos' lleva pilotos.",
+    "race_already_accepted": "La carrera ya tiene un resultado. No se puede registrar otro reinicio.",
+    "driver_not_found": "No se encontró el piloto."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -191,7 +195,9 @@
       "track.created": "{{actor}} creó la pista {{name}}.",
       "layout.created": "{{actor}} creó el trazado {{name}} de {{track}}.",
       "car.created": "{{actor}} creó el auto {{name}}.",
-      "unknown": "{{actor}} hizo un cambio ({{action}})."
+      "unknown": "{{actor}} hizo un cambio ({{action}}).",
+      "restart.recorded": "{{actor}} registró un reinicio en la fecha {{number}} ({{track}}) después de la largada {{attempt}}.",
+      "restart.reviewed": "{{actor}} revisó la responsabilidad del reinicio de la largada {{attempt}} en la fecha {{number}} ({{track}})."
     },
     "fields": {
       "role": "Rol",
@@ -202,9 +208,68 @@
       "track_layout": "Pista",
       "scheduled_at": "Día y hora",
       "steam_guid": "Steam GUID",
-      "account": "Cuenta"
+      "account": "Cuenta",
+      "responsibility": "Responsabilidad",
+      "responsible_drivers": "Pilotos responsables",
+      "review_status": "Revisión"
     },
     "none": "—",
     "pts": "{{count}} pts"
+  },
+  "restarts": {
+    "title": "Largadas y reinicios",
+    "none": "Sin reinicios en esta carrera.",
+    "count_one": "1 reinicio antes de la largada aceptada",
+    "count_other": "{{count}} reinicios antes de la largada aceptada",
+    "attempt": "Largada {{number}}",
+    "attemptStatus": {
+      "active": "en curso",
+      "completed": "terminada",
+      "abandoned": "abandonada",
+      "accepted": "aceptada",
+      "invalidated": "anulada"
+    },
+    "caused": "Reinicios causados (confirmados)",
+    "noCaused": "Ningún piloto tiene reinicios confirmados.",
+    "shared": "{{count}} compartidos",
+    "sharedNote": "Un reinicio con varios responsables suma uno a cada piloto, así que la suma puede superar el total.",
+    "others": "Sin culpable de piloto: {{pending}} pendientes o en disputa, {{incident}} incidente de carrera, {{technical}} técnicos, {{unknown}} sin causa clara.",
+    "lap": "Vuelta",
+    "elapsed": "Segundos de carrera",
+    "location": "Lugar",
+    "reason": "Motivo",
+    "explanation": "Explicación",
+    "requestedBy": "Lo pidió",
+    "executedBy": "Lo ejecutó",
+    "loggedBy": "Lo cargó",
+    "responsibility": "Responsabilidad",
+    "responsibleDrivers": "Pilotos responsables",
+    "review": "Revisión",
+    "nobody": "Nadie",
+    "reasons": {
+      "first_lap_crash": "Choque en la primera vuelta",
+      "technical_issue": "Problema técnico",
+      "server_problem": "Problema del servidor",
+      "wrong_configuration": "Configuración incorrecta",
+      "false_start": "Largada en falso",
+      "other": "Otro"
+    },
+    "responsibilities": {
+      "drivers": "Uno o más pilotos",
+      "racing_incident": "Incidente de carrera",
+      "technical": "Causa técnica",
+      "unknown": "Desconocida"
+    },
+    "reviews": {
+      "pending": "Pendiente",
+      "confirmed": "Confirmada",
+      "disputed": "En disputa"
+    },
+    "record": "Registrar reinicio",
+    "edit": "Editar responsabilidad",
+    "save": "Guardar",
+    "changeReason": "Motivo del cambio",
+    "sharedBadge": "Compartida",
+    "startsColumn": "Largada → siguiente"
   }
 }

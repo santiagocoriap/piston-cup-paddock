@@ -73,10 +73,16 @@ test('an admin sets up a season without voting and enters a result', async ({ pa
   // Result and standings
   await page.getByRole('link', { name: `${names.track} · Long` }).click()
   await expect(page.getByText('Todavía no hay resultado.')).toBeVisible()
+
+  // A restart before the race that counts
+  await submitForm(page, 'Registrar reinicio', { Vuelta: '1', Lugar: 'T1' })
+  await expect(page.getByText('1 reinicio antes de la largada aceptada')).toBeVisible()
+  await expect(page.getByText('Largada 2: en curso')).toBeVisible()
   await page.getByLabel(`Estado ${names.driver}`).selectOption('finished')
   await page.getByLabel(`Pos. ${names.driver}`).fill('1')
   await page.getByRole('button', { name: 'Guardar resultado' }).click()
   await expect(page.getByRole('status')).toContainText('Resultado guardado.')
+  await expect(page.getByText('Largada 2: aceptada')).toBeVisible()
   await expect(page.getByRole('table').first().getByRole('row', { name: new RegExp(names.driver) })).toContainText('25')
 
   await page.getByRole('link', { name: '2026' }).click()

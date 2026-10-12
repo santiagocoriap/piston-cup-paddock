@@ -432,6 +432,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/restarts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Restarts */
+        get: operations["apps_restarts_api_get_restarts"];
+        put?: never;
+        /** Create Restart */
+        post: operations["apps_restarts_api_create_restart"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/restarts/{restart_id}/responsibility": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set Responsibility */
+        put: operations["apps_restarts_api_set_responsibility"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -715,6 +750,8 @@ export interface components {
         EntryOption: {
             /** Entry Id */
             entry_id: number;
+            /** Driver Id */
+            driver_id: number;
             /** Number */
             number: number;
             /** Driver Name */
@@ -893,6 +930,146 @@ export interface components {
             changes: components["schemas"]["AuditChange"][];
             /** Reason */
             reason: string;
+        };
+        /** AttemptOut */
+        AttemptOut: {
+            /** Number */
+            number: number;
+            /** Status */
+            status: string;
+        };
+        /** CausedOut */
+        CausedOut: {
+            /** Entry Id */
+            entry_id: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Total */
+            total: number;
+            /** Shared */
+            shared: number;
+        };
+        /** ResponsibleOut */
+        ResponsibleOut: {
+            /** Entry Id */
+            entry_id: number;
+            /** Driver Name */
+            driver_name: string;
+        };
+        /** RestartOut */
+        RestartOut: {
+            /** Id */
+            id: number;
+            /** Abandoned Attempt */
+            abandoned_attempt: number;
+            /** Replacement Attempt */
+            replacement_attempt: number | null;
+            /** Lap */
+            lap: number | null;
+            /** Elapsed Seconds */
+            elapsed_seconds: number | null;
+            /** Location */
+            location: string;
+            /** Reason */
+            reason: string;
+            /** Explanation */
+            explanation: string;
+            /** Requested By */
+            requested_by: string | null;
+            /** Executed By */
+            executed_by: string | null;
+            /** Logged By */
+            logged_by: string | null;
+            /** Responsibility */
+            responsibility: string;
+            /** Responsible */
+            responsible: components["schemas"]["ResponsibleOut"][];
+            /** Review Status */
+            review_status: string;
+        };
+        /** RoundRestartsOut */
+        RoundRestartsOut: {
+            /** Attempts */
+            attempts: components["schemas"]["AttemptOut"][];
+            /** Restarts */
+            restarts: components["schemas"]["RestartOut"][];
+            summary: components["schemas"]["SummaryOut"];
+        };
+        /** SummaryOut */
+        SummaryOut: {
+            /** Total */
+            total: number;
+            /** Caused */
+            caused: components["schemas"]["CausedOut"][];
+            /** Pending Or Disputed */
+            pending_or_disputed: number;
+            /** Racing Incident */
+            racing_incident: number;
+            /** Technical */
+            technical: number;
+            /** Unknown */
+            unknown: number;
+        };
+        /**
+         * Reason
+         * @enum {string}
+         */
+        Reason: "first_lap_crash" | "technical_issue" | "server_problem" | "wrong_configuration" | "false_start" | "other";
+        /**
+         * Responsibility
+         * @enum {string}
+         */
+        Responsibility: "drivers" | "racing_incident" | "technical" | "unknown";
+        /** RestartIn */
+        RestartIn: {
+            /** Lap */
+            lap?: number | null;
+            /** Elapsed Seconds */
+            elapsed_seconds?: number | null;
+            /**
+             * Location
+             * @default
+             */
+            location?: string;
+            reason: components["schemas"]["Reason"];
+            /**
+             * Explanation
+             * @default
+             */
+            explanation?: string;
+            /** Requested By Id */
+            requested_by_id?: number | null;
+            /** Executed By Id */
+            executed_by_id?: number | null;
+            /** @default unknown */
+            responsibility?: components["schemas"]["Responsibility"];
+            /**
+             * Driver Entry Ids
+             * @default []
+             */
+            driver_entry_ids?: number[];
+            /** @default pending */
+            review_status?: components["schemas"]["Review"];
+        };
+        /**
+         * Review
+         * @enum {string}
+         */
+        Review: "pending" | "confirmed" | "disputed";
+        /** ResponsibilityIn */
+        ResponsibilityIn: {
+            responsibility: components["schemas"]["Responsibility"];
+            /**
+             * Driver Entry Ids
+             * @default []
+             */
+            driver_entry_ids?: number[];
+            review_status: components["schemas"]["Review"];
+            /**
+             * Reason
+             * @default
+             */
+            reason?: string;
         };
     };
     responses: never;
@@ -1583,6 +1760,80 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AuditEntryOut"][];
+                };
+            };
+        };
+    };
+    apps_restarts_api_get_restarts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundRestartsOut"];
+                };
+            };
+        };
+    };
+    apps_restarts_api_create_restart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RestartIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundRestartsOut"];
+                };
+            };
+        };
+    };
+    apps_restarts_api_set_responsibility: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                restart_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResponsibilityIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundRestartsOut"];
                 };
             };
         };

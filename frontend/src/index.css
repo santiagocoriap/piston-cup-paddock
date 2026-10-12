@@ -239,7 +239,8 @@ label {
 }
 
 input,
-select {
+select,
+textarea {
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -343,6 +344,73 @@ input:disabled {
 .reason {
   font-style: italic;
   color: var(--muted);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.75rem;
+}
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  color: var(--muted);
+}
+
+label.check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text);
+}
+
+.attempts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+
+.attempt {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.attempt.accepted {
+  border-color: var(--success);
+  color: var(--text);
+}
+
+.attempt.abandoned {
+  text-decoration: line-through;
+}
+
+.summary {
+  margin-top: 1rem;
+}
+
+.review-confirmed {
+  border-color: var(--success);
+}
+
+.review-disputed {
+  border-color: #fbbf24;
+}
+
+button.small {
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.8rem;
 }
 
 .error {

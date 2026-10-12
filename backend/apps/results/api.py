@@ -24,6 +24,7 @@ class RulesOut(Schema):
 
 class EntryOption(Schema):
     entry_id: int
+    driver_id: int
     number: int
     driver_name: str
     car_name: str
@@ -137,6 +138,7 @@ def _round_detail(user, round_: Round) -> RoundDetail:
         entries=[
             EntryOption(
                 entry_id=e.id,
+                driver_id=e.driver_id,
                 number=e.number,
                 driver_name=e.driver.display_name,
                 car_name=e.car.name,
