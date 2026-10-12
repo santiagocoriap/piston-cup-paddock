@@ -49,3 +49,10 @@ def test_different_passwords_make_no_account(monkeypatch):
     with pytest.raises(CommandError, match="not the same"):
         call_command("create_first_admin", username="santi")
     assert not User.objects.exists()
+
+
+@pytest.mark.django_db
+def test_common_password_is_allowed(monkeypatch):
+    monkeypatch.setenv("FIRST_ADMIN_PASSWORD", "password123")
+    call_command("create_first_admin", username="santi")
+    assert User.objects.get(username="santi").check_password("password123")
