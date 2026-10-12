@@ -90,3 +90,30 @@ class CollectorEvent(models.Model):
 
     def __str__(self):
         return f"{self.kind} {self.run_id}:{self.seq}"
+
+
+class IncidentReview(models.Model):
+    """A steward decision about one incident. The key is the first event of the incident."""
+
+    class Outcome(models.TextChoices):
+        OPEN = "open", _("Open")
+        NO_ACTION = "no_action", _("No further action")
+        RACING_INCIDENT = "racing_incident", _("Racing incident")
+        PENALTY = "penalty", _("Penalty given")
+
+    round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name="incident_reviews")
+    incident_key = models.BigIntegerField()
+    outcome = models.CharField(max_length=16, choices=Outcome.choices, default=Outcome.OPEN)
+    note = models.TextField(blank=True)
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    reviewed_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["round", "incident_key"], name="unique_incident_review")
+        ]
+
+    def __str__(self):
+        return f"Review of incident {self.incident_key}"

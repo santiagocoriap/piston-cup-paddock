@@ -225,7 +225,8 @@
     "file_not_assignable": "This file cannot be assigned.",
     "no_driver_profile": "Your account has no driver.",
     "lap_not_in_session": "That lap is not in this session.",
-    "report_not_failed": "That report did not fail."
+    "report_not_failed": "That report did not fail.",
+    "incident_not_found": "That incident does not exist."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -331,7 +332,8 @@
       "collector.created": "{{actor}} created the collector {{name}}.",
       "collector.revoked": "{{actor}} revoked the collector {{name}}.",
       "collector.file_assigned": "{{actor}} assigned {{filename}} to round {{number}}.",
-      "report.retried": "{{actor}} retried report {{report}} of {{season}}."
+      "report.retried": "{{actor}} retried report {{report}} of {{season}}.",
+      "incident.reviewed": "{{actor}} reviewed incident {{incident}} of round {{number}}: {{outcome}}."
     },
     "fields": {
       "role": "Role",
@@ -1069,5 +1071,34 @@
       "job": "Worker task"
     },
     "retry": "Retry"
+  },
+  "incidents": {
+    "title": "Incidents",
+    "policy": "One incident groups the collisions that share a car with less than {{seconds}} seconds between them. A contact of two cars comes twice (once for each car) and counts once.",
+    "filters": "Filters",
+    "driver": "Driver",
+    "attempt": "Start",
+    "kindLabel": "Type",
+    "kind": {
+      "car": "with a car",
+      "env": "with the track"
+    },
+    "minSpeed": "Minimum impact: {{value}} km/h",
+    "outcomeLabel": "Review",
+    "outcome": {
+      "open": "Not reviewed",
+      "no_action": "No action",
+      "racing_incident": "Racing incident",
+      "penalty": "Penalty given"
+    },
+    "all": "All",
+    "summary": "Start {{attempt}} · lap {{lap}} · {{cars}} · {{speed}} km/h",
+    "map": "Incident map",
+    "mapHelp": "Each dot is an incident, at its position on the track. Red areas show where many happen. This track has no outline drawing yet.",
+    "noPositions": "The incidents have no position.",
+    "detail": "Incident events",
+    "review": "Review incident",
+    "note": "Note",
+    "saveReview": "Save review"
   }
 }

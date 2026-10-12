@@ -4217,6 +4217,114 @@
           }
         ]
       }
+    },
+    "/api/rounds/{round_id}/incidents": {
+      "get": {
+        "operationId": "apps_collectors_incident_api_get_incidents",
+        "summary": "Get Incidents",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "session",
+            "schema": {
+              "default": "race",
+              "enum": [
+                "race",
+                "qualifying",
+                "practice"
+              ],
+              "title": "Session",
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "incidents"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/incidents/{key}/review": {
+      "put": {
+        "operationId": "apps_collectors_incident_api_review_incident",
+        "summary": "Review Incident",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "key",
+            "schema": {
+              "title": "Key",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "incidents"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -11054,6 +11162,246 @@
           "counts"
         ],
         "title": "RoundHealthOut",
+        "type": "object"
+      },
+      "EventOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "car": {
+            "title": "Car",
+            "type": "string"
+          },
+          "other": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Other"
+          },
+          "speed_kmh": {
+            "title": "Speed Kmh",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "at",
+          "kind",
+          "car",
+          "other",
+          "speed_kmh"
+        ],
+        "title": "EventOut",
+        "type": "object"
+      },
+      "IncidentOut": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "integer"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "attempt": {
+            "title": "Attempt",
+            "type": "integer"
+          },
+          "lap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap"
+          },
+          "cars": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Cars",
+            "type": "array"
+          },
+          "max_speed": {
+            "title": "Max Speed",
+            "type": "number"
+          },
+          "x": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "X"
+          },
+          "z": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Z"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EventOut"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "review": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReviewOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "started_at",
+          "kind",
+          "attempt",
+          "lap",
+          "cars",
+          "max_speed",
+          "x",
+          "z",
+          "events",
+          "review"
+        ],
+        "title": "IncidentOut",
+        "type": "object"
+      },
+      "IncidentsOut": {
+        "properties": {
+          "session": {
+            "title": "Session",
+            "type": "string"
+          },
+          "gap_seconds": {
+            "title": "Gap Seconds",
+            "type": "number"
+          },
+          "has_events": {
+            "title": "Has Events",
+            "type": "boolean"
+          },
+          "can_review": {
+            "title": "Can Review",
+            "type": "boolean"
+          },
+          "incidents": {
+            "items": {
+              "$ref": "#/components/schemas/IncidentOut"
+            },
+            "title": "Incidents",
+            "type": "array"
+          }
+        },
+        "required": [
+          "session",
+          "gap_seconds",
+          "has_events",
+          "can_review",
+          "incidents"
+        ],
+        "title": "IncidentsOut",
+        "type": "object"
+      },
+      "ReviewOut": {
+        "properties": {
+          "outcome": {
+            "title": "Outcome",
+            "type": "string"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "reviewed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed By"
+          },
+          "reviewed_at": {
+            "format": "date-time",
+            "title": "Reviewed At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "outcome",
+          "note",
+          "reviewed_by",
+          "reviewed_at"
+        ],
+        "title": "ReviewOut",
+        "type": "object"
+      },
+      "ReviewIn": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "open",
+              "no_action",
+              "racing_incident",
+              "penalty"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "note": {
+            "default": "",
+            "maxLength": 1000,
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "title": "ReviewIn",
         "type": "object"
       }
     },

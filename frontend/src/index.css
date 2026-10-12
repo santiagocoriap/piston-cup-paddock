@@ -869,3 +869,28 @@ td.faster {
 .badge.health-never {
   border-color: var(--error);
 }
+
+.incident-map svg {
+  width: 100%;
+  max-width: 28rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.incident-map .heat {
+  fill: var(--accent);
+  fill-opacity: 0.15;
+}
+
+.incident-map .marker {
+  cursor: pointer;
+  stroke: var(--text);
+}
+
+.incident-map .marker.car {
+  fill: var(--accent);
+}
+
+.incident-map .marker.env {
+  fill: #facc15;
+}

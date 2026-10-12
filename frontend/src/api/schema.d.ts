@@ -1542,6 +1542,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/incidents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Incidents */
+        get: operations["apps_collectors_incident_api_get_incidents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/incidents/{key}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Review Incident */
+        put: operations["apps_collectors_incident_api_review_incident"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3807,6 +3841,91 @@ export interface components {
             counts: {
                 [key: string]: number;
             };
+        };
+        /** EventOut */
+        EventOut: {
+            /** Id */
+            id: number;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Kind */
+            kind: string;
+            /** Car */
+            car: string;
+            /** Other */
+            other: string | null;
+            /** Speed Kmh */
+            speed_kmh: number;
+        };
+        /** IncidentOut */
+        IncidentOut: {
+            /** Key */
+            key: number;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /** Kind */
+            kind: string;
+            /** Attempt */
+            attempt: number;
+            /** Lap */
+            lap: number | null;
+            /** Cars */
+            cars: string[];
+            /** Max Speed */
+            max_speed: number;
+            /** X */
+            x: number | null;
+            /** Z */
+            z: number | null;
+            /** Events */
+            events: components["schemas"]["EventOut"][];
+            review: components["schemas"]["ReviewOut"] | null;
+        };
+        /** IncidentsOut */
+        IncidentsOut: {
+            /** Session */
+            session: string;
+            /** Gap Seconds */
+            gap_seconds: number;
+            /** Has Events */
+            has_events: boolean;
+            /** Can Review */
+            can_review: boolean;
+            /** Incidents */
+            incidents: components["schemas"]["IncidentOut"][];
+        };
+        /** ReviewOut */
+        ReviewOut: {
+            /** Outcome */
+            outcome: string;
+            /** Note */
+            note: string;
+            /** Reviewed By */
+            reviewed_by: string | null;
+            /**
+             * Reviewed At
+             * Format: date-time
+             */
+            reviewed_at: string;
+        };
+        /** ReviewIn */
+        ReviewIn: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "open" | "no_action" | "racing_incident" | "penalty";
+            /**
+             * Note
+             * @default
+             */
+            note?: string;
         };
     };
     responses: never;
@@ -6319,6 +6438,57 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_incident_api_get_incidents: {
+        parameters: {
+            query?: {
+                session?: "race" | "qualifying" | "practice";
+            };
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentsOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_incident_api_review_incident: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+                key: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentsOut"];
                 };
             };
         };

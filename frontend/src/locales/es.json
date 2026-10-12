@@ -225,7 +225,8 @@
     "file_not_assignable": "Este archivo no se puede asignar.",
     "no_driver_profile": "Tu cuenta no tiene piloto.",
     "lap_not_in_session": "Esa vuelta no es de esta sesión.",
-    "report_not_failed": "Ese reporte no falló."
+    "report_not_failed": "Ese reporte no falló.",
+    "incident_not_found": "Ese incidente no existe."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -331,7 +332,8 @@
       "collector.created": "{{actor}} creó el colector {{name}}.",
       "collector.revoked": "{{actor}} desactivó el colector {{name}}.",
       "collector.file_assigned": "{{actor}} asignó {{filename}} a la fecha {{number}}.",
-      "report.retried": "{{actor}} reintentó el reporte {{report}} de {{season}}."
+      "report.retried": "{{actor}} reintentó el reporte {{report}} de {{season}}.",
+      "incident.reviewed": "{{actor}} revisó el incidente {{incident}} de la fecha {{number}}: {{outcome}}."
     },
     "fields": {
       "role": "Rol",
@@ -1069,5 +1071,34 @@
       "job": "Tarea del worker"
     },
     "retry": "Reintentar"
+  },
+  "incidents": {
+    "title": "Incidentes",
+    "policy": "Un incidente junta los choques que comparten un auto con menos de {{seconds}} segundos entre ellos. Un choque entre dos autos llega dos veces (una por auto) y cuenta una sola vez.",
+    "filters": "Filtros",
+    "driver": "Piloto",
+    "attempt": "Largada",
+    "kindLabel": "Tipo",
+    "kind": {
+      "car": "contra auto",
+      "env": "contra muro"
+    },
+    "minSpeed": "Impacto mínimo: {{value}} km/h",
+    "outcomeLabel": "Revisión",
+    "outcome": {
+      "open": "Sin revisar",
+      "no_action": "Sin acción",
+      "racing_incident": "Incidente de carrera",
+      "penalty": "Con sanción"
+    },
+    "all": "Todos",
+    "summary": "Largada {{attempt}} · vuelta {{lap}} · {{cars}} · {{speed}} km/h",
+    "map": "Mapa de incidentes",
+    "mapHelp": "Cada punto es un incidente, en su posición en la pista. Las zonas rojas muestran dónde hay muchos. Esta pista todavía no tiene el dibujo del circuito.",
+    "noPositions": "Los incidentes no tienen posición.",
+    "detail": "Eventos del incidente",
+    "review": "Revisar incidente",
+    "note": "Nota",
+    "saveReview": "Guardar revisión"
   }
 }
