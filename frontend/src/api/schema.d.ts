@@ -730,6 +730,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/laps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Laps */
+        get: operations["apps_imports_api_get_laps"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/seasons/{season_id}/handicaps": {
         parameters: {
             query?: never;
@@ -2232,6 +2249,76 @@ export interface components {
              * @default []
              */
             penalty_keys?: string[];
+        };
+        /** AverageOut */
+        AverageOut: {
+            /** Ms */
+            ms: number | null;
+            /** Laps */
+            laps: number;
+            /** Excluded */
+            excluded: {
+                [key: string]: number;
+            };
+        };
+        /** DriverLapsOut */
+        DriverLapsOut: {
+            /** Entry Id */
+            entry_id: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Number */
+            number: number;
+            /** Best Lap Ms */
+            best_lap_ms: number | null;
+            /** Best Lap Number */
+            best_lap_number: number | null;
+            average: components["schemas"]["AverageOut"];
+            clean_average: components["schemas"]["AverageOut"];
+            /** Theoretical Ms */
+            theoretical_ms: number | null;
+            /** Best Sectors Ms */
+            best_sectors_ms: (number | null)[];
+            /** Laps */
+            laps: components["schemas"]["MarkedLapOut"][];
+        };
+        /** MarkedLapOut */
+        MarkedLapOut: {
+            /** Lap Number */
+            lap_number: number;
+            /** Time Ms */
+            time_ms: number;
+            /** Sectors Ms */
+            sectors_ms: number[];
+            /** Valid */
+            valid: boolean;
+            /** Cuts */
+            cuts: number;
+            /** Invalid Reason */
+            invalid_reason: string;
+            /** Tyre */
+            tyre: string;
+            /** Pit */
+            pit: string | null;
+            /** Time Mark */
+            time_mark: string | null;
+            /** Sector Marks */
+            sector_marks: (string | null)[];
+        };
+        /** RoundLapsOut */
+        RoundLapsOut: {
+            /** Session */
+            session: string;
+            /** Sessions */
+            sessions: string[];
+            /** Has Sectors */
+            has_sectors: boolean;
+            /** Has Pit Data */
+            has_pit_data: boolean;
+            /** Clean Rules */
+            clean_rules: string[];
+            /** Drivers */
+            drivers: components["schemas"]["DriverLapsOut"][];
         };
         /** EntryHandicapsOut */
         EntryHandicapsOut: {
@@ -4098,6 +4185,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PenaltyLogsOut"];
+                };
+            };
+        };
+    };
+    apps_imports_api_get_laps: {
+        parameters: {
+            query?: {
+                session?: "race" | "qualifying" | "practice";
+            };
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundLapsOut"];
                 };
             };
         };

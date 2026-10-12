@@ -44,6 +44,13 @@ def test_qualifying_log_has_an_invalid_lap():
     assert log.cuts["76561190000000005"] == 2
 
 
+def test_final_race_has_pit_lane_events():
+    log = load("race_penalty_20261011_192731.log")
+    entered = [(p.guid[-2:], p.lap) for p in log.pits if p.kind == "entered"]
+    assert ("04", 1) in entered
+    assert ("06", 2) in entered
+
+
 def test_text_that_is_not_a_log_is_refused():
     with pytest.raises(PenaltyLogError):
         parse("hello")

@@ -8,6 +8,8 @@
   --accent-text: #ffffff;
   --error: #ff6b6b;
   --success: #4ade80;
+  --personal-best: #22c55e;
+  --session-best: #a855f7;
   --admin-surface: #2a0b0a;
   color-scheme: dark;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -775,4 +777,72 @@ fieldset.vote {
 .error {
   margin: 0;
   color: var(--error);
+}
+
+/* Lap tables: green for a driver best, purple for a session best. The icons carry the same meaning. */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.tabs button.active {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.mark.personal,
+td.personal {
+  color: var(--personal-best);
+}
+
+.mark.session,
+td.session {
+  color: var(--session-best);
+}
+
+td.personal,
+td.session {
+  font-weight: 700;
+}
+
+tr.invalid-lap td {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+tr.invalid-lap td:nth-last-child(-n + 3) {
+  text-decoration: none;
+}
+
+.lap-chart {
+  margin: 1rem 0;
+}
+
+.lap-chart svg {
+  width: 100%;
+  max-height: 20rem;
+}
+
+.lap-chart .grid {
+  stroke: var(--border);
+}
+
+.lap-chart .axis {
+  fill: var(--muted);
+  font-size: 11px;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-right: 0.75rem;
+}
+
+.swatch {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 2px;
 }

@@ -40,6 +40,14 @@ class InvalidLap:
 
 
 @dataclass
+class PitEvent:
+    kind: str  # "entered" or "left"
+    guid: str
+    lap: int | None
+    at: datetime
+
+
+@dataclass
 class PenaltyLog:
     session_type: str
     track: str
@@ -50,6 +58,7 @@ class PenaltyLog:
     penalties: list[LogPenalty] = field(default_factory=list)
     invalid_laps: list[InvalidLap] = field(default_factory=list)
     cuts: dict[str, int] = field(default_factory=dict)
+    pits: list[PitEvent] = field(default_factory=list)
 
     @property
     def seconds(self) -> int:
@@ -149,6 +158,9 @@ def parse(text: str) -> PenaltyLog:
         elif event == "Invalid Qualify Lap":
             seconds = float(values.get("Time", "0") or 0)
             log.invalid_laps.append(InvalidLap(guid, name, round(seconds * 1000), at))
+        elif event in ("Pit lane entered", "Pit lane left") and guid:
+            kind = "entered" if event == "Pit lane entered" else "left"
+            log.pits.append(PitEvent(kind, guid, _int(values.get("lap") or values.get("Lap")), at))
         elif event in ("Cutting", "Cutting Warning") and guid:
             log.cuts[guid] = log.cuts.get(guid, 0) + 1
 

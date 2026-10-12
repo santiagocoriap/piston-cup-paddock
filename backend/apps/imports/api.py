@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -11,6 +12,7 @@ from apps.competition.permissions import can_manage, can_view
 from apps.rules.scoring import ResultError
 
 from .ac_results import ResultFileError
+from .lap_services import round_laps
 from .models import ResultImport
 from .penalty_services import apply as apply_logs
 from .penalty_services import preview as penalty_preview
@@ -251,3 +253,85 @@ def apply_penalty_logs(request, round_id: int, payload: ApplyLogsIn):
     round_ = _round(request.user, round_id)
     _run_logs(lambda: apply_logs(round_, request.user, penalty_keys=payload.penalty_keys))
     return _run_logs(lambda: _logs_out(round_))
+
+
+# Lap tables
+
+
+class MarkedLapOut(Schema):
+    lap_number: int
+    time_ms: int
+    sectors_ms: list[int]
+    valid: bool
+    cuts: int
+    invalid_reason: str
+    tyre: str
+    pit: str | None
+    time_mark: str | None
+    sector_marks: list[str | None]
+
+
+class AverageOut(Schema):
+    ms: int | None
+    laps: int
+    excluded: dict[str, int]
+
+
+class DriverLapsOut(Schema):
+    entry_id: int
+    driver_name: str
+    number: int
+    best_lap_ms: int | None
+    best_lap_number: int | None
+    average: AverageOut
+    clean_average: AverageOut
+    theoretical_ms: int | None
+    best_sectors_ms: list[int | None]
+    laps: list[MarkedLapOut]
+
+
+class RoundLapsOut(Schema):
+    session: str
+    sessions: list[str]
+    has_sectors: bool
+    has_pit_data: bool
+    clean_rules: list[str]
+    drivers: list[DriverLapsOut]
+
+
+@router.get("/rounds/{round_id}/laps", response=RoundLapsOut)
+def get_laps(request, round_id: int, session: Literal["race", "qualifying", "practice"] = "race"):
+    round_ = get_object_or_404(Round.objects.select_related("season__championship"), pk=round_id)
+    if not can_view(request.user, round_.season.championship):
+        raise Http404
+    data = round_laps(round_, session)
+    return RoundLapsOut(
+        session=data.session,
+        sessions=data.sessions,
+        has_sectors=data.has_sectors,
+        has_pit_data=data.has_pit_data,
+        clean_rules=data.clean_rules,
+        drivers=[
+            DriverLapsOut(
+                entry_id=info.entry_id,
+                driver_name=info.driver_name,
+                number=info.number,
+                best_lap_ms=laps.best_lap_ms,
+                best_lap_number=laps.best_lap_number,
+                average=AverageOut(**vars(laps.average)),
+                clean_average=AverageOut(**vars(laps.clean_average)),
+                theoretical_ms=laps.theoretical_ms,
+                best_sectors_ms=laps.best_sectors_ms,
+                laps=[
+                    MarkedLapOut(
+                        **{k: v for k, v in vars(lap.row).items()},
+                        valid=lap.row.valid,
+                        time_mark=lap.time_mark,
+                        sector_marks=lap.sector_marks,
+                    )
+                    for lap in laps.laps
+                ],
+            )
+            for info, laps in data.drivers
+        ],
+    )

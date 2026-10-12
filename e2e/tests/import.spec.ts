@@ -86,6 +86,13 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
   await expect(page.getByText('Logs aplicados.')).toBeVisible()
   await expect(page.getByText('20 reinicios antes de la largada aceptada')).toBeVisible()
 
+  // The lap tables mark best laps and show the pit laps from the logs.
+  const laps = page.getByRole('region', { name: 'Vueltas' })
+  await expect(laps.getByRole('img', { name: 'Tiempo de vuelta por vuelta' })).toBeVisible()
+  await expect(laps.getByText('Teórica').first()).toBeVisible()
+  await laps.getByText(/Driver 06 · \d+ vueltas/).click()
+  await expect(laps.getByRole('table', { name: 'Vueltas de Driver 06' }).getByText('Salida')).toBeVisible()
+
   // The worker writes the race report. Without an AI key it fails, and the results stay.
   await page.getByRole('form', { name: 'Generar reporte' }).getByRole('button', { name: 'Generar' }).click()
   await expect(page.getByText(/Reporte 1 · (Falló|Listo)/)).toBeVisible({ timeout: 30_000 })

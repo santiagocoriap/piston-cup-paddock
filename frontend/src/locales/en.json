@@ -818,5 +818,53 @@
       "failed": "Failed"
     },
     "facts": "Facts used"
+  },
+  "laps": {
+    "title": "Laps",
+    "sessions": {
+      "race": "Race",
+      "qualifying": "Qualifying",
+      "practice": "Practice"
+    },
+    "marks": {
+      "session": "Session best",
+      "personal": "Driver best"
+    },
+    "validOnly": "Only valid laps count.",
+    "noPitData": "No pit data: the Real Penalty log is missing.",
+    "noSectors": "The file has no sectors.",
+    "best": "Best lap",
+    "average": "Average",
+    "cleanAverage": "Clean average",
+    "theoretical": "Theoretical lap",
+    "theoreticalLabel": "Theoretical",
+    "lapNumber": "lap {{number}}",
+    "averageHelp": "The number in brackets is the number of laps in the average. The average leaves out invalid laps.",
+    "cleanHelp": "The clean average also leaves out: {{rules}}. There is no incident data, so it can include laps with contact.",
+    "theoreticalHelp": "The theoretical lap adds the best valid sectors of the driver. It is theoretical: one real lap may not reach it.",
+    "rules": {
+      "invalid": "invalid laps",
+      "pit_in": "pit entry laps",
+      "pit_out": "pit exit laps",
+      "first_lap": "lap 1 (the start)"
+    },
+    "chart": "Lap time by lap",
+    "chartHelp": "Laps slower than {{limit}} stay at the top of the chart. An empty circle is an invalid lap.",
+    "count_one": "{{count}} lap",
+    "count_other": "{{count}} laps",
+    "tableFor": "Laps of {{name}}",
+    "lap": "Lap",
+    "time": "Time",
+    "validity": "Validity",
+    "valid": "Valid",
+    "invalid": "Invalid",
+    "cuts_one": "{{count}} cut",
+    "cuts_other": "{{count}} cuts",
+    "pit": "Pit",
+    "pitStatus": {
+      "in": "In",
+      "out": "Out"
+    },
+    "tyre": "Tyre"
   }
 }

@@ -10,6 +10,7 @@ import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { penaltyChanged } from '../lib/results'
 import { ImportSection } from './ImportSection'
+import { LapsSection } from './LapsSection'
 import { PenaltyLogsSection } from './PenaltyLogsSection'
 import { ReportSection } from './ReportSection'
 import { Briefing } from './Briefing'
@@ -118,6 +119,8 @@ export function RoundPage() {
       )}
       {adminView && <PenaltyLogsSection roundId={data.id} onApplied={changed} />}
       {adminView && <ResultForm key={imports} round={data} onSaved={changed} />}
+
+      <LapsSection key={`${imports}-${saves}`} roundId={data.id} />
 
       <Penalties round={data} adminView={adminView} onChange={changed} />
       <Protests round={data} adminView={adminView} onChange={changed} />

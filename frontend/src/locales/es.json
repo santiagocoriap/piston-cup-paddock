@@ -818,5 +818,53 @@
       "failed": "Falló"
     },
     "facts": "Datos usados"
+  },
+  "laps": {
+    "title": "Vueltas",
+    "sessions": {
+      "race": "Carrera",
+      "qualifying": "Clasificación",
+      "practice": "Práctica"
+    },
+    "marks": {
+      "session": "Mejor de la sesión",
+      "personal": "Mejor del piloto"
+    },
+    "validOnly": "Solo cuentan las vueltas válidas.",
+    "noPitData": "Sin datos de boxes: falta el log de Real Penalty.",
+    "noSectors": "El archivo no tiene sectores.",
+    "best": "Mejor vuelta",
+    "average": "Promedio",
+    "cleanAverage": "Promedio limpio",
+    "theoretical": "Vuelta teórica",
+    "theoreticalLabel": "Teórica",
+    "lapNumber": "vuelta {{number}}",
+    "averageHelp": "El número entre paréntesis es la cantidad de vueltas del promedio. El promedio deja afuera las vueltas inválidas.",
+    "cleanHelp": "El promedio limpio también deja afuera: {{rules}}. No hay datos de incidentes, así que puede incluir vueltas con contacto.",
+    "theoreticalHelp": "La vuelta teórica suma los mejores sectores válidos del piloto. Es teórica: puede no ser posible en una sola vuelta.",
+    "rules": {
+      "invalid": "vueltas inválidas",
+      "pit_in": "vueltas de entrada a boxes",
+      "pit_out": "vueltas de salida de boxes",
+      "first_lap": "la vuelta 1 (largada)"
+    },
+    "chart": "Tiempo de vuelta por vuelta",
+    "chartHelp": "Las vueltas de más de {{limit}} quedan arriba del gráfico. Un círculo vacío es una vuelta inválida.",
+    "count_one": "{{count}} vuelta",
+    "count_other": "{{count}} vueltas",
+    "tableFor": "Vueltas de {{name}}",
+    "lap": "Vuelta",
+    "time": "Tiempo",
+    "validity": "Validez",
+    "valid": "Válida",
+    "invalid": "Inválida",
+    "cuts_one": "{{count}} corte",
+    "cuts_other": "{{count}} cortes",
+    "pit": "Boxes",
+    "pitStatus": {
+      "in": "Entrada",
+      "out": "Salida"
+    },
+    "tyre": "Neumático"
   }
 }

@@ -33,7 +33,7 @@ from .real_penalty import LogPenalty, PenaltyLog, PenaltyLogError, parse, plan_p
 MAX_BYTES = 2 * 1024 * 1024
 
 
-def _read(log_file: PenaltyLogFile) -> PenaltyLog:
+def read_log(log_file: PenaltyLogFile) -> PenaltyLog:
     with log_file.file.open("rb") as handle:
         return parse(handle.read().decode("utf-8", errors="replace"))
 
@@ -133,7 +133,7 @@ def _planned(item: LogPenalty, kind: str, sha: str, entries, known: set[str]) ->
 
 def preview(round_: Round) -> PenaltyPreview:
     files = list(round_.penalty_logs.order_by("started_at"))
-    parsed = {f.id: _read(f) for f in files}
+    parsed = {f.id: read_log(f) for f in files}
     races = [f for f in files if f.session_type == "race"]
     result = PenaltyPreview(logs=len(files), final_log=races[-1].filename if races else None)
     session = race_session(round_)

@@ -2049,6 +2049,58 @@
         ]
       }
     },
+    "/api/rounds/{round_id}/laps": {
+      "get": {
+        "operationId": "apps_imports_api_get_laps",
+        "summary": "Get Laps",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "session",
+            "schema": {
+              "default": "race",
+              "enum": [
+                "race",
+                "qualifying",
+                "practice"
+              ],
+              "title": "Session",
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundLapsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "imports"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/seasons/{season_id}/handicaps": {
       "get": {
         "operationId": "apps_handicaps_api_get_handicaps",
@@ -6256,6 +6308,261 @@
           }
         },
         "title": "ApplyLogsIn",
+        "type": "object"
+      },
+      "AverageOut": {
+        "properties": {
+          "ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ms"
+          },
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          },
+          "excluded": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Excluded",
+            "type": "object"
+          }
+        },
+        "required": [
+          "ms",
+          "laps",
+          "excluded"
+        ],
+        "title": "AverageOut",
+        "type": "object"
+      },
+      "DriverLapsOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "best_lap_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Lap Ms"
+          },
+          "best_lap_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Lap Number"
+          },
+          "average": {
+            "$ref": "#/components/schemas/AverageOut"
+          },
+          "clean_average": {
+            "$ref": "#/components/schemas/AverageOut"
+          },
+          "theoretical_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Theoretical Ms"
+          },
+          "best_sectors_ms": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Best Sectors Ms",
+            "type": "array"
+          },
+          "laps": {
+            "items": {
+              "$ref": "#/components/schemas/MarkedLapOut"
+            },
+            "title": "Laps",
+            "type": "array"
+          }
+        },
+        "required": [
+          "entry_id",
+          "driver_name",
+          "number",
+          "best_lap_ms",
+          "best_lap_number",
+          "average",
+          "clean_average",
+          "theoretical_ms",
+          "best_sectors_ms",
+          "laps"
+        ],
+        "title": "DriverLapsOut",
+        "type": "object"
+      },
+      "MarkedLapOut": {
+        "properties": {
+          "lap_number": {
+            "title": "Lap Number",
+            "type": "integer"
+          },
+          "time_ms": {
+            "title": "Time Ms",
+            "type": "integer"
+          },
+          "sectors_ms": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Sectors Ms",
+            "type": "array"
+          },
+          "valid": {
+            "title": "Valid",
+            "type": "boolean"
+          },
+          "cuts": {
+            "title": "Cuts",
+            "type": "integer"
+          },
+          "invalid_reason": {
+            "title": "Invalid Reason",
+            "type": "string"
+          },
+          "tyre": {
+            "title": "Tyre",
+            "type": "string"
+          },
+          "pit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pit"
+          },
+          "time_mark": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Mark"
+          },
+          "sector_marks": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Sector Marks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "lap_number",
+          "time_ms",
+          "sectors_ms",
+          "valid",
+          "cuts",
+          "invalid_reason",
+          "tyre",
+          "pit",
+          "time_mark",
+          "sector_marks"
+        ],
+        "title": "MarkedLapOut",
+        "type": "object"
+      },
+      "RoundLapsOut": {
+        "properties": {
+          "session": {
+            "title": "Session",
+            "type": "string"
+          },
+          "sessions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sessions",
+            "type": "array"
+          },
+          "has_sectors": {
+            "title": "Has Sectors",
+            "type": "boolean"
+          },
+          "has_pit_data": {
+            "title": "Has Pit Data",
+            "type": "boolean"
+          },
+          "clean_rules": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Clean Rules",
+            "type": "array"
+          },
+          "drivers": {
+            "items": {
+              "$ref": "#/components/schemas/DriverLapsOut"
+            },
+            "title": "Drivers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "session",
+          "sessions",
+          "has_sectors",
+          "has_pit_data",
+          "clean_rules",
+          "drivers"
+        ],
+        "title": "RoundLapsOut",
         "type": "object"
       },
       "EntryHandicapsOut": {
