@@ -380,11 +380,15 @@ class SeasonStanding:
     rounds: list[RoundScore]
 
 
-def season_standings(season: Season, up_to_round: int | None = None) -> list[SeasonStanding]:
+def season_standings(
+    season: Season, up_to_round: int | None = None, official_only: bool = False
+) -> list[SeasonStanding]:
     """The standings from the current version of each round result. With up_to_round, only
-    the rounds with that number or lower count."""
+    the rounds with that number or lower count. With official_only, only official results."""
     rounds = season.rounds.order_by("number")
     lines = current_lines(version__result__round__season=season)
+    if official_only:
+        lines = lines.filter(version__result__status=State.OFFICIAL)
     if up_to_round is not None:
         rounds = rounds.filter(number__lte=up_to_round)
         lines = lines.filter(version__result__round__number__lte=up_to_round)

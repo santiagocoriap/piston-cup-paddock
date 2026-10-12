@@ -8,6 +8,7 @@ import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { BallotsSection } from './BallotsSection'
 import { CalendarAdmin } from './CalendarAdmin'
+import { ReportSection } from './ReportSection'
 import { TitleSection } from './TitleSection'
 import { HandicapsSection } from './HandicapsSection'
 
@@ -89,6 +90,8 @@ export function SeasonPage() {
       )}
 
       <TitleSection seasonId={seasonId} />
+
+      <ReportSection target={{ kind: 'season', id: seasonId }} adminView={adminView} />
 
       <HandicapsSection seasonId={seasonId} rounds={data.rounds} adminView={adminView} />
 

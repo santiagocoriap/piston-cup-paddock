@@ -198,7 +198,8 @@
     "result_required": "Primero cargá o importá el resultado de la carrera.",
     "not_served_needs_decision": "Una sanción sin cumplir necesita la decisión de un admin.",
     "time_penalty_needs_times": "Una sanción de tiempo necesita los tiempos del archivo de AC.",
-    "report_in_progress": "Ya se está generando un reporte."
+    "report_in_progress": "Ya se está generando un reporte.",
+    "official_rounds_required": "La temporada necesita al menos una fecha con resultado oficial."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -297,7 +298,8 @@
       "penalty_logs.applied": "{{actor}} aplicó los logs de Real Penalty en la fecha {{number}} ({{track}}): {{restarts}} reinicios, {{penalties}} sanciones.",
       "restart.imported": "{{actor}} importó {{count}} reinicios en la fecha {{number}} ({{track}}).",
       "penalty.served": "{{actor}} registró una sanción cumplida de {{driver}} en la fecha {{number}} ({{track}}).",
-      "report.requested": "{{actor}} pidió el reporte {{report}} de la fecha {{number}} ({{track}})."
+      "report.requested": "{{actor}} pidió el reporte {{report}} de la fecha {{number}} ({{track}}).",
+      "report.season_requested": "{{actor}} pidió el reporte {{report}} de la temporada {{season}}."
     },
     "fields": {
       "role": "Rol",
@@ -888,5 +890,13 @@
       "rules_changed": "Las reglas cambiaron durante la temporada. Las fechas que quedan usan las reglas actuales.",
       "provisional_results": "Algunos resultados son provisionales. El cálculo puede cambiar."
     }
+  },
+  "seasonReport": {
+    "title": "Reporte de la temporada",
+    "status": {
+      "finished": "terminada",
+      "in_progress": "en curso"
+    },
+    "meta": "Temporada {{status}}, solo fechas oficiales · {{date}} · {{language}}"
   }
 }

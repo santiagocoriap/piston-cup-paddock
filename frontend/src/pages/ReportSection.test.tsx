@@ -22,7 +22,7 @@ describe('ReportSection', () => {
         json(200, { can_generate: false, ai_configured: false, reports: [report(5, 2), report(4, 1, { unread: false, text: 'Primera versión.' })] }),
       'POST /api/reports/5/read': () => json(200, { ok: true }),
     })
-    renderPage(<ReportSection roundId={9} adminView={false} />, page)
+    renderPage(<ReportSection target={{ kind: 'round', id: 9 }} adminView={false} />, page)
     expect(await screen.findByText('Nuevo')).toBeInTheDocument()
     expect(screen.getByText('Versiones anteriores (1)')).toBeInTheDocument()
 
@@ -43,7 +43,7 @@ describe('ReportSection', () => {
         }),
       'POST /api/rounds/9/reports': () => json(200, { can_generate: true, ai_configured: false, reports: [] }),
     })
-    renderPage(<ReportSection roundId={9} adminView />, page)
+    renderPage(<ReportSection target={{ kind: 'round', id: 9 }} adminView />, page)
     expect(await screen.findByText(/La IA no tiene clave/)).toBeInTheDocument()
     expect(screen.getByText(/ai_not_configured/)).toBeInTheDocument()
     expect(screen.getByText('Todavía no hay reporte.')).toBeInTheDocument()
@@ -53,5 +53,25 @@ describe('ReportSection', () => {
     await vi.waitFor(() =>
       expect(calls.find((c) => c.key === 'POST /api/rounds/9/reports')!.body).toEqual({ language: 'es', tone: 'roast' }),
     )
+  })
+})
+
+describe('ReportSection for a season', () => {
+  it('loads the season reports and asks for a new one', async () => {
+    const calls = mockApi({
+      'GET /api/seasons/4/reports': () =>
+        json(200, {
+          can_generate: true,
+          ai_configured: true,
+          reports: [report(8, 1, { result_status: 'in_progress', unread: false, text: 'Driver 01 lidera.' })],
+        }),
+      'POST /api/seasons/4/reports': () => json(200, { can_generate: true, ai_configured: true, reports: [] }),
+    })
+    renderPage(<ReportSection target={{ kind: 'season', id: 4 }} adminView />, { path: '/seasons/:seasonId', url: '/seasons/4' })
+    expect(await screen.findByRole('heading', { name: 'Reporte de la temporada' })).toBeInTheDocument()
+    expect(screen.getByText(/Temporada en curso, solo fechas oficiales/)).toBeInTheDocument()
+    expect(screen.getByText('Driver 01 lidera.')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Generar' }))
+    await vi.waitFor(() => expect(calls.some((c) => c.key === 'POST /api/seasons/4/reports')).toBe(true))
   })
 })

@@ -188,3 +188,110 @@ def round_facts(round_: Round) -> tuple[dict, ResultVersion | None]:
         facts["data_gaps"].append("no_lap_data")
     facts["data_gaps"].append("no_incident_data")
     return facts, version
+
+
+def season_facts(season) -> dict:
+    """The facts of a season from its official rounds. A round without official result does not
+    count. A season with no lap data gets a data gap, so the text stays a standings recap."""
+    official = list(
+        season.rounds.filter(result__status=RaceResult.State.OFFICIAL)
+        .select_related("track_layout__track", "result__current_version")
+        .order_by("number")
+    )
+    names = {e.id: e.driver.display_name for e in season.entries.select_related("driver")}
+    table = season_standings(season, official_only=True)
+    standings = []
+    for row in table:
+        scores = [s for s in row.rounds if s.status is not None and s.official]
+        standings.append(
+            {
+                "ref": f"standings:season:{season.id}:official",
+                "rank": row.rank,
+                "driver": names[row.entry_id],
+                "points": row.points,
+                "wins": row.wins,
+                "podiums": sum(1 for s in scores if s.position and s.position <= 3),
+                "starts": sum(1 for s in scores if s.status != "dns"),
+            }
+        )
+    rounds = []
+    for round_ in official:
+        version = round_.result.current_version
+        winner = (
+            version.lines.filter(position=1).select_related("entry__driver").first()
+            if version
+            else None
+        )
+        rounds.append(
+            {
+                "ref": f"result_version:{version.id}" if version else f"round:{round_.id}",
+                "number": round_.number,
+                "track": round_.track_layout.track.name,
+                "layout": round_.track_layout.name,
+                "winner": winner.entry.driver.display_name if winner else None,
+                "fastest_lap": _fastest_lap(round_),
+            }
+        )
+    restarts = summarize(
+        list(
+            Restart.objects.filter(abandoned_attempt__session__round__in=official).prefetch_related(
+                "responsible_entries__driver"
+            )
+        )
+    )
+    remaining = max(season.planned_round_count - len(official), 0)
+    gaps = []
+    if not official:
+        gaps.append("no_official_rounds")
+    if not any(r["fastest_lap"] for r in rounds):
+        gaps.append("no_race_details")
+    gaps.append("no_incident_data")
+    return {
+        "season": {
+            "ref": f"season:{season.id}",
+            "championship": season.championship.name,
+            "name": season.name,
+            "planned_rounds": season.planned_round_count,
+            "official_rounds": len(official),
+            "finished": remaining == 0,
+        },
+        "champion": (
+            [s["driver"] for s in standings if s["rank"] == 1] if remaining == 0 and table else []
+        ),
+        "standings": standings,
+        "rounds": rounds,
+        "restarts": {
+            "ref": f"season:{season.id}:restarts",
+            "total": restarts.total,
+            "pending_or_disputed": restarts.pending_or_disputed,
+            "confirmed_caused": [
+                {"driver": c.driver_name, "restarts": c.total, "shared": c.shared}
+                for c in restarts.caused
+            ],
+        },
+        "data_gaps": gaps,
+    }
+
+
+def _fastest_lap(round_: Round) -> dict | None:
+    """The fastest valid lap of the race file of the round."""
+    lap = (
+        ImportedLap.objects.filter(
+            result_import__round=round_,
+            result_import__session__kind=Session.Kind.RACE,
+            result_import__status=ResultImport.State.APPLIED,
+            entry__isnull=False,
+            cuts=0,
+            invalid_reason="",
+        )
+        .select_related("entry__driver")
+        .order_by("lap_time_ms")
+        .first()
+    )
+    if lap is None:
+        return None
+    return {
+        "ref": f"imported_lap:{lap.id}",
+        "driver": lap.entry.driver.display_name,
+        "time": lap_time(lap.lap_time_ms),
+    }

@@ -128,7 +128,7 @@ export function RoundPage() {
 
       <RestartsSection roundId={data.id} entries={data.entries} adminView={adminView} refresh={saves} />
 
-      <ReportSection roundId={data.id} adminView={adminView} />
+      <ReportSection target={{ kind: 'round', id: data.id }} adminView={adminView} />
     </section>
   )
 }

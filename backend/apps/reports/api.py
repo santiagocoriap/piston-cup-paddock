@@ -6,11 +6,18 @@ from django.shortcuts import get_object_or_404
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
-from apps.competition.models import Round
+from apps.competition.models import Round, Season
 from apps.competition.permissions import can_manage, can_view
 
 from .models import RaceReport
-from .services import ReportError, ai_configured, mark_read, read_ids, request_report
+from .services import (
+    ReportError,
+    ai_configured,
+    mark_read,
+    read_ids,
+    request_report,
+    request_season_report,
+)
 
 router = Router(tags=["reports"])
 
@@ -58,9 +65,9 @@ def _round(user, round_id: int) -> Round:
     return round_
 
 
-def _reports_out(user, round_: Round) -> ReportsOut:
-    admin = can_manage(user, round_.season.championship)
-    reports = round_.reports.select_related("source_version")
+def _reports_out(user, reports, championship) -> ReportsOut:
+    admin = can_manage(user, championship)
+    reports = reports.select_related("source_version")
     if not admin:
         reports = reports.filter(status=RaceReport.State.READY)
     reports = list(reports)
@@ -93,7 +100,8 @@ def _reports_out(user, round_: Round) -> ReportsOut:
 
 @router.get("/rounds/{round_id}/reports", response=ReportsOut)
 def list_reports(request, round_id: int):
-    return _reports_out(request.user, _round(request.user, round_id))
+    round_ = _round(request.user, round_id)
+    return _reports_out(request.user, round_.reports.all(), round_.season.championship)
 
 
 @router.post("/rounds/{round_id}/reports", response=ReportsOut)
@@ -105,17 +113,46 @@ def create_report(request, round_id: int, payload: ReportIn):
         request_report(round_, request.user, language=payload.language, tone=payload.tone)
     except ReportError as error:
         raise HttpError(400, str(error)) from error
-    return _reports_out(request.user, round_)
+    return _reports_out(request.user, round_.reports.all(), round_.season.championship)
+
+
+def _season(user, season_id: int) -> Season:
+    season = get_object_or_404(Season.objects.select_related("championship"), pk=season_id)
+    if not can_view(user, season.championship):
+        raise Http404
+    return season
+
+
+def _season_reports(season: Season):
+    return season.reports.filter(kind=RaceReport.Kind.SEASON)
+
+
+@router.get("/seasons/{season_id}/reports", response=ReportsOut)
+def list_season_reports(request, season_id: int):
+    season = _season(request.user, season_id)
+    return _reports_out(request.user, _season_reports(season), season.championship)
+
+
+@router.post("/seasons/{season_id}/reports", response=ReportsOut)
+def create_season_report(request, season_id: int, payload: ReportIn):
+    season = _season(request.user, season_id)
+    if not can_manage(request.user, season.championship):
+        raise HttpError(403, "forbidden")
+    try:
+        request_season_report(season, request.user, language=payload.language, tone=payload.tone)
+    except ReportError as error:
+        raise HttpError(400, str(error)) from error
+    return _reports_out(request.user, _season_reports(season), season.championship)
 
 
 @router.post("/reports/{report_id}/read", response=ReadOut)
 def read_report(request, report_id: int):
     report = get_object_or_404(
-        RaceReport.objects.select_related("round__season__championship"),
+        RaceReport.objects.select_related("season__championship"),
         pk=report_id,
         status=RaceReport.State.READY,
     )
-    if not can_view(request.user, report.round.season.championship):
+    if not can_view(request.user, report.season.championship):
         raise Http404
     mark_read(report, request.user)
     return ReadOut(ok=True)

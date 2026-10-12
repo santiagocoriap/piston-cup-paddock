@@ -8,14 +8,26 @@ import { useLoad } from '../lib/useLoad'
 
 type Report = components['schemas']['ReportOut']
 type Tone = 'sarcastic' | 'friendly' | 'roast'
+/** A race report belongs to a round. A season report belongs to a season. */
+type Target = { kind: 'round' | 'season'; id: number }
 
-/** The AI race report. The AI writes only the text. The facts come from the app. */
-export function ReportSection({ roundId, adminView }: { roundId: number; adminView: boolean }) {
+function loadReports(target: Target) {
+  return target.kind === 'round'
+    ? api.GET('/api/rounds/{round_id}/reports', { params: { path: { round_id: target.id } } })
+    : api.GET('/api/seasons/{season_id}/reports', { params: { path: { season_id: target.id } } })
+}
+
+function createReport(target: Target, body: { language: 'es' | 'en'; tone: Tone }) {
+  return target.kind === 'round'
+    ? api.POST('/api/rounds/{round_id}/reports', { params: { path: { round_id: target.id } }, body })
+    : api.POST('/api/seasons/{season_id}/reports', { params: { path: { season_id: target.id } }, body })
+}
+
+/** The AI race report or season report. The AI writes only the text. The facts come from the app. */
+export function ReportSection({ target, adminView }: { target: Target; adminView: boolean }) {
   const { t } = useTranslation()
-  const reports = useLoad(
-    () => api.GET('/api/rounds/{round_id}/reports', { params: { path: { round_id: roundId } } }),
-    [roundId],
-  )
+  const prefix = target.kind === 'round' ? 'report' : 'seasonReport'
+  const reports = useLoad(() => loadReports(target), [target.kind, target.id])
   const data = reports.data
   const pending = data?.reports.some((r) => r.status === 'pending') ?? false
   const { reload } = reports
@@ -31,25 +43,25 @@ export function ReportSection({ roundId, adminView }: { roundId: number; adminVi
   const ready = data.reports.filter((r) => r.status === 'ready')
   const [latest, ...older] = ready
   return (
-    <section aria-label={t('report.title')}>
-      <h2>{t('report.title')}</h2>
-      {latest ? <ReportText report={latest} open /> : <p className="muted">{t('report.none')}</p>}
+    <section aria-label={t(`${prefix}.title`)}>
+      <h2>{t(`${prefix}.title`)}</h2>
+      {latest ? <ReportText report={latest} open target={target.kind} /> : <p className="muted">{t('report.none')}</p>}
       {older.length > 0 && (
         <details>
           <summary>{t('report.older', { count: older.length })}</summary>
           {older.map((report) => (
-            <ReportText key={report.id} report={report} />
+            <ReportText key={report.id} report={report} target={target.kind} />
           ))}
         </details>
       )}
       {adminView && data.can_generate && (
-        <ReportAdmin roundId={roundId} reports={data.reports} aiConfigured={data.ai_configured} onChange={reload} />
+        <ReportAdmin target={target} reports={data.reports} aiConfigured={data.ai_configured} onChange={reload} />
       )}
     </section>
   )
 }
 
-function ReportText({ report, open = false }: { report: Report; open?: boolean }) {
+function ReportText({ report, open = false, target = 'round' }: { report: Report; open?: boolean; target?: Target['kind'] }) {
   const { t, i18n } = useTranslation()
   const [unread, setUnread] = useState(report.unread)
   // An unread report starts closed. Opening it marks it as read.
@@ -70,12 +82,18 @@ function ReportText({ report, open = false }: { report: Report; open?: boolean }
         {unread && <span className="badge">{t('report.new')}</span>}
       </summary>
       <p className="muted">
-        {t('report.meta', {
-          status: report.result_status ? t(`review.status.${report.result_status}`) : '—',
-          version: report.source_version ?? '—',
-          date: formatDateTime(report.generated_at, i18n.language),
-          language: t(`report.languages.${report.language}`),
-        })}
+        {target === 'season'
+          ? t('seasonReport.meta', {
+              status: t(`seasonReport.status.${report.result_status}`),
+              date: formatDateTime(report.generated_at, i18n.language),
+              language: t(`report.languages.${report.language}`),
+            })
+          : t('report.meta', {
+              status: report.result_status ? t(`review.status.${report.result_status}`) : '—',
+              version: report.source_version ?? '—',
+              date: formatDateTime(report.generated_at, i18n.language),
+              language: t(`report.languages.${report.language}`),
+            })}
       </p>
       {report.text
         .split(/\n+/)
@@ -89,12 +107,12 @@ function ReportText({ report, open = false }: { report: Report; open?: boolean }
 }
 
 function ReportAdmin({
-  roundId,
+  target,
   reports,
   aiConfigured,
   onChange,
 }: {
-  roundId: number
+  target: Target
   reports: Report[]
   aiConfigured: boolean
   onChange: () => void
@@ -107,10 +125,7 @@ function ReportAdmin({
   async function submit(event: FormEvent) {
     event.preventDefault()
     setError(null)
-    const { error } = await api.POST('/api/rounds/{round_id}/reports', {
-      params: { path: { round_id: roundId } },
-      body: { language, tone },
-    })
+    const { error } = await createReport(target, { language, tone })
     if (error) setError(errorMessage(t, error))
     else onChange()
   }

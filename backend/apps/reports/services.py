@@ -1,4 +1,4 @@
-"""Request, generate, and read race reports.
+"""Request, generate, and read race reports and season reports.
 
 The worker generates the text. A failure only marks the report as failed. Results, charts,
 and standings never wait for a report.
@@ -13,11 +13,11 @@ from django.db.models import Max
 from django.utils import timezone
 
 from apps.audit.services import record
-from apps.competition.models import Round
+from apps.competition.models import Round, Season
 
-from .facts import round_facts
+from .facts import round_facts, season_facts
 from .models import RaceReport, ReportRead
-from .prompt import PROMPT_VERSION, messages
+from .prompt import PROMPT_VERSION, SEASON_PROMPT_VERSION, messages
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +48,8 @@ def request_report(round_: Round, user, *, language: str, tone: str) -> RaceRepo
     with transaction.atomic():
         number = (round_.reports.aggregate(top=Max("number"))["top"] or 0) + 1
         report = RaceReport.objects.create(
+            kind=RaceReport.Kind.RACE,
+            season=round_.season,
             round=round_,
             number=number,
             source_version=version,
@@ -70,6 +72,40 @@ def request_report(round_: Round, user, *, language: str, tone: str) -> RaceRepo
                 "track": str(round_.track_layout),
                 "report": number,
             },
+        )
+        transaction.on_commit(lambda: _defer(report.id))
+    return report
+
+
+def request_season_report(season: Season, user, *, language: str, tone: str) -> RaceReport:
+    """Save the season facts now and let the worker write the text."""
+    reports = season.reports.filter(kind=RaceReport.Kind.SEASON)
+    if reports.filter(status=RaceReport.State.PENDING).exists():
+        raise ReportError("report_in_progress")
+    facts = season_facts(season)
+    if not facts["season"]["official_rounds"]:
+        raise ReportError("official_rounds_required")
+    with transaction.atomic():
+        number = (reports.aggregate(top=Max("number"))["top"] or 0) + 1
+        report = RaceReport.objects.create(
+            kind=RaceReport.Kind.SEASON,
+            season=season,
+            number=number,
+            result_status="finished" if facts["season"]["finished"] else "in_progress",
+            language=language,
+            tone=tone,
+            prompt_version=SEASON_PROMPT_VERSION,
+            model=settings.AI_REPORT_MODEL,
+            facts=facts,
+            requested_by=user,
+        )
+        record(
+            user,
+            "report.season_requested",
+            "season",
+            season.id,
+            championship=season.championship,
+            params={"season": season.name, "report": number},
         )
         transaction.on_commit(lambda: _defer(report.id))
     return report
@@ -100,7 +136,12 @@ def generate(report_id: int) -> RaceReport:
     try:
         response = litellm.completion(
             model=report.model,
-            messages=messages(report.facts, report.language, report.tone),
+            messages=messages(
+                report.facts,
+                report.language,
+                report.tone,
+                season=report.kind == RaceReport.Kind.SEASON,
+            ),
             max_tokens=MAX_TOKENS,
             timeout=120,
             num_retries=2,
@@ -155,7 +196,7 @@ def latest_ready(round_ids) -> dict[int, RaceReport]:
     """The newest ready report of each round."""
     latest: dict[int, RaceReport] = {}
     for report in RaceReport.objects.filter(
-        round_id__in=round_ids, status=RaceReport.State.READY
+        kind=RaceReport.Kind.RACE, round_id__in=round_ids, status=RaceReport.State.READY
     ).order_by("round_id", "-number"):
         latest.setdefault(report.round_id, report)
     return latest

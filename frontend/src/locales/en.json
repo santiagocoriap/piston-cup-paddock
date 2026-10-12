@@ -198,7 +198,8 @@
     "result_required": "Enter or import the race result first.",
     "not_served_needs_decision": "A penalty that was not served needs an admin decision.",
     "time_penalty_needs_times": "A time penalty needs the times from the AC file.",
-    "report_in_progress": "A report is already in progress."
+    "report_in_progress": "A report is already in progress.",
+    "official_rounds_required": "The season needs at least one round with an official result."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -297,7 +298,8 @@
       "penalty_logs.applied": "{{actor}} applied the Real Penalty logs in round {{number}} ({{track}}): {{restarts}} restarts, {{penalties}} penalties.",
       "restart.imported": "{{actor}} imported {{count}} restarts in round {{number}} ({{track}}).",
       "penalty.served": "{{actor}} recorded a served penalty of {{driver}} in round {{number}} ({{track}}).",
-      "report.requested": "{{actor}} requested report {{report}} of round {{number}} ({{track}})."
+      "report.requested": "{{actor}} requested report {{report}} of round {{number}} ({{track}}).",
+      "report.season_requested": "{{actor}} requested report {{report}} of season {{season}}."
     },
     "fields": {
       "role": "Role",
@@ -888,5 +890,13 @@
       "rules_changed": "The rules changed in the season. The remaining rounds use the current rules.",
       "provisional_results": "Some results are provisional. The math can change."
     }
+  },
+  "seasonReport": {
+    "title": "Season report",
+    "status": {
+      "finished": "finished",
+      "in_progress": "in progress"
+    },
+    "meta": "Season {{status}}, official rounds only · {{date}} · {{language}}"
   }
 }
