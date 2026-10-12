@@ -28,6 +28,7 @@ function round(canManage: boolean, result: unknown = null, extra: Record<string,
     track_name: 'Highlands',
     layout_name: 'Long',
     scheduled_at: '2026-10-19T00:30:00Z',
+    event_timezone: 'America/Argentina/Buenos_Aires',
     can_manage: canManage,
     rules: { version: 1, points_by_position: [25, 18, 15], pole_bonus: 0, fastest_lap_bonus: 0 },
     entries: [

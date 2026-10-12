@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router'
 import { api } from '../api/client'
 import { ActionForm } from '../components/ActionForm'
 import { Loading } from '../components/Layout'
-import { formatDateTime, localInputToIso } from '../lib/format'
+import { currentTimeZone, formatDateTime, localInputToIso } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { BallotsSection } from './BallotsSection'
@@ -90,6 +90,7 @@ export function SeasonPage() {
       <HandicapsSection seasonId={seasonId} rounds={data.rounds} adminView={adminView} />
 
       <h2>{t('season.calendar')}</h2>
+      <p className="muted">{t('calendar.timesNote', { zone: currentTimeZone().replaceAll('_', ' ') })}</p>
       {data.voted_slots > 0 && (
         <p className="muted">{t('calendar.votedSlots', { count: data.voted_slots })}</p>
       )}

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { api, type Me } from './api/client'
 import { Layout } from './components/Layout'
+import { AccountPage } from './pages/AccountPage'
 import { AuditPage } from './pages/admin/AuditPage'
 import { CatalogPage } from './pages/admin/CatalogPage'
 import { DriversPage } from './pages/admin/DriversPage'
@@ -51,7 +52,7 @@ export default function App() {
   }
 
   return (
-    <SessionProvider me={session.me}>
+    <SessionProvider me={session.me} onMeChange={(me) => setSession({ status: 'signed-in', me })}>
       <BrowserRouter>
         <AppRoutes isAdmin={session.me.is_admin} canAdmin={session.me.can_admin} onSignOut={signOut} />
       </BrowserRouter>
@@ -79,6 +80,7 @@ function AppRoutes({
         <Route path="seasons/:seasonId" element={<SeasonPage />} />
         <Route path="rounds/:roundId" element={<RoundPage />} />
         <Route path="records" element={<RecordsPage />} />
+        <Route path="account" element={<AccountPage />} />
         <Route path="ballots/:ballotId" element={<BallotPage />} />
         {adminPages && <Route path="admin/leagues" element={<LeaguesPage />} />}
         {adminPages && <Route path="admin/drivers" element={<DriversPage />} />}

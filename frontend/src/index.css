@@ -742,6 +742,20 @@ fieldset.vote {
   }
 }
 
+.event-time {
+  display: block;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.narrow-section {
+  max-width: 32rem;
+}
+
+.user a {
+  color: var(--text);
+}
+
 .error {
   margin: 0;
   color: var(--error);

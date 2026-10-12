@@ -14,6 +14,7 @@ const card = {
   ],
   next_round: {
     round_id: 3, round_number: 3, track_name: 'Imola', layout_name: 'GP', scheduled_at: null,
+    event_timezone: 'America/Argentina/Buenos_Aires',
     ballast_kg: 7, restrictor_pct: 1,
   },
 }

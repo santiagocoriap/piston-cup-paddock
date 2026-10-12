@@ -151,6 +151,52 @@
             "SessionAuth": []
           }
         ]
+      },
+      "patch": {
+        "operationId": "apps_identity_api_update_me",
+        "summary": "Update Me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Change the language or the timezone of the signed-in user. An empty timezone means the\ntimezone of the browser.",
+        "tags": [
+          "auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Settings"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
       }
     },
     "/api/catalog/tracks": {
@@ -531,7 +577,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NameIn"
+                "$ref": "#/components/schemas/LeagueIn"
               }
             }
           },
@@ -2556,6 +2602,10 @@
             "title": "Language",
             "type": "string"
           },
+          "timezone": {
+            "title": "Timezone",
+            "type": "string"
+          },
           "is_admin": {
             "title": "Is Admin",
             "type": "boolean"
@@ -2569,6 +2619,7 @@
           "id",
           "username",
           "language",
+          "timezone",
           "is_admin",
           "can_admin"
         ],
@@ -2604,6 +2655,42 @@
           "password"
         ],
         "title": "Credentials",
+        "type": "object"
+      },
+      "Language": {
+        "enum": [
+          "es",
+          "en"
+        ],
+        "title": "Language",
+        "type": "string"
+      },
+      "Settings": {
+        "properties": {
+          "language": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Language"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          }
+        },
+        "title": "Settings",
         "type": "object"
       },
       "LayoutOut": {
@@ -2881,28 +2968,39 @@
           "name": {
             "title": "Name",
             "type": "string"
+          },
+          "timezone": {
+            "title": "Timezone",
+            "type": "string"
           }
         },
         "required": [
           "id",
-          "name"
+          "name",
+          "timezone"
         ],
         "title": "LeagueOut",
         "type": "object"
       },
-      "NameIn": {
+      "LeagueIn": {
         "properties": {
           "name": {
             "maxLength": 100,
             "minLength": 1,
             "title": "Name",
             "type": "string"
+          },
+          "timezone": {
+            "default": "America/Argentina/Buenos_Aires",
+            "maxLength": 64,
+            "title": "Timezone",
+            "type": "string"
           }
         },
         "required": [
           "name"
         ],
-        "title": "NameIn",
+        "title": "LeagueIn",
         "type": "object"
       },
       "ChampionshipOut": {
@@ -2936,6 +3034,21 @@
           "can_manage"
         ],
         "title": "ChampionshipOut",
+        "type": "object"
+      },
+      "NameIn": {
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "NameIn",
         "type": "object"
       },
       "ChampionshipDetail": {
@@ -3214,6 +3327,10 @@
             "title": "Voted Slots",
             "type": "integer"
           },
+          "event_timezone": {
+            "title": "Event Timezone",
+            "type": "string"
+          },
           "championship_id": {
             "title": "Championship Id",
             "type": "integer"
@@ -3248,6 +3365,7 @@
           "protest_window_minutes",
           "allow_repeat_layouts",
           "voted_slots",
+          "event_timezone",
           "championship_id",
           "championship_name",
           "can_manage",
@@ -3869,6 +3987,10 @@
             ],
             "title": "Scheduled At"
           },
+          "event_timezone": {
+            "title": "Event Timezone",
+            "type": "string"
+          },
           "can_manage": {
             "title": "Can Manage",
             "type": "boolean"
@@ -3997,6 +4119,7 @@
           "track_name",
           "layout_name",
           "scheduled_at",
+          "event_timezone",
           "can_manage",
           "can_protest",
           "briefing",
@@ -6723,6 +6846,10 @@
             ],
             "title": "Scheduled At"
           },
+          "event_timezone": {
+            "title": "Event Timezone",
+            "type": "string"
+          },
           "ballast_kg": {
             "title": "Ballast Kg",
             "type": "integer"
@@ -6738,6 +6865,7 @@
           "track_name",
           "layout_name",
           "scheduled_at",
+          "event_timezone",
           "ballast_kg",
           "restrictor_pct"
         ],

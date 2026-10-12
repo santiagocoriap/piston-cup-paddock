@@ -21,7 +21,8 @@
     "main": "Navegación principal",
     "audit": "Historial",
     "records": "Récords",
-    "home": "Mi paddock"
+    "home": "Mi paddock",
+    "account": "Mi cuenta"
   },
   "common": {
     "create": "Crear",
@@ -181,7 +182,8 @@
     "ballot_decided": "La votación ya está decidida.",
     "selection_limit_too_small": "El límite tiene que ser 1 o más.",
     "bad_power": "El valor del voto no es válido.",
-    "bad_prior_season": "La temporada anterior tiene que ser de este campeonato."
+    "bad_prior_season": "La temporada anterior tiene que ser de este campeonato.",
+    "bad_timezone": "La zona horaria no es válida."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -625,7 +627,8 @@
     "round": "Fecha",
     "votedSlots": "{{count}} fechas libres para votar",
     "allowRepeats": "Una pista fija también puede ser candidata en la votación",
-    "conditions": "Condiciones anunciadas (opcional)"
+    "conditions": "Condiciones anunciadas (opcional)",
+    "timesNote": "Horarios en {{zone}}."
   },
   "dashboard": {
     "title": "Mi paddock",
@@ -663,6 +666,15 @@
     "myHandicap": "Tu auto",
     "used": "Valores con los que corriste.",
     "assigned": "Valores asignados para esta fecha.",
-    "notEntered": "No estás inscripto en esta temporada."
+    "notEntered": "No estás inscripto en esta temporada.",
+    "eventTime": "Hora del evento: {{time}} ({{zone}})"
+  },
+  "account": {
+    "title": "Mi cuenta",
+    "language": "Idioma",
+    "timezone": "Zona horaria",
+    "browserZone": "La del navegador ({{zone}})",
+    "timezoneHelp": "Los horarios de las carreras se muestran en esta zona. Si la zona del evento es distinta, también ves la hora del evento.",
+    "saved": "Cambios guardados."
   }
 }

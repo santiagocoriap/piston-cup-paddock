@@ -1,11 +1,14 @@
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpRequest
 from django.middleware.csrf import get_token
-from ninja import Router, Schema, Status
+from ninja import Field, Router, Schema, Status
 from ninja.security import django_auth
 from ninja.utils import check_csrf
 
+from apps.common.timezones import is_timezone
 from apps.competition.permissions import manages_any_championship
+
+from .models import User
 
 router = Router(tags=["auth"])
 
@@ -19,6 +22,7 @@ class Me(Schema):
     id: int
     username: str
     language: str
+    timezone: str
     is_admin: bool
     can_admin: bool  # True when the user can manage something, so the admin mode is useful.
 
@@ -32,6 +36,7 @@ def _me(user) -> Me:
         id=user.id,
         username=user.username,
         language=user.language,
+        timezone=user.timezone,
         is_admin=user.is_staff,
         can_admin=manages_any_championship(user),
     )
@@ -64,3 +69,23 @@ def logout_view(request: HttpRequest):
 @router.get("/me", response=Me, auth=django_auth)
 def me(request: HttpRequest):
     return _me(request.user)
+
+
+class Settings(Schema):
+    language: User.Language | None = None
+    timezone: str | None = Field(None, max_length=64)
+
+
+@router.patch("/me", response={200: Me, 422: Error}, auth=django_auth)
+def update_me(request: HttpRequest, payload: Settings):
+    """Change the language or the timezone of the signed-in user. An empty timezone means the
+    timezone of the browser."""
+    user = request.user
+    if payload.timezone and not is_timezone(payload.timezone):
+        return Status(422, Error(detail="bad_timezone"))
+    if payload.language is not None:
+        user.language = payload.language
+    if payload.timezone is not None:
+        user.timezone = payload.timezone
+    user.save(update_fields=["language", "timezone"])
+    return Status(200, _me(user))

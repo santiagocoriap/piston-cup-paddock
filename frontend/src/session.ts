@@ -3,7 +3,12 @@ import type { Me } from './api/client'
 
 export type Mode = 'driver' | 'admin'
 
-export type Session = { me: Me; mode: Mode; setMode: (mode: Mode) => void }
+export type Session = {
+  me: Me
+  mode: Mode
+  setMode: (mode: Mode) => void
+  updateMe: (me: Me) => void
+}
 
 export const SessionContext = createContext<Session | null>(null)
 export const MODE_KEY = 'paddock.mode'
@@ -28,4 +33,9 @@ export function useMode(): { mode: Mode; setMode: (mode: Mode) => void } {
 export function useAdminView(canManage: boolean): boolean {
   const { me, mode } = useSession()
   return canManage && me.can_admin && mode === 'admin'
+}
+
+/** Give the new user data to the app, for example after a settings change. */
+export function useUpdateMe(): (me: Me) => void {
+  return useSession().updateMe
 }

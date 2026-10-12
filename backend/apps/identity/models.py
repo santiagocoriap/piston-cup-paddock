@@ -10,6 +10,8 @@ class User(AbstractUser):
         ENGLISH = "en", _("English")
 
     language = models.CharField(max_length=2, choices=Language.choices, default=Language.SPANISH)
+    # An IANA timezone, for example "Europe/Madrid". Empty means the timezone of the browser.
+    timezone = models.CharField(max_length=64, blank=True)
 
 
 steam_guid_validator = RegexValidator(r"^\d{17}$", _("A Steam GUID has 17 digits."))

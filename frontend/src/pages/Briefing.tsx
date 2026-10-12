@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { components } from '../api/schema'
-import { formatDateTime } from '../lib/format'
+import { EventTime } from '../components/EventTime'
 
 type RoundDetail = components['schemas']['RoundDetail']
 
@@ -15,7 +15,7 @@ const CONDITION_FIELDS = [
 
 /** What a driver needs before the race: schedule, conditions, rules, and the own car. */
 export function Briefing({ round }: { round: RoundDetail }) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { announced_conditions: conditions, protest_window_minutes, my_handicap: mine } = round.briefing
   const shown = CONDITION_FIELDS.filter(([key]) => {
     const value = (conditions as Record<string, unknown>)[key]
@@ -33,7 +33,9 @@ export function Briefing({ round }: { round: RoundDetail }) {
               {round.track_name} · {round.layout_name}
             </strong>
           </p>
-          <p>{round.scheduled_at ? formatDateTime(round.scheduled_at, i18n.language) : t('briefing.noDate')}</p>
+          <p>
+            <EventTime iso={round.scheduled_at} eventTimeZone={round.event_timezone} />
+          </p>
         </div>
 
         <div className="card">

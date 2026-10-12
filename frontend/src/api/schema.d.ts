@@ -89,7 +89,12 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update Me
+         * @description Change the language or the timezone of the signed-in user. An empty timezone means the
+         *     timezone of the browser.
+         */
+        patch: operations["apps_identity_api_update_me"];
         trace?: never;
     };
     "/api/catalog/tracks": {
@@ -949,6 +954,8 @@ export interface components {
             username: string;
             /** Language */
             language: string;
+            /** Timezone */
+            timezone: string;
             /** Is Admin */
             is_admin: boolean;
             /** Can Admin */
@@ -965,6 +972,17 @@ export interface components {
             username: string;
             /** Password */
             password: string;
+        };
+        /**
+         * Language
+         * @enum {string}
+         */
+        Language: "es" | "en";
+        /** Settings */
+        Settings: {
+            language?: components["schemas"]["Language"] | null;
+            /** Timezone */
+            timezone?: string | null;
         };
         /** LayoutOut */
         LayoutOut: {
@@ -1062,11 +1080,18 @@ export interface components {
             id: number;
             /** Name */
             name: string;
+            /** Timezone */
+            timezone: string;
         };
-        /** NameIn */
-        NameIn: {
+        /** LeagueIn */
+        LeagueIn: {
             /** Name */
             name: string;
+            /**
+             * Timezone
+             * @default America/Argentina/Buenos_Aires
+             */
+            timezone?: string;
         };
         /** ChampionshipOut */
         ChampionshipOut: {
@@ -1080,6 +1105,11 @@ export interface components {
             league_name: string;
             /** Can Manage */
             can_manage: boolean;
+        };
+        /** NameIn */
+        NameIn: {
+            /** Name */
+            name: string;
         };
         /** ChampionshipDetail */
         ChampionshipDetail: {
@@ -1191,6 +1221,8 @@ export interface components {
             allow_repeat_layouts: boolean;
             /** Voted Slots */
             voted_slots: number;
+            /** Event Timezone */
+            event_timezone: string;
             /** Championship Id */
             championship_id: number;
             /** Championship Name */
@@ -1414,6 +1446,8 @@ export interface components {
             layout_name: string;
             /** Scheduled At */
             scheduled_at: string | null;
+            /** Event Timezone */
+            event_timezone: string;
             /** Can Manage */
             can_manage: boolean;
             /** Can Protest */
@@ -2310,6 +2344,8 @@ export interface components {
             layout_name: string;
             /** Scheduled At */
             scheduled_at: string | null;
+            /** Event Timezone */
+            event_timezone: string;
             /** Ballast Kg */
             ballast_kg: number;
             /** Restrictor Pct */
@@ -2488,6 +2524,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    apps_identity_api_update_me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Settings"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
                 };
             };
         };
@@ -2725,7 +2794,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["NameIn"];
+                "application/json": components["schemas"]["LeagueIn"];
             };
         };
         responses: {

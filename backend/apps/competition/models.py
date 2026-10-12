@@ -8,6 +8,8 @@ from apps.identity.models import DriverProfile
 
 class League(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    # The timezone of the race server. The app shows race times in it next to the driver time.
+    timezone = models.CharField(max_length=64, default="America/Argentina/Buenos_Aires")
 
     def __str__(self):
         return self.name

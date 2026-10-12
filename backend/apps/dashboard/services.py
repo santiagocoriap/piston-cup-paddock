@@ -27,6 +27,7 @@ class NextRound:
     track_name: str
     layout_name: str
     scheduled_at: datetime | None
+    event_timezone: str
     ballast_kg: int
     restrictor_pct: int
 
@@ -50,7 +51,7 @@ class SeasonCard:
 def driver_dashboard(user) -> list[SeasonCard]:
     entries = (
         SeasonEntry.objects.filter(driver__user=user)
-        .select_related("season__championship", "car")
+        .select_related("season__championship__league", "car")
         .order_by("-season__created_at")
     )
     cards = []
@@ -99,6 +100,7 @@ def driver_dashboard(user) -> list[SeasonCard]:
                 track_name=next_round.track_layout.track.name,
                 layout_name=next_round.track_layout.name,
                 scheduled_at=next_round.scheduled_at,
+                event_timezone=season.championship.league.timezone,
                 ballast_kg=mine.next_kg,
                 restrictor_pct=mine.next_pct,
             )

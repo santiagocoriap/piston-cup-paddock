@@ -37,6 +37,7 @@ def test_login_with_correct_password_starts_a_session(user):
         "language": "es",
         "is_admin": False,
         "can_admin": False,
+        "timezone": "",
     }
     assert client.get("/api/auth/me").json()["username"] == "driver"
 
@@ -77,3 +78,42 @@ def test_championship_admin_can_use_the_admin_mode(api, champ_admin):
 
 def test_driver_cannot_use_the_admin_mode(api, driver_user):
     assert api(driver_user).get("/auth/me").json()["can_admin"] is False
+
+
+def test_user_changes_language_and_timezone(api, driver_user):
+    client = api(driver_user)
+    response = client.client.patch(
+        "/api/auth/me",
+        {"language": "en", "timezone": "Europe/Madrid"},
+        content_type="application/json",
+    )
+    assert response.status_code == 200
+    assert (response.json()["language"], response.json()["timezone"]) == ("en", "Europe/Madrid")
+    assert client.get("/auth/me").json()["language"] == "en"
+
+
+def test_unknown_timezone_is_refused(api, driver_user):
+    response = api(driver_user).client.patch(
+        "/api/auth/me", {"timezone": "Mars/Olympus"}, content_type="application/json"
+    )
+    assert response.json()["detail"] == "bad_timezone"
+
+
+def test_empty_timezone_means_the_browser_timezone(api, driver_user):
+    response = api(driver_user).client.patch(
+        "/api/auth/me", {"timezone": ""}, content_type="application/json"
+    )
+    assert response.json()["timezone"] == ""
+
+
+def test_round_and_season_give_the_event_timezone(api, champ_admin, season, layout):
+    from apps.competition.models import Round
+
+    round_ = Round.objects.create(season=season, number=1, track_layout=layout)
+    client = api(champ_admin)
+    assert client.get(f"/rounds/{round_.id}").json()["event_timezone"] == (
+        "America/Argentina/Buenos_Aires"
+    )
+    assert client.get(f"/seasons/{season.id}").json()["event_timezone"] == (
+        "America/Argentina/Buenos_Aires"
+    )

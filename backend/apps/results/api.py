@@ -124,6 +124,7 @@ class RoundDetail(Schema):
     track_name: str
     layout_name: str
     scheduled_at: AwareDatetime | None
+    event_timezone: str
     can_manage: bool
     can_protest: bool
     briefing: BriefingOut
@@ -194,7 +195,8 @@ STATUS_ORDER = {Status.FINISHED: 0, Status.DNF: 0, Status.DSQ: 1, Status.DNS: 2}
 
 def _visible_round(user, round_id: int) -> Round:
     round_ = get_object_or_404(
-        Round.objects.select_related("season__championship", "track_layout__track"), pk=round_id
+        Round.objects.select_related("season__championship__league", "track_layout__track"),
+        pk=round_id,
     )
     if not can_view(user, round_.season.championship):
         raise Http404
@@ -286,6 +288,7 @@ def _round_detail(user, round_: Round) -> RoundDetail:
         track_name=round_.track_layout.track.name,
         layout_name=round_.track_layout.name,
         scheduled_at=round_.scheduled_at,
+        event_timezone=season.championship.league.timezone,
         can_manage=can_manage(user, season.championship),
         can_protest=_can_protest(user, round_, result),
         briefing=BriefingOut(

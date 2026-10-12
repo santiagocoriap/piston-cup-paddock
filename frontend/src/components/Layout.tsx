@@ -28,7 +28,9 @@ export function Layout({ onSignOut }: { onSignOut: () => void }) {
         </nav>
         {me.can_admin && <ModeSwitch />}
         <span className="user">
-          {me.username}
+          <NavLink to="/account" aria-label={t('nav.account')}>
+            {me.username}
+          </NavLink>
           <button type="button" className="secondary" onClick={onSignOut}>
             {t('nav.logout')}
           </button>

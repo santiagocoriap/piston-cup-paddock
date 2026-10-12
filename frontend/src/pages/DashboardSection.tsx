@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
-import { formatDateTime } from '../lib/format'
+import { EventTime } from '../components/EventTime'
 import { useLoad } from '../lib/useLoad'
 
 type Card = components['schemas']['SeasonCardOut']
@@ -29,7 +29,7 @@ export function DashboardSection() {
 }
 
 function SeasonCard({ card }: { card: Card }) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const gap = card.leader_points - card.points
   const next = card.next_round
   return (
@@ -86,7 +86,7 @@ function SeasonCard({ card }: { card: Card }) {
             </strong>
           </p>
           <p className="muted">
-            {next.scheduled_at ? formatDateTime(next.scheduled_at, i18n.language) : t('briefing.noDate')}
+            <EventTime iso={next.scheduled_at} eventTimeZone={next.event_timezone} />
           </p>
           <p>
             {t('dashboard.handicap')}:{' '}

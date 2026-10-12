@@ -22,6 +22,7 @@ class NextRoundOut(Schema):
     track_name: str
     layout_name: str
     scheduled_at: datetime | None
+    event_timezone: str
     ballast_kg: int
     restrictor_pct: int
 

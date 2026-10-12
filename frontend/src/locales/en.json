@@ -21,7 +21,8 @@
     "main": "Main navigation",
     "audit": "History",
     "records": "Records",
-    "home": "My paddock"
+    "home": "My paddock",
+    "account": "My account"
   },
   "common": {
     "create": "Create",
@@ -181,7 +182,8 @@
     "ballot_decided": "The ballot is already decided.",
     "selection_limit_too_small": "The limit must be 1 or more.",
     "bad_power": "The vote value is not valid.",
-    "bad_prior_season": "The earlier season must be in this championship."
+    "bad_prior_season": "The earlier season must be in this championship.",
+    "bad_timezone": "The timezone is not valid."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -625,7 +627,8 @@
     "round": "Round",
     "votedSlots": "{{count}} free rounds for voting",
     "allowRepeats": "A fixed track can also be a voting candidate",
-    "conditions": "Announced conditions (optional)"
+    "conditions": "Announced conditions (optional)",
+    "timesNote": "Times in {{zone}}."
   },
   "dashboard": {
     "title": "My paddock",
@@ -663,6 +666,15 @@
     "myHandicap": "Your car",
     "used": "The values of your race.",
     "assigned": "The values for this round.",
-    "notEntered": "You are not in this season."
+    "notEntered": "You are not in this season.",
+    "eventTime": "Event time: {{time}} ({{zone}})"
+  },
+  "account": {
+    "title": "My account",
+    "language": "Language",
+    "timezone": "Timezone",
+    "browserZone": "The browser zone ({{zone}})",
+    "timezoneHelp": "Race times show in this zone. When the event zone is different, you also see the event time.",
+    "saved": "The changes are saved."
   }
 }

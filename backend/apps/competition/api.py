@@ -8,6 +8,7 @@ from pydantic import AwareDatetime
 from apps.audit.services import change, record
 from apps.catalog.models import Car, TrackLayout
 from apps.common.api import conflict_on_duplicate, require
+from apps.common.timezones import DEFAULT_EVENT_TIMEZONE, is_timezone
 from apps.identity.models import DriverProfile, User
 from apps.rules.models import RulesVersion
 
@@ -25,9 +26,15 @@ class NameIn(Schema):
     name: str = Field(min_length=1, max_length=100)
 
 
+class LeagueIn(Schema):
+    name: str = Field(min_length=1, max_length=100)
+    timezone: str = Field(DEFAULT_EVENT_TIMEZONE, max_length=64)
+
+
 class LeagueOut(Schema):
     id: int
     name: str
+    timezone: str
 
 
 class SeasonIn(Schema):
@@ -128,6 +135,7 @@ class RoundOut(Schema):
 
 
 class SeasonDetail(SeasonSummary):
+    event_timezone: str
     championship_id: int
     championship_name: str
     can_manage: bool
@@ -210,6 +218,7 @@ def _season_detail(user, season: Season) -> SeasonDetail:
         protest_window_minutes=season.protest_window_minutes,
         allow_repeat_layouts=season.allow_repeat_layouts,
         voted_slots=voted_slots(season),
+        event_timezone=season.championship.league.timezone,
         championship_id=season.championship_id,
         championship_name=season.championship.name,
         can_manage=can_manage(user, season.championship),
@@ -228,10 +237,12 @@ def list_leagues(request):
 
 
 @router.post("/leagues", response={201: LeagueOut})
-def create_league(request, payload: NameIn):
+def create_league(request, payload: LeagueIn):
     require(is_league_admin(request.user))
+    if not is_timezone(payload.timezone):
+        raise HttpError(422, "bad_timezone")
     with conflict_on_duplicate("league_exists"):
-        league = League.objects.create(name=payload.name)
+        league = League.objects.create(name=payload.name, timezone=payload.timezone)
         record(request.user, "league.created", "league", league.id, params={"name": league.name})
     return Status(201, league)
 
