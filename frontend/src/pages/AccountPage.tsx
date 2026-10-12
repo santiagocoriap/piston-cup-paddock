@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../api/client'
 import { errorMessage } from '../lib/errors'
 import { useMe, useUpdateMe } from '../session'
+import { TelemetryCard } from './TelemetryCard'
 
 const COMMON_ZONES = [
   'America/Argentina/Buenos_Aires',
@@ -83,6 +84,7 @@ export function AccountPage() {
         )}
         <button type="submit">{t('common.save')}</button>
       </form>
+      <TelemetryCard />
       <PasswordForm />
     </section>
   )

@@ -17,6 +17,7 @@ from apps.records.api import router as records_router
 from apps.reports.api import router as reports_router
 from apps.restarts.api import router as restarts_router
 from apps.results.api import router as results_router
+from apps.telemetry.api import router as telemetry_router
 from apps.voting.api import router as voting_router
 
 # Every endpoint needs a signed-in user, unless it sets auth=None.
@@ -38,3 +39,4 @@ api.add_router("/", exports_router)
 api.add_router("/", accounts_router)
 api.add_router("/", reports_router)
 api.add_router("/", collectors_router)
+api.add_router("/", telemetry_router)

@@ -16,6 +16,7 @@ import { ReportSection } from './ReportSection'
 import { Briefing } from './Briefing'
 import { RestartsSection } from './RestartsSection'
 import { ApproveButton, Penalties, Protests, ResultStatus, Versions } from './ResultReview'
+import { TelemetrySection } from './TelemetrySection'
 
 type RoundDetail = components['schemas']['RoundDetail']
 type Status = components['schemas']['LineIn']['status']
@@ -129,6 +130,8 @@ export function RoundPage() {
       <Versions round={data} />
 
       <RestartsSection roundId={data.id} entries={data.entries} adminView={may('restarts')} refresh={saves} />
+
+      <TelemetrySection roundId={data.id} />
 
       <ReportSection target={{ kind: 'round', id: data.id }} adminView={may('reports')} />
     </section>

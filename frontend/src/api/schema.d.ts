@@ -1355,6 +1355,125 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/telemetry/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Collector Status */
+        get: operations["apps_telemetry_api_collector_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/telemetry/laps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Lap */
+        post: operations["apps_telemetry_api_upload_lap"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/telemetry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Telemetry */
+        get: operations["apps_telemetry_api_my_telemetry"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/telemetry/key": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** New Key */
+        post: operations["apps_telemetry_api_new_key"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/telemetry/sharing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set Sharing */
+        put: operations["apps_telemetry_api_set_sharing"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/telemetry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Round Telemetry */
+        get: operations["apps_telemetry_api_round_telemetry"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/telemetry-laps/{lap_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lap Detail */
+        get: operations["apps_telemetry_api_lap_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3354,6 +3473,151 @@ export interface components {
         AssignIn: {
             /** Round Id */
             round_id: number;
+        };
+        /** CollectorStatusOut */
+        CollectorStatusOut: {
+            /** Driver */
+            driver: string;
+            /** Laps */
+            laps: number;
+        };
+        /** LapReceivedOut */
+        LapReceivedOut: {
+            /** Id */
+            id: number;
+            /** Is New */
+            is_new: boolean;
+            /** Round Id */
+            round_id: number | null;
+        };
+        /** LapIn */
+        LapIn: {
+            /** Track */
+            track: string;
+            /** Car */
+            car: string;
+            /**
+             * Session Type
+             * @default
+             */
+            session_type?: string;
+            /** Lap Number */
+            lap_number: number;
+            /** Lap Time Ms */
+            lap_time_ms: number;
+            /**
+             * Valid
+             * @default true
+             */
+            valid?: boolean;
+            /**
+             * Recorded At
+             * Format: date-time
+             */
+            recorded_at: string;
+            /** Sample Hz */
+            sample_hz: number;
+            /** Channels */
+            channels: {
+                [key: string]: number[];
+            };
+        };
+        /** MyTelemetryOut */
+        MyTelemetryOut: {
+            /** Has Driver */
+            has_driver: boolean;
+            /** Has Key */
+            has_key: boolean;
+            /** Last Seen At */
+            last_seen_at: string | null;
+            /** Laps */
+            laps: number;
+            /** Last Lap At */
+            last_lap_at: string | null;
+            sharing: components["schemas"]["SharingOut"] | null;
+        };
+        /** SharingOut */
+        SharingOut: {
+            /**
+             * Teammates
+             * @enum {string}
+             */
+            teammates: "none" | "laps" | "full";
+            /**
+             * Drivers
+             * @enum {string}
+             */
+            drivers: "none" | "laps";
+            /**
+             * Admins
+             * @enum {string}
+             */
+            admins: "none" | "laps" | "full";
+        };
+        /** KeyOut */
+        KeyOut: {
+            /** Key */
+            key: string;
+        };
+        /** SharingIn */
+        SharingIn: {
+            /**
+             * Teammates
+             * @enum {string}
+             */
+            teammates: "none" | "laps" | "full";
+            /**
+             * Drivers
+             * @enum {string}
+             */
+            drivers: "none" | "laps";
+            /**
+             * Admins
+             * @enum {string}
+             */
+            admins: "none" | "laps" | "full";
+        };
+        /** LapOut */
+        LapOut: {
+            /** Id */
+            id: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Session Type */
+            session_type: string;
+            /** Lap Number */
+            lap_number: number;
+            /** Lap Time Ms */
+            lap_time_ms: number;
+            /** Valid */
+            valid: boolean;
+            /** Access */
+            access: string;
+        };
+        /** LapDetailOut */
+        LapDetailOut: {
+            /** Id */
+            id: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Session Type */
+            session_type: string;
+            /** Lap Number */
+            lap_number: number;
+            /** Lap Time Ms */
+            lap_time_ms: number;
+            /** Valid */
+            valid: boolean;
+            /** Access */
+            access: string;
+            /** Sample Hz */
+            sample_hz: number;
+            /** Car */
+            car: string;
+            /** Channels */
+            channels: {
+                [key: string]: number[];
+            };
         };
     };
     responses: never;
@@ -5621,6 +5885,158 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CollectorsOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_api_collector_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectorStatusOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_api_upload_lap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LapIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LapReceivedOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_api_my_telemetry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyTelemetryOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_api_new_key: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KeyOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_api_set_sharing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SharingIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharingOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_api_round_telemetry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LapOut"][];
+                };
+            };
+        };
+    };
+    apps_telemetry_api_lap_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lap_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LapDetailOut"];
                 };
             };
         };

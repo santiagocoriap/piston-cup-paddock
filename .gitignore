@@ -13,3 +13,5 @@ backend/backups/
 # Server collector: local settings and data
 collector/collector.ini
 collector/spool/
+collector/driver.ini
+collector/driver-spool/

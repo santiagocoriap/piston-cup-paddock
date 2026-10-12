@@ -222,7 +222,8 @@
     "role_name_taken": "A role with this name already exists.",
     "custom_role_not_allowed": "Choose a custom role only with the role Custom role.",
     "round_not_in_championship": "That round is in another championship.",
-    "file_not_assignable": "This file cannot be assigned."
+    "file_not_assignable": "This file cannot be assigned.",
+    "no_driver_profile": "Your account has no driver."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -960,5 +961,39 @@
     },
     "chooseRound": "Round for {{name}}",
     "assign": "Assign"
+  },
+  "telemetry": {
+    "title": "Telemetry",
+    "help": "The driver collector is optional. It records speed, position, and pedals for each lap. Results work without it. Instructions are in collector/README.md.",
+    "noKey": "You have no key yet.",
+    "neverSeen": "The collector never connected.",
+    "lastSeen": "Collector seen {{date}}",
+    "laps_one": "{{count}} recorded lap",
+    "laps_other": "{{count}} recorded laps",
+    "makeKey": "Make key",
+    "newKey": "Make new key",
+    "replaceKey": "The old key stops working. Continue?",
+    "keyOnce": "Copy the key now. The app does not show it again.",
+    "key": "Telemetry key",
+    "sharing": "Who sees your telemetry",
+    "teammates": "Teammates",
+    "drivers": "Other drivers",
+    "admins": "Championship admins",
+    "levels": {
+      "none": "Nothing",
+      "laps": "Lap times and speed",
+      "full": "Everything, with pedals and steering"
+    },
+    "protected": "Other drivers never see your pedals, your steering, or your setup.",
+    "saved": "Saved.",
+    "roundTitle": "Driver telemetry",
+    "access": {
+      "laps": "lap times and speed",
+      "full": "full"
+    },
+    "chart": "Speed of {{name}}",
+    "speed": "speed (max {{max}} km/h)",
+    "pedals": "green: throttle, red: brake",
+    "noInputs": "no pedals: the driver does not share them"
   }
 }

@@ -3780,6 +3780,239 @@
           }
         ]
       }
+    },
+    "/api/telemetry/status": {
+      "get": {
+        "operationId": "apps_telemetry_api_collector_status",
+        "summary": "Collector Status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectorStatusOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "telemetry"
+        ],
+        "security": [
+          {
+            "DriverAuth": []
+          }
+        ]
+      }
+    },
+    "/api/telemetry/laps": {
+      "post": {
+        "operationId": "apps_telemetry_api_upload_lap",
+        "summary": "Upload Lap",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LapReceivedOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "telemetry"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LapIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "DriverAuth": []
+          }
+        ]
+      }
+    },
+    "/api/me/telemetry": {
+      "get": {
+        "operationId": "apps_telemetry_api_my_telemetry",
+        "summary": "My Telemetry",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyTelemetryOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "telemetry"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/me/telemetry/key": {
+      "post": {
+        "operationId": "apps_telemetry_api_new_key",
+        "summary": "New Key",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeyOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "telemetry"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/me/telemetry/sharing": {
+      "put": {
+        "operationId": "apps_telemetry_api_set_sharing",
+        "summary": "Set Sharing",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharingOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "telemetry"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharingIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/telemetry": {
+      "get": {
+        "operationId": "apps_telemetry_api_round_telemetry",
+        "summary": "Round Telemetry",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LapOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "telemetry"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/telemetry-laps/{lap_id}": {
+      "get": {
+        "operationId": "apps_telemetry_api_lap_detail",
+        "summary": "Lap Detail",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lap_id",
+            "schema": {
+              "title": "Lap Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LapDetailOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "telemetry"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -9822,6 +10055,376 @@
         ],
         "title": "AssignIn",
         "type": "object"
+      },
+      "CollectorStatusOut": {
+        "properties": {
+          "driver": {
+            "title": "Driver",
+            "type": "string"
+          },
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "driver",
+          "laps"
+        ],
+        "title": "CollectorStatusOut",
+        "type": "object"
+      },
+      "LapReceivedOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "is_new": {
+            "title": "Is New",
+            "type": "boolean"
+          },
+          "round_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Round Id"
+          }
+        },
+        "required": [
+          "id",
+          "is_new",
+          "round_id"
+        ],
+        "title": "LapReceivedOut",
+        "type": "object"
+      },
+      "LapIn": {
+        "properties": {
+          "track": {
+            "maxLength": 200,
+            "title": "Track",
+            "type": "string"
+          },
+          "car": {
+            "maxLength": 100,
+            "title": "Car",
+            "type": "string"
+          },
+          "session_type": {
+            "default": "",
+            "maxLength": 12,
+            "title": "Session Type",
+            "type": "string"
+          },
+          "lap_number": {
+            "maximum": 999,
+            "minimum": 0,
+            "title": "Lap Number",
+            "type": "integer"
+          },
+          "lap_time_ms": {
+            "minimum": 0,
+            "title": "Lap Time Ms",
+            "type": "integer"
+          },
+          "valid": {
+            "default": true,
+            "title": "Valid",
+            "type": "boolean"
+          },
+          "recorded_at": {
+            "format": "date-time",
+            "title": "Recorded At",
+            "type": "string"
+          },
+          "sample_hz": {
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Sample Hz",
+            "type": "integer"
+          },
+          "channels": {
+            "additionalProperties": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Channels",
+            "type": "object"
+          }
+        },
+        "required": [
+          "track",
+          "car",
+          "lap_number",
+          "lap_time_ms",
+          "recorded_at",
+          "sample_hz",
+          "channels"
+        ],
+        "title": "LapIn",
+        "type": "object"
+      },
+      "MyTelemetryOut": {
+        "properties": {
+          "has_driver": {
+            "title": "Has Driver",
+            "type": "boolean"
+          },
+          "has_key": {
+            "title": "Has Key",
+            "type": "boolean"
+          },
+          "last_seen_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Seen At"
+          },
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          },
+          "last_lap_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Lap At"
+          },
+          "sharing": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SharingOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "has_driver",
+          "has_key",
+          "last_seen_at",
+          "laps",
+          "last_lap_at",
+          "sharing"
+        ],
+        "title": "MyTelemetryOut",
+        "type": "object"
+      },
+      "SharingOut": {
+        "properties": {
+          "teammates": {
+            "enum": [
+              "none",
+              "laps",
+              "full"
+            ],
+            "title": "Teammates",
+            "type": "string"
+          },
+          "drivers": {
+            "enum": [
+              "none",
+              "laps"
+            ],
+            "title": "Drivers",
+            "type": "string"
+          },
+          "admins": {
+            "enum": [
+              "none",
+              "laps",
+              "full"
+            ],
+            "title": "Admins",
+            "type": "string"
+          }
+        },
+        "required": [
+          "teammates",
+          "drivers",
+          "admins"
+        ],
+        "title": "SharingOut",
+        "type": "object"
+      },
+      "KeyOut": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key"
+        ],
+        "title": "KeyOut",
+        "type": "object"
+      },
+      "SharingIn": {
+        "properties": {
+          "teammates": {
+            "enum": [
+              "none",
+              "laps",
+              "full"
+            ],
+            "title": "Teammates",
+            "type": "string"
+          },
+          "drivers": {
+            "enum": [
+              "none",
+              "laps"
+            ],
+            "title": "Drivers",
+            "type": "string"
+          },
+          "admins": {
+            "enum": [
+              "none",
+              "laps",
+              "full"
+            ],
+            "title": "Admins",
+            "type": "string"
+          }
+        },
+        "required": [
+          "teammates",
+          "drivers",
+          "admins"
+        ],
+        "title": "SharingIn",
+        "type": "object"
+      },
+      "LapOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "session_type": {
+            "title": "Session Type",
+            "type": "string"
+          },
+          "lap_number": {
+            "title": "Lap Number",
+            "type": "integer"
+          },
+          "lap_time_ms": {
+            "title": "Lap Time Ms",
+            "type": "integer"
+          },
+          "valid": {
+            "title": "Valid",
+            "type": "boolean"
+          },
+          "access": {
+            "title": "Access",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "driver_name",
+          "session_type",
+          "lap_number",
+          "lap_time_ms",
+          "valid",
+          "access"
+        ],
+        "title": "LapOut",
+        "type": "object"
+      },
+      "LapDetailOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "session_type": {
+            "title": "Session Type",
+            "type": "string"
+          },
+          "lap_number": {
+            "title": "Lap Number",
+            "type": "integer"
+          },
+          "lap_time_ms": {
+            "title": "Lap Time Ms",
+            "type": "integer"
+          },
+          "valid": {
+            "title": "Valid",
+            "type": "boolean"
+          },
+          "access": {
+            "title": "Access",
+            "type": "string"
+          },
+          "sample_hz": {
+            "title": "Sample Hz",
+            "type": "integer"
+          },
+          "car": {
+            "title": "Car",
+            "type": "string"
+          },
+          "channels": {
+            "additionalProperties": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Channels",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "driver_name",
+          "session_type",
+          "lap_number",
+          "lap_time_ms",
+          "valid",
+          "access",
+          "sample_hz",
+          "car",
+          "channels"
+        ],
+        "title": "LapDetailOut",
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -9831,6 +10434,10 @@
         "name": "sessionid"
       },
       "CollectorAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "DriverAuth": {
         "type": "http",
         "scheme": "bearer"
       }

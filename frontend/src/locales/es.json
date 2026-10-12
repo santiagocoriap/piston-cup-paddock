@@ -222,7 +222,8 @@
     "role_name_taken": "Ya hay un rol con ese nombre.",
     "custom_role_not_allowed": "Elegí un rol personalizado solo con el rol Rol personalizado.",
     "round_not_in_championship": "Esa fecha es de otro campeonato.",
-    "file_not_assignable": "Este archivo no se puede asignar."
+    "file_not_assignable": "Este archivo no se puede asignar.",
+    "no_driver_profile": "Tu cuenta no tiene piloto."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -960,5 +961,39 @@
     },
     "chooseRound": "Fecha para {{name}}",
     "assign": "Asignar"
+  },
+  "telemetry": {
+    "title": "Telemetría",
+    "help": "El colector de piloto es opcional. Graba velocidad, posición y pedales en cada vuelta. Los resultados funcionan sin él. Instrucciones en collector/README.md.",
+    "noKey": "Todavía no tenés clave.",
+    "neverSeen": "El colector nunca se conectó.",
+    "lastSeen": "Colector visto {{date}}",
+    "laps_one": "{{count}} vuelta grabada",
+    "laps_other": "{{count}} vueltas grabadas",
+    "makeKey": "Crear clave",
+    "newKey": "Crear clave nueva",
+    "replaceKey": "La clave anterior deja de funcionar. ¿Seguro?",
+    "keyOnce": "Copiá la clave ahora. La app no la muestra otra vez.",
+    "key": "Clave de telemetría",
+    "sharing": "Quién ve tu telemetría",
+    "teammates": "Compañeros de equipo",
+    "drivers": "Otros pilotos",
+    "admins": "Admins del campeonato",
+    "levels": {
+      "none": "Nada",
+      "laps": "Tiempos y velocidad",
+      "full": "Todo, con pedales y volante"
+    },
+    "protected": "Los otros pilotos nunca ven tus pedales, tu volante ni tu setup.",
+    "saved": "Guardado.",
+    "roundTitle": "Telemetría de pilotos",
+    "access": {
+      "laps": "tiempos y velocidad",
+      "full": "completa"
+    },
+    "chart": "Velocidad de {{name}}",
+    "speed": "velocidad (máx. {{max}} km/h)",
+    "pedals": "verde: acelerador, rojo: freno",
+    "noInputs": "sin pedales: el piloto no los comparte"
   }
 }

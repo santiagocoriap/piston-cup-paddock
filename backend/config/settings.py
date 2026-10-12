@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "apps.dashboard",
     "apps.reports",
     "apps.collectors",
+    "apps.telemetry",
 ]
 
 MIDDLEWARE = [
