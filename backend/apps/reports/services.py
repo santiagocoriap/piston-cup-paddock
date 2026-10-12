@@ -21,7 +21,8 @@ from .prompt import PROMPT_VERSION, messages
 
 logger = logging.getLogger(__name__)
 
-MAX_TOKENS = 1500  # The cost limit of one report.
+# The cost limit of one report. The model also uses part of it to think before it writes.
+MAX_TOKENS = 4000
 
 
 class ReportError(ValueError):
@@ -105,12 +106,15 @@ def generate(report_id: int) -> RaceReport:
             num_retries=2,
             extra_headers=_headers(),
         )
-        text = (response.choices[0].message.content or "").strip()
+        choice = response.choices[0]
+        text = (choice.message.content or "").strip()
     except Exception as error:  # Any provider error only fails this report.
         logger.warning("Report %s failed: %s", report.id, error)
         return _fail(report, _error_code(error))
     if not text:
         return _fail(report, "ai_empty_text")
+    if getattr(choice, "finish_reason", None) == "length":
+        return _fail(report, "ai_text_cut")
     report.text = text
     report.status = RaceReport.State.READY
     report.generated_at = timezone.now()

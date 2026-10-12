@@ -14,6 +14,7 @@ from apps.reports.services import generate
 
 class FakeAI:
     def __init__(self, configured=True, text="Gran carrera.", error=None):
+        self.finish_reason = "stop"
         self.configured = configured
         self.text = text
         self.error = error
@@ -27,7 +28,8 @@ class FakeAI:
         if self.error:
             raise self.error
         message = SimpleNamespace(content=self.text)
-        return SimpleNamespace(choices=[SimpleNamespace(message=message)])
+        choice = SimpleNamespace(message=message, finish_reason=self.finish_reason)
+        return SimpleNamespace(choices=[choice])
 
 
 @pytest.fixture
@@ -113,6 +115,13 @@ def test_workspace_id_goes_as_a_header(api, champ_admin, raced, ai, settings):
     request(api, champ_admin, raced)
     generate(RaceReport.objects.get().id)
     assert ai.calls[0]["extra_headers"] == {"anthropic-workspace-id": "wrkspc_1"}
+
+
+def test_cut_text_fails_the_report(api, champ_admin, raced, ai):
+    ai.finish_reason = "length"
+    request(api, champ_admin, raced)
+    report = generate(RaceReport.objects.get().id)
+    assert (report.status, report.error, report.text) == ("failed", "ai_text_cut", "")
 
 
 def test_no_api_key_fails_the_report_but_not_the_results(api, champ_admin, raced, ai):
