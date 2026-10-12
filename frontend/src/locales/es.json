@@ -113,6 +113,51 @@
     "layout_exists": "Esa pista ya tiene un trazado con esa carpeta.",
     "car_exists": "Ya existe un auto con esa carpeta.",
     "steam_guid_exists": "Otro piloto ya tiene ese Steam GUID.",
-    "account_has_profile": "Esa cuenta ya está vinculada a otro piloto."
+    "account_has_profile": "Esa cuenta ya está vinculada a otro piloto.",
+    "positions_not_continuous": "Las posiciones tienen que ir de 1 en 1, sin huecos ni repetidas.",
+    "position_required": "Cada piloto que terminó o abandonó necesita una posición.",
+    "position_not_allowed": "DNS y DSQ no llevan posición.",
+    "duplicate_entry": "Un piloto aparece dos veces.",
+    "one_pole_only": "Solo un piloto puede tener la pole.",
+    "one_fastest_lap_only": "Solo un piloto puede tener la vuelta rápida.",
+    "dns_has_no_bonus": "Un piloto que no largó no puede tener bonus.",
+    "entry_not_in_season": "Un piloto no está inscripto en esta temporada."
+  },
+  "standings": {
+    "title": "Campeonato de pilotos",
+    "rank": "Pos.",
+    "points": "Puntos",
+    "wins": "Victorias",
+    "noEntries": "La tabla aparece cuando hay pilotos inscriptos.",
+    "shared": "Posición compartida"
+  },
+  "round": {
+    "title": "Fecha {{number}}",
+    "result": "Resultado de la carrera",
+    "noResult": "Todavía no hay resultado.",
+    "position": "Pos.",
+    "status": "Estado",
+    "points": "Puntos",
+    "pole": "Pole",
+    "fastestLap": "Vuelta rápida",
+    "enter": "Cargar resultado",
+    "save": "Guardar resultado",
+    "saved": "Resultado guardado. La tabla del campeonato se actualizó.",
+    "rules": "Reglas v{{version}}: {{points}} puntos.",
+    "bonuses": "Bonus: pole +{{pole}}, vuelta rápida +{{fastest}}.",
+    "help": "Escribí la posición final de cada piloto que largó, también si abandonó. DNS y DSQ no llevan posición.",
+    "statuses": {
+      "absent": "No participó",
+      "finished": "Terminó",
+      "dnf": "Abandonó (DNF)",
+      "dns": "No largó (DNS)",
+      "dsq": "Descalificado (DSQ)"
+    },
+    "short": {
+      "finished": "",
+      "dnf": "DNF",
+      "dns": "DNS",
+      "dsq": "DSQ"
+    }
   }
 }

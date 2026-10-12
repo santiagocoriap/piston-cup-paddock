@@ -31,6 +31,16 @@ function season(canManage: boolean) {
   }
 }
 
+const standings = {
+  'GET /api/seasons/5/standings': () =>
+    json(200, [
+      {
+        rank: 1, entry_id: 1, number: 93, driver_name: 'Bing', car_name: 'Acura', team: 'MSR',
+        points: 25, wins: 1, rounds: [{ round_number: 1, status: 'finished', position: 1, points: 25 }],
+      },
+    ]),
+}
+
 const catalog = {
   'GET /api/catalog/tracks': () =>
     json(200, [{ id: 7, key: 'ks_highlands', name: 'Highlands', layouts: [{ id: 4, key: 'layout_long', name: 'Long' }] }]),
@@ -43,16 +53,25 @@ const show = (me = undefined as typeof DRIVER | undefined) =>
 
 describe('SeasonPage', () => {
   it('shows the calendar with the manual origin and the entries', async () => {
-    mockApi({ 'GET /api/seasons/5': () => json(200, season(false)) })
+    mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
     show(DRIVER)
-    const calendar = (await screen.findAllByRole('table'))[0]
-    expect(within(calendar).getByText('Highlands · Long')).toBeInTheDocument()
-    expect(within(calendar).getByText('Manual')).toBeInTheDocument()
+    const link = await screen.findByRole('link', { name: 'Highlands · Long' })
+    expect(link).toHaveAttribute('href', '/rounds/9')
+    expect(link.closest('tr')).toHaveTextContent('Manual')
     expect(screen.getByText('MSR')).toBeInTheDocument()
   })
 
+  it('shows the standings with the points of each driver', async () => {
+    mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
+    show(DRIVER)
+    expect(await screen.findByRole('heading', { name: 'Campeonato de pilotos' })).toBeInTheDocument()
+    const standingsTable = (await screen.findAllByRole('table'))[0]
+    const row = within(standingsTable).getByRole('row', { name: /Bing/ })
+    expect(within(row).getByText('25')).toBeInTheDocument()
+  })
+
   it('hides the forms from a driver', async () => {
-    mockApi({ 'GET /api/seasons/5': () => json(200, season(false)) })
+    mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
     show(DRIVER)
     await screen.findAllByRole('table')
     expect(screen.queryByRole('form', { name: 'Agregar fecha' })).not.toBeInTheDocument()
@@ -61,6 +80,7 @@ describe('SeasonPage', () => {
   it('sends a new round with the timezone of the browser', async () => {
     const calls = mockApi({
       'GET /api/seasons/5': () => json(200, season(true)),
+      ...standings,
       'POST /api/seasons/5/rounds': () => json(201, season(true).rounds[0]),
       ...catalog,
     })
@@ -82,6 +102,7 @@ describe('SeasonPage', () => {
   it('shows the API error when a number is taken', async () => {
     mockApi({
       'GET /api/seasons/5': () => json(200, season(true)),
+      ...standings,
       'POST /api/seasons/5/entries': () => json(409, { detail: 'entry_exists' }),
       ...catalog,
       'GET /api/drivers': () => json(200, [{ id: 3, display_name: 'Bing', steam_guid: null, user_id: null, username: null }]),

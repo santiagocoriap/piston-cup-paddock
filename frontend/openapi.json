@@ -922,6 +922,132 @@
           }
         ]
       }
+    },
+    "/api/rounds/{round_id}": {
+      "get": {
+        "operationId": "apps_results_api_get_round",
+        "summary": "Get Round",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "results"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/result": {
+      "put": {
+        "operationId": "apps_results_api_put_result",
+        "summary": "Put Result",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "Replace the race classification of the round and calculate the points.",
+        "tags": [
+          "results"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResultIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seasons/{season_id}/standings": {
+      "get": {
+        "operationId": "apps_results_api_get_standings",
+        "summary": "Get Standings",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StandingOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "results"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1666,6 +1792,365 @@
           "scheduled_at"
         ],
         "title": "RoundIn",
+        "type": "object"
+      },
+      "EntryOption": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "car_name": {
+            "title": "Car Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entry_id",
+          "number",
+          "driver_name",
+          "car_name"
+        ],
+        "title": "EntryOption",
+        "type": "object"
+      },
+      "LineOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "maximum": 200,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "pole": {
+            "default": false,
+            "title": "Pole",
+            "type": "boolean"
+          },
+          "fastest_lap": {
+            "default": false,
+            "title": "Fastest Lap",
+            "type": "boolean"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "entry_id",
+          "status",
+          "number",
+          "driver_name",
+          "points"
+        ],
+        "title": "LineOut",
+        "type": "object"
+      },
+      "RoundDetail": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          },
+          "season_name": {
+            "title": "Season Name",
+            "type": "string"
+          },
+          "championship_name": {
+            "title": "Championship Name",
+            "type": "string"
+          },
+          "track_name": {
+            "title": "Track Name",
+            "type": "string"
+          },
+          "layout_name": {
+            "title": "Layout Name",
+            "type": "string"
+          },
+          "scheduled_at": {
+            "format": "date-time",
+            "title": "Scheduled At",
+            "type": "string"
+          },
+          "can_manage": {
+            "title": "Can Manage",
+            "type": "boolean"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/RulesOut"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/EntryOption"
+            },
+            "title": "Entries",
+            "type": "array"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/LineOut"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "season_id",
+          "season_name",
+          "championship_name",
+          "track_name",
+          "layout_name",
+          "scheduled_at",
+          "can_manage",
+          "rules",
+          "entries",
+          "result"
+        ],
+        "title": "RoundDetail",
+        "type": "object"
+      },
+      "RulesOut": {
+        "properties": {
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          },
+          "points_by_position": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Points By Position",
+            "type": "array"
+          },
+          "pole_bonus": {
+            "title": "Pole Bonus",
+            "type": "integer"
+          },
+          "fastest_lap_bonus": {
+            "title": "Fastest Lap Bonus",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version",
+          "points_by_position",
+          "pole_bonus",
+          "fastest_lap_bonus"
+        ],
+        "title": "RulesOut",
+        "type": "object"
+      },
+      "Status": {
+        "enum": [
+          "finished",
+          "dnf",
+          "dns",
+          "dsq"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "LineIn": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "maximum": 200,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "pole": {
+            "default": false,
+            "title": "Pole",
+            "type": "boolean"
+          },
+          "fastest_lap": {
+            "default": false,
+            "title": "Fastest Lap",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "entry_id",
+          "status"
+        ],
+        "title": "LineIn",
+        "type": "object"
+      },
+      "ResultIn": {
+        "properties": {
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/LineIn"
+            },
+            "title": "Lines",
+            "type": "array"
+          }
+        },
+        "required": [
+          "lines"
+        ],
+        "title": "ResultIn",
+        "type": "object"
+      },
+      "RoundScoreOut": {
+        "properties": {
+          "round_number": {
+            "title": "Round Number",
+            "type": "integer"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "round_number",
+          "status",
+          "position",
+          "points"
+        ],
+        "title": "RoundScoreOut",
+        "type": "object"
+      },
+      "StandingOut": {
+        "properties": {
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "car_name": {
+            "title": "Car Name",
+            "type": "string"
+          },
+          "team": {
+            "title": "Team",
+            "type": "string"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "wins": {
+            "title": "Wins",
+            "type": "integer"
+          },
+          "rounds": {
+            "items": {
+              "$ref": "#/components/schemas/RoundScoreOut"
+            },
+            "title": "Rounds",
+            "type": "array"
+          }
+        },
+        "required": [
+          "rank",
+          "entry_id",
+          "number",
+          "driver_name",
+          "car_name",
+          "team",
+          "points",
+          "wins",
+          "rounds"
+        ],
+        "title": "StandingOut",
         "type": "object"
       }
     },

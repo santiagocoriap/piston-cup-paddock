@@ -11,6 +11,10 @@ export function SeasonPage() {
   const seasonId = Number(useParams().seasonId)
   const path = { season_id: seasonId }
   const season = useLoad(() => api.GET('/api/seasons/{season_id}', { params: { path } }), [seasonId])
+  const standings = useLoad(
+    () => api.GET('/api/seasons/{season_id}/standings', { params: { path } }),
+    [seasonId],
+  )
 
   const data = season.data
   if (!data) return <Loading failed={season.failed} />
@@ -21,6 +25,55 @@ export function SeasonPage() {
       </p>
       <h1>{data.name}</h1>
       <p className="muted">{t('season.plannedRounds', { count: data.planned_round_count })}</p>
+
+      <h2>{t('standings.title')}</h2>
+      {standings.data && standings.data.length === 0 && <p>{t('standings.noEntries')}</p>}
+      {standings.data && standings.data.length > 0 && (
+        <div className="table-wrap">
+          <table className="standings">
+            <thead>
+              <tr>
+                <th scope="col">{t('standings.rank')}</th>
+                <th scope="col">#</th>
+                <th scope="col">{t('season.driver')}</th>
+                <th scope="col">{t('season.car')}</th>
+                {data.rounds.map((round) => (
+                  <th scope="col" key={round.id} title={`${round.track_name} · ${round.layout_name}`}>
+                    R{round.number}
+                  </th>
+                ))}
+                <th scope="col">{t('standings.wins')}</th>
+                <th scope="col">{t('standings.points')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {standings.data.map((row, index) => {
+                const shared = standings.data!.some((other, i) => i !== index && other.rank === row.rank)
+                return (
+                  <tr key={row.entry_id}>
+                    <td title={shared ? t('standings.shared') : undefined}>
+                      {row.rank}
+                      {shared && '='}
+                    </td>
+                    <td>{row.number}</td>
+                    <td>{row.driver_name}</td>
+                    <td className="muted">{row.car_name}</td>
+                    {row.rounds.map((score) => (
+                      <td key={score.round_number} className="muted">
+                        {score.status === null
+                          ? '·'
+                          : (score.position ?? t(`round.short.${score.status}`))}
+                      </td>
+                    ))}
+                    <td>{row.wins}</td>
+                    <td className="points">{row.points}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <h2>{t('season.calendar')}</h2>
       {data.rounds.length === 0 ? (
@@ -41,7 +94,9 @@ export function SeasonPage() {
                 <tr key={round.id}>
                   <td>{round.number}</td>
                   <td>
-                    {round.track_name} · {round.layout_name}
+                    <Link to={`/rounds/${round.id}`}>
+                      {round.track_name} · {round.layout_name}
+                    </Link>
                   </td>
                   <td>{formatDateTime(round.scheduled_at, i18n.language)}</td>
                   <td>

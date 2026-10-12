@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.catalog",
     "apps.competition",
+    "apps.rules",
+    "apps.results",
 ]
 
 MIDDLEWARE = [

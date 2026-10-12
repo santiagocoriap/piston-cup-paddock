@@ -358,6 +358,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Round */
+        get: operations["apps_results_api_get_round"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/result": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Put Result
+         * @description Replace the race classification of the round and calculate the points.
+         */
+        put: operations["apps_results_api_put_result"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seasons/{season_id}/standings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Standings */
+        get: operations["apps_results_api_get_standings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -634,6 +688,141 @@ export interface components {
             scheduled_at: string;
             /** Number */
             number?: number | null;
+        };
+        /** EntryOption */
+        EntryOption: {
+            /** Entry Id */
+            entry_id: number;
+            /** Number */
+            number: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Car Name */
+            car_name: string;
+        };
+        /** LineOut */
+        LineOut: {
+            /** Entry Id */
+            entry_id: number;
+            status: components["schemas"]["Status"];
+            /** Position */
+            position?: number | null;
+            /**
+             * Pole
+             * @default false
+             */
+            pole: boolean;
+            /**
+             * Fastest Lap
+             * @default false
+             */
+            fastest_lap: boolean;
+            /** Number */
+            number: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Points */
+            points: number;
+        };
+        /** RoundDetail */
+        RoundDetail: {
+            /** Id */
+            id: number;
+            /** Number */
+            number: number;
+            /** Season Id */
+            season_id: number;
+            /** Season Name */
+            season_name: string;
+            /** Championship Name */
+            championship_name: string;
+            /** Track Name */
+            track_name: string;
+            /** Layout Name */
+            layout_name: string;
+            /**
+             * Scheduled At
+             * Format: date-time
+             */
+            scheduled_at: string;
+            /** Can Manage */
+            can_manage: boolean;
+            rules: components["schemas"]["RulesOut"];
+            /** Entries */
+            entries: components["schemas"]["EntryOption"][];
+            /** Result */
+            result: components["schemas"]["LineOut"][] | null;
+        };
+        /** RulesOut */
+        RulesOut: {
+            /** Version */
+            version: number;
+            /** Points By Position */
+            points_by_position: number[];
+            /** Pole Bonus */
+            pole_bonus: number;
+            /** Fastest Lap Bonus */
+            fastest_lap_bonus: number;
+        };
+        /**
+         * Status
+         * @enum {string}
+         */
+        Status: "finished" | "dnf" | "dns" | "dsq";
+        /** LineIn */
+        LineIn: {
+            /** Entry Id */
+            entry_id: number;
+            status: components["schemas"]["Status"];
+            /** Position */
+            position?: number | null;
+            /**
+             * Pole
+             * @default false
+             */
+            pole: boolean;
+            /**
+             * Fastest Lap
+             * @default false
+             */
+            fastest_lap: boolean;
+        };
+        /** ResultIn */
+        ResultIn: {
+            /** Lines */
+            lines: components["schemas"]["LineIn"][];
+        };
+        /** RoundScoreOut */
+        RoundScoreOut: {
+            /** Round Number */
+            round_number: number;
+            /** Status */
+            status: string | null;
+            /** Position */
+            position: number | null;
+            /** Points */
+            points: number;
+        };
+        /** StandingOut */
+        StandingOut: {
+            /** Rank */
+            rank: number;
+            /** Entry Id */
+            entry_id: number;
+            /** Number */
+            number: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Car Name */
+            car_name: string;
+            /** Team */
+            team: string;
+            /** Points */
+            points: number;
+            /** Wins */
+            wins: number;
+            /** Rounds */
+            rounds: components["schemas"]["RoundScoreOut"][];
         };
     };
     responses: never;
@@ -1231,6 +1420,76 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoundOut"];
+                };
+            };
+        };
+    };
+    apps_results_api_get_round: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundDetail"];
+                };
+            };
+        };
+    };
+    apps_results_api_put_result: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResultIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundDetail"];
+                };
+            };
+        };
+    };
+    apps_results_api_get_standings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StandingOut"][];
                 };
             };
         };

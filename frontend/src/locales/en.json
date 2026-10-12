@@ -113,6 +113,51 @@
     "layout_exists": "This track already has a layout with this folder.",
     "car_exists": "A car with this folder exists.",
     "steam_guid_exists": "Another driver has this Steam GUID.",
-    "account_has_profile": "This account is already linked to another driver."
+    "account_has_profile": "This account is already linked to another driver.",
+    "positions_not_continuous": "The positions must go up by 1, with no gaps and no repeats.",
+    "position_required": "Each driver who finished or had a DNF needs a position.",
+    "position_not_allowed": "DNS and DSQ have no position.",
+    "duplicate_entry": "A driver shows two times.",
+    "one_pole_only": "Only one driver can have the pole.",
+    "one_fastest_lap_only": "Only one driver can have the fastest lap.",
+    "dns_has_no_bonus": "A driver who did not start cannot have a bonus.",
+    "entry_not_in_season": "A driver is not in this season."
+  },
+  "standings": {
+    "title": "Drivers' championship",
+    "rank": "Pos.",
+    "points": "Points",
+    "wins": "Wins",
+    "noEntries": "The table shows when the season has entries.",
+    "shared": "Shared position"
+  },
+  "round": {
+    "title": "Round {{number}}",
+    "result": "Race result",
+    "noResult": "There is no result yet.",
+    "position": "Pos.",
+    "status": "Status",
+    "points": "Points",
+    "pole": "Pole",
+    "fastestLap": "Fastest lap",
+    "enter": "Enter the result",
+    "save": "Save the result",
+    "saved": "The result is saved. The championship table is up to date.",
+    "rules": "Rules v{{version}}: {{points}} points.",
+    "bonuses": "Bonus: pole +{{pole}}, fastest lap +{{fastest}}.",
+    "help": "Type the final position of each driver who started, also after a DNF. DNS and DSQ have no position.",
+    "statuses": {
+      "absent": "Did not take part",
+      "finished": "Finished",
+      "dnf": "Did not finish (DNF)",
+      "dns": "Did not start (DNS)",
+      "dsq": "Disqualified (DSQ)"
+    },
+    "short": {
+      "finished": "",
+      "dnf": "DNF",
+      "dns": "DNS",
+      "dsq": "DSQ"
+    }
   }
 }

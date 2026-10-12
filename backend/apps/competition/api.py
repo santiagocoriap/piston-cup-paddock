@@ -6,6 +6,7 @@ from pydantic import AwareDatetime
 from apps.catalog.models import Car, TrackLayout
 from apps.common.api import conflict_on_duplicate, require
 from apps.identity.models import DriverProfile, User
+from apps.rules.models import RulesVersion
 
 from .models import Championship, ChampionshipMember, League, Round, Season, SeasonEntry
 from .permissions import can_manage, can_view, is_league_admin, visible_championships
@@ -236,6 +237,7 @@ def create_season(request, championship_id: int, payload: SeasonIn):
     require(can_manage(request.user, championship))
     with conflict_on_duplicate("season_exists"):
         season = Season.objects.create(championship=championship, **payload.dict())
+        RulesVersion.current_for(season)  # Version 1 with the league defaults.
     return Status(201, season)
 
 

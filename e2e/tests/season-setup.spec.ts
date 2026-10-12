@@ -11,7 +11,7 @@ const names = {
   car: `Acura ${run}`,
 }
 
-test('an admin sets up a season without voting', async ({ page }, testInfo) => {
+test('an admin sets up a season without voting and enters a result', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'One run is enough. The flow writes data.')
   await signIn(page)
 
@@ -66,4 +66,17 @@ test('an admin sets up a season without voting', async ({ page }, testInfo) => {
     { Piloto: names.driver, Auto: names.car },
   )
   await expect(page.getByRole('row').filter({ hasText: names.driver })).toContainText('Meyer Shank')
+
+  // Result and standings
+  await page.getByRole('link', { name: `${names.track} · Long` }).click()
+  await expect(page.getByText('Todavía no hay resultado.')).toBeVisible()
+  await page.getByLabel(`Estado ${names.driver}`).selectOption('finished')
+  await page.getByLabel(`Pos. ${names.driver}`).fill('1')
+  await page.getByRole('button', { name: 'Guardar resultado' }).click()
+  await expect(page.getByRole('status')).toContainText('Resultado guardado.')
+  await expect(page.getByRole('table').first().getByRole('row', { name: new RegExp(names.driver) })).toContainText('25')
+
+  await page.getByRole('link', { name: '2026' }).click()
+  const standingsRow = page.getByRole('table').first().getByRole('row', { name: new RegExp(names.driver) })
+  await expect(standingsRow).toContainText('25')
 })

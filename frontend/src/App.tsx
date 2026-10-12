@@ -8,6 +8,7 @@ import { DriversPage } from './pages/admin/DriversPage'
 import { LeaguesPage } from './pages/admin/LeaguesPage'
 import { ChampionshipPage } from './pages/ChampionshipPage'
 import { ChampionshipsPage } from './pages/ChampionshipsPage'
+import { RoundPage } from './pages/RoundPage'
 import { SeasonPage } from './pages/SeasonPage'
 import { SessionContext } from './session'
 
@@ -54,6 +55,7 @@ export default function App() {
             <Route index element={<ChampionshipsPage />} />
             <Route path="championships/:championshipId" element={<ChampionshipPage />} />
             <Route path="seasons/:seasonId" element={<SeasonPage />} />
+            <Route path="rounds/:roundId" element={<RoundPage />} />
             {isAdmin && <Route path="admin/leagues" element={<LeaguesPage />} />}
             {isAdmin && <Route path="admin/drivers" element={<DriversPage />} />}
             {isAdmin && <Route path="admin/catalog" element={<CatalogPage />} />}
