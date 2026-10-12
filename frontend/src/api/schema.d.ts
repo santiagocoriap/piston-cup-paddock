@@ -378,6 +378,46 @@ export interface paths {
         patch: operations["apps_competition_api_update_season_settings"];
         trace?: never;
     };
+    "/api/seasons/{season_id}/fixed-rounds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reserve Fixed Round
+         * @description Reserve a fixed track before the track voting. Position and date are optional.
+         */
+        post: operations["apps_competition_api_reserve_fixed_round"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/calendar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Round
+         * @description Set the calendar position or the date of a round.
+         */
+        patch: operations["apps_competition_api_update_round"];
+        trace?: never;
+    };
     "/api/rounds/{round_id}": {
         parameters: {
             query?: never;
@@ -715,6 +755,164 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/seasons/{season_id}/ballots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Ballots */
+        get: operations["apps_voting_api_list_ballots"];
+        put?: never;
+        /** Create */
+        post: operations["apps_voting_api_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ballots/{ballot_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Ballot */
+        get: operations["apps_voting_api_get_ballot"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update */
+        patch: operations["apps_voting_api_update"];
+        trace?: never;
+    };
+    "/api/ballots/{ballot_id}/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Option */
+        post: operations["apps_voting_api_create_option"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ballots/{ballot_id}/options/{option_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Option */
+        delete: operations["apps_voting_api_delete_option"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ballots/{ballot_id}/open": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Open */
+        post: operations["apps_voting_api_open_"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ballots/{ballot_id}/vote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Vote */
+        put: operations["apps_voting_api_vote"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ballots/{ballot_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Close */
+        post: operations["apps_voting_api_close"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ballots/{ballot_id}/runoff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Runoff
+         * @description Start a runoff. The answer is the new runoff ballot.
+         */
+        post: operations["apps_voting_api_runoff"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ballots/{ballot_id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide */
+        post: operations["apps_voting_api_decide"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -891,6 +1089,10 @@ export interface components {
             planned_round_count: number;
             /** Protest Window Minutes */
             protest_window_minutes: number;
+            /** Allow Repeat Layouts */
+            allow_repeat_layouts: boolean;
+            /** Voted Slots */
+            voted_slots: number;
         };
         /** MemberOut */
         MemberOut: {
@@ -953,11 +1155,8 @@ export interface components {
             track_name: string;
             /** Layout Name */
             layout_name: string;
-            /**
-             * Scheduled At
-             * Format: date-time
-             */
-            scheduled_at: string;
+            /** Scheduled At */
+            scheduled_at: string | null;
             /** Origin */
             origin: string;
         };
@@ -971,6 +1170,10 @@ export interface components {
             planned_round_count: number;
             /** Protest Window Minutes */
             protest_window_minutes: number;
+            /** Allow Repeat Layouts */
+            allow_repeat_layouts: boolean;
+            /** Voted Slots */
+            voted_slots: number;
             /** Championship Id */
             championship_id: number;
             /** Championship Name */
@@ -1011,7 +1214,25 @@ export interface components {
         /** SeasonSettingsIn */
         SeasonSettingsIn: {
             /** Protest Window Minutes */
-            protest_window_minutes: number;
+            protest_window_minutes?: number | null;
+            /** Allow Repeat Layouts */
+            allow_repeat_layouts?: boolean | null;
+        };
+        /** FixedRoundIn */
+        FixedRoundIn: {
+            /** Track Layout Id */
+            track_layout_id: number;
+            /** Number */
+            number?: number | null;
+            /** Scheduled At */
+            scheduled_at?: string | null;
+        };
+        /** RoundPatchIn */
+        RoundPatchIn: {
+            /** Number */
+            number?: number | null;
+            /** Scheduled At */
+            scheduled_at?: string | null;
         };
         /** EntryOption */
         EntryOption: {
@@ -1123,11 +1344,8 @@ export interface components {
             track_name: string;
             /** Layout Name */
             layout_name: string;
-            /**
-             * Scheduled At
-             * Format: date-time
-             */
-            scheduled_at: string;
+            /** Scheduled At */
+            scheduled_at: string | null;
             /** Can Manage */
             can_manage: boolean;
             /** Can Protest */
@@ -1768,6 +1986,242 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** BallotSummary */
+        BallotSummary: {
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Title */
+            title: string;
+            /** Status */
+            status: string;
+            /** Parent Id */
+            parent_id: number | null;
+            /** Winners */
+            winners: string[];
+        };
+        /** BallotDetail */
+        BallotDetail: {
+            /** Id */
+            id: number;
+            /** Season Id */
+            season_id: number;
+            /** Season Name */
+            season_name: string;
+            /** Championship Name */
+            championship_name: string;
+            /** Kind */
+            kind: string;
+            /** Title */
+            title: string;
+            /** Status */
+            status: string;
+            /** Method */
+            method: string;
+            /** Selection Limit */
+            selection_limit: number;
+            /** Slots */
+            slots: number;
+            /** Choice Visibility */
+            choice_visibility: string;
+            /** Totals Visibility */
+            totals_visibility: string;
+            /** Allow Vote Changes */
+            allow_vote_changes: boolean;
+            /** Closes At */
+            closes_at: string | null;
+            /** Eligible Roles */
+            eligible_roles: string[];
+            /** Prior Season Id */
+            prior_season_id: number | null;
+            /** Min Prior Starts */
+            min_prior_starts: number;
+            /** Max Runoffs */
+            max_runoffs: number | null;
+            /** Power Exceptions */
+            power_exceptions: components["schemas"]["VoterOut"][];
+            /** Power Overrides */
+            power_overrides: {
+                [key: string]: number;
+            };
+            /** Closed Early */
+            closed_early: boolean;
+            /** Close Reason */
+            close_reason: string;
+            parent: components["schemas"]["BallotLink"] | null;
+            /** Runoffs */
+            runoffs: components["schemas"]["BallotLink"][];
+            /** Can Manage */
+            can_manage: boolean;
+            /** Can Vote */
+            can_vote: boolean;
+            /** My Power */
+            my_power: number;
+            /** My Choices */
+            my_choices: number[];
+            /** Voted Count */
+            voted_count: number;
+            /** Voter Count */
+            voter_count: number;
+            /** Totals Visible */
+            totals_visible: boolean;
+            /** Choices Visible */
+            choices_visible: boolean;
+            /** Options */
+            options: components["schemas"]["OptionOut"][];
+            tie: components["schemas"]["TieOut"] | null;
+            /** Voters */
+            voters: components["schemas"]["VoterOut"][] | null;
+        };
+        /** BallotLink */
+        BallotLink: {
+            /** Id */
+            id: number;
+            /** Title */
+            title: string;
+            /** Status */
+            status: string;
+        };
+        /** OptionOut */
+        OptionOut: {
+            /** Id */
+            id: number;
+            /** Label */
+            label: string;
+            /** Track Layout Id */
+            track_layout_id: number | null;
+            /** Selected */
+            selected: boolean;
+            /** Selected By */
+            selected_by: string;
+            /** Votes */
+            votes: number | null;
+            /** Voters */
+            voters: string[] | null;
+        };
+        /** TieOut */
+        TieOut: {
+            /** Option Ids */
+            option_ids: number[];
+            /** Open Slots */
+            open_slots: number;
+        };
+        /** VoterOut */
+        VoterOut: {
+            /** Username */
+            username: string;
+            /** Power */
+            power: number;
+            /** Voted */
+            voted: boolean;
+        };
+        /** BallotIn */
+        BallotIn: {
+            /** Title */
+            title: string;
+            method?: components["schemas"]["Method"] | null;
+            /** Selection Limit */
+            selection_limit?: number | null;
+            /** Slots */
+            slots?: number | null;
+            choice_visibility?: components["schemas"]["ChoiceVisibility"] | null;
+            totals_visibility?: components["schemas"]["TotalsVisibility"] | null;
+            /** Allow Vote Changes */
+            allow_vote_changes?: boolean | null;
+            /** Closes At */
+            closes_at?: string | null;
+            /** Eligible Roles */
+            eligible_roles?: string[] | null;
+            /** Prior Season Id */
+            prior_season_id?: number | null;
+            /** Min Prior Starts */
+            min_prior_starts?: number | null;
+            /** Max Runoffs */
+            max_runoffs?: number | null;
+            /** Power Overrides */
+            power_overrides?: {
+                [key: string]: number;
+            } | null;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "track" | "car_class";
+        };
+        /**
+         * ChoiceVisibility
+         * @enum {string}
+         */
+        ChoiceVisibility: "visible" | "hidden";
+        /**
+         * Method
+         * @enum {string}
+         */
+        Method: "single" | "multiple";
+        /**
+         * TotalsVisibility
+         * @enum {string}
+         */
+        TotalsVisibility: "live" | "after_close" | "hidden";
+        /** BallotSettingsIn */
+        BallotSettingsIn: {
+            /** Title */
+            title?: string | null;
+            method?: components["schemas"]["Method"] | null;
+            /** Selection Limit */
+            selection_limit?: number | null;
+            /** Slots */
+            slots?: number | null;
+            choice_visibility?: components["schemas"]["ChoiceVisibility"] | null;
+            totals_visibility?: components["schemas"]["TotalsVisibility"] | null;
+            /** Allow Vote Changes */
+            allow_vote_changes?: boolean | null;
+            /** Closes At */
+            closes_at?: string | null;
+            /** Eligible Roles */
+            eligible_roles?: string[] | null;
+            /** Prior Season Id */
+            prior_season_id?: number | null;
+            /** Min Prior Starts */
+            min_prior_starts?: number | null;
+            /** Max Runoffs */
+            max_runoffs?: number | null;
+            /** Power Overrides */
+            power_overrides?: {
+                [key: string]: number;
+            } | null;
+        };
+        /** OptionIn */
+        OptionIn: {
+            /**
+             * Label
+             * @default
+             */
+            label?: string;
+            /** Track Layout Id */
+            track_layout_id?: number | null;
+        };
+        /** VoteIn */
+        VoteIn: {
+            /** Option Ids */
+            option_ids: number[];
+        };
+        /** CloseIn */
+        CloseIn: {
+            /**
+             * Reason
+             * @default
+             */
+            reason?: string;
+        };
+        /** DecideIn */
+        DecideIn: {
+            /** Option Ids */
+            option_ids: number[];
+            /** Reason */
+            reason: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -2394,6 +2848,58 @@ export interface operations {
             };
         };
     };
+    apps_competition_api_reserve_fixed_round: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FixedRoundIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_update_round: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoundPatchIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundOut"];
+                };
+            };
+        };
+    };
     apps_results_api_get_round: {
         parameters: {
             query?: never;
@@ -2912,6 +3418,273 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    apps_voting_api_list_ballots: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotSummary"][];
+                };
+            };
+        };
+    };
+    apps_voting_api_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BallotIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
+                };
+            };
+        };
+    };
+    apps_voting_api_get_ballot: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
+                };
+            };
+        };
+    };
+    apps_voting_api_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BallotSettingsIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
+                };
+            };
+        };
+    };
+    apps_voting_api_create_option: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OptionIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
+                };
+            };
+        };
+    };
+    apps_voting_api_delete_option: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+                option_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
+                };
+            };
+        };
+    };
+    apps_voting_api_open_: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
+                };
+            };
+        };
+    };
+    apps_voting_api_vote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoteIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
+                };
+            };
+        };
+    };
+    apps_voting_api_close: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CloseIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
+                };
+            };
+        };
+    };
+    apps_voting_api_runoff: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
+                };
+            };
+        };
+    };
+    apps_voting_api_decide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecideIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
+                };
             };
         };
     };

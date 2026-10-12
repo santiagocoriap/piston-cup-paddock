@@ -6,6 +6,8 @@ import { Loading } from '../components/Layout'
 import { formatDateTime, localInputToIso } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
+import { BallotsSection } from './BallotsSection'
+import { CalendarAdmin } from './CalendarAdmin'
 import { HandicapsSection } from './HandicapsSection'
 
 export function SeasonPage() {
@@ -88,6 +90,9 @@ export function SeasonPage() {
       <HandicapsSection seasonId={seasonId} rounds={data.rounds} adminView={adminView} />
 
       <h2>{t('season.calendar')}</h2>
+      {data.voted_slots > 0 && (
+        <p className="muted">{t('calendar.votedSlots', { count: data.voted_slots })}</p>
+      )}
       {data.rounds.length === 0 ? (
         <p>{t('season.noRounds')}</p>
       ) : (
@@ -110,7 +115,11 @@ export function SeasonPage() {
                       {round.track_name} · {round.layout_name}
                     </Link>
                   </td>
-                  <td>{formatDateTime(round.scheduled_at, i18n.language)}</td>
+                  <td>
+                    {round.scheduled_at
+                      ? formatDateTime(round.scheduled_at, i18n.language)
+                      : t('calendar.noDate')}
+                  </td>
                   <td>
                     <span className="badge">{t(`season.origins.${round.origin}`)}</span>
                   </td>
@@ -120,6 +129,10 @@ export function SeasonPage() {
           </table>
         </div>
       )}
+
+      {adminView && <CalendarAdmin season={data} onChange={season.reload} />}
+
+      <BallotsSection seasonId={seasonId} championshipId={data.championship_id} adminView={adminView} />
 
       <h2>{t('season.entries')}</h2>
       {data.entries.length === 0 ? (
@@ -158,7 +171,10 @@ export function SeasonPage() {
             onSubmit={async (form) => {
               const { error } = await api.PATCH('/api/seasons/{season_id}/settings', {
                 params: { path },
-                body: { protest_window_minutes: Number(form.get('protest_window_minutes')) },
+                body: {
+                  protest_window_minutes: Number(form.get('protest_window_minutes')),
+                  allow_repeat_layouts: form.get('allow_repeat_layouts') === 'on',
+                },
               })
               if (!error) season.reload()
               return error
@@ -174,6 +190,14 @@ export function SeasonPage() {
                 required
                 defaultValue={data.protest_window_minutes}
               />
+            </label>
+            <label className="check">
+              <input
+                type="checkbox"
+                name="allow_repeat_layouts"
+                defaultChecked={data.allow_repeat_layouts}
+              />
+              {t('calendar.allowRepeats')}
             </label>
           </ActionForm>
         </div>

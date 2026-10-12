@@ -12,6 +12,7 @@ from apps.imports.api import router as imports_router
 from apps.records.api import router as records_router
 from apps.restarts.api import router as restarts_router
 from apps.results.api import router as results_router
+from apps.voting.api import router as voting_router
 
 # Every endpoint needs a signed-in user, unless it sets auth=None.
 api = NinjaAPI(title="Piston Cup Paddock", version="0.1.0", urls_namespace="api", auth=django_auth)
@@ -26,3 +27,4 @@ api.add_router("/", restarts_router)
 api.add_router("/", imports_router)
 api.add_router("/", handicaps_router)
 api.add_router("/", records_router)
+api.add_router("/", voting_router)

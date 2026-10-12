@@ -2,6 +2,7 @@ from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from ninja import Field, Router, Schema, Status
+from ninja.errors import HttpError
 from pydantic import AwareDatetime
 
 from apps.audit.services import change, record
@@ -10,6 +11,7 @@ from apps.common.api import conflict_on_duplicate, require
 from apps.identity.models import DriverProfile, User
 from apps.rules.models import RulesVersion
 
+from .calendar import fixed_layout_ids, next_round_number, voted_slots
 from .models import Championship, ChampionshipMember, League, Round, Season, SeasonEntry
 from .permissions import can_manage, can_view, is_league_admin, visible_championships
 
@@ -35,7 +37,19 @@ class SeasonIn(Schema):
 
 
 class SeasonSettingsIn(Schema):
-    protest_window_minutes: int = Field(ge=0, le=10080)
+    protest_window_minutes: int | None = Field(None, ge=0, le=10080)
+    allow_repeat_layouts: bool | None = None
+
+
+class FixedRoundIn(Schema):
+    track_layout_id: int
+    number: int | None = Field(None, ge=1, le=99)
+    scheduled_at: AwareDatetime | None = None
+
+
+class RoundPatchIn(Schema):
+    number: int | None = Field(None, ge=1, le=99)
+    scheduled_at: AwareDatetime | None = None
 
 
 class SeasonSummary(Schema):
@@ -43,6 +57,8 @@ class SeasonSummary(Schema):
     name: str
     planned_round_count: int
     protest_window_minutes: int
+    allow_repeat_layouts: bool
+    voted_slots: int
 
 
 class ChampionshipOut(Schema):
@@ -97,7 +113,7 @@ class RoundOut(Schema):
     track_layout_id: int
     track_name: str
     layout_name: str
-    scheduled_at: AwareDatetime
+    scheduled_at: AwareDatetime | None
     origin: str
 
 
@@ -163,6 +179,17 @@ def _round_out(round_: Round) -> RoundOut:
     )
 
 
+def _season_summary(season: Season) -> SeasonSummary:
+    return SeasonSummary(
+        id=season.id,
+        name=season.name,
+        planned_round_count=season.planned_round_count,
+        protest_window_minutes=season.protest_window_minutes,
+        allow_repeat_layouts=season.allow_repeat_layouts,
+        voted_slots=voted_slots(season),
+    )
+
+
 def _season_detail(user, season: Season) -> SeasonDetail:
     entries = season.entries.select_related("driver", "car")
     rounds = season.rounds.select_related("track_layout__track")
@@ -171,6 +198,8 @@ def _season_detail(user, season: Season) -> SeasonDetail:
         name=season.name,
         planned_round_count=season.planned_round_count,
         protest_window_minutes=season.protest_window_minutes,
+        allow_repeat_layouts=season.allow_repeat_layouts,
+        voted_slots=voted_slots(season),
         championship_id=season.championship_id,
         championship_name=season.championship.name,
         can_manage=can_manage(user, season.championship),
@@ -225,7 +254,7 @@ def get_championship(request, championship_id: int):
     championship = _visible_championship(request.user, championship_id)
     return {
         **_championship_out(request.user, championship),
-        "seasons": list(championship.seasons.all()),
+        "seasons": [_season_summary(s) for s in championship.seasons.all()],
     }
 
 
@@ -279,7 +308,7 @@ def create_season(request, championship_id: int, payload: SeasonIn):
                 change("planned_round_count", None, season.planned_round_count),
             ],
         )
-    return Status(201, season)
+    return Status(201, _season_summary(season))
 
 
 # Seasons, entries, and rounds
@@ -354,10 +383,14 @@ def create_round(request, season_id: int, payload: RoundIn):
 def update_season_settings(request, season_id: int, payload: SeasonSettingsIn):
     season = _visible_season(request.user, season_id)
     require(can_manage(request.user, season.championship))
-    old = season.protest_window_minutes
+    changes = []
+    for field in ("protest_window_minutes", "allow_repeat_layouts"):
+        new = getattr(payload, field)
+        if new is not None and new != getattr(season, field):
+            changes.append(change(field, getattr(season, field), new))
+            setattr(season, field, new)
     with transaction.atomic():
-        season.protest_window_minutes = payload.protest_window_minutes
-        season.save(update_fields=["protest_window_minutes"])
+        season.save()
         record(
             request.user,
             "season.settings_changed",
@@ -365,6 +398,86 @@ def update_season_settings(request, season_id: int, payload: SeasonSettingsIn):
             season.id,
             championship=season.championship,
             params={"season": season.name},
-            changes=[change("protest_window_minutes", old, season.protest_window_minutes)],
+            changes=changes,
         )
-    return season
+    return _season_summary(season)
+
+
+@router.post("/seasons/{season_id}/fixed-rounds", response={201: RoundOut})
+def reserve_fixed_round(request, season_id: int, payload: FixedRoundIn):
+    """Reserve a fixed track before the track voting. Position and date are optional."""
+    season = _visible_season(request.user, season_id)
+    require(can_manage(request.user, season.championship))
+    layout = get_object_or_404(
+        TrackLayout.objects.select_related("track"), pk=payload.track_layout_id
+    )
+    fixed = season.rounds.filter(origin=Round.Origin.FIXED).count()
+    if fixed + 1 > season.planned_round_count:
+        raise HttpError(422, "too_many_fixed_rounds")
+    if voted_slots(season) < 1:
+        raise HttpError(422, "season_is_full")
+    if layout.id in fixed_layout_ids(season):
+        raise HttpError(409, "layout_already_fixed")
+    number = payload.number or next_round_number(season)
+    with conflict_on_duplicate("round_number_exists"):
+        round_ = Round.objects.create(
+            season=season,
+            number=number,
+            track_layout=layout,
+            scheduled_at=payload.scheduled_at,
+            origin=Round.Origin.FIXED,
+        )
+        round_.refresh_from_db()
+        record(
+            request.user,
+            "round.fixed",
+            "round",
+            round_.id,
+            championship=season.championship,
+            params={"season": season.name, "number": number, "track": str(layout)},
+            changes=[
+                change("track_layout", None, str(layout)),
+                change(
+                    "scheduled_at",
+                    None,
+                    round_.scheduled_at.isoformat() if round_.scheduled_at else None,
+                ),
+            ],
+        )
+    return Status(201, _round_out(round_))
+
+
+@router.patch("/rounds/{round_id}/calendar", response=RoundOut)
+def update_round(request, round_id: int, payload: RoundPatchIn):
+    """Set the calendar position or the date of a round."""
+    round_ = get_object_or_404(
+        Round.objects.select_related("season__championship", "track_layout__track"), pk=round_id
+    )
+    if not can_view(request.user, round_.season.championship):
+        raise Http404
+    require(can_manage(request.user, round_.season.championship))
+    changes = []
+    if payload.number is not None and payload.number != round_.number:
+        changes.append(change("number", round_.number, payload.number))
+        round_.number = payload.number
+    if payload.scheduled_at is not None and payload.scheduled_at != round_.scheduled_at:
+        old = round_.scheduled_at.isoformat() if round_.scheduled_at else None
+        changes.append(change("scheduled_at", old, payload.scheduled_at.isoformat()))
+        round_.scheduled_at = payload.scheduled_at
+    with conflict_on_duplicate("round_number_exists"):
+        round_.save()
+        record(
+            request.user,
+            "round.changed",
+            "round",
+            round_.id,
+            championship=round_.season.championship,
+            params={
+                "season": round_.season.name,
+                "number": round_.number,
+                "track": str(round_.track_layout),
+            },
+            changes=changes,
+        )
+    round_.refresh_from_db()
+    return _round_out(round_)

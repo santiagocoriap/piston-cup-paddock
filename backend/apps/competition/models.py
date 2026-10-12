@@ -54,6 +54,8 @@ class Season(models.Model):
     name = models.CharField(max_length=100)
     planned_round_count = models.PositiveSmallIntegerField()
     protest_window_minutes = models.PositiveIntegerField(default=60)
+    # By default a fixed layout cannot also be a voting candidate.
+    allow_repeat_layouts = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -93,7 +95,8 @@ class Round(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="rounds")
     number = models.PositiveSmallIntegerField()
     track_layout = models.ForeignKey(TrackLayout, on_delete=models.PROTECT, related_name="rounds")
-    scheduled_at = models.DateTimeField()
+    # A voted or fixed round can wait for its date. The admin sets it in the calendar.
+    scheduled_at = models.DateTimeField(null=True, blank=True)
     origin = models.CharField(max_length=10, choices=Origin.choices, default=Origin.MANUAL)
 
     class Meta:

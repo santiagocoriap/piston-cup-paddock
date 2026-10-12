@@ -73,7 +73,7 @@ def _lap_out(user, item, details) -> RecordLapOut:
         lap_id=lap.id,
         lap_time_ms=lap.lap_time_ms,
         driver_name=item.driver_name,
-        date=round_.scheduled_at,
+        date=round_.scheduled_at or lap.result_import.uploaded_at,
         round_id=round_.id,
         round_number=round_.number,
         season_name=round_.season.name,

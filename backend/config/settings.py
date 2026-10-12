@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "apps.imports",
     "apps.handicaps",
     "apps.records",
+    "apps.voting",
 ]
 
 MIDDLEWARE = [

@@ -84,7 +84,7 @@ def candidate_laps(user, layout_id: int | None = None) -> tuple[list[RecordLap],
                 driver_name=lap.entry.driver.display_name,
                 round_id=round_.id,
                 round_number=round_.number,
-                date=round_.scheduled_at,
+                date=round_.scheduled_at or lap.result_import.uploaded_at,
                 timestamp_ms=lap.timestamp_ms,
                 ineligible_reason=_reason(lap, category, dsq_by_round[round_.id]),
             )

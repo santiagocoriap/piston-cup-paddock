@@ -971,6 +971,102 @@
         ]
       }
     },
+    "/api/seasons/{season_id}/fixed-rounds": {
+      "post": {
+        "operationId": "apps_competition_api_reserve_fixed_round",
+        "summary": "Reserve Fixed Round",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Reserve a fixed track before the track voting. Position and date are optional.",
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FixedRoundIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/calendar": {
+      "patch": {
+        "operationId": "apps_competition_api_update_round",
+        "summary": "Update Round",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Set the calendar position or the date of a round.",
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoundPatchIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/rounds/{round_id}": {
       "get": {
         "operationId": "apps_results_api_get_round",
@@ -1920,6 +2016,483 @@
           }
         ]
       }
+    },
+    "/api/seasons/{season_id}/ballots": {
+      "get": {
+        "operationId": "apps_voting_api_list_ballots",
+        "summary": "List Ballots",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BallotSummary"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "voting"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_voting_api_create",
+        "summary": "Create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "voting"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BallotIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/ballots/{ballot_id}": {
+      "get": {
+        "operationId": "apps_voting_api_get_ballot",
+        "summary": "Get Ballot",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "voting"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "apps_voting_api_update",
+        "summary": "Update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "voting"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BallotSettingsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/ballots/{ballot_id}/options": {
+      "post": {
+        "operationId": "apps_voting_api_create_option",
+        "summary": "Create Option",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "voting"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/ballots/{ballot_id}/options/{option_id}": {
+      "delete": {
+        "operationId": "apps_voting_api_delete_option",
+        "summary": "Delete Option",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "option_id",
+            "schema": {
+              "title": "Option Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "voting"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/ballots/{ballot_id}/open": {
+      "post": {
+        "operationId": "apps_voting_api_open_",
+        "summary": "Open ",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "voting"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/ballots/{ballot_id}/vote": {
+      "put": {
+        "operationId": "apps_voting_api_vote",
+        "summary": "Vote",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "voting"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoteIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/ballots/{ballot_id}/close": {
+      "post": {
+        "operationId": "apps_voting_api_close",
+        "summary": "Close",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "voting"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/ballots/{ballot_id}/runoff": {
+      "post": {
+        "operationId": "apps_voting_api_runoff",
+        "summary": "Runoff",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "Start a runoff. The answer is the new runoff ballot.",
+        "tags": [
+          "voting"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/ballots/{ballot_id}/decide": {
+      "post": {
+        "operationId": "apps_voting_api_decide",
+        "summary": "Decide",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "voting"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecideIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -2396,13 +2969,23 @@
           "protest_window_minutes": {
             "title": "Protest Window Minutes",
             "type": "integer"
+          },
+          "allow_repeat_layouts": {
+            "title": "Allow Repeat Layouts",
+            "type": "boolean"
+          },
+          "voted_slots": {
+            "title": "Voted Slots",
+            "type": "integer"
           }
         },
         "required": [
           "id",
           "name",
           "planned_round_count",
-          "protest_window_minutes"
+          "protest_window_minutes",
+          "allow_repeat_layouts",
+          "voted_slots"
         ],
         "title": "SeasonSummary",
         "type": "object"
@@ -2550,9 +3133,16 @@
             "type": "string"
           },
           "scheduled_at": {
-            "format": "date-time",
-            "title": "Scheduled At",
-            "type": "string"
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
           },
           "origin": {
             "title": "Origin",
@@ -2589,6 +3179,14 @@
             "title": "Protest Window Minutes",
             "type": "integer"
           },
+          "allow_repeat_layouts": {
+            "title": "Allow Repeat Layouts",
+            "type": "boolean"
+          },
+          "voted_slots": {
+            "title": "Voted Slots",
+            "type": "integer"
+          },
           "championship_id": {
             "title": "Championship Id",
             "type": "integer"
@@ -2621,6 +3219,8 @@
           "name",
           "planned_round_count",
           "protest_window_minutes",
+          "allow_repeat_layouts",
+          "voted_slots",
           "championship_id",
           "championship_name",
           "can_manage",
@@ -2696,16 +3296,100 @@
       "SeasonSettingsIn": {
         "properties": {
           "protest_window_minutes": {
-            "maximum": 10080,
-            "minimum": 0,
-            "title": "Protest Window Minutes",
+            "anyOf": [
+              {
+                "maximum": 10080,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protest Window Minutes"
+          },
+          "allow_repeat_layouts": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allow Repeat Layouts"
+          }
+        },
+        "title": "SeasonSettingsIn",
+        "type": "object"
+      },
+      "FixedRoundIn": {
+        "properties": {
+          "track_layout_id": {
+            "title": "Track Layout Id",
             "type": "integer"
+          },
+          "number": {
+            "anyOf": [
+              {
+                "maximum": 99,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Number"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
           }
         },
         "required": [
-          "protest_window_minutes"
+          "track_layout_id"
         ],
-        "title": "SeasonSettingsIn",
+        "title": "FixedRoundIn",
+        "type": "object"
+      },
+      "RoundPatchIn": {
+        "properties": {
+          "number": {
+            "anyOf": [
+              {
+                "maximum": 99,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Number"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
+          }
+        },
+        "title": "RoundPatchIn",
         "type": "object"
       },
       "EntryOption": {
@@ -3018,9 +3702,16 @@
             "type": "string"
           },
           "scheduled_at": {
-            "format": "date-time",
-            "title": "Scheduled At",
-            "type": "string"
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
           },
           "can_manage": {
             "title": "Can Manage",
@@ -4963,6 +5654,862 @@
           "reason"
         ],
         "title": "InvalidateIn",
+        "type": "object"
+      },
+      "BallotSummary": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
+          "winners": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Winners",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "status",
+          "parent_id",
+          "winners"
+        ],
+        "title": "BallotSummary",
+        "type": "object"
+      },
+      "BallotDetail": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          },
+          "season_name": {
+            "title": "Season Name",
+            "type": "string"
+          },
+          "championship_name": {
+            "title": "Championship Name",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "method": {
+            "title": "Method",
+            "type": "string"
+          },
+          "selection_limit": {
+            "title": "Selection Limit",
+            "type": "integer"
+          },
+          "slots": {
+            "title": "Slots",
+            "type": "integer"
+          },
+          "choice_visibility": {
+            "title": "Choice Visibility",
+            "type": "string"
+          },
+          "totals_visibility": {
+            "title": "Totals Visibility",
+            "type": "string"
+          },
+          "allow_vote_changes": {
+            "title": "Allow Vote Changes",
+            "type": "boolean"
+          },
+          "closes_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closes At"
+          },
+          "eligible_roles": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Eligible Roles",
+            "type": "array"
+          },
+          "prior_season_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prior Season Id"
+          },
+          "min_prior_starts": {
+            "title": "Min Prior Starts",
+            "type": "integer"
+          },
+          "max_runoffs": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Runoffs"
+          },
+          "power_exceptions": {
+            "items": {
+              "$ref": "#/components/schemas/VoterOut"
+            },
+            "title": "Power Exceptions",
+            "type": "array"
+          },
+          "power_overrides": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Power Overrides",
+            "type": "object"
+          },
+          "closed_early": {
+            "title": "Closed Early",
+            "type": "boolean"
+          },
+          "close_reason": {
+            "title": "Close Reason",
+            "type": "string"
+          },
+          "parent": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BallotLink"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "runoffs": {
+            "items": {
+              "$ref": "#/components/schemas/BallotLink"
+            },
+            "title": "Runoffs",
+            "type": "array"
+          },
+          "can_manage": {
+            "title": "Can Manage",
+            "type": "boolean"
+          },
+          "can_vote": {
+            "title": "Can Vote",
+            "type": "boolean"
+          },
+          "my_power": {
+            "title": "My Power",
+            "type": "integer"
+          },
+          "my_choices": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "My Choices",
+            "type": "array"
+          },
+          "voted_count": {
+            "title": "Voted Count",
+            "type": "integer"
+          },
+          "voter_count": {
+            "title": "Voter Count",
+            "type": "integer"
+          },
+          "totals_visible": {
+            "title": "Totals Visible",
+            "type": "boolean"
+          },
+          "choices_visible": {
+            "title": "Choices Visible",
+            "type": "boolean"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/OptionOut"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "tie": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TieOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "voters": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/VoterOut"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voters"
+          }
+        },
+        "required": [
+          "id",
+          "season_id",
+          "season_name",
+          "championship_name",
+          "kind",
+          "title",
+          "status",
+          "method",
+          "selection_limit",
+          "slots",
+          "choice_visibility",
+          "totals_visibility",
+          "allow_vote_changes",
+          "closes_at",
+          "eligible_roles",
+          "prior_season_id",
+          "min_prior_starts",
+          "max_runoffs",
+          "power_exceptions",
+          "power_overrides",
+          "closed_early",
+          "close_reason",
+          "parent",
+          "runoffs",
+          "can_manage",
+          "can_vote",
+          "my_power",
+          "my_choices",
+          "voted_count",
+          "voter_count",
+          "totals_visible",
+          "choices_visible",
+          "options",
+          "tie",
+          "voters"
+        ],
+        "title": "BallotDetail",
+        "type": "object"
+      },
+      "BallotLink": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "status"
+        ],
+        "title": "BallotLink",
+        "type": "object"
+      },
+      "OptionOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "track_layout_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Layout Id"
+          },
+          "selected": {
+            "title": "Selected",
+            "type": "boolean"
+          },
+          "selected_by": {
+            "title": "Selected By",
+            "type": "string"
+          },
+          "votes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Votes"
+          },
+          "voters": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voters"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "track_layout_id",
+          "selected",
+          "selected_by",
+          "votes",
+          "voters"
+        ],
+        "title": "OptionOut",
+        "type": "object"
+      },
+      "TieOut": {
+        "properties": {
+          "option_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Option Ids",
+            "type": "array"
+          },
+          "open_slots": {
+            "title": "Open Slots",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "option_ids",
+          "open_slots"
+        ],
+        "title": "TieOut",
+        "type": "object"
+      },
+      "VoterOut": {
+        "properties": {
+          "username": {
+            "title": "Username",
+            "type": "string"
+          },
+          "power": {
+            "title": "Power",
+            "type": "integer"
+          },
+          "voted": {
+            "title": "Voted",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "username",
+          "power",
+          "voted"
+        ],
+        "title": "VoterOut",
+        "type": "object"
+      },
+      "BallotIn": {
+        "properties": {
+          "title": {
+            "maxLength": 150,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "method": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Method"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "selection_limit": {
+            "anyOf": [
+              {
+                "maximum": 50,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selection Limit"
+          },
+          "slots": {
+            "anyOf": [
+              {
+                "maximum": 50,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slots"
+          },
+          "choice_visibility": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChoiceVisibility"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "totals_visibility": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TotalsVisibility"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "allow_vote_changes": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allow Vote Changes"
+          },
+          "closes_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closes At"
+          },
+          "eligible_roles": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eligible Roles"
+          },
+          "prior_season_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prior Season Id"
+          },
+          "min_prior_starts": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Prior Starts"
+          },
+          "max_runoffs": {
+            "anyOf": [
+              {
+                "maximum": 20,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Runoffs"
+          },
+          "power_overrides": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Overrides"
+          },
+          "kind": {
+            "enum": [
+              "track",
+              "car_class"
+            ],
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "kind"
+        ],
+        "title": "BallotIn",
+        "type": "object"
+      },
+      "ChoiceVisibility": {
+        "enum": [
+          "visible",
+          "hidden"
+        ],
+        "title": "ChoiceVisibility",
+        "type": "string"
+      },
+      "Method": {
+        "enum": [
+          "single",
+          "multiple"
+        ],
+        "title": "Method",
+        "type": "string"
+      },
+      "TotalsVisibility": {
+        "enum": [
+          "live",
+          "after_close",
+          "hidden"
+        ],
+        "title": "TotalsVisibility",
+        "type": "string"
+      },
+      "BallotSettingsIn": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "maxLength": 150,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "method": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Method"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "selection_limit": {
+            "anyOf": [
+              {
+                "maximum": 50,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selection Limit"
+          },
+          "slots": {
+            "anyOf": [
+              {
+                "maximum": 50,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slots"
+          },
+          "choice_visibility": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChoiceVisibility"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "totals_visibility": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TotalsVisibility"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "allow_vote_changes": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allow Vote Changes"
+          },
+          "closes_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closes At"
+          },
+          "eligible_roles": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eligible Roles"
+          },
+          "prior_season_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prior Season Id"
+          },
+          "min_prior_starts": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Prior Starts"
+          },
+          "max_runoffs": {
+            "anyOf": [
+              {
+                "maximum": 20,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Runoffs"
+          },
+          "power_overrides": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Overrides"
+          }
+        },
+        "title": "BallotSettingsIn",
+        "type": "object"
+      },
+      "OptionIn": {
+        "properties": {
+          "label": {
+            "default": "",
+            "maxLength": 150,
+            "title": "Label",
+            "type": "string"
+          },
+          "track_layout_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Layout Id"
+          }
+        },
+        "title": "OptionIn",
+        "type": "object"
+      },
+      "VoteIn": {
+        "properties": {
+          "option_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Option Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "option_ids"
+        ],
+        "title": "VoteIn",
+        "type": "object"
+      },
+      "CloseIn": {
+        "properties": {
+          "reason": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "title": "CloseIn",
+        "type": "object"
+      },
+      "DecideIn": {
+        "properties": {
+          "option_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Option Ids",
+            "type": "array"
+          },
+          "reason": {
+            "maxLength": 500,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "option_ids",
+          "reason"
+        ],
+        "title": "DecideIn",
         "type": "object"
       }
     },

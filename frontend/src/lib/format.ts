@@ -1,5 +1,6 @@
-/** Show a date and time in the timezone of the browser. */
-export function formatDateTime(iso: string, language: string): string {
+/** Show a date and time in the timezone of the browser. No date gives a dash. */
+export function formatDateTime(iso: string | null | undefined, language: string): string {
+  if (!iso) return '—'
   return new Intl.DateTimeFormat(language, { dateStyle: 'medium', timeStyle: 'short' }).format(
     new Date(iso),
   )

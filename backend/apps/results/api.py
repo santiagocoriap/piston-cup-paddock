@@ -108,7 +108,7 @@ class RoundDetail(Schema):
     championship_name: str
     track_name: str
     layout_name: str
-    scheduled_at: AwareDatetime
+    scheduled_at: AwareDatetime | None
     can_manage: bool
     can_protest: bool
     rules: RulesOut

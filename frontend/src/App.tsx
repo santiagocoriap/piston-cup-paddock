@@ -7,6 +7,7 @@ import { AuditPage } from './pages/admin/AuditPage'
 import { CatalogPage } from './pages/admin/CatalogPage'
 import { DriversPage } from './pages/admin/DriversPage'
 import { LeaguesPage } from './pages/admin/LeaguesPage'
+import { BallotPage } from './pages/BallotPage'
 import { ChampionshipPage } from './pages/ChampionshipPage'
 import { ChampionshipsPage } from './pages/ChampionshipsPage'
 import { RecordsPage } from './pages/RecordsPage'
@@ -78,6 +79,7 @@ function AppRoutes({
         <Route path="seasons/:seasonId" element={<SeasonPage />} />
         <Route path="rounds/:roundId" element={<RoundPage />} />
         <Route path="records" element={<RecordsPage />} />
+        <Route path="ballots/:ballotId" element={<BallotPage />} />
         {adminPages && <Route path="admin/leagues" element={<LeaguesPage />} />}
         {adminPages && <Route path="admin/drivers" element={<DriversPage />} />}
         {adminPages && <Route path="admin/catalog" element={<CatalogPage />} />}
