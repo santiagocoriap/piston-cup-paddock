@@ -23,6 +23,7 @@ export function Layout({ onSignOut }: { onSignOut: () => void }) {
               <NavLink to="/admin/catalog">{t('nav.catalog')}</NavLink>
             </>
           )}
+          {adminMode && me.can_admin && <NavLink to="/admin/audit">{t('nav.audit')}</NavLink>}
         </nav>
         {me.can_admin && <ModeSwitch />}
         <span className="user">

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from django.db import transaction
 
+from apps.audit.services import change, record
 from apps.competition.models import Round, Season
 from apps.rules.models import RulesVersion
 from apps.rules.scoring import Line, ResultError, Status, race_points, standings, validate
@@ -9,7 +10,7 @@ from apps.rules.scoring import Line, ResultError, Status, race_points, standings
 from .models import RaceResult, ResultLine
 
 
-def save_result(round_: Round, lines: list[Line], user) -> RaceResult:
+def save_result(round_: Round, lines: list[Line], user, reason: str = "") -> RaceResult:
     """Check the lines, calculate the points, and replace the result of the round."""
     entry_ids = set(round_.season.entries.values_list("id", flat=True))
     if any(line.entry_id not in entry_ids for line in lines):
@@ -19,6 +20,12 @@ def save_result(round_: Round, lines: list[Line], user) -> RaceResult:
     rules_version = RulesVersion.current_for(round_.season)
     points = race_points(lines, rules_version.as_points_rules())
     with transaction.atomic():
+        before = {
+            row.entry_id: row
+            for row in ResultLine.objects.filter(result__round=round_).select_related(
+                "entry__driver"
+            )
+        }
         result, _ = RaceResult.objects.update_or_create(
             round=round_, defaults={"rules_version": rules_version, "updated_by": user}
         )
@@ -35,7 +42,41 @@ def save_result(round_: Round, lines: list[Line], user) -> RaceResult:
             )
             for line in lines
         )
+        _audit_result(round_, user, reason, before, lines, points)
     return result
+
+
+def _audit_result(round_, user, reason, before, lines, points) -> None:
+    drivers = dict(round_.season.entries.values_list("id", "driver__display_name"))
+    after = {line.entry_id: line for line in lines}
+    changes = []
+    for entry_id in sorted(set(before) | set(after), key=lambda e: drivers.get(e, "")):
+        old = before.get(entry_id)
+        new = after.get(entry_id)
+        old_value = (
+            {"status": old.status, "position": old.position, "points": old.points} if old else None
+        )
+        new_value = (
+            {"status": new.status, "position": new.position, "points": points[entry_id]}
+            if new
+            else None
+        )
+        if old_value != new_value:
+            changes.append(change(drivers.get(entry_id, str(entry_id)), old_value, new_value))
+    record(
+        user,
+        "result.saved" if not before else "result.changed",
+        "round",
+        round_.id,
+        championship=round_.season.championship,
+        params={
+            "season": round_.season.name,
+            "number": round_.number,
+            "track": str(round_.track_layout),
+        },
+        changes=changes,
+        reason=reason,
+    )
 
 
 def _as_line(row: ResultLine) -> Line:

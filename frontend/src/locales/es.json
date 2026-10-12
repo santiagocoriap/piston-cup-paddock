@@ -18,7 +18,8 @@
     "drivers": "Pilotos",
     "catalog": "Pistas y autos",
     "logout": "Cerrar sesión",
-    "main": "Navegación principal"
+    "main": "Navegación principal",
+    "audit": "Historial"
   },
   "common": {
     "create": "Crear",
@@ -165,5 +166,45 @@
     "label": "Modo",
     "driver": "Modo piloto",
     "admin": "Modo admin"
+  },
+  "audit": {
+    "title": "Historial de cambios",
+    "empty": "Todavía no hay cambios.",
+    "when": "Cuándo",
+    "who": "Quién",
+    "what": "Qué",
+    "reason": "Motivo",
+    "all": "Todos los campeonatos",
+    "championship": "Campeonato",
+    "actions": {
+      "league.created": "{{actor}} creó la liga {{name}}.",
+      "championship.created": "{{actor}} creó el campeonato {{name}} en {{league}}.",
+      "member.set": "{{actor}} le dio a {{username}} el rol {{role}}.",
+      "season.created": "{{actor}} creó la temporada {{season}} de {{championship}}.",
+      "entry.created": "{{actor}} inscribió a {{driver}} con el #{{number}} ({{car}}) en {{season}}.",
+      "round.created": "{{actor}} agregó la fecha {{number}} en {{track}} a {{season}}.",
+      "result.saved": "{{actor}} cargó el resultado de la fecha {{number}} ({{track}}).",
+      "result.changed": "{{actor}} cambió el resultado de la fecha {{number}} ({{track}}).",
+      "driver.created": "{{actor}} creó el piloto {{driver}}.",
+      "driver.linked": "{{actor}} vinculó al piloto {{driver}} con la cuenta {{username}}.",
+      "driver.unlinked": "{{actor}} desvinculó al piloto {{driver}} de la cuenta {{username}}.",
+      "track.created": "{{actor}} creó la pista {{name}}.",
+      "layout.created": "{{actor}} creó el trazado {{name}} de {{track}}.",
+      "car.created": "{{actor}} creó el auto {{name}}.",
+      "unknown": "{{actor}} hizo un cambio ({{action}})."
+    },
+    "fields": {
+      "role": "Rol",
+      "name": "Nombre",
+      "planned_round_count": "Carreras previstas",
+      "number": "Número",
+      "team": "Equipo",
+      "track_layout": "Pista",
+      "scheduled_at": "Día y hora",
+      "steam_guid": "Steam GUID",
+      "account": "Cuenta"
+    },
+    "none": "—",
+    "pts": "{{count}} pts"
   }
 }

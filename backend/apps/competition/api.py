@@ -1,8 +1,10 @@
+from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from ninja import Field, Router, Schema, Status
 from pydantic import AwareDatetime
 
+from apps.audit.services import change, record
 from apps.catalog.models import Car, TrackLayout
 from apps.common.api import conflict_on_duplicate, require
 from apps.identity.models import DriverProfile, User
@@ -184,6 +186,7 @@ def create_league(request, payload: NameIn):
     require(is_league_admin(request.user))
     with conflict_on_duplicate("league_exists"):
         league = League.objects.create(name=payload.name)
+        record(request.user, "league.created", "league", league.id, params={"name": league.name})
     return Status(201, league)
 
 
@@ -193,6 +196,14 @@ def create_championship(request, league_id: int, payload: NameIn):
     league = get_object_or_404(League, pk=league_id)
     with conflict_on_duplicate("championship_exists"):
         championship = Championship.objects.create(league=league, name=payload.name)
+        record(
+            request.user,
+            "championship.created",
+            "championship",
+            championship.id,
+            championship=championship,
+            params={"name": championship.name, "league": league.name},
+        )
     return Status(201, _championship_out(request.user, championship))
 
 
@@ -225,9 +236,20 @@ def set_member(request, championship_id: int, payload: MemberIn):
     championship = _visible_championship(request.user, championship_id)
     require(can_manage(request.user, championship))
     user = get_object_or_404(User, pk=payload.user_id)
-    ChampionshipMember.objects.update_or_create(
-        championship=championship, user=user, defaults={"role": payload.role}
-    )
+    old = ChampionshipMember.objects.filter(championship=championship, user=user).first()
+    with transaction.atomic():
+        ChampionshipMember.objects.update_or_create(
+            championship=championship, user=user, defaults={"role": payload.role}
+        )
+        record(
+            request.user,
+            "member.set",
+            "championship",
+            championship.id,
+            championship=championship,
+            params={"username": user.username, "role": payload.role},
+            changes=[change("role", old.role if old else None, payload.role)],
+        )
     return MemberOut(user_id=user.id, username=user.username, role=payload.role)
 
 
@@ -238,6 +260,18 @@ def create_season(request, championship_id: int, payload: SeasonIn):
     with conflict_on_duplicate("season_exists"):
         season = Season.objects.create(championship=championship, **payload.dict())
         RulesVersion.current_for(season)  # Version 1 with the league defaults.
+        record(
+            request.user,
+            "season.created",
+            "season",
+            season.id,
+            championship=championship,
+            params={"season": season.name, "championship": championship.name},
+            changes=[
+                change("name", None, season.name),
+                change("planned_round_count", None, season.planned_round_count),
+            ],
+        )
     return Status(201, season)
 
 
@@ -260,6 +294,20 @@ def create_entry(request, season_id: int, payload: EntryIn):
         entry = SeasonEntry.objects.create(
             season=season, driver=driver, car=car, number=payload.number, team=payload.team
         )
+        record(
+            request.user,
+            "entry.created",
+            "season",
+            season.id,
+            championship=season.championship,
+            params={
+                "season": season.name,
+                "driver": driver.display_name,
+                "number": entry.number,
+                "car": car.name,
+            },
+            changes=[change("number", None, entry.number), change("team", None, entry.team)],
+        )
     return Status(201, _entry_out(entry))
 
 
@@ -279,5 +327,17 @@ def create_round(request, season_id: int, payload: RoundIn):
             scheduled_at=payload.scheduled_at,
             origin=Round.Origin.MANUAL,
         )
-    round_.refresh_from_db()
+        round_.refresh_from_db()
+        record(
+            request.user,
+            "round.created",
+            "round",
+            round_.id,
+            championship=season.championship,
+            params={"season": season.name, "number": number, "track": str(layout)},
+            changes=[
+                change("track_layout", None, str(layout)),
+                change("scheduled_at", None, round_.scheduled_at.isoformat()),
+            ],
+        )
     return Status(201, _round_out(round_))

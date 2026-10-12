@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { api, type Me } from './api/client'
 import { Layout } from './components/Layout'
+import { AuditPage } from './pages/admin/AuditPage'
 import { CatalogPage } from './pages/admin/CatalogPage'
 import { DriversPage } from './pages/admin/DriversPage'
 import { LeaguesPage } from './pages/admin/LeaguesPage'
@@ -50,15 +51,24 @@ export default function App() {
   return (
     <SessionProvider me={session.me}>
       <BrowserRouter>
-        <AppRoutes isAdmin={session.me.is_admin} onSignOut={signOut} />
+        <AppRoutes isAdmin={session.me.is_admin} canAdmin={session.me.can_admin} onSignOut={signOut} />
       </BrowserRouter>
     </SessionProvider>
   )
 }
 
-function AppRoutes({ isAdmin, onSignOut }: { isAdmin: boolean; onSignOut: () => void }) {
+function AppRoutes({
+  isAdmin,
+  canAdmin,
+  onSignOut,
+}: {
+  isAdmin: boolean
+  canAdmin: boolean
+  onSignOut: () => void
+}) {
   const { mode } = useMode()
   const adminPages = isAdmin && mode === 'admin'
+  const managerPages = canAdmin && mode === 'admin'
   return (
     <Routes>
       <Route element={<Layout onSignOut={onSignOut} />}>
@@ -69,6 +79,7 @@ function AppRoutes({ isAdmin, onSignOut }: { isAdmin: boolean; onSignOut: () => 
         {adminPages && <Route path="admin/leagues" element={<LeaguesPage />} />}
         {adminPages && <Route path="admin/drivers" element={<DriversPage />} />}
         {adminPages && <Route path="admin/catalog" element={<CatalogPage />} />}
+        {managerPages && <Route path="admin/audit" element={<AuditPage />} />}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

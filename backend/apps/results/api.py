@@ -45,6 +45,7 @@ class LineOut(LineIn):
 
 class ResultIn(Schema):
     lines: list[LineIn]
+    reason: str = Field("", max_length=500)
 
 
 class RoundDetail(Schema):
@@ -162,7 +163,7 @@ def put_result(request, round_id: int, payload: ResultIn):
         for line in payload.lines
     ]
     try:
-        save_result(round_, lines, request.user)
+        save_result(round_, lines, request.user, payload.reason)
     except ResultError as error:
         raise HttpError(422, error.code) from error
     return _round_detail(request.user, round_)

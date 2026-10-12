@@ -1,6 +1,7 @@
 from ninja import NinjaAPI
 from ninja.security import django_auth
 
+from apps.audit.api import router as audit_router
 from apps.catalog.api import router as catalog_router
 from apps.competition.api import router as competition_router
 from apps.core.api import router as core_router
@@ -16,3 +17,4 @@ api.add_router("/catalog", catalog_router)
 api.add_router("/", drivers_router)
 api.add_router("/", competition_router)
 api.add_router("/", results_router)
+api.add_router("/", audit_router)

@@ -412,6 +412,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Audit
+         * @description League admins see every entry. A championship admin sees the entries of that championship.
+         */
+        get: operations["apps_audit_api_list_audit"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -481,7 +501,7 @@ export interface components {
              * Key
              * @default
              */
-            key: string;
+            key?: string;
             /** Name */
             name: string;
         };
@@ -677,7 +697,7 @@ export interface components {
              * Team
              * @default
              */
-            team: string;
+            team?: string;
         };
         /** RoundIn */
         RoundIn: {
@@ -713,12 +733,12 @@ export interface components {
              * Pole
              * @default false
              */
-            pole: boolean;
+            pole?: boolean;
             /**
              * Fastest Lap
              * @default false
              */
-            fastest_lap: boolean;
+            fastest_lap?: boolean;
             /** Number */
             number: number;
             /** Driver Name */
@@ -782,17 +802,22 @@ export interface components {
              * Pole
              * @default false
              */
-            pole: boolean;
+            pole?: boolean;
             /**
              * Fastest Lap
              * @default false
              */
-            fastest_lap: boolean;
+            fastest_lap?: boolean;
         };
         /** ResultIn */
         ResultIn: {
             /** Lines */
             lines: components["schemas"]["LineIn"][];
+            /**
+             * Reason
+             * @default
+             */
+            reason?: string;
         };
         /** RoundScoreOut */
         RoundScoreOut: {
@@ -825,6 +850,49 @@ export interface components {
             wins: number;
             /** Rounds */
             rounds: components["schemas"]["RoundScoreOut"][];
+        };
+        /** AuditChange */
+        AuditChange: {
+            /** Field */
+            field: string;
+            /** Old */
+            old: string | number | boolean | {
+                [key: string]: unknown;
+            } | null;
+            /** New */
+            new: string | number | boolean | {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** AuditEntryOut */
+        AuditEntryOut: {
+            /** Id */
+            id: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Actor Name */
+            actor_name: string;
+            /** Action */
+            action: string;
+            /** Championship Id */
+            championship_id: number | null;
+            /** Championship Name */
+            championship_name: string | null;
+            /** Target Type */
+            target_type: string;
+            /** Target Id */
+            target_id: number;
+            /** Params */
+            params: {
+                [key: string]: unknown;
+            };
+            /** Changes */
+            changes: components["schemas"]["AuditChange"][];
+            /** Reason */
+            reason: string;
         };
     };
     responses: never;
@@ -1492,6 +1560,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StandingOut"][];
+                };
+            };
+        };
+    };
+    apps_audit_api_list_audit: {
+        parameters: {
+            query?: {
+                championship_id?: number | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditEntryOut"][];
                 };
             };
         };

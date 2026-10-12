@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from ninja import Field, Router, Schema, Status
 
+from apps.audit.services import record
 from apps.common.api import conflict_on_duplicate, require
 from apps.competition.permissions import manages_any_championship
 
@@ -53,6 +54,7 @@ def create_track(request, payload: TrackIn):
     require(manages_any_championship(request.user))
     with conflict_on_duplicate("track_exists"):
         track = Track.objects.create(**payload.dict())
+        record(request.user, "track.created", "track", track.id, params={"name": track.name})
     return Status(201, track)
 
 
@@ -62,6 +64,13 @@ def create_layout(request, track_id: int, payload: LayoutIn):
     track = get_object_or_404(Track, pk=track_id)
     with conflict_on_duplicate("layout_exists"):
         layout = TrackLayout.objects.create(track=track, **payload.dict())
+        record(
+            request.user,
+            "layout.created",
+            "track",
+            track.id,
+            params={"track": track.name, "name": layout.name},
+        )
     return Status(201, layout)
 
 
@@ -75,4 +84,5 @@ def create_car(request, payload: CarIn):
     require(manages_any_championship(request.user))
     with conflict_on_duplicate("car_exists"):
         car = Car.objects.create(**payload.dict())
+        record(request.user, "car.created", "car", car.id, params={"name": car.name})
     return Status(201, car)

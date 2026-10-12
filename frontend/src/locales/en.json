@@ -18,7 +18,8 @@
     "drivers": "Drivers",
     "catalog": "Tracks and cars",
     "logout": "Sign out",
-    "main": "Main navigation"
+    "main": "Main navigation",
+    "audit": "History"
   },
   "common": {
     "create": "Create",
@@ -165,5 +166,45 @@
     "label": "Mode",
     "driver": "Driver mode",
     "admin": "Admin mode"
+  },
+  "audit": {
+    "title": "Change history",
+    "empty": "There are no changes yet.",
+    "when": "When",
+    "who": "Who",
+    "what": "What",
+    "reason": "Reason",
+    "all": "All championships",
+    "championship": "Championship",
+    "actions": {
+      "league.created": "{{actor}} made the league {{name}}.",
+      "championship.created": "{{actor}} made the championship {{name}} in {{league}}.",
+      "member.set": "{{actor}} gave {{username}} the role {{role}}.",
+      "season.created": "{{actor}} made the season {{season}} of {{championship}}.",
+      "entry.created": "{{actor}} added {{driver}} as #{{number}} ({{car}}) to {{season}}.",
+      "round.created": "{{actor}} added round {{number}} at {{track}} to {{season}}.",
+      "result.saved": "{{actor}} entered the result of round {{number}} ({{track}}).",
+      "result.changed": "{{actor}} changed the result of round {{number}} ({{track}}).",
+      "driver.created": "{{actor}} made the driver {{driver}}.",
+      "driver.linked": "{{actor}} linked the driver {{driver}} to the account {{username}}.",
+      "driver.unlinked": "{{actor}} removed the link between the driver {{driver}} and the account {{username}}.",
+      "track.created": "{{actor}} made the track {{name}}.",
+      "layout.created": "{{actor}} made the layout {{name}} of {{track}}.",
+      "car.created": "{{actor}} made the car {{name}}.",
+      "unknown": "{{actor}} made a change ({{action}})."
+    },
+    "fields": {
+      "role": "Role",
+      "name": "Name",
+      "planned_round_count": "Planned rounds",
+      "number": "Number",
+      "team": "Team",
+      "track_layout": "Track",
+      "scheduled_at": "Date and time",
+      "steam_guid": "Steam GUID",
+      "account": "Account"
+    },
+    "none": "—",
+    "pts": "{{count}} pts"
   }
 }

@@ -82,4 +82,11 @@ test('an admin sets up a season without voting and enters a result', async ({ pa
   await page.getByRole('link', { name: '2026' }).click()
   const standingsRow = page.getByRole('table').first().getByRole('row', { name: new RegExp(names.driver) })
   await expect(standingsRow).toContainText('25')
+
+  // Audit trail
+  await page.getByRole('link', { name: 'Historial' }).click()
+  const resultEntry = page.getByRole('link', { name: /e2e-admin cargó el resultado de la fecha 1/ })
+  await expect(resultEntry).toBeVisible()
+  await resultEntry.click()
+  await expect(page.getByRole('heading', { name: /Fecha 1/ })).toBeVisible()
 })

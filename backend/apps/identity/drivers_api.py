@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from ninja import Field, Router, Schema, Status
 
+from apps.audit.services import change, record
 from apps.common.api import conflict_on_duplicate, require
 from apps.competition.permissions import is_league_admin, manages_any_championship
 
@@ -45,6 +46,14 @@ def create_driver(request, payload: DriverIn):
     require(manages_any_championship(request.user))
     with conflict_on_duplicate("steam_guid_exists"):
         profile = DriverProfile.objects.create(**payload.dict())
+        record(
+            request.user,
+            "driver.created",
+            "driver",
+            profile.id,
+            params={"driver": profile.display_name},
+            changes=[change("steam_guid", None, profile.steam_guid)],
+        )
     return Status(201, profile)
 
 
@@ -53,9 +62,19 @@ def link_driver(request, driver_id: int, payload: LinkIn):
     """Link a driver profile to an account, or remove the link with user_id null."""
     require(is_league_admin(request.user))
     profile = get_object_or_404(DriverProfile, pk=driver_id)
+    old_username = profile.user.username if profile.user else None
     profile.user = get_object_or_404(User, pk=payload.user_id) if payload.user_id else None
+    new_username = profile.user.username if profile.user else None
     with conflict_on_duplicate("account_has_profile"):
         profile.save(update_fields=["user"])
+        record(
+            request.user,
+            "driver.linked" if new_username else "driver.unlinked",
+            "driver",
+            profile.id,
+            params={"driver": profile.display_name, "username": new_username or old_username},
+            changes=[change("account", old_username, new_username)],
+        )
     return profile
 
 

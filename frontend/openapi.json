@@ -1048,6 +1048,65 @@
           }
         ]
       }
+    },
+    "/api/audit": {
+      "get": {
+        "operationId": "apps_audit_api_list_audit",
+        "summary": "List Audit",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "championship_id",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Championship Id"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 200,
+              "title": "Limit",
+              "type": "integer"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AuditEntryOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "League admins see every entry. A championship admin sees the entries of that championship.",
+        "tags": [
+          "audit"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -2052,6 +2111,12 @@
             },
             "title": "Lines",
             "type": "array"
+          },
+          "reason": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Reason",
+            "type": "string"
           }
         },
         "required": [
@@ -2156,6 +2221,151 @@
           "rounds"
         ],
         "title": "StandingOut",
+        "type": "object"
+      },
+      "AuditChange": {
+        "properties": {
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "old": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Old"
+          },
+          "new": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New"
+          }
+        },
+        "required": [
+          "field",
+          "old",
+          "new"
+        ],
+        "title": "AuditChange",
+        "type": "object"
+      },
+      "AuditEntryOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "actor_name": {
+            "title": "Actor Name",
+            "type": "string"
+          },
+          "action": {
+            "title": "Action",
+            "type": "string"
+          },
+          "championship_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Championship Id"
+          },
+          "championship_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Championship Name"
+          },
+          "target_type": {
+            "title": "Target Type",
+            "type": "string"
+          },
+          "target_id": {
+            "title": "Target Id",
+            "type": "integer"
+          },
+          "params": {
+            "additionalProperties": true,
+            "title": "Params",
+            "type": "object"
+          },
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/AuditChange"
+            },
+            "title": "Changes",
+            "type": "array"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "actor_name",
+          "action",
+          "championship_id",
+          "championship_name",
+          "target_type",
+          "target_id",
+          "params",
+          "changes",
+          "reason"
+        ],
+        "title": "AuditEntryOut",
         "type": "object"
       }
     },

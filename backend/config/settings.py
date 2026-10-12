@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "apps.competition",
     "apps.rules",
     "apps.results",
+    "apps.audit",
 ]
 
 MIDDLEWARE = [
