@@ -24,6 +24,6 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY backend/ ./
 COPY --from=frontend /app/frontend/dist /app/frontend-dist
 RUN DJANGO_SECRET_KEY=build-only POSTGRES_PASSWORD=build-only python manage.py collectstatic --noinput
-RUN useradd --create-home paddock && mkdir -p /app/media && chown -R paddock /app
+RUN useradd --create-home paddock && mkdir -p /app/media /app/backend/backups && chown -R paddock /app
 USER paddock
 EXPOSE 8000

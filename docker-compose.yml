@@ -28,6 +28,7 @@ services:
       MEDIA_ROOT: /app/media
     volumes:
       - media-data:/app/media
+      - backups:/app/backend/backups
     depends_on:
       db:
         condition: service_healthy
@@ -56,3 +57,4 @@ services:
 volumes:
   db-data:
   media-data:
+  backups:

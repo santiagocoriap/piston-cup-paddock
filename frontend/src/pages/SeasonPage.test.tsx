@@ -93,6 +93,7 @@ describe('SeasonPage', () => {
     })
     show()
     const form = await screen.findByRole('form', { name: 'Agregar fecha' })
+    await within(form).findByRole('option', { name: 'Highlands · Long' }) // Wait for the list.
     await userEvent.selectOptions(await within(form).findByLabelText('Pista y trazado'), '4')
     await userEvent.type(within(form).getByLabelText('Día y hora'), '2026-10-18T21:30')
     await userEvent.click(within(form).getByRole('button', { name: 'Agregar' }))
@@ -116,6 +117,7 @@ describe('SeasonPage', () => {
     })
     show()
     const form = await screen.findByRole('form', { name: 'Inscribir piloto' })
+    await within(form).findByRole('option', { name: 'Bing' }) // Wait for the list.
     await userEvent.selectOptions(await within(form).findByLabelText('Piloto'), '3')
     await userEvent.selectOptions(await within(form).findByLabelText('Auto'), '2')
     await userEvent.type(within(form).getByLabelText('Número'), '93')

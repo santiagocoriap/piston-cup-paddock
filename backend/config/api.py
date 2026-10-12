@@ -5,6 +5,7 @@ from apps.audit.api import router as audit_router
 from apps.catalog.api import router as catalog_router
 from apps.competition.api import router as competition_router
 from apps.core.api import router as core_router
+from apps.core.exports import router as exports_router
 from apps.dashboard.api import router as dashboard_router
 from apps.handicaps.api import router as handicaps_router
 from apps.identity.api import router as auth_router
@@ -30,3 +31,4 @@ api.add_router("/", handicaps_router)
 api.add_router("/", records_router)
 api.add_router("/", voting_router)
 api.add_router("/", dashboard_router)
+api.add_router("/", exports_router)

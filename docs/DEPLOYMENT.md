@@ -47,7 +47,38 @@ Deploy the new version. The `web` service runs the migrations before it starts.
 
 ## Backup
 
-Ticket #18 adds a backup and restore command. Until then, use the backup feature of Coolify for 2 volumes:
+One command backs up the database and the stored files (the result files) into one zip file:
 
-- `db-data`: the database.
-- `media-data`: the uploaded result files, which are the evidence for the results.
+```bash
+docker compose exec web python manage.py backup
+```
+
+The file goes to the `backups` volume, for example `backups/paddock-20261012-213000.zip`. Copy it out of the container and keep it on another computer:
+
+```bash
+docker compose cp web:/app/backend/backups/paddock-20261012-213000.zip .
+```
+
+Do a backup before each upgrade, and after each race night. Login sessions and background tasks are not in the backup.
+
+## Restore
+
+A restore **deletes all current data and stored files**, then loads the backup. Users must sign in again.
+
+1. Copy the backup into the container:
+
+   ```bash
+   docker compose cp paddock-20261012-213000.zip web:/app/backend/backups/
+   ```
+
+2. Run the restore:
+
+   ```bash
+   docker compose exec web python manage.py restore backups/paddock-20261012-213000.zip --confirm
+   ```
+
+The command checks the row counts after the restore and stops with an error when they differ.
+
+## Exports
+
+The season page has links to CSV files of the results, the standings, and the restart history. The records page has a link to a CSV file of the track records. The files open in Excel and Google Sheets.

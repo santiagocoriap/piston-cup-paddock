@@ -756,6 +756,13 @@ fieldset.vote {
   color: var(--text);
 }
 
+.exports {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 1rem 0;
+}
+
 .error {
   margin: 0;
   color: var(--error);

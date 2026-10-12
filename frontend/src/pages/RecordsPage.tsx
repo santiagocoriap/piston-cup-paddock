@@ -24,6 +24,11 @@ export function RecordsPage() {
     <section>
       <h1>{t('records.title')}</h1>
       <p className="muted">{t('records.help')}</p>
+      <p className="exports">
+        <a href="/api/records/export.csv" download>
+          {t('exports.records')}
+        </a>
+      </p>
       {!records.data ? (
         <Loading failed={records.failed} />
       ) : (

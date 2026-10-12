@@ -676,5 +676,12 @@
     "browserZone": "La del navegador ({{zone}})",
     "timezoneHelp": "Los horarios de las carreras se muestran en esta zona. Si la zona del evento es distinta, también ves la hora del evento.",
     "saved": "Cambios guardados."
+  },
+  "exports": {
+    "title": "Exportar (CSV)",
+    "results": "Resultados",
+    "standings": "Campeonato",
+    "restarts": "Reinicios",
+    "records": "Exportar récords (CSV)"
   }
 }

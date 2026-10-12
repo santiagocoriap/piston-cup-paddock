@@ -135,6 +135,15 @@ export function SeasonPage() {
 
       <BallotsSection seasonId={seasonId} championshipId={data.championship_id} adminView={adminView} />
 
+      <p className="exports">
+        <span className="muted">{t('exports.title')}:</span>{' '}
+        {(['results', 'standings', 'restarts'] as const).map((kind) => (
+          <a key={kind} href={`/api/seasons/${seasonId}/export/${kind}.csv`} download>
+            {t(`exports.${kind}`)}
+          </a>
+        ))}
+      </p>
+
       <h2>{t('season.entries')}</h2>
       {data.entries.length === 0 ? (
         <p>{t('season.noEntries')}</p>

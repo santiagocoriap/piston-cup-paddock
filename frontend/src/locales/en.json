@@ -676,5 +676,12 @@
     "browserZone": "The browser zone ({{zone}})",
     "timezoneHelp": "Race times show in this zone. When the event zone is different, you also see the event time.",
     "saved": "The changes are saved."
+  },
+  "exports": {
+    "title": "Export (CSV)",
+    "results": "Results",
+    "standings": "Standings",
+    "restarts": "Restarts",
+    "records": "Export records (CSV)"
   }
 }

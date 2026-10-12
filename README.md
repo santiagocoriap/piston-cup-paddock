@@ -36,6 +36,6 @@ You need Docker, [uv](https://docs.astral.sh/uv/), Node 24, and pnpm 10 (`corepa
 
 `pnpm test` runs the backend tests, the frontend tests, and the end-to-end tests. The end-to-end tests start a separate Docker stack (`paddock-e2e`, port 8421) with an empty database, and delete it after the run. Your local app and its data do not change. To keep the test stack after a failure, set `E2E_KEEP_STACK=true`.
 
-## Deploy
+## Deploy, backup, and restore
 
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Back up with `docker compose exec web python manage.py backup`.
