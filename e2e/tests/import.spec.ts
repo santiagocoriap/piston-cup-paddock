@@ -105,6 +105,7 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
   // The winner carries the first win step into the next round.
   await page.goto(`/seasons/${season.id}`)
   const handicapRow = page.locator('table.handicaps tr').filter({ hasText: 'Driver 01' })
+  await expect(page.getByRole('heading', { name: 'Pelea por el título' })).toBeVisible()
   await expect(handicapRow).toContainText('10 kg · 2 %')
 
   // An official result makes the race laps into track records.

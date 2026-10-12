@@ -866,5 +866,27 @@
       "out": "Out"
     },
     "tyre": "Tyre"
+  },
+  "title": {
+    "title": "Title fight",
+    "champion": "{{name}} is the champion. No rival can catch them.",
+    "target_one": "{{name}} is sure of the title with {{points}} points in the last round, whatever the rivals do.",
+    "target_other": "{{name}} is sure of the title with {{points}} points in the {{count}} remaining rounds, whatever the rivals do.",
+    "dependsOnRivals": "{{name}} leads, but cannot make sure of the title alone. It depends on rival results.",
+    "bestCase": "maximum possible {{points}} pts",
+    "ownDestiny": "wins the title if they win every round with pole and fastest lap",
+    "needsHelp": "needs rivals to lose points",
+    "eliminated": "These drivers cannot win the title: {{names}}.",
+    "assumptions": "Assumptions",
+    "remaining_one": "{{count}} of {{planned}} planned rounds remains.",
+    "remaining_other": "{{count}} of {{planned}} planned rounds remain.",
+    "maxPoints": "One round gives at most {{top}} points (1st with pole and fastest lap). If another driver wins, at most {{second}}.",
+    "countback": "With equal points, more wins rank higher, then more 2nd places, and so on. The same as the standings.",
+    "noPenalties": "The math does not include future penalties.",
+    "targetHelp": "The target assumes that the best rival wins every remaining round. So it is sure, but fewer points can be enough.",
+    "limits": {
+      "rules_changed": "The rules changed in the season. The remaining rounds use the current rules.",
+      "provisional_results": "Some results are provisional. The math can change."
+    }
   }
 }

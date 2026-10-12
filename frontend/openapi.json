@@ -1437,6 +1437,43 @@
         ]
       }
     },
+    "/api/seasons/{season_id}/title": {
+      "get": {
+        "operationId": "apps_results_api_get_title",
+        "summary": "Get Title",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TitleOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "results"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/seasons/{season_id}/standings": {
       "get": {
         "operationId": "apps_results_api_get_standings",
@@ -5094,6 +5131,117 @@
         ],
         "title": "State",
         "type": "string"
+      },
+      "TitleDriverOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "best_case": {
+            "title": "Best Case",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "own_destiny": {
+            "title": "Own Destiny",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "entry_id",
+          "driver_name",
+          "points",
+          "best_case",
+          "status",
+          "own_destiny"
+        ],
+        "title": "TitleDriverOut",
+        "type": "object"
+      },
+      "TitleOut": {
+        "properties": {
+          "planned_rounds": {
+            "title": "Planned Rounds",
+            "type": "integer"
+          },
+          "rounds_with_result": {
+            "title": "Rounds With Result",
+            "type": "integer"
+          },
+          "remaining_rounds": {
+            "title": "Remaining Rounds",
+            "type": "integer"
+          },
+          "max_per_round": {
+            "title": "Max Per Round",
+            "type": "integer"
+          },
+          "max_if_not_winner": {
+            "title": "Max If Not Winner",
+            "type": "integer"
+          },
+          "leader_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leader Id"
+          },
+          "leader_target": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leader Target"
+          },
+          "drivers": {
+            "items": {
+              "$ref": "#/components/schemas/TitleDriverOut"
+            },
+            "title": "Drivers",
+            "type": "array"
+          },
+          "limits": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limits",
+            "type": "array"
+          }
+        },
+        "required": [
+          "planned_rounds",
+          "rounds_with_result",
+          "remaining_rounds",
+          "max_per_round",
+          "max_if_not_winner",
+          "leader_id",
+          "leader_target",
+          "drivers",
+          "limits"
+        ],
+        "title": "TitleOut",
+        "type": "object"
       },
       "RoundScoreOut": {
         "properties": {

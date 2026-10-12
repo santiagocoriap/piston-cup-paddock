@@ -866,5 +866,27 @@
       "out": "Salida"
     },
     "tyre": "Neumático"
+  },
+  "title": {
+    "title": "Pelea por el título",
+    "champion": "¡{{name}} es campeón! Ningún rival puede alcanzarlo.",
+    "target_one": "{{name}} es campeón seguro si suma {{points}} puntos en la fecha que queda, haga lo que haga el resto.",
+    "target_other": "{{name}} es campeón seguro si suma {{points}} puntos en las {{count}} fechas que quedan, haga lo que haga el resto.",
+    "dependsOnRivals": "{{name}} lidera, pero no puede asegurar el título solo: depende de los resultados de los rivales.",
+    "bestCase": "máximo posible {{points}} pts",
+    "ownDestiny": "si gana todas las fechas con pole y vuelta rápida, es campeón",
+    "needsHelp": "necesita que otros pierdan puntos",
+    "eliminated": "Ya no pueden ganar el título: {{names}}.",
+    "assumptions": "Supuestos del cálculo",
+    "remaining_one": "Queda {{count}} fecha de {{planned}} planificadas.",
+    "remaining_other": "Quedan {{count}} fechas de {{planned}} planificadas.",
+    "maxPoints": "Una fecha da como máximo {{top}} puntos (1.º con pole y vuelta rápida). Si otro gana, como máximo {{second}}.",
+    "countback": "Con los mismos puntos gana quien tiene más victorias, después más 2.º puestos, y así. Igual que la tabla.",
+    "noPenalties": "El cálculo no incluye sanciones futuras.",
+    "targetHelp": "El objetivo supone que el mejor rival gana todas las fechas que quedan. Por eso es seguro, aunque a veces alcanza con menos.",
+    "limits": {
+      "rules_changed": "Las reglas cambiaron durante la temporada. Las fechas que quedan usan las reglas actuales.",
+      "provisional_results": "Algunos resultados son provisionales. El cálculo puede cambiar."
+    }
   }
 }

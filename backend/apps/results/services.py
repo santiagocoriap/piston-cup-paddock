@@ -1,5 +1,6 @@
 """Race results: versions, penalties, protests, approval, and standings."""
 
+from collections import Counter
 from dataclasses import dataclass
 from datetime import timedelta
 
@@ -22,6 +23,8 @@ from apps.rules.scoring import (
     standings,
     validate,
 )
+from apps.rules.title import Contender, TitleScenarios
+from apps.rules.title import scenarios as title_math
 
 from .models import Penalty, Protest, RaceResult, ResultLine, ResultVersion
 
@@ -415,6 +418,41 @@ def season_standings(season: Season, up_to_round: int | None = None) -> list[Sea
         )
         for row in table
     ]
+
+
+@dataclass
+class SeasonTitle:
+    planned_rounds: int
+    rounds_with_result: int
+    scenarios: TitleScenarios
+    limits: list[str]
+
+
+def title_scenarios(season: Season) -> SeasonTitle:
+    """Who can still win the title, with the rules of the standings and the current rules."""
+    table = season_standings(season)
+    done = {score.round_number for row in table for score in row.rounds if score.status is not None}
+    remaining = max(season.planned_round_count - len(done), 0)
+    contenders = [
+        Contender(
+            row.entry_id,
+            row.points,
+            Counter(s.position for s in row.rounds if s.position is not None),
+        )
+        for row in table
+    ]
+    rules = RulesVersion.current_for(season)
+    limits = []
+    if RulesVersion.objects.filter(season=season).count() > 1:
+        limits.append("rules_changed")
+    if any(score.status is not None and not score.official for r in table for score in r.rounds):
+        limits.append("provisional_results")
+    return SeasonTitle(
+        season.planned_round_count,
+        len(done),
+        title_math(contenders, rules.as_points_rules(), remaining),
+        limits,
+    )
 
 
 def career_points(driver_ids: list[int]) -> dict[int, int]:

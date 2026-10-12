@@ -23,6 +23,7 @@ from .services import (
     save_result,
     season_standings,
     submit_protest,
+    title_scenarios,
 )
 
 router = Router(tags=["results"])
@@ -471,6 +472,49 @@ def decide(request, protest_id: int, payload: DecisionIn):
         )
     )
     return _round_detail(request.user, round_)
+
+
+class TitleDriverOut(Schema):
+    entry_id: int
+    driver_name: str
+    points: int
+    best_case: int
+    status: str
+    own_destiny: bool
+
+
+class TitleOut(Schema):
+    planned_rounds: int
+    rounds_with_result: int
+    remaining_rounds: int
+    max_per_round: int
+    max_if_not_winner: int
+    leader_id: int | None
+    leader_target: int | None
+    drivers: list[TitleDriverOut]
+    limits: list[str]
+
+
+@router.get("/seasons/{season_id}/title", response=TitleOut)
+def get_title(request, season_id: int):
+    season = get_object_or_404(Season.objects.select_related("championship"), pk=season_id)
+    if not can_view(request.user, season.championship):
+        raise Http404
+    data = title_scenarios(season)
+    names = {e.id: e.driver.display_name for e in season.entries.select_related("driver")}
+    return TitleOut(
+        planned_rounds=data.planned_rounds,
+        rounds_with_result=data.rounds_with_result,
+        remaining_rounds=data.scenarios.remaining_rounds,
+        max_per_round=data.scenarios.max_per_round,
+        max_if_not_winner=data.scenarios.max_if_not_winner,
+        leader_id=data.scenarios.leader_id,
+        leader_target=data.scenarios.leader_target,
+        drivers=[
+            TitleDriverOut(**vars(d), driver_name=names[d.entry_id]) for d in data.scenarios.drivers
+        ],
+        limits=data.limits,
+    )
 
 
 @router.get("/seasons/{season_id}/standings", response=list[StandingOut])

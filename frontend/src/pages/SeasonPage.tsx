@@ -8,6 +8,7 @@ import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { BallotsSection } from './BallotsSection'
 import { CalendarAdmin } from './CalendarAdmin'
+import { TitleSection } from './TitleSection'
 import { HandicapsSection } from './HandicapsSection'
 
 export function SeasonPage() {
@@ -86,6 +87,8 @@ export function SeasonPage() {
       {standings.data?.some((row) => row.rounds.some((r) => r.status !== null && !r.official)) && (
         <p className="muted">{t('season.provisionalNote')}</p>
       )}
+
+      <TitleSection seasonId={seasonId} />
 
       <HandicapsSection seasonId={seasonId} rounds={data.rounds} adminView={adminView} />
 
