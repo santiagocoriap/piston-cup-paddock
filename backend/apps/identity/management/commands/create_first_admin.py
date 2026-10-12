@@ -30,7 +30,7 @@ class Command(BaseCommand):
                 return
             raise CommandError(f"The user {username} exists.")
 
-        password = os.environ.get("FIRST_ADMIN_PASSWORD") or getpass.getpass("Password: ")
+        password = os.environ.get("FIRST_ADMIN_PASSWORD") or self._ask_password()
         user = User(username=username, email=email, is_staff=True, is_superuser=True)
         try:
             validate_password(password, user)
@@ -39,3 +39,9 @@ class Command(BaseCommand):
         user.set_password(password)
         user.save()
         self.stdout.write(self.style.SUCCESS(f"Made the admin account {username}."))
+
+    def _ask_password(self) -> str:
+        password = getpass.getpass("Password: ")
+        if getpass.getpass("Password again: ") != password:
+            raise CommandError("The two passwords are not the same. No account was made.")
+        return password

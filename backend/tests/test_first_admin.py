@@ -30,3 +30,22 @@ def test_command_with_if_missing_keeps_an_existing_account():
     User.objects.create_user(username="santi", password="other-pass-9921")
     call_command("create_first_admin", username="santi", if_missing=True)
     assert User.objects.get(username="santi").check_password("other-pass-9921")
+
+
+@pytest.mark.django_db
+def test_prompt_asks_for_the_password_two_times(monkeypatch):
+    monkeypatch.delenv("FIRST_ADMIN_PASSWORD")
+    answers = iter(["typed-pass-7741", "typed-pass-7741"])
+    monkeypatch.setattr("getpass.getpass", lambda prompt: next(answers))
+    call_command("create_first_admin", username="santi")
+    assert User.objects.get(username="santi").check_password("typed-pass-7741")
+
+
+@pytest.mark.django_db
+def test_different_passwords_make_no_account(monkeypatch):
+    monkeypatch.delenv("FIRST_ADMIN_PASSWORD")
+    answers = iter(["typed-pass-7741", "typed-pass-7742"])
+    monkeypatch.setattr("getpass.getpass", lambda prompt: next(answers))
+    with pytest.raises(CommandError, match="not the same"):
+        call_command("create_first_admin", username="santi")
+    assert not User.objects.exists()
