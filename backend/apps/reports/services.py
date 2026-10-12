@@ -108,7 +108,7 @@ def generate(report_id: int) -> RaceReport:
         text = (response.choices[0].message.content or "").strip()
     except Exception as error:  # Any provider error only fails this report.
         logger.warning("Report %s failed: %s", report.id, error)
-        return _fail(report, f"ai_error: {type(error).__name__}: {str(error)[:200]}")
+        return _fail(report, _error_code(error))
     if not text:
         return _fail(report, "ai_empty_text")
     report.text = text
@@ -116,6 +116,21 @@ def generate(report_id: int) -> RaceReport:
     report.generated_at = timezone.now()
     report.save(update_fields=["text", "status", "generated_at"])
     return report
+
+
+# Fixed codes for the admin list. The full provider text goes only to the worker log.
+ERROR_CODES = {
+    "AuthenticationError": "ai_key_refused",
+    "PermissionDeniedError": "ai_key_refused",
+    "BadRequestError": "ai_request_refused",
+    "RateLimitError": "ai_rate_limit",
+    "Timeout": "ai_timeout",
+    "APIConnectionError": "ai_no_connection",
+}
+
+
+def _error_code(error: Exception) -> str:
+    return ERROR_CODES.get(type(error).__name__, "ai_error")
 
 
 def _headers() -> dict[str, str] | None:

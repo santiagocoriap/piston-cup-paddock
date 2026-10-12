@@ -128,7 +128,7 @@ def test_provider_error_fails_only_the_report(api, champ_admin, raced, ai):
     request(api, champ_admin, raced)
     report = generate(RaceReport.objects.get().id)
     assert report.status == "failed"
-    assert "TimeoutError" in report.error
+    assert report.error == "ai_error"
     approve = api(champ_admin).post(f"/rounds/{raced.id}/result/approve")
     assert approve.status_code == 200
 
