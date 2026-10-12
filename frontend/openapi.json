@@ -4414,6 +4414,59 @@
           }
         ]
       }
+    },
+    "/api/rounds/{round_id}/replay": {
+      "get": {
+        "operationId": "apps_collectors_replay_api_replay",
+        "summary": "Replay",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "attempt",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Attempt"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "replay"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -11784,6 +11837,155 @@
           "drivers"
         ],
         "title": "SafetyOut",
+        "type": "object"
+      },
+      "CarTrackOut": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "t_ms": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "T Ms",
+            "type": "array"
+          },
+          "x": {
+            "items": {
+              "type": "number"
+            },
+            "title": "X",
+            "type": "array"
+          },
+          "z": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Z",
+            "type": "array"
+          }
+        },
+        "required": [
+          "key",
+          "name",
+          "t_ms",
+          "x",
+          "z"
+        ],
+        "title": "CarTrackOut",
+        "type": "object"
+      },
+      "MarkerOut": {
+        "properties": {
+          "t_ms": {
+            "title": "T Ms",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "incident_key": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Incident Key"
+          }
+        },
+        "required": [
+          "t_ms",
+          "kind",
+          "label"
+        ],
+        "title": "MarkerOut",
+        "type": "object"
+      },
+      "ReplayAttemptOut": {
+        "properties": {
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "number",
+          "started_at"
+        ],
+        "title": "ReplayAttemptOut",
+        "type": "object"
+      },
+      "ReplayOut": {
+        "properties": {
+          "attempts": {
+            "items": {
+              "$ref": "#/components/schemas/ReplayAttemptOut"
+            },
+            "title": "Attempts",
+            "type": "array"
+          },
+          "attempt": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attempt"
+          },
+          "has_positions": {
+            "title": "Has Positions",
+            "type": "boolean"
+          },
+          "duration_ms": {
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "cars": {
+            "items": {
+              "$ref": "#/components/schemas/CarTrackOut"
+            },
+            "title": "Cars",
+            "type": "array"
+          },
+          "markers": {
+            "items": {
+              "$ref": "#/components/schemas/MarkerOut"
+            },
+            "title": "Markers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "attempts",
+          "attempt",
+          "has_positions",
+          "duration_ms",
+          "cars",
+          "markers"
+        ],
+        "title": "ReplayOut",
         "type": "object"
       }
     },

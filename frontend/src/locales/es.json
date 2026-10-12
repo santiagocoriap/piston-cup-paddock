@@ -1156,5 +1156,19 @@
     "history": "Cambios de {{name}}",
     "unknownRound": "sin eventos del colector: sin cambio (no cuenta como carrera limpia).",
     "change": "{{laps}} vueltas {{up}}, {{points}} puntos {{down}} = {{total}} → {{after}}"
+  },
+  "replay": {
+    "title": "Repetición de posiciones",
+    "help": "Repetición simple con las posiciones grabadas, no una repetición de AC. Entre muestras de menos de {{gap}} s el punto se mueve en línea recta. Con más tiempo sin muestras, el auto desaparece: es un hueco en los datos.",
+    "attempt": "Largada",
+    "attemptN": "Largada {{number}}",
+    "map": "Posiciones de los autos",
+    "play": "Reproducir",
+    "pause": "Pausa",
+    "speed": "Velocidad",
+    "timeline": "Línea de tiempo",
+    "incident": "Incidente: {{cars}}",
+    "restart": "Reinicio de la carrera",
+    "gap": "Sin datos en este momento: {{names}}."
   }
 }

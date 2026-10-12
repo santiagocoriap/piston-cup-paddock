@@ -6,6 +6,7 @@ from apps.catalog.api import router as catalog_router
 from apps.collectors.api import router as collectors_router
 from apps.collectors.health_api import router as health_router
 from apps.collectors.incident_api import router as incidents_router
+from apps.collectors.replay_api import router as replay_router
 from apps.collectors.safety_api import router as safety_router
 from apps.competition.api import router as competition_router
 from apps.core.api import router as core_router
@@ -46,3 +47,4 @@ api.add_router("/", telemetry_router)
 api.add_router("/", health_router)
 api.add_router("/", incidents_router)
 api.add_router("/", safety_router)
+api.add_router("/", replay_router)

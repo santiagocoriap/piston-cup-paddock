@@ -894,3 +894,40 @@ td.faster {
 .incident-map .marker.env {
   fill: #facc15;
 }
+
+.replay-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.timeline {
+  position: relative;
+  padding-top: 0.75rem;
+}
+
+.timeline input[type='range'] {
+  width: 100%;
+}
+
+.marker-tick {
+  position: absolute;
+  top: 0;
+  width: 0.6rem;
+  height: 0.6rem;
+  padding: 0;
+  margin-left: -0.3rem;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+
+.marker-tick.incident {
+  background: var(--accent);
+}
+
+.marker-tick.restart {
+  background: #facc15;
+}

@@ -1610,6 +1610,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/replay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Replay */
+        get: operations["apps_collectors_replay_api_replay"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4060,6 +4077,55 @@ export interface components {
             computed_at: string;
             /** Drivers */
             drivers: components["schemas"]["DriverSafetyOut"][];
+        };
+        /** CarTrackOut */
+        CarTrackOut: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** T Ms */
+            t_ms: number[];
+            /** X */
+            x: number[];
+            /** Z */
+            z: number[];
+        };
+        /** MarkerOut */
+        MarkerOut: {
+            /** T Ms */
+            t_ms: number;
+            /** Kind */
+            kind: string;
+            /** Label */
+            label: string;
+            /** Incident Key */
+            incident_key?: number | null;
+        };
+        /** ReplayAttemptOut */
+        ReplayAttemptOut: {
+            /** Number */
+            number: number;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+        };
+        /** ReplayOut */
+        ReplayOut: {
+            /** Attempts */
+            attempts: components["schemas"]["ReplayAttemptOut"][];
+            /** Attempt */
+            attempt: number | null;
+            /** Has Positions */
+            has_positions: boolean;
+            /** Duration Ms */
+            duration_ms: number;
+            /** Cars */
+            cars: components["schemas"]["CarTrackOut"][];
+            /** Markers */
+            markers: components["schemas"]["MarkerOut"][];
         };
     };
     responses: never;
@@ -6669,6 +6735,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SafetyOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_replay_api_replay: {
+        parameters: {
+            query?: {
+                attempt?: number | null;
+            };
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplayOut"];
                 };
             };
         };

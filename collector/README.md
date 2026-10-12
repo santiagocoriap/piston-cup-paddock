@@ -42,6 +42,15 @@ Real Penalty already uses the UDP plugin connection. Content Manager can send th
 
 The collector records session starts and ends, connections, laps, and collisions. It accepts packets only from the same computer.
 
+### Car positions for the replay (optional)
+
+The replay needs car positions. The AC server sends them only to a plugin that asks for them.
+
+1. Find `UDP_PLUGIN_LOCAL_PORT` in the `server_cfg.ini` of the server.
+2. In `collector.ini`, set `server_udp_port` to that port, and set `request_positions = true`.
+
+At each new session the collector sends one packet to the server: the request for positions every 200 ms. It sends no other command. The old `live_logger.py` did the same next to Real Penalty.
+
 # Driver collector (optional)
 
 The driver collector runs on the PC of a driver, next to Assetto Corsa. It records speed, track position, and inputs for each lap and sends the laps to the app. Results and standings work without it.

@@ -14,6 +14,7 @@ import { EngineerSection } from './EngineerSection'
 import { IncidentsSection } from './IncidentsSection'
 import { LapsSection } from './LapsSection'
 import { PenaltyLogsSection } from './PenaltyLogsSection'
+import { ReplaySection } from './ReplaySection'
 import { ReportSection } from './ReportSection'
 import { Briefing } from './Briefing'
 import { RestartsSection } from './RestartsSection'
@@ -127,6 +128,7 @@ export function RoundPage() {
 
       <LapsSection key={`${imports}-${saves}`} roundId={data.id} />
       <IncidentsSection roundId={data.id} />
+      <ReplaySection roundId={data.id} />
 
       <Penalties round={data} adminView={may('penalties')} onChange={changed} />
       <Protests round={data} adminView={may('penalties')} onChange={changed} />

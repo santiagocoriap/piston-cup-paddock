@@ -1156,5 +1156,19 @@
     "history": "Changes of {{name}}",
     "unknownRound": "no collector events: no change (it does not count as a clean race).",
     "change": "{{laps}} laps {{up}}, {{points}} points {{down}} = {{total}} → {{after}}"
+  },
+  "replay": {
+    "title": "Position replay",
+    "help": "A simple replay from the recorded positions, not an AC replay. Between samples less than {{gap}} s apart, the dot moves in a straight line. With more time without samples, the car disappears: it is a gap in the data.",
+    "attempt": "Start",
+    "attemptN": "Start {{number}}",
+    "map": "Car positions",
+    "play": "Play",
+    "pause": "Pause",
+    "speed": "Speed",
+    "timeline": "Timeline",
+    "incident": "Incident: {{cars}}",
+    "restart": "Race restart",
+    "gap": "No data at this moment: {{names}}."
   }
 }

@@ -6,7 +6,8 @@ Runs next to the Assetto Corsa server. It sends new result files, Real Penalty l
 
 Safety rules:
 - It only reads the server folders. It never writes or deletes there.
-- It never sends a packet to the AC server. It only listens.
+- It sends one packet to the AC server only when request_positions is on: the request for
+  car positions (REALTIMEPOS_INTERVAL). It never sends any other command.
 - It keeps a copy of each file and each event in its own spool folder first. An app outage
   only delays the upload. The game server never waits for the collector.
 - It accepts UDP packets only from this computer (127.0.0.1 or ::1).
@@ -46,12 +47,15 @@ LOCAL_ADDRESSES = {"127.0.0.1", "::1", "::ffff:127.0.0.1"}
 NEW_SESSION = 50
 NEW_CONNECTION = 51
 CONNECTION_CLOSED = 52
+CAR_UPDATE = 53
 END_SESSION = 55
 CLIENT_LOADED = 58
 LAP_COMPLETED = 73
 CLIENT_EVENT = 130
 CE_COLLISION_WITH_CAR = 10
 CE_COLLISION_WITH_ENV = 11
+REALTIMEPOS_INTERVAL = 200
+POSITION_CHUNK_SECONDS = 5
 
 
 # Settings
@@ -65,6 +69,9 @@ class Settings:
     penalty_dir: Path | None
     spool_dir: Path
     udp_port: int = 0
+    server_udp_port: int = 0  # UDP_PLUGIN_LOCAL_PORT of server_cfg.ini.
+    request_positions: bool = False
+    position_interval_ms: int = 200
     result_stable_seconds: int = 10
     log_stable_seconds: int = 600
     poll_seconds: int = 15
@@ -87,6 +94,9 @@ class Settings:
             penalty_dir=folder(server.get("realpenalty_logs_dir", "")),
             spool_dir=Path(collector.get("spool_dir", "spool")),
             udp_port=collector.getint("udp_port", 0),
+            server_udp_port=collector.getint("server_udp_port", 0),
+            request_positions=collector.getboolean("request_positions", False),
+            position_interval_ms=max(100, collector.getint("position_interval_ms", 200)),
             result_stable_seconds=collector.getint("result_stable_seconds", 10),
             log_stable_seconds=collector.getint("log_stable_seconds", 600),
             poll_seconds=collector.getint("poll_seconds", 15),
@@ -422,6 +432,14 @@ def parse_packet(data: bytes, drivers: dict[int, dict]) -> dict | None:
         if event == CE_COLLISION_WITH_ENV:
             return {"kind": "collision_env", "data": data}
         return None
+    if packet == CAR_UPDATE:
+        car_id = reader.byte()
+        x, _y, z = reader.vec3()
+        reader.vec3()  # velocity
+        reader.byte()  # gear
+        reader.uint16()  # rpm
+        spline = reader.single()
+        return {"kind": "car_update", "data": {"car_id": car_id, "x": x, "z": z, "n": spline}}
     if packet == END_SESSION:
         return {"kind": "session_ended", "data": {"result_file": reader.stringw()}}
     if packet == CLIENT_LOADED:
@@ -430,17 +448,58 @@ def parse_packet(data: bytes, drivers: dict[int, dict]) -> dict | None:
 
 
 class EventListener(threading.Thread):
-    """Listens as a Content Manager extra plugin. It never answers the server."""
+    """Listens as a Content Manager extra plugin. With request_positions on, it asks the
+    server for car positions at each new session. It sends nothing else."""
 
-    def __init__(self, port: int, state: State, run_id: str):
+    def __init__(self, settings: Settings, state: State, run_id: str):
         super().__init__(daemon=True, name="udp")
-        self.port = port
+        self.settings = settings
         self.state = state
         self.run_id = run_id
         self.seq = 0
         self.drivers: dict[int, dict] = {}
+        self.sock: socket.socket | None = None
+        # Positions come many times a second. They go to the app in chunks of 5 seconds.
+        self.chunk_start: float | None = None
+        self.chunk: dict[str, list[list[float]]] = {}
 
-    def handle(self, data: bytes, source: str) -> dict | None:
+    def _store(self, event: dict) -> None:
+        self.state.add_event(self.run_id, self.seq, event)
+        self.seq += 1
+
+    def flush_positions(self) -> dict | None:
+        if self.chunk_start is None or not self.chunk:
+            return None
+        event = {
+            "kind": "positions",
+            "at": datetime.fromtimestamp(self.chunk_start, UTC).isoformat(),
+            "data": {"cars": self.chunk},
+        }
+        self._store(event)
+        self.chunk_start, self.chunk = None, {}
+        return event
+
+    def add_position(self, data: dict, now: float) -> None:
+        if self.chunk_start is not None and now - self.chunk_start >= POSITION_CHUNK_SECONDS:
+            self.flush_positions()
+        if self.chunk_start is None:
+            self.chunk_start = now
+        driver = self.drivers.get(data["car_id"], {})
+        key = driver.get("guid") or f"car:{data['car_id']}"
+        offset_ms = round((now - self.chunk_start) * 1000)
+        self.chunk.setdefault(key, []).append(
+            [offset_ms, round(data["x"], 1), round(data["z"], 1), round(data["n"], 4)]
+        )
+
+    def request_positions(self) -> None:
+        settings = self.settings
+        if not (settings.request_positions and settings.server_udp_port and self.sock):
+            return
+        packet = struct.pack("<BH", REALTIMEPOS_INTERVAL, settings.position_interval_ms)
+        self.sock.sendto(packet, ("127.0.0.1", settings.server_udp_port))
+        log.info("Asked the server for positions every %s ms", settings.position_interval_ms)
+
+    def handle(self, data: bytes, source: str, now: float | None = None) -> dict | None:
         if source not in LOCAL_ADDRESSES:
             log.warning("Ignored a UDP packet from %s", source)
             return None
@@ -450,18 +509,31 @@ class EventListener(threading.Thread):
             return None  # A short or broken packet must not stop the listener.
         if event is None:
             return None
-        event["at"] = now_iso()
-        self.state.add_event(self.run_id, self.seq, event)
-        self.seq += 1
+        now = time.time() if now is None else now
+        if event["kind"] == "car_update":
+            self.add_position(event["data"], now)
+            return event
+        if event["kind"] in ("session_started", "session_ended"):
+            self.flush_positions()
+        event["at"] = datetime.fromtimestamp(now, UTC).isoformat()
+        self._store(event)
+        if event["kind"] == "session_started":
+            self.request_positions()
         return event
 
     def run(self) -> None:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.bind(("127.0.0.1", self.port))
-        log.info("Listening for UDP plugin events on 127.0.0.1:%s", self.port)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.bind(("127.0.0.1", self.settings.udp_port))
+        self.sock.settimeout(1.0)
+        log.info("Listening for UDP plugin events on 127.0.0.1:%s", self.settings.udp_port)
+        self.request_positions()  # A session can already run when the collector starts.
         while True:
             try:
-                data, (source, _port) = sock.recvfrom(4096)
+                data, (source, _port) = self.sock.recvfrom(4096)
+            except TimeoutError:
+                if self.chunk_start and time.time() - self.chunk_start >= POSITION_CHUNK_SECONDS:
+                    self.flush_positions()
+                continue
             except OSError:
                 continue  # Windows can report a closed remote port here. It is harmless.
             self.handle(data, source)
@@ -479,7 +551,7 @@ def run(settings: Settings) -> None:
         state.set_meta("since", settings.since)
     app = App(settings)
     if settings.udp_port:
-        EventListener(settings.udp_port, state, uuid.uuid4().hex).start()
+        EventListener(settings, state, uuid.uuid4().hex).start()
     wait = settings.poll_seconds
     next_ping = 0.0
     while True:
