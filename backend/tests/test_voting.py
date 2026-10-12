@@ -344,3 +344,17 @@ def test_driver_cannot_manage_a_ballot(api, admin, season, layouts, voters):
         == 403
     )
     assert Ballot.objects.count() == 1
+
+
+def test_prior_season_must_be_in_the_same_championship(admin, season, other_championship):
+    from apps.competition.models import Season
+
+    foreign = Season.objects.create(
+        championship=other_championship, name="X", planned_round_count=1
+    )
+    for season_id in (foreign.id, 999999, season.id):
+        response = admin.post(
+            f"/seasons/{season.id}/ballots",
+            {"kind": "track", "title": "x", "prior_season_id": season_id, "min_prior_starts": 1},
+        )
+        assert response.json()["detail"] == "bad_prior_season"

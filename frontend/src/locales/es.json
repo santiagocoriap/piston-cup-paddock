@@ -179,7 +179,8 @@
     "wrong_number_of_choices": "Elegí la cantidad exacta de opciones.",
     "ballot_decided": "La votación ya está decidida.",
     "selection_limit_too_small": "El límite tiene que ser 1 o más.",
-    "bad_power": "El valor del voto no es válido."
+    "bad_power": "El valor del voto no es válido.",
+    "bad_prior_season": "La temporada anterior tiene que ser de este campeonato."
   },
   "standings": {
     "title": "Campeonato de pilotos",

@@ -59,6 +59,12 @@ SETTINGS = (
 
 
 def _check_settings(ballot: Ballot) -> None:
+    if ballot.prior_season_id is not None:
+        # Only a season of the same championship. Other championships stay out of scope.
+        same = Season.objects.filter(
+            pk=ballot.prior_season_id, championship_id=ballot.season.championship_id
+        ).exclude(pk=ballot.season_id)
+        _require(same.exists(), "bad_prior_season")
     _require(ballot.selection_limit >= 1, "selection_limit_too_small")
     if ballot.method == Ballot.Method.SINGLE:
         ballot.selection_limit = 1
