@@ -1,9 +1,34 @@
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { useMe, useMode, type Mode } from '../session'
 import { Icon, type IconName } from './Icon'
 import { Logo, LogoMark } from './Logo'
 import { NotificationBell } from './NotificationBell'
+
+const SIDE_KEY = 'paddock.side'
+
+function readSide(): boolean {
+  try {
+    return localStorage.getItem(SIDE_KEY) === 'hidden'
+  } catch {
+    return false
+  }
+}
+
+/** True above the phone width. On a phone the side menu is the bottom bar and never hides. */
+function useWide(): boolean {
+  const query = '(min-width: 701px)'
+  const [wide, setWide] = useState(() => (typeof window.matchMedia === 'function' ? window.matchMedia(query).matches : true))
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return
+    const list = window.matchMedia(query)
+    const update = () => setWide(list.matches)
+    list.addEventListener('change', update)
+    return () => list.removeEventListener('change', update)
+  }, [])
+  return wide
+}
 
 function NavItem({ to, icon, label, end }: { to: string; icon: IconName; label: string; end?: boolean }) {
   return (
@@ -20,10 +45,22 @@ export function Layout({ onSignOut }: { onSignOut: () => void }) {
   const { mode, setMode } = useMode()
   const adminMode = mode === 'admin'
   const initials = me.username.slice(0, 2).toUpperCase()
+  const [sideHidden, setSideHidden] = useState(() => readSide())
+  const wide = useWide()
+
+  function toggleSide() {
+    const next = !sideHidden
+    setSideHidden(next)
+    try {
+      localStorage.setItem(SIDE_KEY, next ? 'hidden' : 'shown')
+    } catch {
+      // Private windows can refuse storage. The choice then lasts for this page only.
+    }
+  }
 
   return (
-    <div className={`app ${adminMode ? 'admin-mode' : ''}`}>
-      <aside className="side">
+    <div className={`app ${adminMode ? 'admin-mode' : ''} ${sideHidden ? 'side-hidden' : ''}`}>
+      <aside className="side" id="side-panel" inert={sideHidden && wide ? true : undefined}>
         <Link to="/" className="side-logo" aria-label={t('app.name')}>
           <Logo />
         </Link>
@@ -58,19 +95,35 @@ export function Layout({ onSignOut }: { onSignOut: () => void }) {
         </div>
       </aside>
       <div className="main">
-        {adminMode && (
-          <div className="mode-banner" role="note">
-            <span className="mode-tag">
-              <Icon name="shield" small />
-              {t('mode.bannerTag')}
-            </span>
-            <span className="muted">{t('mode.bannerText')}</span>
-          </div>
-        )}
         <header className="topbar">
+          <button
+            type="button"
+            className="icon-button side-toggle"
+            aria-controls="side-panel"
+            aria-expanded={!sideHidden}
+            aria-label={sideHidden ? t('nav.showSide') : t('nav.hideSide')}
+            title={sideHidden ? t('nav.showSide') : t('nav.hideSide')}
+            onClick={toggleSide}
+          >
+            <Icon name="panel" />
+          </button>
+          {sideHidden && (
+            <Link to="/" className="side-hidden-logo" aria-label={t('app.name')}>
+              <LogoMark size={30} />
+            </Link>
+          )}
           <Link to="/" className="topbar-logo" aria-hidden="true" tabIndex={-1}>
             <LogoMark size={30} />
           </Link>
+          {adminMode && (
+            <p className="mode-banner" role="note">
+              <span className="mode-tag">
+                <Icon name="shield" small />
+                {t('mode.bannerTag')}
+              </span>
+              <span className="mode-text muted">{t('mode.bannerText')}</span>
+            </p>
+          )}
           <span className="spacer" />
           {me.can_admin && <ModeSwitch mode={mode} setMode={setMode} />}
           <NotificationBell />

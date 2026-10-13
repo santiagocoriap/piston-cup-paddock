@@ -24,7 +24,9 @@
     "records": "Records",
     "home": "Home",
     "account": "My account",
-    "accounts": "Accounts"
+    "accounts": "Accounts",
+    "hideSide": "Hide the side menu",
+    "showSide": "Show the side menu"
   },
   "common": {
     "create": "Create",
@@ -39,7 +41,10 @@
   "championships": {
     "title": "Championships",
     "empty": "You are not in a championship yet.",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "open": "Open championship",
+    "moreSeasons_one": "{{count}} more season",
+    "moreSeasons_other": "{{count}} more seasons"
   },
   "championship": {
     "seasons": "Seasons",
@@ -75,7 +80,11 @@
       "reports": "Generate AI reports",
       "records": "Invalidate record laps"
     },
-    "provisionalReports": "Write a provisional report when the race file is applied (before approval)"
+    "provisionalReports": "Write a provisional report when the race file is applied (before approval)",
+    "latest": "Latest",
+    "openSeason": "Open season",
+    "protestWindow_one": "Protests: {{count}} minute after the provisional result",
+    "protestWindow_other": "Protests: {{count}} minutes after the provisional result"
   },
   "season": {
     "plannedRounds": "{{count}} planned rounds",
@@ -192,7 +201,10 @@
       "missing_one": "{{count}} with no files in the ZIP",
       "missing_other": "{{count}} with no files in the ZIP",
       "author": "author: {{author}}"
-    }
+    },
+    "noImage": "No image yet",
+    "pitBoxes_one": "{{count}} pit box",
+    "pitBoxes_other": "{{count}} pit boxes"
   },
   "errors": {
     "generic": "Something went wrong. Try again.",
@@ -986,7 +998,10 @@
     "noWeather": "No weather data",
     "air": "air {{value}} °C",
     "track": "track {{value}} °C",
-    "outlineAlt": "Map of {{track}} · {{layout}}"
+    "outlineAlt": "Map of {{track}} · {{layout}}",
+    "noProfileTitle": "You do not race with this account yet",
+    "noSeasonsTitle": "You have no season yet",
+    "linkDriver": "Link a driver"
   },
   "briefing": {
     "title": "Briefing",
@@ -1620,5 +1635,34 @@
     "lastOk": "Last good backup: {{date}}",
     "start": "Back up now",
     "refresh": "Refresh"
+  },
+  "home": {
+    "shortcuts": {
+      "title": "Administration",
+      "leagues": "Leagues, championships and admins",
+      "drivers": "Driver profiles and linked accounts",
+      "catalog": "Tracks, cars, classes and game images",
+      "accounts": "Invitations and permissions",
+      "audit": "Every change, with its reason"
+    }
+  },
+  "seasonNav": {
+    "label": "Season sections",
+    "title": "Title fight",
+    "safety": "Safety",
+    "handicaps": "Ballast",
+    "ballots": "Ballots",
+    "rules": "Rules",
+    "report": "Report"
+  },
+  "seasonStats": {
+    "rounds": "Rounds raced",
+    "drivers": "Drivers",
+    "leader": "Leader",
+    "next": "Next round"
+  },
+  "seasonAdmin": {
+    "calendar": "Manage the calendar",
+    "entries": "Manage drivers and settings"
   }
 }

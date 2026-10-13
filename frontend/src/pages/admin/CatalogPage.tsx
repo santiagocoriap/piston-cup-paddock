@@ -24,37 +24,68 @@ export function CatalogPage() {
       />
 
       <h2>{t('catalog.tracks')}</h2>
-      {tracks.data.length === 0 && <p>{t('catalog.noTracks')}</p>}
-      <ul className="list">
-        {tracks.data.map((track) => (
-          <li key={track.id}>
-            {track.name} <span className="mono muted">{track.key}</span>
-            <ul>
-              {track.layouts.map((layout) => (
-                <li key={layout.id}>
-                  {layout.has_outline && (
-                    <img className="thumb" src={`/api/catalog/layouts/${layout.id}/images/outline`} alt="" />
-                  )}
-                  {layout.name} <span className="mono muted">{layout.key}</span>
-                  {layout.length_m && <span className="muted"> · {(layout.length_m / 1000).toFixed(3)} km</span>}
-                  <GuidanceForm layout={layout} onSaved={tracks.reload} />
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
+      {tracks.data.length === 0 && <p className="muted">{t('catalog.noTracks')}</p>}
+      <ul className="catalog-grid">
+        {tracks.data.flatMap((track) =>
+          track.layouts.map((layout) => (
+            <li key={layout.id} className="catalog-card">
+              <div className="catalog-media track">
+                {layout.has_outline ? (
+                  <img src={`/api/catalog/layouts/${layout.id}/images/outline`} alt="" />
+                ) : (
+                  <span className="catalog-missing">{t('catalog.noImage')}</span>
+                )}
+              </div>
+              <div className="catalog-body">
+                <h3>
+                  {track.name} · {layout.name}
+                </h3>
+                <p className="mono muted">
+                  {track.key}
+                  {layout.key && `/${layout.key}`}
+                </p>
+                <p className="muted">
+                  {[
+                    layout.length_m ? `${(layout.length_m / 1000).toFixed(3)} km` : null,
+                    layout.country || null,
+                    layout.pit_boxes ? t('catalog.pitBoxes', { count: layout.pit_boxes }) : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+                <GuidanceForm layout={layout} onSaved={tracks.reload} />
+              </div>
+            </li>
+          )),
+        )}
       </ul>
 
       <h2>{t('catalog.cars')}</h2>
-      {cars.data.length === 0 && <p>{t('catalog.noCars')}</p>}
-      <ul className="list">
+      {cars.data.length === 0 && <p className="muted">{t('catalog.noCars')}</p>}
+      <ul className="catalog-grid">
         {cars.data.map((car) => (
-          <li key={car.id}>
-            {car.has_preview && (
-              <img className="thumb car" src={`/api/catalog/cars/${car.id}/images/preview`} alt="" />
-            )}
-            {car.name} <span className="mono muted">{car.key}</span>
-            {car.author && <span className="muted"> · {t('catalog.images.author', { author: car.author })}</span>}
+          <li key={car.id} className="catalog-card">
+            <div className="catalog-media car">
+              {car.has_preview ? (
+                <img src={`/api/catalog/cars/${car.id}/images/preview`} alt="" />
+              ) : (
+                <span className="catalog-missing">{t('catalog.noImage')}</span>
+              )}
+              {car.has_badge && (
+                <img className="catalog-badge" src={`/api/catalog/cars/${car.id}/images/badge`} alt="" />
+              )}
+            </div>
+            <div className="catalog-body">
+              <h3>{car.name}</h3>
+              <p className="mono muted">{car.key}</p>
+              {(car.brand || car.author) && (
+                <p className="muted">
+                  {[car.brand, car.author ? t('catalog.images.author', { author: car.author }) : null]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+              )}
+            </div>
           </li>
         ))}
       </ul>

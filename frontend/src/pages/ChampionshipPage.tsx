@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router'
 import { api } from '../api/client'
 import { ActionForm } from '../components/ActionForm'
+import { Icon } from '../components/Icon'
 import { Loading } from '../components/Layout'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
@@ -26,20 +27,39 @@ export function ChampionshipPage() {
       <h1>{data.name}</h1>
 
       <h2>{t('championship.seasons')}</h2>
-      {data.seasons.length === 0 && <p>{t('championship.noSeasons')}</p>}
-      <ul className="list">
-        {data.seasons.map((season) => (
-          <li key={season.id}>
-            <Link to={`/seasons/${season.id}`}>{season.name}</Link>
-            <span className="muted">
-              {' '}
-              · {t('season.plannedRounds', { count: season.planned_round_count })}
-            </span>
+      {data.seasons.length === 0 && <p className="muted">{t('championship.noSeasons')}</p>}
+      <ul className="champ-grid">
+        {[...data.seasons].reverse().map((season, index) => (
+          <li key={season.id} className="champ-card">
+            <div className="champ-head">
+              <span className="champ-icon">
+                <Icon name="flag" />
+              </span>
+              <div>
+                <h3>
+                  <Link to={`/seasons/${season.id}`}>{season.name}</Link>
+                </h3>
+                <p className="muted">{t('season.plannedRounds', { count: season.planned_round_count })}</p>
+              </div>
+              {index === 0 && <span className="badge">{t('championship.latest')}</span>}
+            </div>
+            <p className="muted champ-season">
+              {t('championship.protestWindow', { count: season.protest_window_minutes })}
+            </p>
+            <Link className="small-link" to={`/seasons/${season.id}`}>
+              {t('championship.openSeason')}
+              <Icon name="arrow" small />
+            </Link>
           </li>
         ))}
       </ul>
 
       {adminView && (
+        <section className="admin-tools" aria-labelledby="champ-admin">
+          <h2 id="champ-admin">
+            <Icon name="shield" />
+            {t('round.adminTools')}
+          </h2>
         <label className="check">
           <input
             type="checkbox"
@@ -54,9 +74,6 @@ export function ChampionshipPage() {
           />
           {t('championship.provisionalReports')}
         </label>
-      )}
-
-      {adminView && (
         <div className="forms">
           <ActionForm
             title={t('championship.newSeason')}
@@ -87,6 +104,7 @@ export function ChampionshipPage() {
           <HealthSection championshipId={championshipId} />
           <CollectorsSection championshipId={championshipId} />
         </div>
+        </section>
       )}
     </section>
   )

@@ -9,7 +9,7 @@ import { Icon, type IconName } from '../components/Icon'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
-import { useMe } from '../session'
+import { useMe, useMode } from '../session'
 
 type Card = components['schemas']['SeasonCardOut']
 type NextRound = components['schemas']['NextRoundOut']
@@ -24,6 +24,7 @@ const MAX_PCT = 5
 export function DashboardSection() {
   const { t } = useTranslation()
   const me = useMe()
+  const { setMode } = useMode()
   const dashboard = useLoad(() => api.GET('/api/dashboard'), [])
   const data = dashboard.data
   if (!data) return null
@@ -34,8 +35,37 @@ export function DashboardSection() {
   return (
     <section className="dashboard" aria-labelledby="home-title">
       <h1 id="home-title">{t('dashboard.hello', { name: me.username })}</h1>
-      {!data.has_driver_profile && <p className="muted">{t('dashboard.noProfile')}</p>}
-      {data.has_driver_profile && data.seasons.length === 0 && <p className="muted">{t('dashboard.noSeasons')}</p>}
+      {!data.has_driver_profile && (
+        <div className="empty-home">
+          <span className="champ-icon">
+            <Icon name="user" />
+          </span>
+          <div>
+            <p className="empty-title">{t('dashboard.noProfileTitle')}</p>
+            <p className="muted">{t('dashboard.noProfile')}</p>
+          </div>
+          {me.is_admin && (
+            <Link
+              className="button-link"
+              to="/admin/drivers"
+              onClick={() => setMode('admin')}
+            >
+              {t('dashboard.linkDriver')}
+            </Link>
+          )}
+        </div>
+      )}
+      {data.has_driver_profile && data.seasons.length === 0 && (
+        <div className="empty-home">
+          <span className="champ-icon">
+            <Icon name="flag" />
+          </span>
+          <div>
+            <p className="empty-title">{t('dashboard.noSeasonsTitle')}</p>
+            <p className="muted">{t('dashboard.noSeasons')}</p>
+          </div>
+        </div>
+      )}
       {main && <SeasonHome key={main.season_id} card={main} />}
       {data.seasons.length > 1 && (
         <section aria-labelledby="other-seasons">

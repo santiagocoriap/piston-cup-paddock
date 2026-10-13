@@ -24,7 +24,9 @@
     "records": "Récords",
     "home": "Inicio",
     "account": "Mi cuenta",
-    "accounts": "Cuentas"
+    "accounts": "Cuentas",
+    "hideSide": "Ocultar el menú lateral",
+    "showSide": "Mostrar el menú lateral"
   },
   "common": {
     "create": "Crear",
@@ -39,7 +41,10 @@
   "championships": {
     "title": "Campeonatos",
     "empty": "Todavía no participás en ningún campeonato.",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "open": "Abrir campeonato",
+    "moreSeasons_one": "{{count}} temporada más",
+    "moreSeasons_other": "{{count}} temporadas más"
   },
   "championship": {
     "seasons": "Temporadas",
@@ -75,7 +80,11 @@
       "reports": "Generar reportes con IA",
       "records": "Invalidar vueltas de récords"
     },
-    "provisionalReports": "Escribir un reporte provisional al aplicar el archivo de carrera (antes de aprobar)"
+    "provisionalReports": "Escribir un reporte provisional al aplicar el archivo de carrera (antes de aprobar)",
+    "latest": "Más reciente",
+    "openSeason": "Abrir temporada",
+    "protestWindow_one": "Protestas: {{count}} minuto después del resultado provisional",
+    "protestWindow_other": "Protestas: {{count}} minutos después del resultado provisional"
   },
   "season": {
     "plannedRounds": "{{count}} carreras previstas",
@@ -192,7 +201,10 @@
       "missing_one": "{{count}} sin archivos en el ZIP",
       "missing_other": "{{count}} sin archivos en el ZIP",
       "author": "autor: {{author}}"
-    }
+    },
+    "noImage": "Sin imagen todavía",
+    "pitBoxes_one": "{{count}} box",
+    "pitBoxes_other": "{{count}} boxes"
   },
   "errors": {
     "generic": "Algo salió mal. Intentá de nuevo.",
@@ -986,7 +998,10 @@
     "noWeather": "Sin dato de clima",
     "air": "aire {{value}} °C",
     "track": "pista {{value}} °C",
-    "outlineAlt": "Mapa del trazado {{track}} · {{layout}}"
+    "outlineAlt": "Mapa del trazado {{track}} · {{layout}}",
+    "noProfileTitle": "Todavía no corrés con esta cuenta",
+    "noSeasonsTitle": "Todavía no tenés una temporada",
+    "linkDriver": "Vincular un piloto"
   },
   "briefing": {
     "title": "Briefing",
@@ -1620,5 +1635,34 @@
     "lastOk": "Último backup correcto: {{date}}",
     "start": "Hacer backup ahora",
     "refresh": "Actualizar"
+  },
+  "home": {
+    "shortcuts": {
+      "title": "Administración",
+      "leagues": "Ligas, campeonatos y admins",
+      "drivers": "Perfiles de piloto y cuentas vinculadas",
+      "catalog": "Pistas, autos, clases e imágenes del juego",
+      "accounts": "Invitaciones y permisos",
+      "audit": "Todos los cambios, con motivo"
+    }
+  },
+  "seasonNav": {
+    "label": "Secciones de la temporada",
+    "title": "Pelea por el título",
+    "safety": "Seguridad",
+    "handicaps": "Lastre",
+    "ballots": "Votaciones",
+    "rules": "Reglamento",
+    "report": "Reporte"
+  },
+  "seasonStats": {
+    "rounds": "Fechas corridas",
+    "drivers": "Pilotos",
+    "leader": "Líder",
+    "next": "Próxima fecha"
+  },
+  "seasonAdmin": {
+    "calendar": "Administrar el calendario",
+    "entries": "Administrar pilotos y configuración"
   }
 }

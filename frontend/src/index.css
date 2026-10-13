@@ -5,6 +5,7 @@
 /* Old variable names, kept so that inline styles in the pages keep working. */
 :root {
   --surface: var(--surface-1);
+  --content-wide: 1440px;
   --border: var(--line);
   --text: var(--ink);
   --muted: var(--ink-2);
@@ -276,7 +277,7 @@ a {
   min-height: 38px;
   padding: 0 8px;
   border: 0;
-  border-radius: 3px;
+  border-radius: 6px;
   background: transparent;
   color: var(--ink-2);
   font-size: 14px;
@@ -370,19 +371,24 @@ a {
 }
 
 .mode-banner {
+  flex: 1;
+  max-width: none;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
-  min-height: 44px;
-  padding: 6px var(--space-6);
-  background: var(--admin-surface);
-  border-top: 4px solid var(--brand);
+  min-width: 0;
+  margin: 0;
   font-size: 14px;
   font-weight: 600;
 }
 
+.admin-mode .topbar {
+  border-top: 4px solid var(--brand);
+}
+
 .mode-tag {
+  flex: none;
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -393,16 +399,18 @@ a {
   font-weight: 700;
 }
 
-.mode-banner .muted {
+.mode-banner .mode-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-weight: 400;
-  flex: 1;
 }
 
 .content {
   width: 100%;
-  max-width: var(--content-max);
+  max-width: calc(var(--content-wide) + 2 * var(--space-7));
   margin: 0 auto;
-  padding: var(--space-6) var(--space-6) var(--space-8);
+  padding: var(--space-6) var(--space-7) var(--space-8);
 }
 
 .icon-button {
@@ -514,10 +522,6 @@ a {
     min-height: 56px;
   }
 
-  .admin-mode .topbar {
-    border-top: 4px solid var(--brand);
-  }
-
   .topbar-logo {
     display: block;
   }
@@ -526,12 +530,7 @@ a {
     display: none;
   }
 
-  .mode-banner {
-    padding: 6px var(--space-4);
-    border-top: 0;
-  }
-
-  .mode-banner .muted {
+  .mode-banner .mode-text {
     display: none;
   }
 
@@ -867,12 +866,60 @@ tr.cancelled-round td:nth-child(2) a {
 }
 
 /* ---------- Forms ---------- */
+/* A group of sections: one section per row, the same gap between each.
+   A group of filters (no sections inside): the filters share the row. */
 .forms {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
   gap: var(--space-4);
+  align-items: end;
   margin-top: var(--space-6);
-  align-items: start;
+}
+
+.forms:has(> .card) {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: stretch;
+}
+
+.forms > label.check {
+  grid-column: 1 / -1;
+}
+
+.forms > .card {
+  min-width: 0;
+}
+
+/* Inside a form, the fields fill the row in columns. Everything else takes a full row. */
+form.card {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: var(--space-4) var(--space-5);
+  align-items: end;
+}
+
+form.card > :not(label),
+form.card > label.check,
+form.card > label:has(textarea) {
+  grid-column: 1 / -1;
+}
+
+form.card > button {
+  justify-self: start;
+  min-width: 160px;
+}
+
+.card {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* A form inside a section is a part of it, not a second panel. */
+.card .card {
+  padding: var(--space-4) 0 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
 }
 
 label {
@@ -954,8 +1001,8 @@ label.inline {
 }
 
 .inline-filter {
-  display: inline-flex;
-  margin-bottom: var(--space-4);
+  display: flex;
+  margin-bottom: 0;
 }
 
 /* ---------- Buttons ---------- */
@@ -3409,5 +3456,799 @@ td.faster {
     width: 100%;
     max-height: 120px;
     margin-top: var(--space-3);
+  }
+}
+
+
+/* ---------- Hidden side panel ---------- */
+.side-toggle {
+  margin-left: -10px;
+}
+
+.side-hidden-logo {
+  display: flex;
+  animation: fade-in var(--dur-base) ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+}
+
+@media (min-width: 701px) {
+  .app {
+    transition: grid-template-columns var(--dur-slow) cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .side {
+    overflow: hidden;
+  }
+
+  .side > * {
+    transition:
+      opacity var(--dur-base) ease,
+      transform var(--dur-slow) cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .app.side-hidden {
+    grid-template-columns: 0px minmax(0, 1fr);
+  }
+
+  .app.side-hidden .side {
+    border-right-color: transparent;
+  }
+
+  .app.side-hidden .side > * {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
+
+@media (max-width: 700px) {
+  .side-toggle,
+  .side-hidden-logo {
+    display: none;
+  }
+}
+
+.mode-banner + .spacer {
+  flex: 0;
+}
+
+/* ---------- Global character ---------- */
+/* Section headings carry a short red bar, like a timing-screen label. */
+.content h2:not(.hero-title):not(.board-title) {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.content h2:not(.hero-title):not(.board-title)::before {
+  content: '';
+  flex: none;
+  width: 4px;
+  height: 20px;
+  border-radius: 2px;
+  background: var(--brand);
+}
+
+.card {
+  border: 1px solid var(--line);
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--ink-3);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+  border-color: var(--ink);
+}
+
+/* A row of filters sits in a toolbar panel. */
+.forms[role='group'] {
+  margin: var(--space-5) 0;
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.note {
+  font-size: 14px;
+}
+
+/* ---------- Season page ---------- */
+.season-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-6);
+  align-items: end;
+  margin-bottom: var(--space-6);
+  padding: var(--space-6) var(--space-6) var(--space-6) calc(var(--space-6) + 6px);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(115deg, transparent 62%, rgba(215, 25, 32, 0.08) 62%, rgba(215, 25, 32, 0.08) 70%, transparent 70%),
+    var(--surface-2);
+}
+
+.season-hero::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--brand);
+}
+
+.season-title {
+  margin: var(--space-1) 0 var(--space-4);
+  font-family: var(--font-display);
+  font-stretch: 75%;
+  font-size: 64px;
+  line-height: 60px;
+  font-weight: 800;
+}
+
+.season-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  max-width: none;
+}
+
+.season-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, auto));
+  gap: 1px;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--line);
+}
+
+.season-stats > div {
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-1);
+}
+
+.season-stats dt {
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.season-stats dd {
+  margin: 2px 0 0;
+  font-size: 28px;
+  line-height: 32px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.season-stats dd small {
+  margin-left: 4px;
+  color: var(--ink-2);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.season-stats dd.season-stat-text {
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.season-stat-text small {
+  display: block;
+  margin-left: 0 !important;
+  font-size: 13px !important;
+}
+
+.season-stat-text a {
+  text-decoration: none;
+}
+
+.season-layout {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.season-nav {
+  position: sticky;
+  top: 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--line);
+}
+
+.season-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.season-nav a:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.season-body {
+  min-width: 0;
+}
+
+.season-block {
+  scroll-margin-top: 80px;
+  margin-bottom: var(--space-7);
+}
+
+.season-block > h2:first-child,
+.season-block > :first-child h2:first-of-type {
+  margin-top: 0;
+}
+
+.season-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+}
+
+.season-pair .season-block {
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.season-pair h2 {
+  margin-top: 0;
+}
+
+.standings td.pos {
+  width: 52px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.standings tr.leader td {
+  background: var(--brand-tint);
+}
+
+.standings tr.leader td.pos {
+  box-shadow: inset 4px 0 0 var(--brand);
+}
+
+.standings .round-col {
+  width: 44px;
+  text-align: center;
+  color: var(--ink-2);
+}
+
+.standings td.round-col.win {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.standings .points-col {
+  min-width: 180px;
+  text-align: right;
+}
+
+.standings td.points-col {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.points-bar {
+  position: relative;
+  flex: 1;
+  height: 8px;
+  max-width: 140px;
+  border-radius: var(--radius-xs);
+  background: var(--surface-3);
+}
+
+.points-bar span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: var(--radius-xs);
+  background: var(--ink-2);
+}
+
+.standings tr.leader .points-bar span {
+  background: var(--brand);
+}
+
+.standings .points {
+  min-width: 36px;
+  font-size: 17px;
+}
+
+.standings th.r,
+.standings td.r {
+  text-align: right;
+}
+
+.calendar-table td.pos {
+  width: 52px;
+  font-weight: 700;
+}
+
+.calendar-table tr.next-row td {
+  background: var(--brand-tint);
+}
+
+.calendar-table .status-badge.new {
+  margin-left: var(--space-2);
+}
+
+.entry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry-grid li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.entry-grid b,
+.entry-grid .muted,
+.entry-team {
+  display: block;
+}
+
+.entry-grid .muted,
+.entry-team {
+  font-size: 14px;
+}
+
+.entry-team {
+  color: var(--ink-3);
+}
+
+.entry-number {
+  min-width: 48px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  color: var(--bg);
+  font-family: var(--font-display);
+  font-stretch: 75%;
+  font-size: 24px;
+  line-height: 24px;
+  font-weight: 800;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-block {
+  margin-top: var(--space-4);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--brand);
+  border-radius: var(--radius-md);
+  background: var(--admin-surface);
+}
+
+.admin-block > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target-min);
+  padding: 0 var(--space-4);
+  cursor: pointer;
+  font-weight: 650;
+}
+
+.admin-block[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-block-body {
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+@media (max-width: 1280px) {
+  .season-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .season-stats {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .season-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .season-nav {
+    top: 60px;
+    z-index: 5;
+    flex-direction: row;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: var(--space-2) 0;
+    border-left: 0;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+  }
+
+  .season-nav a {
+    flex: none;
+  }
+
+  .season-pair {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .season-hero {
+    padding: var(--space-5) var(--space-4) var(--space-5) var(--space-5);
+  }
+
+  .season-title {
+    font-size: 44px;
+    line-height: 44px;
+  }
+
+  .season-nav {
+    top: 56px;
+  }
+
+  .standings .hide-sm,
+  .calendar-table .hide-sm {
+    display: none;
+  }
+
+  .standings .points-col {
+    min-width: 0;
+  }
+
+  .points-bar {
+    display: none;
+  }
+}
+
+/* ---------- Cards, forms and catalog polish ---------- */
+.card > h2:first-child,
+.card > h3:first-child {
+  margin-top: 0;
+}
+
+.card > h2 {
+  margin-bottom: 0;
+}
+
+/* Short forms: the button sits at the end of the field row. */
+form.card > button {
+  grid-column: auto;
+  align-self: end;
+  justify-self: start;
+}
+
+form.card > label:has(textarea) ~ button,
+form.card > fieldset ~ button,
+form.card > .checks ~ button {
+  grid-column: 1 / -1;
+}
+
+input[type='file'] {
+  padding: 6px;
+  line-height: 30px;
+}
+
+input[type='file']::file-selector-button {
+  margin-right: var(--space-3);
+  padding: 6px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.game-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: var(--space-4);
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.game-steps li {
+  counter-increment: step;
+  position: relative;
+  padding: var(--space-4) var(--space-4) var(--space-4) 56px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.game-steps li + li {
+  margin-top: 0;
+}
+
+.game-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: var(--space-4);
+  top: var(--space-4);
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.game-steps .upload {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: var(--space-4);
+  margin: 0 0 var(--space-6);
+  padding: 0;
+  list-style: none;
+}
+
+.catalog-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.catalog-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  background: repeating-linear-gradient(45deg, var(--surface-2) 0 10px, var(--surface-3) 10px 20px);
+}
+
+.catalog-media.track {
+  background: radial-gradient(circle at 50% 40%, var(--surface-3), var(--surface-2) 70%);
+}
+
+.catalog-media img {
+  width: 100%;
+  height: 100%;
+}
+
+.catalog-media.track img {
+  padding: var(--space-4);
+  object-fit: contain;
+}
+
+.catalog-media.car img {
+  object-fit: cover;
+}
+
+.catalog-media img.catalog-badge {
+  position: absolute;
+  right: var(--space-2);
+  bottom: var(--space-2);
+  width: 36px;
+  height: 36px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.6);
+  object-fit: contain;
+}
+
+.catalog-missing {
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.catalog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-4);
+}
+
+.catalog-body p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.catalog-body details {
+  margin-top: var(--space-2);
+}
+
+.round-page .data-state {
+  margin-bottom: var(--space-4);
+  border-color: var(--warning);
+  background: var(--warning-tint);
+}
+
+.round-page .data-state .ds-icon {
+  border: 1px solid var(--warning);
+  background: transparent;
+  color: var(--warning);
+}
+
+.results-table tbody tr:first-child td.pos {
+  box-shadow: inset 4px 0 0 var(--brand);
+}
+
+/* ---------- Home and championship cards ---------- */
+.champ-grid,
+.shortcut-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.champ-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+}
+
+.champ-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  width: 100%;
+}
+
+.champ-head h3 {
+  font-size: 18px;
+}
+
+.champ-head h3 a {
+  text-decoration: none;
+}
+
+.champ-head h3 a:hover {
+  text-decoration: underline;
+}
+
+.champ-head p,
+.champ-season {
+  margin: 0;
+}
+
+.champ-head .badge {
+  margin-left: 0;
+}
+
+.champ-icon {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--brand);
+  border-radius: var(--radius-sm);
+  background: var(--brand-tint);
+  color: var(--brand-ink);
+}
+
+.small-link {
+  gap: var(--space-2);
+}
+
+.shortcut {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+  min-height: 72px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.shortcut:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-2);
+}
+
+.shortcut b,
+.shortcut .muted {
+  display: block;
+}
+
+.shortcut .muted {
+  font-size: 14px;
+}
+
+.empty-home {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-4);
+  align-items: center;
+  margin-bottom: var(--space-6);
+  padding: var(--space-5);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+}
+
+.empty-home p {
+  margin: 0;
+}
+
+.empty-title {
+  font-weight: 650;
+}
+
+.empty-home .button-link {
+  margin-top: 0;
+}
+
+@media (max-width: 700px) {
+  .empty-home {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .empty-home .button-link {
+    grid-column: 1 / -1;
+    justify-content: center;
   }
 }
