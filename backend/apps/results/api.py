@@ -1,10 +1,12 @@
 from datetime import datetime
+from typing import Literal
 
-from django.http import Http404
+from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from ninja import Field, Router, Schema
+from ninja import Field, File, Form, Router, Schema
 from ninja.errors import HttpError
+from ninja.files import UploadedFile
 from pydantic import AwareDatetime
 
 from apps.collectors.incident_api import accepted_race_incidents
@@ -16,10 +18,13 @@ from apps.reports.services import auto_request
 from apps.rules.models import RulesVersion
 from apps.rules.scoring import Line, ResultError, Status
 
-from .models import Penalty, Protest, RaceResult, ResultVersion
+from .models import Penalty, Protest, ProtestEvidence, RaceResult, ResultVersion
 from .services import (
+    add_evidence,
     add_penalty,
+    appeal_protest,
     approve_result,
+    decide_appeal,
     decide_protest,
     protest_deadline,
     save_result,
@@ -98,6 +103,14 @@ class PenaltyOut(Schema):
     created_at: datetime
 
 
+class EvidenceOut(Schema):
+    id: int
+    url: str
+    filename: str
+    content_type: str
+    uploaded_by: str | None
+
+
 class ProtestOut(Schema):
     id: int
     attempt: int | None
@@ -109,6 +122,21 @@ class ProtestOut(Schema):
     decision: str
     decided_by: str | None
     created_at: datetime
+    evidence: list[EvidenceOut] = []
+    appeal_status: str = ""
+    appeal_reason: str = ""
+    appeal_decision: str = ""
+    appeal_decided_by: str | None = None
+    can_appeal: bool = False
+
+
+class AppealIn(Schema):
+    reason: str = Field(max_length=2000)
+
+
+class AppealDecisionIn(Schema):
+    outcome: Literal["upheld", "dismissed"]
+    decision: str = Field(max_length=2000)
 
 
 class MyHandicapOut(Schema):
@@ -421,6 +449,23 @@ def _round_detail(user, round_: Round) -> RoundDetail:
                 decision=p.decision,
                 decided_by=_username(p.decided_by),
                 created_at=p.created_at,
+                evidence=[
+                    EvidenceOut(
+                        id=e.id,
+                        url=e.url,
+                        filename=e.filename,
+                        content_type=e.content_type,
+                        uploaded_by=_username(e.uploaded_by),
+                    )
+                    for e in p.evidence.select_related("uploaded_by")
+                ],
+                appeal_status=p.appeal_status,
+                appeal_reason=p.appeal_reason,
+                appeal_decision=p.appeal_decision,
+                appeal_decided_by=_username(p.appeal_decided_by),
+                can_appeal=(
+                    p.submitted_by_id == user.id and p.status != "open" and not p.appeal_status
+                ),
             )
             for p in protests
         ],
@@ -598,3 +643,61 @@ def get_standings(request, season_id: int):
         )
         for row in season_standings(season)
     ]
+
+
+def _protest(user, protest_id: int):
+    protest = get_object_or_404(
+        Protest.objects.select_related("result__round__season__championship"), pk=protest_id
+    )
+    round_ = _visible_round(user, protest.result.round_id)
+    return protest, round_
+
+
+# A link, a file, or both. Ninja needs these defaults to read an optional multipart file.
+NO_LINK = Form("")
+NO_FILE = File(None)
+
+
+@router.post("/protests/{protest_id}/evidence", response=RoundDetail)
+def add_protest_evidence(
+    request, protest_id: int, url: str = NO_LINK, file: UploadedFile = NO_FILE
+):
+    protest, round_ = _protest(request.user, protest_id)
+    is_author = protest.submitted_by_id == request.user.id
+    if not is_author and not can(request.user, round_.season.championship, "penalties"):
+        raise HttpError(403, "forbidden")
+    _run(lambda: add_evidence(protest, request.user, url=url.strip(), upload=file))
+    return _round_detail(request.user, round_)
+
+
+@router.get("/protest-evidence/{evidence_id}")
+def evidence_file(request, evidence_id: int):
+    """The file of a piece of evidence. Only members of the championship see it."""
+    item = get_object_or_404(
+        ProtestEvidence.objects.select_related("protest__result__round"), pk=evidence_id
+    )
+    _visible_round(request.user, item.protest.result.round_id)
+    if not item.file:
+        raise Http404
+    return FileResponse(
+        item.file.open("rb"), filename=item.filename, content_type=item.content_type
+    )
+
+
+@router.post("/protests/{protest_id}/appeal", response=RoundDetail)
+def appeal(request, protest_id: int, payload: AppealIn):
+    protest, round_ = _protest(request.user, protest_id)
+    _run(lambda: appeal_protest(protest, request.user, payload.reason))
+    return _round_detail(request.user, round_)
+
+
+@router.post("/protests/{protest_id}/appeal-decision", response=RoundDetail)
+def appeal_decision(request, protest_id: int, payload: AppealDecisionIn):
+    protest, round_ = _protest(request.user, protest_id)
+    _require(request.user, round_, "penalties")
+    _run(
+        lambda: decide_appeal(
+            protest, request.user, outcome=payload.outcome, decision=payload.decision
+        )
+    )
+    return _round_detail(request.user, round_)

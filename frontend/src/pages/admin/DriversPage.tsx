@@ -91,6 +91,47 @@ export function DriversPage() {
             <input name="steam_guid" inputMode="numeric" pattern="\d{17}" />
           </label>
         </ActionForm>
+        {drivers.data && drivers.data.length > 1 && (
+          <ActionForm
+            title={t('drivers.merge')}
+            submitLabel={t('drivers.mergeButton')}
+            onSubmit={async (form) => {
+              if (!window.confirm(t('drivers.confirmMerge'))) return undefined
+              const { error } = await api.POST('/api/drivers/{driver_id}/merge', {
+                params: { path: { driver_id: Number(form.get('old_id')) } },
+                body: { into_id: Number(form.get('into_id')), reason: String(form.get('reason')) },
+              })
+              if (!error) drivers.reload()
+              return error
+            }}
+          >
+            <p className="muted">{t('drivers.mergeHelp')}</p>
+            <label>
+              {t('drivers.mergeOld')}
+              <select name="old_id" required>
+                {drivers.data.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.display_name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              {t('drivers.mergeInto')}
+              <select name="into_id" required>
+                {drivers.data.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.display_name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              {t('drivers.mergeReason')}
+              <input name="reason" required maxLength={500} />
+            </label>
+          </ActionForm>
+        )}
       </div>
     </section>
   )

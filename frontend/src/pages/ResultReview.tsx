@@ -5,6 +5,7 @@ import type { components } from '../api/schema'
 import { ActionForm } from '../components/ActionForm'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
+import { ProtestExtras } from './ProtestExtras'
 
 type RoundDetail = components['schemas']['RoundDetail']
 type LineOut = components['schemas']['LineOut']
@@ -268,6 +269,7 @@ export function Protests({
               {adminView && protest.status === 'open' && (
                 <DecisionForm protestId={protest.id} round={round} onChange={onChange} />
               )}
+              <ProtestExtras protest={protest} canDecide={adminView} onChange={onChange} />
             </li>
           ))}
         </ul>

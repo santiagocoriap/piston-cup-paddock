@@ -110,6 +110,15 @@ class Protest(models.Model):
     )
     decided_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    # One appeal for each decided protest. "" means no appeal.
+    appeal_status = models.CharField(max_length=10, blank=True)
+    appeal_reason = models.TextField(blank=True)
+    appealed_at = models.DateTimeField(null=True, blank=True)
+    appeal_decision = models.TextField(blank=True)
+    appeal_decided_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    appeal_decided_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["created_at"]
@@ -164,3 +173,27 @@ class Penalty(models.Model):
 
     def __str__(self):
         return f"{self.kind} {self.value} for {self.entry}"
+
+
+def evidence_path(instance, filename):
+    return f"protests/{instance.protest_id}/{filename}"
+
+
+class ProtestEvidence(models.Model):
+    """A link or a short image or video for a protest. A file is visible only in the app."""
+
+    protest = models.ForeignKey(Protest, on_delete=models.CASCADE, related_name="evidence")
+    url = models.URLField(max_length=500, blank=True)
+    file = models.FileField(upload_to=evidence_path, blank=True)
+    filename = models.CharField(max_length=255, blank=True)
+    content_type = models.CharField(max_length=100, blank=True)
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["uploaded_at", "id"]
+
+    def __str__(self):
+        return self.url or self.filename

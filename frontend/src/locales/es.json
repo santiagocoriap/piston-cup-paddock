@@ -117,7 +117,14 @@
     "account": "Cuenta",
     "noAccount": "Sin cuenta",
     "link": "Vincular",
-    "careerPoints": "Puntos de carrera"
+    "careerPoints": "Puntos de carrera",
+    "merge": "Unir dos perfiles",
+    "mergeButton": "Unir",
+    "mergeHelp": "Pasa todo del perfil viejo al perfil que queda: inscripciones, vueltas, reinicios y récords. El perfil viejo se borra.",
+    "mergeOld": "Perfil que se borra",
+    "mergeInto": "Perfil que queda",
+    "mergeReason": "Motivo",
+    "confirmMerge": "Esto no se puede deshacer. ¿Seguro?"
   },
   "catalog": {
     "title": "Pistas y autos",
@@ -243,7 +250,20 @@
     "track_excluded": "Esa pista está excluida de esta votación.",
     "grid_too_small": "La pista tiene menos boxes que pilotos inscriptos.",
     "bad_participation": "La participación mínima no es válida.",
-    "opens_after_close": "La votación tiene que abrir antes de cerrar."
+    "opens_after_close": "La votación tiene que abrir antes de cerrar.",
+    "same_driver": "Es el mismo perfil.",
+    "both_have_accounts": "Los dos perfiles tienen cuenta. Desvinculá una antes.",
+    "different_steam_ids": "Los perfiles tienen Steam ID distintos.",
+    "both_in_season": "Los dos perfiles corren la misma temporada.",
+    "protest_closed": "La protesta está cerrada.",
+    "evidence_required": "Agregá un link o un archivo.",
+    "bad_link": "El link tiene que empezar con https://.",
+    "evidence_type": "Solo imágenes o videos.",
+    "only_author_appeals": "Solo quien hizo la protesta puede apelar.",
+    "protest_not_decided": "La protesta todavía no tiene decisión.",
+    "already_appealed": "Ya apelaste esta protesta.",
+    "no_open_appeal": "No hay apelación pendiente.",
+    "same_decider": "Otra persona tiene que decidir la apelación."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -372,7 +392,11 @@
       "season.cloned": "{{actor}} creó la temporada {{season}} como copia de {{source}}.",
       "ballot.voted": "{{actor}} votó en {{ballot}} ({{season}}).",
       "ballot.vote_changed": "{{actor}} cambió su voto en {{ballot}} ({{season}}).",
-      "ballot.reminded": "{{actor}} envió el recordatorio de {{ballot}}."
+      "ballot.reminded": "{{actor}} envió el recordatorio de {{ballot}}.",
+      "driver.merged": "{{actor}} unió el perfil {{old}} con {{kept}}.",
+      "protest.evidence": "{{actor}} agregó una prueba a la protesta {{protest}}.",
+      "protest.appealed": "{{actor}} apeló la protesta {{protest}}.",
+      "protest.appeal_decided": "{{actor}} decidió la apelación de la protesta {{protest}}: {{outcome}}."
     },
     "fields": {
       "role": "Rol",
@@ -1357,7 +1381,9 @@
       "ballot.open": "Hay una votación abierta en {{season}}",
       "report.ready.race": "Reporte nuevo: R{{number}} · {{track}}",
       "report.ready.season": "Reporte nuevo de la temporada {{season}}",
-      "ballot.reminder": "Recordatorio: todavía no votaste en {{ballot}}"
+      "ballot.reminder": "Recordatorio: todavía no votaste en {{ballot}}",
+      "protest.appealed": "Nueva apelación en R{{number}} · {{track}}",
+      "protest.appeal_decided": "Tu apelación de R{{number}} tiene decisión"
     }
   },
   "roundTools": {
@@ -1376,5 +1402,22 @@
     "clone": "Crear temporada",
     "cloneName": "Nombre de la temporada nueva",
     "cloneHelp": "Copia los pilotos inscriptos, el reglamento actual y las pistas fijas (sin fecha). No copia resultados."
+  },
+  "protestExtras": {
+    "addEvidence": "Agregar prueba",
+    "link": "Link (video, captura)",
+    "file": "Archivo de imagen o video (máx. 10 MB)",
+    "appeal": {
+      "open": "Apelación pendiente",
+      "upheld": "Apelación aceptada",
+      "dismissed": "Apelación rechazada"
+    },
+    "appealTitle": "Apelar la decisión",
+    "appealButton": "Apelar",
+    "appealReason": "¿Por qué apelás? (una sola vez)",
+    "decideAppeal": "Decidir la apelación",
+    "outcome": "Resultado",
+    "decision": "Decisión",
+    "appealHelp": "Si aceptás la apelación, cambiá las sanciones con las herramientas de siempre. Si decidiste la protesta, otra persona decide la apelación."
   }
 }

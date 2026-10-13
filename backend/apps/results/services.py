@@ -590,3 +590,127 @@ def change_rules(
                     reason=reason,
                 )
     return version
+
+
+# Protest evidence and appeals
+
+MAX_EVIDENCE_BYTES = 10 * 1024 * 1024
+EVIDENCE_TYPES = ("image/", "video/")
+
+
+def add_evidence(protest: Protest, user, *, url: str = "", upload=None):
+    """Add a link or a file while the protest or its appeal is open."""
+    from .models import ProtestEvidence
+
+    if protest.status != Protest.State.OPEN and protest.appeal_status != "open":
+        raise ResultError("protest_closed")
+    if not url and upload is None:
+        raise ResultError("evidence_required")
+    if url and not url.startswith(("https://", "http://")):
+        raise ResultError("bad_link")
+    item = ProtestEvidence(protest=protest, url=url, uploaded_by=user)
+    if upload is not None:
+        content_type = upload.content_type or ""
+        if not content_type.startswith(EVIDENCE_TYPES):
+            raise ResultError("evidence_type")
+        if upload.size > MAX_EVIDENCE_BYTES:
+            raise ResultError("file_too_large")
+        item.filename = upload.name[:255]
+        item.content_type = content_type
+        item.file.save(upload.name, upload, save=False)
+    round_ = protest.result.round
+    with transaction.atomic():
+        item.save()
+        record(
+            user,
+            "protest.evidence",
+            "round",
+            round_.id,
+            championship=round_.season.championship,
+            params={**_audit_params(round_), "protest": protest.id},
+        )
+    return item
+
+
+def appeal_protest(protest: Protest, user, reason: str) -> Protest:
+    """The author appeals a decided protest one time."""
+    if protest.submitted_by_id != user.id:
+        raise ResultError("only_author_appeals")
+    if protest.status == Protest.State.OPEN:
+        raise ResultError("protest_not_decided")
+    if protest.appeal_status:
+        raise ResultError("already_appealed")
+    if not reason.strip():
+        raise ResultError("reason_required")
+    round_ = protest.result.round
+    with transaction.atomic():
+        protest.appeal_status = "open"
+        protest.appeal_reason = reason
+        protest.appealed_at = timezone.now()
+        protest.save(update_fields=["appeal_status", "appeal_reason", "appealed_at"])
+        record(
+            user,
+            "protest.appealed",
+            "round",
+            round_.id,
+            championship=round_.season.championship,
+            params={**_audit_params(round_), "protest": protest.id},
+            reason=reason,
+        )
+    from apps.community.services import notify, round_params, staff_user_ids
+
+    notify(
+        staff_user_ids(round_.season, "penalties"),
+        "protest.appealed",
+        round_params(round_),
+        f"/rounds/{round_.id}",
+    )
+    return protest
+
+
+def decide_appeal(protest: Protest, user, *, outcome: str, decision: str) -> Protest:
+    """Decide the appeal. Another person than the first decider decides, if possible: a
+    league admin may decide both. An upheld appeal does not change penalties by itself: the
+    steward then changes them with the normal tools."""
+    from apps.competition.permissions import is_league_admin
+
+    if protest.appeal_status != "open":
+        raise ResultError("no_open_appeal")
+    if outcome not in ("upheld", "dismissed"):
+        raise ResultError("outcome_required")
+    if not decision.strip():
+        raise ResultError("reason_required")
+    if protest.decided_by_id == user.id and not is_league_admin(user):
+        raise ResultError("same_decider")
+    round_ = protest.result.round
+    with transaction.atomic():
+        protest.appeal_status = outcome
+        protest.appeal_decision = decision
+        protest.appeal_decided_by = user
+        protest.appeal_decided_at = timezone.now()
+        protest.save(
+            update_fields=[
+                "appeal_status",
+                "appeal_decision",
+                "appeal_decided_by",
+                "appeal_decided_at",
+            ]
+        )
+        record(
+            user,
+            "protest.appeal_decided",
+            "round",
+            round_.id,
+            championship=round_.season.championship,
+            params={**_audit_params(round_), "protest": protest.id, "outcome": outcome},
+            reason=decision,
+        )
+    from apps.community.services import notify, round_params
+
+    notify(
+        [protest.submitted_by_id],
+        "protest.appeal_decided",
+        {**round_params(round_), "outcome": outcome},
+        f"/rounds/{round_.id}",
+    )
+    return protest

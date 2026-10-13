@@ -1,10 +1,12 @@
 from django.shortcuts import get_object_or_404
 from ninja import Field, Router, Schema, Status
+from ninja.errors import HttpError
 
 from apps.audit.services import change, record
 from apps.common.api import conflict_on_duplicate, require
 from apps.competition.permissions import is_league_admin, manages_any_championship
 
+from .merge import MergeError, merge
 from .models import DriverProfile, User
 
 router = Router(tags=["drivers"])
@@ -90,3 +92,20 @@ def link_driver(request, driver_id: int, payload: LinkIn):
 def list_users(request):
     require(manages_any_championship(request.user))
     return User.objects.filter(is_active=True).order_by("username")
+
+
+class MergeIn(Schema):
+    into_id: int
+    reason: str = Field(min_length=1, max_length=500)
+
+
+@router.post("/drivers/{driver_id}/merge", response=DriverOut)
+def merge_driver(request, driver_id: int, payload: MergeIn):
+    """Move everything of this profile to another profile of the same person, then delete it."""
+    require(is_league_admin(request.user))
+    old = get_object_or_404(DriverProfile, pk=driver_id)
+    kept = get_object_or_404(DriverProfile, pk=payload.into_id)
+    try:
+        return merge(old, kept, request.user, payload.reason)
+    except MergeError as error:
+        raise HttpError(422, error.code) from error

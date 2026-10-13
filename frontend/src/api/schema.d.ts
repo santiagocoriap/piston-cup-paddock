@@ -225,6 +225,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/drivers/{driver_id}/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Merge Driver
+         * @description Move everything of this profile to another profile of the same person, then delete it.
+         */
+        post: operations["apps_identity_drivers_api_merge_driver"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/leagues": {
         parameters: {
             query?: never;
@@ -720,6 +740,77 @@ export interface paths {
         get: operations["apps_results_api_get_standings"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/protests/{protest_id}/evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Protest Evidence */
+        post: operations["apps_results_api_add_protest_evidence"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/protest-evidence/{evidence_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Evidence File
+         * @description The file of a piece of evidence. Only members of the championship see it.
+         */
+        get: operations["apps_results_api_evidence_file"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/protests/{protest_id}/appeal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Appeal */
+        post: operations["apps_results_api_appeal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/protests/{protest_id}/appeal-decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Appeal Decision */
+        post: operations["apps_results_api_appeal_decision"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2186,6 +2277,13 @@ export interface components {
             /** Username */
             username: string;
         };
+        /** MergeIn */
+        MergeIn: {
+            /** Into Id */
+            into_id: number;
+            /** Reason */
+            reason: string;
+        };
         /** LeagueOut */
         LeagueOut: {
             /** Id */
@@ -2522,6 +2620,19 @@ export interface components {
             /** Car Name */
             car_name: string;
         };
+        /** EvidenceOut */
+        EvidenceOut: {
+            /** Id */
+            id: number;
+            /** Url */
+            url: string;
+            /** Filename */
+            filename: string;
+            /** Content Type */
+            content_type: string;
+            /** Uploaded By */
+            uploaded_by: string | null;
+        };
         /** HandicapCheckOut */
         HandicapCheckOut: {
             /** Entry Id */
@@ -2642,6 +2753,33 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /**
+             * Evidence
+             * @default []
+             */
+            evidence?: components["schemas"]["EvidenceOut"][];
+            /**
+             * Appeal Status
+             * @default
+             */
+            appeal_status?: string;
+            /**
+             * Appeal Reason
+             * @default
+             */
+            appeal_reason?: string;
+            /**
+             * Appeal Decision
+             * @default
+             */
+            appeal_decision?: string;
+            /** Appeal Decided By */
+            appeal_decided_by?: string | null;
+            /**
+             * Can Appeal
+             * @default false
+             */
+            can_appeal?: boolean;
         };
         /** RoundDetail */
         RoundDetail: {
@@ -2880,6 +3018,21 @@ export interface components {
             wins: number;
             /** Rounds */
             rounds: components["schemas"]["RoundScoreOut"][];
+        };
+        /** AppealIn */
+        AppealIn: {
+            /** Reason */
+            reason: string;
+        };
+        /** AppealDecisionIn */
+        AppealDecisionIn: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "upheld" | "dismissed";
+            /** Decision */
+            decision: string;
         };
         /** AuditChange */
         AuditChange: {
@@ -5477,6 +5630,32 @@ export interface operations {
             };
         };
     };
+    apps_identity_drivers_api_merge_driver: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                driver_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MergeIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DriverOut"];
+                };
+            };
+        };
+    };
     apps_competition_api_list_leagues: {
         parameters: {
             query?: never;
@@ -6230,6 +6409,115 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StandingOut"][];
+                };
+            };
+        };
+    };
+    apps_results_api_add_protest_evidence: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                protest_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * Url
+                     * @default
+                     */
+                    url?: string;
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundDetail"];
+                };
+            };
+        };
+    };
+    apps_results_api_evidence_file: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                evidence_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_results_api_appeal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                protest_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppealIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundDetail"];
+                };
+            };
+        };
+    };
+    apps_results_api_appeal_decision: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                protest_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppealDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundDetail"];
                 };
             };
         };

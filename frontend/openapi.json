@@ -581,6 +581,54 @@
         ]
       }
     },
+    "/api/drivers/{driver_id}/merge": {
+      "post": {
+        "operationId": "apps_identity_drivers_api_merge_driver",
+        "summary": "Merge Driver",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "driver_id",
+            "schema": {
+              "title": "Driver Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriverOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Move everything of this profile to another profile of the same person, then delete it.",
+        "tags": [
+          "drivers"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MergeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/leagues": {
       "get": {
         "operationId": "apps_competition_api_list_leagues",
@@ -1925,6 +1973,191 @@
         "tags": [
           "results"
         ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/protests/{protest_id}/evidence": {
+      "post": {
+        "operationId": "apps_results_api_add_protest_evidence",
+        "summary": "Add Protest Evidence",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "protest_id",
+            "schema": {
+              "title": "Protest Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "results"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "title": "MultiPartBodyParams",
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "default": "",
+                    "title": "Url",
+                    "type": "string"
+                  },
+                  "file": {
+                    "format": "binary",
+                    "title": "File",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/protest-evidence/{evidence_id}": {
+      "get": {
+        "operationId": "apps_results_api_evidence_file",
+        "summary": "Evidence File",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "evidence_id",
+            "schema": {
+              "title": "Evidence Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "The file of a piece of evidence. Only members of the championship see it.",
+        "tags": [
+          "results"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/protests/{protest_id}/appeal": {
+      "post": {
+        "operationId": "apps_results_api_appeal",
+        "summary": "Appeal",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "protest_id",
+            "schema": {
+              "title": "Protest Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "results"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppealIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/protests/{protest_id}/appeal-decision": {
+      "post": {
+        "operationId": "apps_results_api_appeal_decision",
+        "summary": "Appeal Decision",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "protest_id",
+            "schema": {
+              "title": "Protest Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "results"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppealDecisionIn"
+              }
+            }
+          },
+          "required": true
+        },
         "security": [
           {
             "SessionAuth": []
@@ -5941,6 +6174,26 @@
         "title": "UserOut",
         "type": "object"
       },
+      "MergeIn": {
+        "properties": {
+          "into_id": {
+            "title": "Into Id",
+            "type": "integer"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "into_id",
+          "reason"
+        ],
+        "title": "MergeIn",
+        "type": "object"
+      },
       "LeagueOut": {
         "properties": {
           "id": {
@@ -6886,6 +7139,46 @@
         "title": "EntryOption",
         "type": "object"
       },
+      "EvidenceOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "content_type": {
+            "title": "Content Type",
+            "type": "string"
+          },
+          "uploaded_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uploaded By"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "filename",
+          "content_type",
+          "uploaded_by"
+        ],
+        "title": "EvidenceOut",
+        "type": "object"
+      },
       "HandicapCheckOut": {
         "properties": {
           "entry_id": {
@@ -7246,6 +7539,45 @@
             "format": "date-time",
             "title": "Created At",
             "type": "string"
+          },
+          "evidence": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EvidenceOut"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "appeal_status": {
+            "default": "",
+            "title": "Appeal Status",
+            "type": "string"
+          },
+          "appeal_reason": {
+            "default": "",
+            "title": "Appeal Reason",
+            "type": "string"
+          },
+          "appeal_decision": {
+            "default": "",
+            "title": "Appeal Decision",
+            "type": "string"
+          },
+          "appeal_decided_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appeal Decided By"
+          },
+          "can_appeal": {
+            "default": false,
+            "title": "Can Appeal",
+            "type": "boolean"
           }
         },
         "required": [
@@ -7971,6 +8303,43 @@
           "rounds"
         ],
         "title": "StandingOut",
+        "type": "object"
+      },
+      "AppealIn": {
+        "properties": {
+          "reason": {
+            "maxLength": 2000,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "AppealIn",
+        "type": "object"
+      },
+      "AppealDecisionIn": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "upheld",
+              "dismissed"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "decision": {
+            "maxLength": 2000,
+            "title": "Decision",
+            "type": "string"
+          }
+        },
+        "required": [
+          "outcome",
+          "decision"
+        ],
+        "title": "AppealDecisionIn",
         "type": "object"
       },
       "AuditChange": {

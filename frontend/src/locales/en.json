@@ -117,7 +117,14 @@
     "account": "Account",
     "noAccount": "No account",
     "link": "Link",
-    "careerPoints": "Career points"
+    "careerPoints": "Career points",
+    "merge": "Merge two profiles",
+    "mergeButton": "Merge",
+    "mergeHelp": "Moves everything from the old profile to the kept profile: entries, laps, restarts, and records. The old profile goes away.",
+    "mergeOld": "Profile to remove",
+    "mergeInto": "Profile to keep",
+    "mergeReason": "Reason",
+    "confirmMerge": "This cannot be undone. Continue?"
   },
   "catalog": {
     "title": "Tracks and cars",
@@ -243,7 +250,20 @@
     "track_excluded": "That track is excluded from this ballot.",
     "grid_too_small": "The track has fewer pit boxes than drivers.",
     "bad_participation": "The minimum participation is not valid.",
-    "opens_after_close": "The ballot must open before it closes."
+    "opens_after_close": "The ballot must open before it closes.",
+    "same_driver": "It is the same profile.",
+    "both_have_accounts": "Both profiles have an account. Unlink one first.",
+    "different_steam_ids": "The profiles have different Steam IDs.",
+    "both_in_season": "Both profiles race in the same season.",
+    "protest_closed": "The protest is closed.",
+    "evidence_required": "Add a link or a file.",
+    "bad_link": "The link must start with https://.",
+    "evidence_type": "Only images or videos.",
+    "only_author_appeals": "Only the author of the protest can appeal.",
+    "protest_not_decided": "The protest has no decision yet.",
+    "already_appealed": "You already appealed this protest.",
+    "no_open_appeal": "There is no open appeal.",
+    "same_decider": "Another person must decide the appeal."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -372,7 +392,11 @@
       "season.cloned": "{{actor}} made season {{season}} as a copy of {{source}}.",
       "ballot.voted": "{{actor}} voted in {{ballot}} ({{season}}).",
       "ballot.vote_changed": "{{actor}} changed the vote in {{ballot}} ({{season}}).",
-      "ballot.reminded": "{{actor}} sent the reminder for {{ballot}}."
+      "ballot.reminded": "{{actor}} sent the reminder for {{ballot}}.",
+      "driver.merged": "{{actor}} merged profile {{old}} into {{kept}}.",
+      "protest.evidence": "{{actor}} added evidence to protest {{protest}}.",
+      "protest.appealed": "{{actor}} appealed protest {{protest}}.",
+      "protest.appeal_decided": "{{actor}} decided the appeal of protest {{protest}}: {{outcome}}."
     },
     "fields": {
       "role": "Role",
@@ -1357,7 +1381,9 @@
       "ballot.open": "A ballot is open in {{season}}",
       "report.ready.race": "New report: R{{number}} · {{track}}",
       "report.ready.season": "New season report: {{season}}",
-      "ballot.reminder": "Reminder: you did not vote in {{ballot}} yet"
+      "ballot.reminder": "Reminder: you did not vote in {{ballot}} yet",
+      "protest.appealed": "New appeal in R{{number}} · {{track}}",
+      "protest.appeal_decided": "Your appeal in R{{number}} has a decision"
     }
   },
   "roundTools": {
@@ -1376,5 +1402,22 @@
     "clone": "Create season",
     "cloneName": "Name of the new season",
     "cloneHelp": "It copies the entries, the current rules, and the fixed tracks (with no date). It does not copy results."
+  },
+  "protestExtras": {
+    "addEvidence": "Add evidence",
+    "link": "Link (video, screenshot)",
+    "file": "Image or video file (max 10 MB)",
+    "appeal": {
+      "open": "Appeal pending",
+      "upheld": "Appeal upheld",
+      "dismissed": "Appeal dismissed"
+    },
+    "appealTitle": "Appeal the decision",
+    "appealButton": "Appeal",
+    "appealReason": "Why do you appeal? (one time only)",
+    "decideAppeal": "Decide the appeal",
+    "outcome": "Outcome",
+    "decision": "Decision",
+    "appealHelp": "If you uphold the appeal, change the penalties with the normal tools. If you decided the protest, another person decides the appeal."
   }
 }
