@@ -435,6 +435,120 @@
         ]
       }
     },
+    "/api/catalog/classes": {
+      "get": {
+        "operationId": "apps_catalog_api_list_classes",
+        "summary": "List Classes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CarClassOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_catalog_api_create_class",
+        "summary": "Create Class",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarClassOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CarClassIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/classes/{class_id}/cars": {
+      "put": {
+        "operationId": "apps_catalog_api_set_class_cars",
+        "summary": "Set Class Cars",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "class_id",
+            "schema": {
+              "title": "Class Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarClassOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Set the cars of the class from today. Old rows stay in the history.",
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassCarsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/drivers": {
       "get": {
         "operationId": "apps_identity_drivers_api_list_drivers",
@@ -3036,6 +3150,22 @@
               "default": false,
               "title": "Overall",
               "type": "boolean"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "car_class_id",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Car Class Id"
             },
             "required": false
           }
@@ -6048,6 +6178,119 @@
           }
         },
         "title": "GuidanceIn",
+        "type": "object"
+      },
+      "CarClassOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "car_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Car Ids",
+            "type": "array"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/MembershipOut"
+            },
+            "title": "History",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "car_ids",
+          "history"
+        ],
+        "title": "CarClassOut",
+        "type": "object"
+      },
+      "MembershipOut": {
+        "properties": {
+          "car_id": {
+            "title": "Car Id",
+            "type": "integer"
+          },
+          "car_name": {
+            "title": "Car Name",
+            "type": "string"
+          },
+          "valid_from": {
+            "format": "date",
+            "title": "Valid From",
+            "type": "string"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid To"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "car_id",
+          "car_name",
+          "valid_from",
+          "valid_to",
+          "reason"
+        ],
+        "title": "MembershipOut",
+        "type": "object"
+      },
+      "CarClassIn": {
+        "properties": {
+          "name": {
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "CarClassIn",
+        "type": "object"
+      },
+      "ClassCarsIn": {
+        "properties": {
+          "car_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Car Ids",
+            "type": "array"
+          },
+          "reason": {
+            "default": "",
+            "maxLength": 300,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "car_ids"
+        ],
+        "title": "ClassCarsIn",
         "type": "object"
       },
       "DriverOut": {
@@ -10610,6 +10853,13 @@
             "title": "Cars",
             "type": "array"
           },
+          "classes": {
+            "items": {
+              "$ref": "#/components/schemas/LayoutOption"
+            },
+            "title": "Classes",
+            "type": "array"
+          },
           "seasons": {
             "items": {
               "$ref": "#/components/schemas/LayoutOption"
@@ -10628,6 +10878,7 @@
         "required": [
           "layouts",
           "cars",
+          "classes",
           "seasons",
           "boards"
         ],
@@ -11129,6 +11380,17 @@
               }
             ],
             "title": "Track Layout Id"
+          },
+          "car_class_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Car Class Id"
           },
           "selected": {
             "title": "Selected",
@@ -11750,6 +12012,17 @@
               }
             ],
             "title": "Track Layout Id"
+          },
+          "car_class_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Car Class Id"
           }
         },
         "title": "OptionIn",

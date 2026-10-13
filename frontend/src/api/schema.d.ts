@@ -167,6 +167,44 @@ export interface paths {
         patch: operations["apps_catalog_api_set_guidance"];
         trace?: never;
     };
+    "/api/catalog/classes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Classes */
+        get: operations["apps_catalog_api_list_classes"];
+        put?: never;
+        /** Create Class */
+        post: operations["apps_catalog_api_create_class"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/classes/{class_id}/cars": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Class Cars
+         * @description Set the cars of the class from today. Old rows stay in the history.
+         */
+        put: operations["apps_catalog_api_set_class_cars"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/drivers": {
         parameters: {
             query?: never;
@@ -2240,6 +2278,48 @@ export interface components {
             /** Pit Boxes */
             pit_boxes?: number | null;
         };
+        /** CarClassOut */
+        CarClassOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Car Ids */
+            car_ids: number[];
+            /** History */
+            history: components["schemas"]["MembershipOut"][];
+        };
+        /** MembershipOut */
+        MembershipOut: {
+            /** Car Id */
+            car_id: number;
+            /** Car Name */
+            car_name: string;
+            /**
+             * Valid From
+             * Format: date
+             */
+            valid_from: string;
+            /** Valid To */
+            valid_to: string | null;
+            /** Reason */
+            reason: string;
+        };
+        /** CarClassIn */
+        CarClassIn: {
+            /** Name */
+            name: string;
+        };
+        /** ClassCarsIn */
+        ClassCarsIn: {
+            /** Car Ids */
+            car_ids: number[];
+            /**
+             * Reason
+             * @default
+             */
+            reason?: string;
+        };
         /** DriverOut */
         DriverOut: {
             /** Id */
@@ -3771,6 +3851,8 @@ export interface components {
             layouts: components["schemas"]["LayoutOption"][];
             /** Cars */
             cars: components["schemas"]["LayoutOption"][];
+            /** Classes */
+            classes: components["schemas"]["LayoutOption"][];
             /** Seasons */
             seasons: components["schemas"]["LayoutOption"][];
             /** Boards */
@@ -3931,6 +4013,8 @@ export interface components {
             label: string;
             /** Track Layout Id */
             track_layout_id: number | null;
+            /** Car Class Id */
+            car_class_id?: number | null;
             /** Selected */
             selected: boolean;
             /** Selected By */
@@ -4065,6 +4149,8 @@ export interface components {
             label?: string;
             /** Track Layout Id */
             track_layout_id?: number | null;
+            /** Car Class Id */
+            car_class_id?: number | null;
         };
         /** VoteIn */
         VoteIn: {
@@ -5540,6 +5626,76 @@ export interface operations {
             };
         };
     };
+    apps_catalog_api_list_classes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarClassOut"][];
+                };
+            };
+        };
+    };
+    apps_catalog_api_create_class: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CarClassIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarClassOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_set_class_cars: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                class_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClassCarsIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarClassOut"];
+                };
+            };
+        };
+    };
     apps_identity_drivers_api_list_drivers: {
         parameters: {
             query?: never;
@@ -6939,6 +7095,7 @@ export interface operations {
                 category?: ("qualifying" | "race") | null;
                 season_id?: number | null;
                 overall?: boolean;
+                car_class_id?: number | null;
             };
             header?: never;
             path?: never;

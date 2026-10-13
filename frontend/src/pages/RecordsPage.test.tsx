@@ -16,6 +16,7 @@ const lap = (id: number, driver: string, time: number, reason: string | null = n
 const data = {
   layouts: [{ id: 1, name: 'Highlands · Long' }],
   cars: [{ id: 1, name: 'Acura' }],
+  classes: [],
   seasons: [{ id: 4, name: 'LMDh 2026' }],
   boards: [
     {
@@ -49,7 +50,7 @@ describe('RecordsPage', () => {
   })
 
   it('says when there are no records', async () => {
-    mockApi({ 'GET /api/records': () => json(200, { layouts: [], cars: [], seasons: [], boards: [] }) })
+    mockApi({ 'GET /api/records': () => json(200, { layouts: [], cars: [], classes: [], seasons: [], boards: [] }) })
     renderPage(<RecordsPage />, { path: '/records', url: '/records', me: DRIVER })
     expect(await screen.findByText(/Todavía no hay récords/)).toBeInTheDocument()
   })
@@ -61,7 +62,7 @@ describe('RecordsPage filters', () => {
     mockApi({
       'GET /api/records': (request) => {
         queries.push(new URL(request.url).search)
-        return json(200, { layouts: [], cars: [], seasons: [], boards: [] })
+        return json(200, { layouts: [], cars: [], classes: [], seasons: [], boards: [] })
       },
     })
     renderPage(<RecordsPage />, { path: '/records', url: '/records', me: DRIVER })

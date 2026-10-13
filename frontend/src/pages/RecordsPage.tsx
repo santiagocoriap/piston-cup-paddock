@@ -11,9 +11,9 @@ import { useMode } from '../session'
 
 type Board = components['schemas']['BoardOut']
 type RecordLap = components['schemas']['RecordLapOut']
-type Filters = { layout: string; car: string; category: string; season: string; overall: boolean }
+type Filters = { layout: string; car: string; carClass: string; category: string; season: string; overall: boolean }
 
-const NO_FILTERS: Filters = { layout: '', car: '', category: '', season: '', overall: false }
+const NO_FILTERS: Filters = { layout: '', car: '', carClass: '', category: '', season: '', overall: false }
 
 export function RecordsPage() {
   const { t } = useTranslation()
@@ -25,14 +25,15 @@ export function RecordsPage() {
         params: {
           query: {
             ...(filters.layout ? { layout_id: Number(filters.layout) } : {}),
-            ...(filters.car && !filters.overall ? { car_id: Number(filters.car) } : {}),
+            ...(filters.car && !filters.overall && !filters.carClass ? { car_id: Number(filters.car) } : {}),
+            ...(filters.carClass ? { car_class_id: Number(filters.carClass) } : {}),
             ...(filters.category ? { category: filters.category as 'race' | 'qualifying' } : {}),
             ...(filters.season ? { season_id: Number(filters.season) } : {}),
             ...(filters.overall ? { overall: true } : {}),
           },
         },
       }),
-    [filters.layout, filters.car, filters.category, filters.season, filters.overall],
+    [filters.layout, filters.car, filters.carClass, filters.category, filters.season, filters.overall],
   )
   const set = (name: keyof Filters, value: string | boolean) => setFilters((old) => ({ ...old, [name]: value }))
 
@@ -63,7 +64,7 @@ export function RecordsPage() {
             </label>
             <label className="inline-filter">
               {t('records.car')}
-              <select value={filters.car} disabled={filters.overall} onChange={(e) => set('car', e.target.value)}>
+              <select value={filters.car} disabled={filters.overall || Boolean(filters.carClass)} onChange={(e) => set('car', e.target.value)}>
                 <option value="">{t('records.allCars')}</option>
                 {records.data.cars.map((car) => (
                   <option key={car.id} value={car.id}>
@@ -72,6 +73,19 @@ export function RecordsPage() {
                 ))}
               </select>
             </label>
+            {records.data.classes.length > 0 && (
+              <label className="inline-filter">
+                {t('records.carClass')}
+                <select value={filters.carClass} onChange={(e) => set('carClass', e.target.value)}>
+                  <option value="">{t('records.noClass')}</option>
+                  {records.data.classes.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <label className="inline-filter">
               {t('records.session')}
               <select value={filters.category} onChange={(e) => set('category', e.target.value)}>
@@ -112,7 +126,7 @@ export function RecordsPage() {
 function BoardCard({ board, onChange }: { board: Board; onChange: () => void }) {
   const { t, i18n } = useTranslation()
   const { mode } = useMode()
-  const car = board.car_id ? board.car_name : t('records.allCars')
+  const car = board.car_id ? board.car_name : board.car_name || t('records.allCars')
   const title = `${t(`records.category.${board.category}`)}: ${board.track_name} · ${board.layout_name} · ${car}`
   return (
     <article className="card board" aria-label={title}>

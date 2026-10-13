@@ -109,6 +109,9 @@ class BallotOption(models.Model):
     track_layout = models.ForeignKey(
         TrackLayout, null=True, blank=True, on_delete=models.PROTECT, related_name="+"
     )
+    car_class = models.ForeignKey(
+        "catalog.CarClass", null=True, blank=True, on_delete=models.PROTECT, related_name="+"
+    )
     selected = models.BooleanField(default=False)
     selected_by = models.CharField(max_length=10, choices=Source.choices, blank=True)
     origin = models.ForeignKey(

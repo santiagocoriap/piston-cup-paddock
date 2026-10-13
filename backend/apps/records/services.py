@@ -13,6 +13,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from apps.audit.services import record
+from apps.catalog.models import classes_of
 from apps.competition.models import Attempt, Session
 from apps.competition.permissions import visible_championships
 from apps.imports.models import ImportedLap, ResultImport
@@ -138,6 +139,7 @@ def record_boards(
     category: str | None = None,
     season_id: int | None = None,
     overall: bool = False,
+    car_class_id: int | None = None,
 ):
     """The boards with filters. A season filter leaves out manual records, which have no
     season."""
@@ -152,6 +154,10 @@ def record_boards(
         laps = [lap for lap in laps if lap.car_id == car_id]
     if category is not None:
         laps = [lap for lap in laps if lap.category == category]
+    if car_class_id is not None:
+        # A class board: the laps of the cars that were in the class on the day of the lap.
+        laps = [lap for lap in laps if car_class_id in classes_of(lap.car_id, lap.date.date())]
+        overall = True
     return boards(laps, overall=overall), details
 
 

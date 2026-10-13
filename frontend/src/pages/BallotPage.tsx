@@ -194,6 +194,7 @@ function AdminPanel({ ballot, onChange }: { ballot: Ballot; onChange: () => void
   const navigate = useNavigate()
   const path = { ballot_id: ballot.id }
   const tracks = useLoad(() => api.GET('/api/catalog/tracks'), [])
+  const classes = useLoad(() => api.GET('/api/catalog/classes'), [])
   const users = useLoad(() => api.GET('/api/users'), [])
   const [error, setError] = useState<string | null>(null)
 
@@ -239,7 +240,9 @@ function AdminPanel({ ballot, onChange }: { ballot: Ballot; onChange: () => void
                 body:
                   ballot.kind === 'track'
                     ? { track_layout_id: Number(form.get('track_layout_id')) }
-                    : { label: String(form.get('label') ?? '') },
+                    : form.get('car_class_id')
+                      ? { car_class_id: Number(form.get('car_class_id')) }
+                      : { label: String(form.get('label') ?? '') },
               })
               if (!error) onChange()
               return error
@@ -262,10 +265,25 @@ function AdminPanel({ ballot, onChange }: { ballot: Ballot; onChange: () => void
                 </select>
               </label>
             ) : (
-              <label>
-                {t('voting.label')}
-                <input name="label" required maxLength={150} />
-              </label>
+              <>
+                {(classes.data?.length ?? 0) > 0 && (
+                  <label>
+                    {t('voting.carClass')}
+                    <select name="car_class_id" defaultValue="">
+                      <option value="">{t('voting.freeLabel')}</option>
+                      {classes.data?.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+                <label>
+                  {t('voting.label')}
+                  <input name="label" maxLength={150} />
+                </label>
+              </>
             )}
           </ActionForm>
 

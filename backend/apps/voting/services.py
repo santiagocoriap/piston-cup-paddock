@@ -8,7 +8,7 @@ from django.db.models import Count
 from django.utils import timezone
 
 from apps.audit.services import change, record
-from apps.catalog.models import TrackLayout
+from apps.catalog.models import CarClass, TrackLayout
 from apps.competition.calendar import fixed_layout_ids, next_round_number, voted_slots
 from apps.competition.models import ChampionshipMember, Round, Season
 from apps.results.services import current_lines
@@ -119,9 +119,21 @@ def _plain(value):
     return value.isoformat() if hasattr(value, "isoformat") else value
 
 
-def add_option(ballot: Ballot, user, *, label: str = "", layout_id: int | None = None):
+def add_option(
+    ballot: Ballot,
+    user,
+    *,
+    label: str = "",
+    layout_id: int | None = None,
+    car_class_id: int | None = None,
+):
     _require(ballot.status == Ballot.State.DRAFT, "ballot_not_draft")
     layout = None
+    car_class = None
+    if ballot.kind == Ballot.Kind.CAR_CLASS and car_class_id is not None:
+        car_class = CarClass.objects.filter(pk=car_class_id).first()
+        _require(car_class is not None, "class_required")
+        label = car_class.name
     if ballot.kind == Ballot.Kind.TRACK:
         _require(layout_id is not None, "layout_required")
         layout = TrackLayout.objects.select_related("track").filter(pk=layout_id).first()
@@ -135,7 +147,9 @@ def add_option(ballot: Ballot, user, *, label: str = "", layout_id: int | None =
     _require(bool(label.strip()), "label_required")
     _require(not ballot.options.filter(label=label).exists(), "option_exists")
     with transaction.atomic():
-        option = BallotOption.objects.create(ballot=ballot, label=label, track_layout=layout)
+        option = BallotOption.objects.create(
+            ballot=ballot, label=label, track_layout=layout, car_class=car_class
+        )
         _audit(user, "ballot.option_added", ballot, changes=[change("option", None, label)])
     return option
 

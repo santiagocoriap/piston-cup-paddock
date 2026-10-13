@@ -263,7 +263,9 @@
     "protest_not_decided": "The protest has no decision yet.",
     "already_appealed": "You already appealed this protest.",
     "no_open_appeal": "There is no open appeal.",
-    "same_decider": "Another person must decide the appeal."
+    "same_decider": "Another person must decide the appeal.",
+    "class_exists": "A class with this name already exists.",
+    "class_required": "Choose a class."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -396,7 +398,9 @@
       "driver.merged": "{{actor}} merged profile {{old}} into {{kept}}.",
       "protest.evidence": "{{actor}} added evidence to protest {{protest}}.",
       "protest.appealed": "{{actor}} appealed protest {{protest}}.",
-      "protest.appeal_decided": "{{actor}} decided the appeal of protest {{protest}}: {{outcome}}."
+      "protest.appeal_decided": "{{actor}} decided the appeal of protest {{protest}}: {{outcome}}.",
+      "class.created": "{{actor}} created the class {{name}}.",
+      "class.cars_changed": "{{actor}} changed the cars of the class {{name}}."
     },
     "fields": {
       "role": "Role",
@@ -688,7 +692,9 @@
     "addManual": "Add historical record",
     "championship": "Championship",
     "time": "Time (m:ss.mmm)",
-    "manualSourceLabel": "Source (screenshot, video, old file)"
+    "manualSourceLabel": "Source (screenshot, video, old file)",
+    "carClass": "Class",
+    "noClass": "No class"
   },
   "voting": {
     "title": "Ballots",
@@ -788,7 +794,9 @@
     "showVoterNames": "Show who voted (not what they chose)",
     "votedNames": "Voted: {{names}}",
     "remindNow": "Remind the drivers who did not vote",
-    "reminded": "Reminder sent."
+    "reminded": "Reminder sent.",
+    "carClass": "Class",
+    "freeLabel": "Free text (below)"
   },
   "calendar": {
     "fixed": "Reserve a fixed track",
@@ -1419,5 +1427,18 @@
     "outcome": "Outcome",
     "decision": "Decision",
     "appealHelp": "If you uphold the appeal, change the penalties with the normal tools. If you decided the protest, another person decides the appeal."
+  },
+  "classes": {
+    "title": "Car classes",
+    "none": "There are no classes yet.",
+    "new": "New class",
+    "name": "Name",
+    "noCars": "No cars.",
+    "editCars": "Change cars",
+    "carsOf": "Cars of {{name}}",
+    "cars": "Cars",
+    "reason": "Reason for the change",
+    "history": "History",
+    "today": "today"
   }
 }

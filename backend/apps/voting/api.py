@@ -62,6 +62,7 @@ class BallotIn(BallotSettingsIn):
 class OptionIn(Schema):
     label: str = Field("", max_length=150)
     track_layout_id: int | None = None
+    car_class_id: int | None = None
 
 
 class VoteIn(Schema):
@@ -81,6 +82,7 @@ class OptionOut(Schema):
     id: int
     label: str
     track_layout_id: int | None
+    car_class_id: int | None = None
     selected: bool
     selected_by: str
     votes: int | None  # None when the totals are hidden from this user.
@@ -267,6 +269,7 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
                 id=o.id,
                 label=o.label,
                 track_layout_id=o.track_layout_id,
+                car_class_id=o.car_class_id,
                 selected=o.selected,
                 selected_by=o.selected_by,
                 votes=counts[o.id] if totals_visible else None,
@@ -334,7 +337,11 @@ def create_option(request, ballot_id: int, payload: OptionIn):
     _manager(request.user, ballot)
     _run(
         lambda: add_option(
-            ballot, request.user, label=payload.label, layout_id=payload.track_layout_id
+            ballot,
+            request.user,
+            label=payload.label,
+            layout_id=payload.track_layout_id,
+            car_class_id=payload.car_class_id,
         )
     )
     return _detail(request.user, ballot)

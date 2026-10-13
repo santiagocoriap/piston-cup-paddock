@@ -9,7 +9,7 @@ from ninja import Field, Router, Schema, Status
 from ninja.errors import HttpError
 
 from apps.audit.services import record
-from apps.catalog.models import Car, TrackLayout
+from apps.catalog.models import Car, CarClass, TrackLayout
 from apps.competition.models import Championship, Season
 from apps.competition.permissions import can, can_view, visible_championships
 from apps.identity.models import DriverProfile
@@ -71,6 +71,7 @@ class LayoutOption(Schema):
 class RecordsOut(Schema):
     layouts: list[LayoutOption]
     cars: list[LayoutOption]
+    classes: list[LayoutOption]
     seasons: list[LayoutOption]
     boards: list[BoardOut]
 
@@ -156,11 +157,18 @@ def get_records(
     category: Literal["qualifying", "race"] | None = None,
     season_id: int | None = None,
     overall: bool = False,
+    car_class_id: int | None = None,
 ):
     every, _ = record_boards(request.user)
     all_boards, details = record_boards(
-        request.user, car_id=car_id, category=category, season_id=season_id, overall=overall
+        request.user,
+        car_id=car_id,
+        category=category,
+        season_id=season_id,
+        overall=overall,
+        car_class_id=car_class_id,
     )
+    car_class = CarClass.objects.filter(pk=car_class_id).first() if car_class_id else None
     layout_ids = sorted({b.layout_id for b in every})
     layouts = {
         layout.id: layout
@@ -181,6 +189,7 @@ def get_records(
             for i in layout_ids
         ],
         cars=[LayoutOption(id=c.id, name=c.name) for c in sorted(cars.values(), key=str)],
+        classes=[LayoutOption(id=c.id, name=c.name) for c in CarClass.objects.all()],
         seasons=[LayoutOption(id=s.id, name=f"{s.championship.name} {s.name}") for s in seasons],
         boards=[
             BoardOut(
@@ -188,7 +197,7 @@ def get_records(
                 track_name=layouts[b.layout_id].track.name,
                 layout_name=layouts[b.layout_id].name,
                 car_id=b.car_id,
-                car_name=cars[b.car_id].name if b.car_id else "",
+                car_name=cars[b.car_id].name if b.car_id else (car_class.name if car_class else ""),
                 category=b.category,
                 record_ms=b.record_ms,
                 holders=[_lap_out(request.user, h, details) for h in b.holders],

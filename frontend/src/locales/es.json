@@ -263,7 +263,9 @@
     "protest_not_decided": "La protesta todavía no tiene decisión.",
     "already_appealed": "Ya apelaste esta protesta.",
     "no_open_appeal": "No hay apelación pendiente.",
-    "same_decider": "Otra persona tiene que decidir la apelación."
+    "same_decider": "Otra persona tiene que decidir la apelación.",
+    "class_exists": "Ya existe una clase con ese nombre.",
+    "class_required": "Elegí una clase."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -396,7 +398,9 @@
       "driver.merged": "{{actor}} unió el perfil {{old}} con {{kept}}.",
       "protest.evidence": "{{actor}} agregó una prueba a la protesta {{protest}}.",
       "protest.appealed": "{{actor}} apeló la protesta {{protest}}.",
-      "protest.appeal_decided": "{{actor}} decidió la apelación de la protesta {{protest}}: {{outcome}}."
+      "protest.appeal_decided": "{{actor}} decidió la apelación de la protesta {{protest}}: {{outcome}}.",
+      "class.created": "{{actor}} creó la clase {{name}}.",
+      "class.cars_changed": "{{actor}} cambió los autos de la clase {{name}}."
     },
     "fields": {
       "role": "Rol",
@@ -688,7 +692,9 @@
     "addManual": "Agregar récord histórico",
     "championship": "Campeonato",
     "time": "Tiempo (m:ss.mmm)",
-    "manualSourceLabel": "Fuente (captura, video, archivo viejo)"
+    "manualSourceLabel": "Fuente (captura, video, archivo viejo)",
+    "carClass": "Clase",
+    "noClass": "Sin clase"
   },
   "voting": {
     "title": "Votaciones",
@@ -788,7 +794,9 @@
     "showVoterNames": "Mostrar quién votó (no qué votó)",
     "votedNames": "Ya votaron: {{names}}",
     "remindNow": "Recordar ahora a quien no votó",
-    "reminded": "Recordatorio enviado."
+    "reminded": "Recordatorio enviado.",
+    "carClass": "Clase",
+    "freeLabel": "Texto libre (abajo)"
   },
   "calendar": {
     "fixed": "Reservar pista fija",
@@ -1419,5 +1427,18 @@
     "outcome": "Resultado",
     "decision": "Decisión",
     "appealHelp": "Si aceptás la apelación, cambiá las sanciones con las herramientas de siempre. Si decidiste la protesta, otra persona decide la apelación."
+  },
+  "classes": {
+    "title": "Clases de autos",
+    "none": "Todavía no hay clases.",
+    "new": "Nueva clase",
+    "name": "Nombre",
+    "noCars": "Sin autos.",
+    "editCars": "Cambiar autos",
+    "carsOf": "Autos de {{name}}",
+    "cars": "Autos",
+    "reason": "Motivo del cambio",
+    "history": "Historial",
+    "today": "hoy"
   }
 }

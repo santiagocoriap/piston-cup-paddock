@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -47,3 +48,44 @@ class Car(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class CarClass(models.Model):
+    """A group of cars, for example GT3 or LMDh. Ballots, entries, and records use it."""
+
+    name = models.CharField(max_length=60, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
+class CarClassMembership(models.Model):
+    """A car is in a class from valid_from until valid_to. An open row has no valid_to. A
+    change closes the old row and opens a new one, so the history stays."""
+
+    car_class = models.ForeignKey(CarClass, on_delete=models.CASCADE, related_name="memberships")
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="class_memberships")
+    valid_from = models.DateField()
+    valid_to = models.DateField(null=True, blank=True)
+    reason = models.CharField(max_length=300, blank=True)
+    changed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+
+    class Meta:
+        ordering = ["car_class", "car", "valid_from"]
+
+    def __str__(self):
+        return f"{self.car} in {self.car_class}"
+
+
+def classes_of(car_id: int, day) -> list[int]:
+    """The classes of a car on a day."""
+    rows = CarClassMembership.objects.filter(car_id=car_id, valid_from__lte=day).filter(
+        models.Q(valid_to__isnull=True) | models.Q(valid_to__gte=day)
+    )
+    return list(rows.values_list("car_class_id", flat=True))

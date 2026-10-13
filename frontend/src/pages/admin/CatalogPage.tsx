@@ -4,6 +4,7 @@ import type { components } from '../../api/schema'
 import { ActionForm } from '../../components/ActionForm'
 import { Loading } from '../../components/Layout'
 import { useLoad } from '../../lib/useLoad'
+import { CarClassesSection } from './CarClassesSection'
 
 export function CatalogPage() {
   const { t } = useTranslation()
@@ -42,6 +43,8 @@ export function CatalogPage() {
           </li>
         ))}
       </ul>
+
+      {cars.data && <CarClassesSection cars={cars.data} />}
 
       <div className="forms">
         <ActionForm
