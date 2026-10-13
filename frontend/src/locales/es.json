@@ -265,7 +265,8 @@
     "no_open_appeal": "No hay apelación pendiente.",
     "same_decider": "Otra persona tiene que decidir la apelación.",
     "class_exists": "Ya existe una clase con ese nombre.",
-    "class_required": "Elegí una clase."
+    "class_required": "Elegí una clase.",
+    "pool_empty": "El pool de condiciones de la temporada está vacío."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -400,7 +401,10 @@
       "protest.appealed": "{{actor}} apeló la protesta {{protest}}.",
       "protest.appeal_decided": "{{actor}} decidió la apelación de la protesta {{protest}}: {{outcome}}.",
       "class.created": "{{actor}} creó la clase {{name}}.",
-      "class.cars_changed": "{{actor}} cambió los autos de la clase {{name}}."
+      "class.cars_changed": "{{actor}} cambió los autos de la clase {{name}}.",
+      "round.conditions_drawn": "{{actor}} sorteó las condiciones de la fecha {{number}} ({{track}}).",
+      "round.conditions_redrawn": "{{actor}} volvió a sortear las condiciones de la fecha {{number}} ({{track}}).",
+      "season.conditions_pool": "{{actor}} cambió el pool de condiciones de {{season}}."
     },
     "fields": {
       "role": "Rol",
@@ -1440,5 +1444,17 @@
     "reason": "Motivo del cambio",
     "history": "Historial",
     "today": "hoy"
+  },
+  "draw": {
+    "button": "Sortear condiciones",
+    "reasonPrompt": "Ya hubo un sorteo. ¿Por qué se sortea de nuevo?",
+    "poolTitle": "Pool de condiciones para sortear",
+    "poolHelp": "Valores separados por coma. El sorteo elige uno de cada lista y una temperatura dentro de cada rango. Una lista vacía queda afuera.",
+    "airMin": "Aire mín. °C",
+    "airMax": "Aire máx. °C",
+    "trackMin": "Pista mín. °C",
+    "trackMax": "Pista máx. °C",
+    "history_one": "{{count}} sorteo",
+    "history_other": "{{count}} sorteos"
   }
 }

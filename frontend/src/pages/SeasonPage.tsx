@@ -14,6 +14,7 @@ import { RulesSection } from './RulesSection'
 import { SafetySection } from './SafetySection'
 import { TitleSection } from './TitleSection'
 import { HandicapsSection } from './HandicapsSection'
+import { ConditionsPoolForm } from './ConditionsDraw'
 
 export function SeasonPage() {
   const { t, i18n } = useTranslation()
@@ -167,6 +168,7 @@ export function SeasonPage() {
       )}
 
       {adminView && <CalendarAdmin season={data} onChange={season.reload} />}
+      {adminView && <ConditionsPoolForm seasonId={seasonId} />}
       {adminView && <CloneSeasonForm seasonId={seasonId} />}
 
       <BallotsSection seasonId={seasonId} championshipId={data.championship_id} adminView={adminView} />

@@ -1702,6 +1702,180 @@
         ]
       }
     },
+    "/api/seasons/{season_id}/conditions-pool": {
+      "get": {
+        "operationId": "apps_competition_api_get_pool",
+        "summary": "Get Pool",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoolOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "apps_competition_api_set_pool",
+        "summary": "Set Pool",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoolOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PoolIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/conditions-draws": {
+      "get": {
+        "operationId": "apps_competition_api_list_draws",
+        "summary": "List Draws",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DrawOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/draw-conditions": {
+      "post": {
+        "operationId": "apps_competition_api_draw_conditions",
+        "summary": "Draw Conditions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DrawOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DrawIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/rounds/{round_id}": {
       "get": {
         "operationId": "apps_results_api_get_round",
@@ -7307,6 +7481,219 @@
           "name"
         ],
         "title": "CloneIn",
+        "type": "object"
+      },
+      "PoolOut": {
+        "properties": {
+          "weather": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Weather",
+            "type": "array"
+          },
+          "time_of_day": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Time Of Day",
+            "type": "array"
+          },
+          "grip": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Grip",
+            "type": "array"
+          },
+          "air_temp_min": {
+            "anyOf": [
+              {
+                "maximum": 60,
+                "minimum": -30,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Air Temp Min"
+          },
+          "air_temp_max": {
+            "anyOf": [
+              {
+                "maximum": 60,
+                "minimum": -30,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Air Temp Max"
+          },
+          "track_temp_min": {
+            "anyOf": [
+              {
+                "maximum": 80,
+                "minimum": -30,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Temp Min"
+          },
+          "track_temp_max": {
+            "anyOf": [
+              {
+                "maximum": 80,
+                "minimum": -30,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Temp Max"
+          }
+        },
+        "title": "PoolOut",
+        "type": "object"
+      },
+      "PoolIn": {
+        "properties": {
+          "weather": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Weather",
+            "type": "array"
+          },
+          "time_of_day": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Time Of Day",
+            "type": "array"
+          },
+          "grip": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Grip",
+            "type": "array"
+          },
+          "air_temp_min": {
+            "anyOf": [
+              {
+                "maximum": 60,
+                "minimum": -30,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Air Temp Min"
+          },
+          "air_temp_max": {
+            "anyOf": [
+              {
+                "maximum": 60,
+                "minimum": -30,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Air Temp Max"
+          },
+          "track_temp_min": {
+            "anyOf": [
+              {
+                "maximum": 80,
+                "minimum": -30,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Temp Min"
+          },
+          "track_temp_max": {
+            "anyOf": [
+              {
+                "maximum": 80,
+                "minimum": -30,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Temp Max"
+          }
+        },
+        "title": "PoolIn",
+        "type": "object"
+      },
+      "DrawOut": {
+        "properties": {
+          "values": {
+            "additionalProperties": true,
+            "title": "Values",
+            "type": "object"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "drawn_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drawn By"
+          },
+          "drawn_at": {
+            "format": "date-time",
+            "title": "Drawn At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "values",
+          "reason",
+          "drawn_by",
+          "drawn_at"
+        ],
+        "title": "DrawOut",
+        "type": "object"
+      },
+      "DrawIn": {
+        "properties": {
+          "reason": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "title": "DrawIn",
         "type": "object"
       },
       "BriefingOut": {

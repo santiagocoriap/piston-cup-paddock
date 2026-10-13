@@ -6,6 +6,7 @@ import type { components } from '../api/schema'
 import { ActionForm } from '../components/ActionForm'
 import { errorMessage } from '../lib/errors'
 import { useLoad } from '../lib/useLoad'
+import { drawConditions } from '../lib/drawConditions'
 
 type RoundOut = components['schemas']['RoundOut']
 
@@ -34,6 +35,17 @@ export function RoundTools({ round, onChange }: { round: RoundOut; onChange: () 
       </button>{' '}
       <button type="button" className="secondary small" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
         {t('roundTools.replace')}
+      </button>{' '}
+      <button
+        type="button"
+        className="secondary small"
+        onClick={async () => {
+          const problem = await drawConditions(round.id, t)
+          if (problem) setError(problem)
+          else onChange()
+        }}
+      >
+        {t('draw.button')}
       </button>
       {open && (
         <ActionForm

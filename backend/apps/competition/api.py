@@ -16,10 +16,12 @@ from apps.identity.models import DriverProfile, User
 from apps.rules.models import RulesVersion
 
 from .calendar import fixed_layout_ids, next_round_number, voted_slots
+from .conditions import DrawError, draw
 from .models import (
     Championship,
     ChampionshipMember,
     ChampionshipRole,
+    ConditionsPool,
     League,
     Round,
     RoundTrackChange,
@@ -840,3 +842,88 @@ def clone_season(request, season_id: int, payload: CloneIn):
             params={"season": season.name, "source": source.name},
         )
     return Status(201, _season_summary(season))
+
+
+class PoolIn(Schema):
+    weather: list[str] = Field(default_factory=list, max_length=20)
+    time_of_day: list[str] = Field(default_factory=list, max_length=20)
+    grip: list[str] = Field(default_factory=list, max_length=20)
+    air_temp_min: int | None = Field(None, ge=-30, le=60)
+    air_temp_max: int | None = Field(None, ge=-30, le=60)
+    track_temp_min: int | None = Field(None, ge=-30, le=80)
+    track_temp_max: int | None = Field(None, ge=-30, le=80)
+
+
+class PoolOut(PoolIn):
+    pass
+
+
+class DrawIn(Schema):
+    reason: str = Field("", max_length=500)
+
+
+class DrawOut(Schema):
+    values: dict
+    reason: str
+    drawn_by: str | None
+    drawn_at: AwareDatetime
+
+
+def _pool_out(season: Season) -> PoolOut:
+    pool = ConditionsPool.objects.filter(season=season).first()
+    if pool is None:
+        return PoolOut()
+    return PoolOut(**{name: getattr(pool, name) for name in PoolIn.model_fields})
+
+
+@router.get("/seasons/{season_id}/conditions-pool", response=PoolOut)
+def get_pool(request, season_id: int):
+    return _pool_out(_visible_season(request.user, season_id))
+
+
+@router.put("/seasons/{season_id}/conditions-pool", response=PoolOut)
+def set_pool(request, season_id: int, payload: PoolIn):
+    season = _visible_season(request.user, season_id)
+    require(can_manage(request.user, season.championship))
+    clean = {
+        name: [v.strip()[:50] for v in getattr(payload, name) if v.strip()]
+        for name in ("weather", "time_of_day", "grip")
+    }
+    fields = {**payload.dict(), **clean}
+    with transaction.atomic():
+        ConditionsPool.objects.update_or_create(season=season, defaults=fields)
+        record(
+            request.user,
+            "season.conditions_pool",
+            "season",
+            season.id,
+            championship=season.championship,
+            params={"season": season.name},
+        )
+    return _pool_out(season)
+
+
+@router.get("/rounds/{round_id}/conditions-draws", response=list[DrawOut])
+def list_draws(request, round_id: int):
+    round_ = get_object_or_404(Round.objects.select_related("season__championship"), pk=round_id)
+    if not can_view(request.user, round_.season.championship):
+        raise Http404
+    return [
+        DrawOut(
+            values=d.values,
+            reason=d.reason,
+            drawn_by=d.drawn_by.username if d.drawn_by else None,
+            drawn_at=d.drawn_at,
+        )
+        for d in round_.conditions_draws.select_related("drawn_by")
+    ]
+
+
+@router.post("/rounds/{round_id}/draw-conditions", response=list[DrawOut])
+def draw_conditions(request, round_id: int, payload: DrawIn):
+    round_ = _managed_round(request.user, round_id)
+    try:
+        draw(round_, request.user, payload.reason)
+    except DrawError as error:
+        raise HttpError(422, error.code) from error
+    return list_draws(request, round_id)

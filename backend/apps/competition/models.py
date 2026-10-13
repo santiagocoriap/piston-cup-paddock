@@ -208,3 +208,37 @@ class RoundTrackChange(models.Model):
 
     def __str__(self):
         return f"{self.round}: {self.old_layout} -> {self.new_layout}"
+
+
+class ConditionsPool(models.Model):
+    """The choices for the conditions draw of a season. An empty list leaves that value out."""
+
+    season = models.OneToOneField(Season, on_delete=models.CASCADE, related_name="conditions_pool")
+    weather = models.JSONField(default=list)
+    time_of_day = models.JSONField(default=list)
+    grip = models.JSONField(default=list)
+    air_temp_min = models.SmallIntegerField(null=True, blank=True)
+    air_temp_max = models.SmallIntegerField(null=True, blank=True)
+    track_temp_min = models.SmallIntegerField(null=True, blank=True)
+    track_temp_max = models.SmallIntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Conditions pool of {self.season}"
+
+
+class ConditionsDraw(models.Model):
+    """One draw of the conditions of a round. A new draw keeps the earlier ones here."""
+
+    round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name="conditions_draws")
+    values = models.JSONField()
+    reason = models.TextField(blank=True)  # Required for a new draw after the first.
+    drawn_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    drawn_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["drawn_at", "id"]
+
+    def __str__(self):
+        return f"Draw for {self.round}"

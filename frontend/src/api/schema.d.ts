@@ -625,6 +625,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/seasons/{season_id}/conditions-pool": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Pool */
+        get: operations["apps_competition_api_get_pool"];
+        /** Set Pool */
+        put: operations["apps_competition_api_set_pool"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/conditions-draws": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Draws */
+        get: operations["apps_competition_api_list_draws"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/draw-conditions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Draw Conditions */
+        post: operations["apps_competition_api_draw_conditions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/rounds/{round_id}": {
         parameters: {
             query?: never;
@@ -2672,6 +2724,64 @@ export interface components {
         CloneIn: {
             /** Name */
             name: string;
+        };
+        /** PoolOut */
+        PoolOut: {
+            /** Weather */
+            weather?: string[];
+            /** Time Of Day */
+            time_of_day?: string[];
+            /** Grip */
+            grip?: string[];
+            /** Air Temp Min */
+            air_temp_min?: number | null;
+            /** Air Temp Max */
+            air_temp_max?: number | null;
+            /** Track Temp Min */
+            track_temp_min?: number | null;
+            /** Track Temp Max */
+            track_temp_max?: number | null;
+        };
+        /** PoolIn */
+        PoolIn: {
+            /** Weather */
+            weather?: string[];
+            /** Time Of Day */
+            time_of_day?: string[];
+            /** Grip */
+            grip?: string[];
+            /** Air Temp Min */
+            air_temp_min?: number | null;
+            /** Air Temp Max */
+            air_temp_max?: number | null;
+            /** Track Temp Min */
+            track_temp_min?: number | null;
+            /** Track Temp Max */
+            track_temp_max?: number | null;
+        };
+        /** DrawOut */
+        DrawOut: {
+            /** Values */
+            values: {
+                [key: string]: unknown;
+            };
+            /** Reason */
+            reason: string;
+            /** Drawn By */
+            drawn_by: string | null;
+            /**
+             * Drawn At
+             * Format: date-time
+             */
+            drawn_at: string;
+        };
+        /** DrawIn */
+        DrawIn: {
+            /**
+             * Reason
+             * @default
+             */
+            reason?: string;
         };
         /** BriefingOut */
         BriefingOut: {
@@ -6350,6 +6460,102 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SeasonSummary"];
+                };
+            };
+        };
+    };
+    apps_competition_api_get_pool: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PoolOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_set_pool: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PoolIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PoolOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_list_draws: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DrawOut"][];
+                };
+            };
+        };
+    };
+    apps_competition_api_draw_conditions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DrawIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DrawOut"][];
                 };
             };
         };

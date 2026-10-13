@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { components } from '../api/schema'
 import { EventTime } from '../components/EventTime'
+import { DrawHistory } from './ConditionsDraw'
 
 type RoundDetail = components['schemas']['RoundDetail']
 
@@ -51,7 +52,8 @@ export function Briefing({ round }: { round: RoundDetail }) {
                     {String((conditions as Record<string, unknown>)[key])}
                     {unit}
                   </dd>
-                </div>
+                  <DrawHistory roundId={round.id} />
+        </div>
               ))}
             </dl>
           )}

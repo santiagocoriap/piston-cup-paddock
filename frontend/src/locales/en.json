@@ -265,7 +265,8 @@
     "no_open_appeal": "There is no open appeal.",
     "same_decider": "Another person must decide the appeal.",
     "class_exists": "A class with this name already exists.",
-    "class_required": "Choose a class."
+    "class_required": "Choose a class.",
+    "pool_empty": "The conditions pool of the season is empty."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -400,7 +401,10 @@
       "protest.appealed": "{{actor}} appealed protest {{protest}}.",
       "protest.appeal_decided": "{{actor}} decided the appeal of protest {{protest}}: {{outcome}}.",
       "class.created": "{{actor}} created the class {{name}}.",
-      "class.cars_changed": "{{actor}} changed the cars of the class {{name}}."
+      "class.cars_changed": "{{actor}} changed the cars of the class {{name}}.",
+      "round.conditions_drawn": "{{actor}} drew the conditions of round {{number}} ({{track}}).",
+      "round.conditions_redrawn": "{{actor}} drew the conditions of round {{number}} ({{track}}) again.",
+      "season.conditions_pool": "{{actor}} changed the conditions pool of {{season}}."
     },
     "fields": {
       "role": "Role",
@@ -1440,5 +1444,17 @@
     "reason": "Reason for the change",
     "history": "History",
     "today": "today"
+  },
+  "draw": {
+    "button": "Draw conditions",
+    "reasonPrompt": "There is already a draw. Why draw again?",
+    "poolTitle": "Conditions pool for the draw",
+    "poolHelp": "Values separated by commas. The draw picks one from each list and a temperature inside each range. An empty list stays out.",
+    "airMin": "Air min °C",
+    "airMax": "Air max °C",
+    "trackMin": "Track min °C",
+    "trackMax": "Track max °C",
+    "history_one": "{{count}} draw",
+    "history_other": "{{count}} draws"
   }
 }
