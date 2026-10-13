@@ -95,7 +95,7 @@ def test_race_and_qualifying_laps_make_separate_records(admin, raced):
 def test_record_shows_conditions_handicaps_and_provenance(admin, raced):
     admin.post(f"/rounds/{raced.id}/result/approve")
     holder = board(admin, "race")["holders"][0]
-    assert holder["conditions"] is None
+    assert holder["conditions"] == {}  # The round announced no conditions.
     assert (holder["ballast_kg"], holder["restrictor"]) == (8, 0)
     assert holder["source_file"] == "2026_10_11_20_7_RACE.json"
     assert len(holder["sectors_ms"]) == 3

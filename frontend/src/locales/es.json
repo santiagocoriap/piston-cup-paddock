@@ -353,7 +353,10 @@
       "result.recalculated": "{{actor}} recalculó la fecha {{number}} ({{track}}) con el reglamento {{version}}.",
       "career.adjusted": "{{actor}} ajustó la carrera de {{driver}} ({{kind}} {{points}}).",
       "championship.settings": "{{actor}} cambió la configuración de {{name}}.",
-      "layout.guidance": "{{actor}} cambió la guía de reinicios de {{name}}."
+      "layout.guidance": "{{actor}} cambió la guía de reinicios de {{name}}.",
+      "record.manual_added": "{{actor}} agregó un récord histórico de {{driver}} en {{track}}.",
+      "record.manual_verified": "{{actor}} verificó el récord histórico de {{driver}} en {{track}}.",
+      "record.manual_removed": "{{actor}} borró el récord histórico de {{driver}} en {{track}}."
     },
     "fields": {
       "role": "Rol",
@@ -625,7 +628,27 @@
       "dsq": "piloto descalificado"
     },
     "invalidate": "Anular vuelta",
-    "invalidateReason": "Motivo para anular la vuelta"
+    "invalidateReason": "Motivo para anular la vuelta",
+    "filters": "Filtros",
+    "car": "Auto",
+    "allCars": "Todos los autos",
+    "session": "Sesión",
+    "allSessions": "Clasificación y carrera",
+    "season": "Temporada",
+    "allTime": "Todas las temporadas",
+    "overall": "Récord absoluto (sin importar el auto)",
+    "air": "aire",
+    "track": "pista",
+    "verified": "verificado",
+    "unverified": "sin verificar",
+    "manualSource": "Cargado a mano. Fuente: {{source}}",
+    "verify": "Verificar",
+    "remove": "Borrar",
+    "confirmRemove": "¿Borrar este récord histórico?",
+    "addManual": "Agregar récord histórico",
+    "championship": "Campeonato",
+    "time": "Tiempo (m:ss.mmm)",
+    "manualSourceLabel": "Fuente (captura, video, archivo viejo)"
   },
   "voting": {
     "title": "Votaciones",

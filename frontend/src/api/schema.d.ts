@@ -918,6 +918,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/records/manual": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Manual */
+        post: operations["apps_records_api_add_manual"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/records/manual/{record_id}/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Verify Manual */
+        post: operations["apps_records_api_verify_manual"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/records/manual/{record_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Manual */
+        delete: operations["apps_records_api_delete_manual"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/seasons/{season_id}/ballots": {
         parameters: {
             query?: never;
@@ -3400,7 +3451,9 @@ export interface components {
             /** Restrictor */
             restrictor: number;
             /** Conditions */
-            conditions: string | null;
+            conditions: {
+                [key: string]: unknown;
+            };
             /** Source File */
             source_file: string;
             /** Uploaded By */
@@ -3409,11 +3462,29 @@ export interface components {
             ineligible_reason: string | null;
             /** Can Invalidate */
             can_invalidate: boolean;
+            /**
+             * Manual
+             * @default false
+             */
+            manual?: boolean;
+            /** Verified */
+            verified?: boolean | null;
+            /** Manual Id */
+            manual_id?: number | null;
+            /**
+             * Can Verify
+             * @default false
+             */
+            can_verify?: boolean;
         };
         /** RecordsOut */
         RecordsOut: {
             /** Layouts */
             layouts: components["schemas"]["LayoutOption"][];
+            /** Cars */
+            cars: components["schemas"]["LayoutOption"][];
+            /** Seasons */
+            seasons: components["schemas"]["LayoutOption"][];
             /** Boards */
             boards: components["schemas"]["BoardOut"][];
         };
@@ -3421,6 +3492,33 @@ export interface components {
         InvalidateIn: {
             /** Reason */
             reason: string;
+        };
+        /** ManualRecordIn */
+        ManualRecordIn: {
+            /** Championship Id */
+            championship_id: number;
+            /** Layout Id */
+            layout_id: number;
+            /** Car Id */
+            car_id: number;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "qualifying" | "race";
+            /** Lap Time Ms */
+            lap_time_ms: number;
+            /** Driver Id */
+            driver_id?: number | null;
+            /** Driver Name */
+            driver_name: string;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Source */
+            source: string;
         };
         /** BallotSummary */
         BallotSummary: {
@@ -6268,6 +6366,10 @@ export interface operations {
         parameters: {
             query?: {
                 layout_id?: number | null;
+                car_id?: number | null;
+                category?: ("qualifying" | "race") | null;
+                season_id?: number | null;
+                overall?: boolean;
             };
             header?: never;
             path?: never;
@@ -6300,6 +6402,68 @@ export interface operations {
                 "application/json": components["schemas"]["InvalidateIn"];
             };
         };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_records_api_add_manual: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManualRecordIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_records_api_verify_manual: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                record_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_records_api_delete_manual: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                record_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description No Content */
             204: {

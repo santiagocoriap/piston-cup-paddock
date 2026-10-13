@@ -24,6 +24,7 @@ class RecordLap:
     date: datetime
     timestamp_ms: int
     ineligible_reason: str | None = None  # None means the lap can be a record.
+    season_id: int = 0  # 0 for a manual record, which has no season.
 
 
 @dataclass
@@ -66,10 +67,13 @@ def board(laps: Iterable[RecordLap]) -> list[HistoryItem]:
     return history
 
 
-def boards(laps: Iterable[RecordLap]) -> list[Board]:
+def boards(laps: Iterable[RecordLap], overall: bool = False) -> list[Board]:
+    """One board for each layout, car, and category. With overall, one board for each layout
+    and category: the car does not count, and the board has car ID 0."""
     groups: dict[tuple[int, int, str], list[RecordLap]] = {}
     for lap in laps:
-        groups.setdefault((lap.layout_id, lap.car_id, lap.category), []).append(lap)
+        car_id = 0 if overall else lap.car_id
+        groups.setdefault((lap.layout_id, car_id, lap.category), []).append(lap)
     result = []
     for (layout_id, car_id, category), group in groups.items():
         history = board(group)

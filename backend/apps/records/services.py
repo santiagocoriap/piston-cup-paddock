@@ -7,6 +7,8 @@ The rules for the first release (docs/LEAGUE_RULES.md):
   records. They stay in the history with the reason.
 """
 
+from datetime import UTC, datetime, time
+
 from django.db import transaction
 from django.utils import timezone
 
@@ -18,6 +20,7 @@ from apps.results.models import RaceResult
 from apps.rules.scoring import Status
 
 from .boards import RecordLap, boards
+from .models import ManualRecord
 
 CATEGORIES = {Session.Kind.QUALIFYING: "qualifying", Session.Kind.RACE: "race"}
 
@@ -92,15 +95,64 @@ def candidate_laps(user, layout_id: int | None = None) -> tuple[list[RecordLap],
                 date=round_.scheduled_at or lap.result_import.uploaded_at,
                 timestamp_ms=lap.timestamp_ms,
                 ineligible_reason=_reason(lap, category, dsq_by_round[round_.id]),
+                season_id=round_.season_id,
             )
         )
         details[lap.id] = lap
     return items, details
 
 
-def record_boards(user, layout_id: int | None = None):
+def manual_laps(user, layout_id: int | None = None) -> tuple[list[RecordLap], dict]:
+    """Manual records as record laps. A negative lap ID and entry ID mark them."""
+    items = ManualRecord.objects.select_related("layout__track", "car", "championship")
+    if user is not None:
+        items = items.filter(championship__in=visible_championships(user))
+    if layout_id is not None:
+        items = items.filter(layout_id=layout_id)
+    laps, details = [], {}
+    for item in items:
+        laps.append(
+            RecordLap(
+                lap_id=-item.id,
+                layout_id=item.layout_id,
+                car_id=item.car_id,
+                category=item.category,
+                lap_time_ms=item.lap_time_ms,
+                entry_id=-item.id,
+                driver_name=item.driver_name,
+                round_id=0,
+                round_number=0,
+                date=datetime.combine(item.date, time(), tzinfo=UTC),
+                timestamp_ms=0,
+            )
+        )
+        details[-item.id] = item
+    return laps, details
+
+
+def record_boards(
+    user,
+    layout_id: int | None = None,
+    *,
+    car_id: int | None = None,
+    category: str | None = None,
+    season_id: int | None = None,
+    overall: bool = False,
+):
+    """The boards with filters. A season filter leaves out manual records, which have no
+    season."""
     laps, details = candidate_laps(user, layout_id)
-    return boards(laps), details
+    if season_id is None:
+        manual, manual_details = manual_laps(user, layout_id)
+        laps += manual
+        details.update(manual_details)
+    else:
+        laps = [lap for lap in laps if lap.season_id == season_id]
+    if car_id is not None:
+        laps = [lap for lap in laps if lap.car_id == car_id]
+    if category is not None:
+        laps = [lap for lap in laps if lap.category == category]
+    return boards(laps, overall=overall), details
 
 
 def invalidate_lap(lap: ImportedLap, reason: str, user) -> ImportedLap:

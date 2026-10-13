@@ -353,7 +353,10 @@
       "result.recalculated": "{{actor}} recalculated round {{number}} ({{track}}) with rules version {{version}}.",
       "career.adjusted": "{{actor}} adjusted the career of {{driver}} ({{kind}} {{points}}).",
       "championship.settings": "{{actor}} changed the settings of {{name}}.",
-      "layout.guidance": "{{actor}} changed the restart guidance of {{name}}."
+      "layout.guidance": "{{actor}} changed the restart guidance of {{name}}.",
+      "record.manual_added": "{{actor}} added a historical record of {{driver}} at {{track}}.",
+      "record.manual_verified": "{{actor}} verified the historical record of {{driver}} at {{track}}.",
+      "record.manual_removed": "{{actor}} removed the historical record of {{driver}} at {{track}}."
     },
     "fields": {
       "role": "Role",
@@ -625,7 +628,27 @@
       "dsq": "driver disqualified"
     },
     "invalidate": "Invalidate the lap",
-    "invalidateReason": "Reason to invalidate the lap"
+    "invalidateReason": "Reason to invalidate the lap",
+    "filters": "Filters",
+    "car": "Car",
+    "allCars": "All cars",
+    "session": "Session",
+    "allSessions": "Qualifying and race",
+    "season": "Season",
+    "allTime": "All seasons",
+    "overall": "Overall record (any car)",
+    "air": "air",
+    "track": "track",
+    "verified": "verified",
+    "unverified": "unverified",
+    "manualSource": "Entered by hand. Source: {{source}}",
+    "verify": "Verify",
+    "remove": "Remove",
+    "confirmRemove": "Remove this historical record?",
+    "addManual": "Add historical record",
+    "championship": "Championship",
+    "time": "Time (m:ss.mmm)",
+    "manualSourceLabel": "Source (screenshot, video, old file)"
   },
   "voting": {
     "title": "Ballots",

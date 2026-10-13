@@ -2553,6 +2553,68 @@
               "title": "Layout Id"
             },
             "required": false
+          },
+          {
+            "in": "query",
+            "name": "car_id",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Car Id"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "qualifying",
+                    "race"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "season_id",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Season Id"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "overall",
+            "schema": {
+              "default": false,
+              "title": "Overall",
+              "type": "boolean"
+            },
+            "required": false
           }
         ],
         "responses": {
@@ -2610,6 +2672,96 @@
           },
           "required": true
         },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/records/manual": {
+      "post": {
+        "operationId": "apps_records_api_add_manual",
+        "summary": "Add Manual",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "records"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualRecordIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/records/manual/{record_id}/verify": {
+      "post": {
+        "operationId": "apps_records_api_verify_manual",
+        "summary": "Verify Manual",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "record_id",
+            "schema": {
+              "title": "Record Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "records"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/records/manual/{record_id}": {
+      "delete": {
+        "operationId": "apps_records_api_delete_manual",
+        "summary": "Delete Manual",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "record_id",
+            "schema": {
+              "title": "Record Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "records"
+        ],
         "security": [
           {
             "SessionAuth": []
@@ -9622,15 +9774,9 @@
             "type": "integer"
           },
           "conditions": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Conditions"
+            "additionalProperties": true,
+            "title": "Conditions",
+            "type": "object"
           },
           "source_file": {
             "title": "Source File",
@@ -9660,6 +9806,38 @@
           },
           "can_invalidate": {
             "title": "Can Invalidate",
+            "type": "boolean"
+          },
+          "manual": {
+            "default": false,
+            "title": "Manual",
+            "type": "boolean"
+          },
+          "verified": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verified"
+          },
+          "manual_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manual Id"
+          },
+          "can_verify": {
+            "default": false,
+            "title": "Can Verify",
             "type": "boolean"
           }
         },
@@ -9695,6 +9873,20 @@
             "title": "Layouts",
             "type": "array"
           },
+          "cars": {
+            "items": {
+              "$ref": "#/components/schemas/LayoutOption"
+            },
+            "title": "Cars",
+            "type": "array"
+          },
+          "seasons": {
+            "items": {
+              "$ref": "#/components/schemas/LayoutOption"
+            },
+            "title": "Seasons",
+            "type": "array"
+          },
           "boards": {
             "items": {
               "$ref": "#/components/schemas/BoardOut"
@@ -9705,6 +9897,8 @@
         },
         "required": [
           "layouts",
+          "cars",
+          "seasons",
           "boards"
         ],
         "title": "RecordsOut",
@@ -9723,6 +9917,76 @@
           "reason"
         ],
         "title": "InvalidateIn",
+        "type": "object"
+      },
+      "ManualRecordIn": {
+        "properties": {
+          "championship_id": {
+            "title": "Championship Id",
+            "type": "integer"
+          },
+          "layout_id": {
+            "title": "Layout Id",
+            "type": "integer"
+          },
+          "car_id": {
+            "title": "Car Id",
+            "type": "integer"
+          },
+          "category": {
+            "enum": [
+              "qualifying",
+              "race"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "lap_time_ms": {
+            "maximum": 3600000,
+            "minimum": 1000,
+            "title": "Lap Time Ms",
+            "type": "integer"
+          },
+          "driver_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Id"
+          },
+          "driver_name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "source": {
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "championship_id",
+          "layout_id",
+          "car_id",
+          "category",
+          "lap_time_ms",
+          "driver_name",
+          "date",
+          "source"
+        ],
+        "title": "ManualRecordIn",
         "type": "object"
       },
       "BallotSummary": {
