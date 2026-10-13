@@ -6089,6 +6089,44 @@
         "title": "EntryOption",
         "type": "object"
       },
+      "HandicapCheckOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "assigned_kg": {
+            "title": "Assigned Kg",
+            "type": "integer"
+          },
+          "assigned_pct": {
+            "title": "Assigned Pct",
+            "type": "integer"
+          },
+          "observed_kg": {
+            "title": "Observed Kg",
+            "type": "integer"
+          },
+          "observed_pct": {
+            "title": "Observed Pct",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "entry_id",
+          "driver_name",
+          "assigned_kg",
+          "assigned_pct",
+          "observed_kg",
+          "observed_pct"
+        ],
+        "title": "HandicapCheckOut",
+        "type": "object"
+      },
       "LineOut": {
         "properties": {
           "entry_id": {
@@ -6478,6 +6516,13 @@
             "title": "Can Manage",
             "type": "boolean"
           },
+          "handicap_checks": {
+            "items": {
+              "$ref": "#/components/schemas/HandicapCheckOut"
+            },
+            "title": "Handicap Checks",
+            "type": "array"
+          },
           "capabilities": {
             "items": {
               "type": "string"
@@ -6611,6 +6656,7 @@
           "scheduled_at",
           "event_timezone",
           "can_manage",
+          "handicap_checks",
           "capabilities",
           "can_protest",
           "briefing",
@@ -7900,6 +7946,28 @@
             },
             "title": "Warnings",
             "type": "array"
+          },
+          "assigned_ballast_kg": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assigned Ballast Kg"
+          },
+          "assigned_restrictor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assigned Restrictor"
           }
         },
         "required": [

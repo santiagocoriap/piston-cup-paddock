@@ -19,6 +19,7 @@ function round(canManage: boolean, result: unknown = null, extra: Record<string,
     versions: result ? [{ number: 1, kind: 'entry', reason: '', created_at: '2026-10-19T02:00:00Z', created_by: 'santi' }] : [],
     penalties: [],
     protests: [],
+    handicap_checks: [],
     ...extra,
     id: 9,
     number: 1,
@@ -97,6 +98,18 @@ describe('RoundPage', () => {
     expect(within(table).getByRole('row', { name: /Beto/ })).toHaveTextContent('+126.464')
     expect(within(table).getByRole('row', { name: /Ceci/ })).toHaveTextContent('+1 vuelta')
     expect(within(table).getByRole('columnheader', { name: 'Incidentes' })).toBeInTheDocument()
+  })
+
+  it('lists drivers who raced with other handicap values', async () => {
+    mockApi({
+      ...noRestarts,
+      'GET /api/rounds/9': () =>
+        json(200, round(false, null, {
+          handicap_checks: [{ entry_id: 1, driver_name: 'Ana', assigned_kg: 10, assigned_pct: 0, observed_kg: 8, observed_pct: 0 }],
+        })),
+    })
+    show(DRIVER)
+    expect(await screen.findByText('Ana: asignado 10 kg y 0 %, corrió con 8 kg y 0 %.')).toBeInTheDocument()
   })
 
   it('sends only the drivers who took part, with their positions', async () => {

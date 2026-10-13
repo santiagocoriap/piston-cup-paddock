@@ -197,3 +197,55 @@ def adjust(
             reason=reason,
         )
     return adjustment
+
+
+def assigned_values(round_: Round) -> dict[int, tuple[int, int]]:
+    """The ballast (kg) and restrictor (%) of each entry for this round. The saved values when
+    the round has a result, else the values that the drivers carry into the round."""
+    used = {
+        u.entry_id: (u.ballast_kg, u.restrictor_pct)
+        for u in UsedHandicap.objects.filter(round=round_)
+    }
+    if used:
+        return used
+    values = season_handicaps(round_.season, before_round=round_)
+    return {e.entry_id: (e.next_kg, e.next_pct) for e in values.entries}
+
+
+@dataclass
+class HandicapCheck:
+    entry_id: int
+    driver_name: str
+    assigned_kg: int
+    assigned_pct: int
+    observed_kg: int
+    observed_pct: int
+
+
+def handicap_checks(round_: Round) -> list[HandicapCheck]:
+    """The drivers whose race file shows other ballast or restrictor than assigned."""
+    from apps.competition.models import Session
+    from apps.imports.models import ImportedLap, ResultImport
+
+    race_import = (
+        ResultImport.objects.filter(
+            round=round_, session__kind=Session.Kind.RACE, status=ResultImport.State.APPLIED
+        )
+        .order_by("-applied_at")
+        .first()
+    )
+    if race_import is None:
+        return []
+    assigned = assigned_values(round_)
+    observed: dict[int, tuple[int, int, str]] = {}
+    laps = ImportedLap.objects.filter(result_import=race_import, entry__isnull=False)
+    for lap in laps.select_related("entry__driver").order_by("lap_number"):
+        observed.setdefault(
+            lap.entry_id, (lap.ballast_kg, lap.restrictor, lap.entry.driver.display_name)
+        )
+    checks = []
+    for entry_id, (kg, pct, name) in observed.items():
+        expected = assigned.get(entry_id)
+        if expected and (kg, pct) != expected:
+            checks.append(HandicapCheck(entry_id, name, expected[0], expected[1], kg, pct))
+    return sorted(checks, key=lambda c: c.driver_name)

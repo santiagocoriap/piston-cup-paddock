@@ -274,7 +274,9 @@
     "timeGap": "Tiempo / diferencia",
     "incidents": "Incidentes",
     "lapsDown_one": "+{{count}} vuelta",
-    "lapsDown_other": "+{{count}} vueltas"
+    "lapsDown_other": "+{{count}} vueltas",
+    "handicapChecks": "Lastre o restrictor distinto al asignado",
+    "handicapCheck": "{{name}}: asignado {{assignedKg}} kg y {{assignedPct}} %, corrió con {{observedKg}} kg y {{observedPct}} %."
   },
   "mode": {
     "label": "Modo",
@@ -551,11 +553,13 @@
       "track_differs": "La pista del archivo no coincide con la pista de la fecha.",
       "guid_differs_in_result": "El GUID de la tabla de resultados no coincide con el de las vueltas. Se usa el de las vueltas.",
       "car_differs": "El auto del archivo no coincide con el auto inscripto.",
-      "fewer_laps": "Menos vueltas que el ganador: revisá si fue DNF."
+      "fewer_laps": "Menos vueltas que el ganador: revisá si fue DNF.",
+      "handicap_differs": "El lastre o el restrictor del archivo no es el asignado."
     },
     "apply": "Aplicar el archivo",
     "applied": "Archivo aplicado.",
-    "qualifyingNote": "Un archivo de clasificación o práctica guarda las vueltas, pero no cambia el resultado de carrera."
+    "qualifyingNote": "Un archivo de clasificación o práctica guarda las vueltas, pero no cambia el resultado de carrera.",
+    "handicapDiffers": "Asignado {{assignedKg}} kg y {{assignedPct}} %, el archivo dice {{fileKg}} kg y {{filePct}} %."
   },
   "handicaps": {
     "title": "Lastre y restrictor",

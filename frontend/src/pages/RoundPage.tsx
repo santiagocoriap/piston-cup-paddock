@@ -69,6 +69,24 @@ export function RoundPage() {
 
       <h2>{t('round.result')}</h2>
       <ResultStatus round={data} />
+      {data.handicap_checks.length > 0 && (
+        <div className="card warning" role="status">
+          <strong>{t('round.handicapChecks')}</strong>
+          <ul>
+            {data.handicap_checks.map((c) => (
+              <li key={c.entry_id}>
+                {t('round.handicapCheck', {
+                  name: c.driver_name,
+                  assignedKg: c.assigned_kg,
+                  assignedPct: c.assigned_pct,
+                  observedKg: c.observed_kg,
+                  observedPct: c.observed_pct,
+                })}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {may('results') && <ApproveButton round={data} onChange={changed} />}
       {data.result === null || data.result === undefined ? (
         <p>{t('round.noResult')}</p>

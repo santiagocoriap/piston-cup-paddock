@@ -2212,6 +2212,21 @@ export interface components {
             /** Car Name */
             car_name: string;
         };
+        /** HandicapCheckOut */
+        HandicapCheckOut: {
+            /** Entry Id */
+            entry_id: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Assigned Kg */
+            assigned_kg: number;
+            /** Assigned Pct */
+            assigned_pct: number;
+            /** Observed Kg */
+            observed_kg: number;
+            /** Observed Pct */
+            observed_pct: number;
+        };
         /** LineOut */
         LineOut: {
             /** Entry Id */
@@ -2340,6 +2355,8 @@ export interface components {
             event_timezone: string;
             /** Can Manage */
             can_manage: boolean;
+            /** Handicap Checks */
+            handicap_checks: components["schemas"]["HandicapCheckOut"][];
             /** Capabilities */
             capabilities: string[];
             /** Can Protest */
@@ -2814,6 +2831,10 @@ export interface components {
             driver_name: string | null;
             /** Warnings */
             warnings: string[];
+            /** Assigned Ballast Kg */
+            assigned_ballast_kg?: number | null;
+            /** Assigned Restrictor */
+            assigned_restrictor?: number | null;
         };
         /** PreviewOut */
         PreviewOut: {

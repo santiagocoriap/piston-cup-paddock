@@ -274,7 +274,9 @@
     "timeGap": "Time / gap",
     "incidents": "Incidents",
     "lapsDown_one": "+{{count}} lap",
-    "lapsDown_other": "+{{count}} laps"
+    "lapsDown_other": "+{{count}} laps",
+    "handicapChecks": "Ballast or restrictor different from the assigned value",
+    "handicapCheck": "{{name}}: assigned {{assignedKg}} kg and {{assignedPct}} %, raced with {{observedKg}} kg and {{observedPct}} %."
   },
   "mode": {
     "label": "Mode",
@@ -551,11 +553,13 @@
       "track_differs": "The track in the file is not the track of the round.",
       "guid_differs_in_result": "The GUID in the result table is not the GUID of the laps. The app uses the GUID of the laps.",
       "car_differs": "The car in the file is not the entered car.",
-      "fewer_laps": "Fewer laps than the winner: check for a DNF."
+      "fewer_laps": "Fewer laps than the winner: check for a DNF.",
+      "handicap_differs": "The ballast or restrictor in the file is not the assigned value."
     },
     "apply": "Apply the file",
     "applied": "The file is applied.",
-    "qualifyingNote": "A qualifying or practice file stores the laps, but it does not change the race result."
+    "qualifyingNote": "A qualifying or practice file stores the laps, but it does not change the race result.",
+    "handicapDiffers": "Assigned {{assignedKg}} kg and {{assignedPct}} %, the file says {{fileKg}} kg and {{filePct}} %."
   },
   "handicaps": {
     "title": "Ballast and restrictor",

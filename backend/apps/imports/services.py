@@ -11,6 +11,7 @@ from django.utils import timezone
 from apps.audit.services import change, record
 from apps.competition.attempts import current_attempt, race_session
 from apps.competition.models import Round, SeasonEntry, Session
+from apps.handicaps.services import assigned_values
 from apps.identity.models import DriverProfile
 from apps.results.services import save_result
 from apps.rules.scoring import Line, ResultError, Status
@@ -74,6 +75,8 @@ class MatchedDriver:
     entry_id: int | None
     driver_name: str | None
     warnings: list[str] = field(default_factory=list)
+    assigned_ballast_kg: int | None = None
+    assigned_restrictor: int | None = None
 
 
 @dataclass
@@ -97,6 +100,7 @@ def preview(result_import: ResultImport) -> Preview:
         if e.driver.steam_guid
     }
     leader_laps = parsed.drivers[0].laps if parsed.drivers else 0
+    assigned = assigned_values(round_) if parsed.session_type == "race" else {}
     matched, unmatched = [], []
     for position, driver in enumerate(parsed.drivers, start=1):
         entry = entries.get(driver.guid)
@@ -117,6 +121,12 @@ def preview(result_import: ResultImport) -> Preview:
             row.warnings.append("guid_differs_in_result")
         if entry and entry.car.key.lower() != driver.car_model.lower():
             row.warnings.append("car_differs")
+        if entry and parsed.session_type == "race":
+            expected = assigned.get(entry.id)
+            if expected:
+                row.assigned_ballast_kg, row.assigned_restrictor = expected
+                if (driver.ballast_kg, driver.restrictor) != expected:
+                    row.warnings.append("handicap_differs")
         if parsed.session_type == "race" and driver.laps < leader_laps:
             row.warnings.append("fewer_laps")
         (matched if entry else unmatched).append(row)

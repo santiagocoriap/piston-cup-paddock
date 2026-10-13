@@ -11,6 +11,7 @@ from apps.collectors.incident_api import accepted_race_incidents
 from apps.competition.models import ChampionshipMember, Round, Season, SeasonEntry
 from apps.competition.permissions import can, can_manage, can_view, capabilities
 from apps.dashboard.services import my_handicap
+from apps.handicaps.services import handicap_checks
 from apps.reports.services import auto_request
 from apps.rules.models import RulesVersion
 from apps.rules.scoring import Line, ResultError, Status
@@ -118,6 +119,15 @@ class MyHandicapOut(Schema):
     source: str
 
 
+class HandicapCheckOut(Schema):
+    entry_id: int
+    driver_name: str
+    assigned_kg: int
+    assigned_pct: int
+    observed_kg: int
+    observed_pct: int
+
+
 class BriefingOut(Schema):
     announced_conditions: dict
     protest_window_minutes: int
@@ -137,6 +147,7 @@ class RoundDetail(Schema):
     scheduled_at: AwareDatetime | None
     event_timezone: str
     can_manage: bool
+    handicap_checks: list[HandicapCheckOut]
     capabilities: list[str]
     can_protest: bool
     briefing: BriefingOut
@@ -337,6 +348,7 @@ def _round_detail(user, round_: Round) -> RoundDetail:
         scheduled_at=round_.scheduled_at,
         event_timezone=season.championship.league.timezone,
         can_manage=can_manage(user, season.championship),
+        handicap_checks=[HandicapCheckOut(**vars(c)) for c in handicap_checks(round_)],
         capabilities=sorted(capabilities(user, season.championship)),
         can_protest=_can_protest(user, round_, result),
         briefing=BriefingOut(

@@ -38,6 +38,8 @@ class MatchedOut(Schema):
     entry_id: int | None
     driver_name: str | None
     warnings: list[str]
+    assigned_ballast_kg: int | None = None
+    assigned_restrictor: int | None = None
 
 
 class PreviewOut(Schema):

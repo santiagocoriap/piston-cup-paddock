@@ -290,6 +290,16 @@ function DriverRow({
             !
           </span>
         ))}
+        {driver.warnings.includes('handicap_differs') && (
+          <div className="warning">
+            {t('imports.handicapDiffers', {
+              assignedKg: driver.assigned_ballast_kg,
+              assignedPct: driver.assigned_restrictor,
+              fileKg: driver.ballast_kg,
+              filePct: driver.restrictor,
+            })}
+          </div>
+        )}
       </td>
       <td className="mono muted">{driver.guid}</td>
       <td>{driver.laps}</td>
