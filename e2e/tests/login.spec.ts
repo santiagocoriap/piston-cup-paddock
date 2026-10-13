@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { E2E_ADMIN } from '../fixtures'
-import { signIn } from './helpers'
+import { signIn, signOut } from './helpers'
 
 test('an admin signs in, stays signed in after a reload, and signs out', async ({ page }) => {
   await signIn(page)
@@ -9,7 +9,7 @@ test('an admin signs in, stays signed in after a reload, and signs out', async (
   await page.reload()
   await expect(page.getByRole('heading', { name: 'Campeonatos' })).toBeVisible()
 
-  await page.getByRole('button', { name: 'Cerrar sesión' }).click()
+  await signOut(page)
   await expect(page.getByRole('heading', { name: 'Iniciar sesión' })).toBeVisible()
 })
 

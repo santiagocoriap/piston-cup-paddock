@@ -25,9 +25,29 @@
     "home": "Home",
     "account": "My account",
     "accounts": "Accounts",
-    "hideSide": "Hide the side menu",
-    "showSide": "Show the side menu",
-    "breadcrumbs": "Breadcrumb"
+    "breadcrumbs": "Breadcrumb",
+    "collapseSide": "Make the menu narrow",
+    "expandSide": "Make the menu wide",
+    "pendingCount_one": "{{count}} pending",
+    "pendingCount_other": "{{count}} pending",
+    "userMenu": "Menu of {{name}}",
+    "themeDay": "Day theme",
+    "themeNight": "Night theme",
+    "roleLeagueAdmin": "League admin",
+    "roleAdmin": "Championship admin",
+    "roleDriver": "Driver",
+    "search": "Search",
+    "searchPlaceholder": "Search pages, drivers, championships, or rounds",
+    "searchShortcut": "Ctrl K",
+    "searchEmpty": "Nothing matches “{{query}}”.",
+    "searchHint": "Type 2 letters or more to search drivers, championships, and rounds.",
+    "searchGroups": {
+      "pages": "Pages",
+      "championship": "Championships",
+      "season": "Seasons",
+      "round": "Rounds",
+      "driver": "Drivers"
+    }
   },
   "common": {
     "create": "Create",
@@ -45,7 +65,12 @@
     "adminBadge": "Admin",
     "open": "Open championship",
     "moreSeasons_one": "{{count}} more season",
-    "moreSeasons_other": "{{count}} more seasons"
+    "moreSeasons_other": "{{count}} more seasons",
+    "progress": "{{done}} of {{total}} rounds",
+    "next": "Next: Round {{number}} · {{track}}",
+    "noNext": "There are no more rounds in the calendar.",
+    "leader": "Leader: {{name}}",
+    "noDate": "No date"
   },
   "championship": {
     "seasons": "Seasons",
@@ -426,7 +451,8 @@
     "driverShort": "Driver",
     "adminShort": "Admin",
     "bannerTag": "ADMIN MODE",
-    "bannerText": "Changes affect the whole league and stay in the history."
+    "bannerText": "Changes affect the whole league and stay in the history.",
+    "bannerShort": "Admin mode"
   },
   "audit": {
     "title": "Change history",
@@ -1045,7 +1071,14 @@
     "outlineAlt": "Map of {{track}} · {{layout}}",
     "noProfileTitle": "You do not race with this account yet",
     "noSeasonsTitle": "You have no season yet",
-    "linkDriver": "Link a driver"
+    "noProfileAdmin": "Pick your driver profile to see your races here.",
+    "pickProfile": "Pick your profile",
+    "pickProfileTitle": "Link my account",
+    "profileLabel": "Driver profile",
+    "noFreeProfiles": "There is no profile without an account. Make one in Drivers.",
+    "noProfileMatch": "No profile matches.",
+    "notRacing": "I do not race in this league",
+    "linked": "Your account is now linked to {{name}}."
   },
   "briefing": {
     "title": "Briefing",
@@ -1616,7 +1649,10 @@
       "ballot.reminder": "Reminder: you did not vote in {{ballot}} yet",
       "protest.appealed": "New appeal in R{{number}} · {{track}}",
       "protest.appeal_decided": "Your appeal in R{{number}} has a decision"
-    }
+    },
+    "all": "All",
+    "unread": "Unread",
+    "noneUnread": "Nothing is unread."
   },
   "roundTools": {
     "actions": "Actions",
@@ -1696,13 +1732,23 @@
     "refresh": "Refresh"
   },
   "home": {
-    "shortcuts": {
-      "title": "Administration",
-      "leagues": "Leagues, championships and admins",
-      "drivers": "Driver profiles and linked accounts",
-      "catalog": "Tracks, cars, classes and game images",
-      "accounts": "Invitations and permissions",
-      "audit": "Every change, with its reason"
+    "pending": {
+      "title": "Pending",
+      "none": "Nothing pending.",
+      "more": "and {{count}} more",
+      "open": "Open",
+      "results_one": "{{count}} result to approve",
+      "results_other": "{{count}} results to approve",
+      "protests_one": "{{count}} protest to decide",
+      "protests_other": "{{count}} protests to decide",
+      "ballots_closed_one": "{{count}} ballot to decide",
+      "ballots_closed_other": "{{count}} ballots to decide",
+      "ballots_open_one": "{{count}} open ballot",
+      "ballots_open_other": "{{count}} open ballots",
+      "accounts_one": "{{count}} account waiting for a password",
+      "accounts_other": "{{count}} accounts waiting for a password",
+      "images_one": "{{count}} track or car without an image",
+      "images_other": "{{count}} tracks or cars without an image"
     }
   },
   "seasonNav": {

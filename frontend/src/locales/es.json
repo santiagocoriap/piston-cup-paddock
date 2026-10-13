@@ -25,9 +25,29 @@
     "home": "Inicio",
     "account": "Mi cuenta",
     "accounts": "Cuentas",
-    "hideSide": "Ocultar el menú lateral",
-    "showSide": "Mostrar el menú lateral",
-    "breadcrumbs": "Ruta de navegación"
+    "breadcrumbs": "Ruta de navegación",
+    "collapseSide": "Achicar el menú",
+    "expandSide": "Agrandar el menú",
+    "pendingCount_one": "{{count}} pendiente",
+    "pendingCount_other": "{{count}} pendientes",
+    "userMenu": "Menú de {{name}}",
+    "themeDay": "Tema de día",
+    "themeNight": "Tema de noche",
+    "roleLeagueAdmin": "Admin de la liga",
+    "roleAdmin": "Admin de campeonato",
+    "roleDriver": "Piloto",
+    "search": "Buscar",
+    "searchPlaceholder": "Buscar páginas, pilotos, campeonatos o fechas",
+    "searchShortcut": "Ctrl K",
+    "searchEmpty": "Nada coincide con «{{query}}».",
+    "searchHint": "Escribí al menos 2 letras para buscar pilotos, campeonatos y fechas.",
+    "searchGroups": {
+      "pages": "Páginas",
+      "championship": "Campeonatos",
+      "season": "Temporadas",
+      "round": "Fechas",
+      "driver": "Pilotos"
+    }
   },
   "common": {
     "create": "Crear",
@@ -45,7 +65,12 @@
     "adminBadge": "Admin",
     "open": "Abrir campeonato",
     "moreSeasons_one": "{{count}} temporada más",
-    "moreSeasons_other": "{{count}} temporadas más"
+    "moreSeasons_other": "{{count}} temporadas más",
+    "progress": "{{done}} de {{total}} fechas",
+    "next": "Próxima: Fecha {{number}} · {{track}}",
+    "noNext": "No hay más fechas en el calendario.",
+    "leader": "Líder: {{name}}",
+    "noDate": "Sin fecha"
   },
   "championship": {
     "seasons": "Temporadas",
@@ -426,7 +451,8 @@
     "driverShort": "Piloto",
     "adminShort": "Admin",
     "bannerTag": "MODO ADMINISTRACIÓN",
-    "bannerText": "Los cambios afectan a toda la liga y quedan en el historial."
+    "bannerText": "Los cambios afectan a toda la liga y quedan en el historial.",
+    "bannerShort": "Modo admin"
   },
   "audit": {
     "title": "Historial de cambios",
@@ -1045,7 +1071,14 @@
     "outlineAlt": "Mapa del trazado {{track}} · {{layout}}",
     "noProfileTitle": "Todavía no corrés con esta cuenta",
     "noSeasonsTitle": "Todavía no tenés una temporada",
-    "linkDriver": "Vincular un piloto"
+    "noProfileAdmin": "Elegí tu perfil de piloto para ver tus carreras acá.",
+    "pickProfile": "Elegí tu perfil",
+    "pickProfileTitle": "Vincular mi cuenta",
+    "profileLabel": "Perfil de piloto",
+    "noFreeProfiles": "No hay perfiles sin cuenta. Creá uno en Pilotos.",
+    "noProfileMatch": "Ningún perfil coincide.",
+    "notRacing": "No corro en esta liga",
+    "linked": "Tu cuenta quedó vinculada a {{name}}."
   },
   "briefing": {
     "title": "Briefing",
@@ -1616,7 +1649,10 @@
       "ballot.reminder": "Recordatorio: todavía no votaste en {{ballot}}",
       "protest.appealed": "Nueva apelación en R{{number}} · {{track}}",
       "protest.appeal_decided": "Tu apelación de R{{number}} tiene decisión"
-    }
+    },
+    "all": "Todas",
+    "unread": "Sin leer",
+    "noneUnread": "No hay nada sin leer."
   },
   "roundTools": {
     "actions": "Acciones",
@@ -1696,13 +1732,23 @@
     "refresh": "Actualizar"
   },
   "home": {
-    "shortcuts": {
-      "title": "Administración",
-      "leagues": "Ligas, campeonatos y admins",
-      "drivers": "Perfiles de piloto y cuentas vinculadas",
-      "catalog": "Pistas, autos, clases e imágenes del juego",
-      "accounts": "Invitaciones y permisos",
-      "audit": "Todos los cambios, con motivo"
+    "pending": {
+      "title": "Pendiente",
+      "none": "Nada pendiente.",
+      "more": "y {{count}} más",
+      "open": "Abrir",
+      "results_one": "{{count}} resultado para aprobar",
+      "results_other": "{{count}} resultados para aprobar",
+      "protests_one": "{{count}} protesta para decidir",
+      "protests_other": "{{count}} protestas para decidir",
+      "ballots_closed_one": "{{count}} votación para decidir",
+      "ballots_closed_other": "{{count}} votaciones para decidir",
+      "ballots_open_one": "{{count}} votación abierta",
+      "ballots_open_other": "{{count}} votaciones abiertas",
+      "accounts_one": "{{count}} cuenta esperando contraseña",
+      "accounts_other": "{{count}} cuentas esperando contraseña",
+      "images_one": "{{count}} pista o auto sin imagen",
+      "images_other": "{{count}} pistas o autos sin imagen"
     }
   },
   "seasonNav": {

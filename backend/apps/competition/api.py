@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal
 
 from django.db import transaction
@@ -121,8 +122,26 @@ class ChampionshipSettingsIn(Schema):
     provisional_reports: bool
 
 
+class NextRoundBrief(Schema):
+    round_id: int
+    number: int
+    track_name: str
+    layout_name: str
+    scheduled_at: datetime | None
+
+
+class LatestSeasonOut(Schema):
+    season_id: int
+    name: str
+    done: int  # Rounds with a result.
+    total: int  # The planned number of rounds.
+    next_round: NextRoundBrief | None
+    leader: str | None  # The driver in first place, after the first points.
+
+
 class ChampionshipDetail(ChampionshipOut):
     seasons: list[SeasonSummary]
+    latest: LatestSeasonOut | None
 
 
 class MemberIn(Schema):
@@ -367,10 +386,48 @@ def list_championships(request):
 @router.get("/championships/{championship_id}", response=ChampionshipDetail)
 def get_championship(request, championship_id: int):
     championship = _visible_championship(request.user, championship_id)
+    seasons = list(championship.seasons.all())
     return {
         **_championship_out(request.user, championship),
-        "seasons": [_season_summary(s) for s in championship.seasons.all()],
+        "seasons": [_season_summary(s) for s in seasons],
+        # The newest season. The list order can change, so the dates decide.
+        "latest": _latest(max(seasons, key=lambda s: (s.created_at, s.id))) if seasons else None,
     }
+
+
+def _latest(season: Season) -> LatestSeasonOut:
+    """The progress of a season: rounds done, the next round, and the leader."""
+    from apps.results.services import season_standings
+
+    rounds = list(
+        season.rounds.filter(cancelled_at__isnull=True)
+        .select_related("track_layout__track", "result")
+        .order_by("number")
+    )
+    done = [r for r in rounds if hasattr(r, "result")]
+    upcoming = next((r for r in rounds if not hasattr(r, "result")), None)
+    leader = None
+    if done:
+        table = season_standings(season)
+        if table and table[0].points > 0:
+            entry = SeasonEntry.objects.select_related("driver").get(pk=table[0].entry_id)
+            leader = entry.driver.display_name
+    return LatestSeasonOut(
+        season_id=season.id,
+        name=season.name,
+        done=len(done),
+        total=season.planned_round_count,
+        next_round=NextRoundBrief(
+            round_id=upcoming.id,
+            number=upcoming.number,
+            track_name=upcoming.track_layout.track.name,
+            layout_name=upcoming.track_layout.name,
+            scheduled_at=upcoming.scheduled_at,
+        )
+        if upcoming
+        else None,
+        leader=leader,
+    )
 
 
 @router.get("/championships/{championship_id}/members", response=list[MemberOut])

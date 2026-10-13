@@ -11,7 +11,9 @@ from apps.competition.models import Championship
 from apps.competition.permissions import can_manage, is_league_admin
 from apps.identity.models import DriverProfile
 
+from .pending import pending
 from .profile import adjust_career, can_see_driver, career, records, restarts_caused, seasons
+from .search import search
 from .services import driver_dashboard
 
 router = Router(tags=["dashboard"])
@@ -78,6 +80,39 @@ class SeasonCardOut(Schema):
 class DashboardOut(Schema):
     has_driver_profile: bool
     seasons: list[SeasonCardOut]
+
+
+class PendingItemOut(Schema):
+    path: str
+    name: str
+    championship: str | None
+    number: int | None
+
+
+class PendingOut(Schema):
+    kind: str
+    count: int
+    items: list[PendingItemOut]
+
+
+class SearchHitOut(Schema):
+    kind: str
+    label: str
+    detail: str
+    path: str
+    number: int | None
+
+
+@router.get("/search", response=list[SearchHitOut])
+def search_all(request, q: str = ""):
+    """The search box in the header. It needs two letters or more."""
+    return search(request.user, q)
+
+
+@router.get("/pending", response=list[PendingOut])
+def pending_list(request):
+    """What waits for this admin. A user who manages nothing gets an empty list."""
+    return pending(request.user)
 
 
 @router.get("/dashboard", response=DashboardOut)

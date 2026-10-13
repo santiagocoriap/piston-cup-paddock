@@ -3,13 +3,15 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
+import { Combobox } from '../components/Combobox'
+import { Dialog } from '../components/Dialog'
 import { EventTime } from '../components/EventTime'
 import { Explainer, StatusBadge } from '../components/Feedback'
 import { Icon, type IconName } from '../components/Icon'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
-import { useMe, useMode } from '../session'
+import { useMe } from '../session'
 
 type Card = components['schemas']['SeasonCardOut']
 type NextRound = components['schemas']['NextRoundOut']
@@ -24,10 +26,28 @@ const MAX_PCT = 5
 export function DashboardSection() {
   const { t } = useTranslation()
   const me = useMe()
-  const { setMode } = useMode()
   const dashboard = useLoad(() => api.GET('/api/dashboard'), [])
+  const [linking, setLinking] = useState(false)
+  const [notice, setNotice] = useState<string | null>(null)
+  const hideKey = `paddock.notRacing.${me.id}`
+  const [notRacing, setNotRacing] = useState(() => {
+    try {
+      return localStorage.getItem(hideKey) === 'yes'
+    } catch {
+      return false
+    }
+  })
   const data = dashboard.data
   if (!data) return null
+
+  function hideBox() {
+    setNotRacing(true)
+    try {
+      localStorage.setItem(hideKey, 'yes')
+    } catch {
+      // Private windows can refuse storage. The box then stays hidden for this page only.
+    }
+  }
 
   const withNext = data.seasons.filter((card) => card.next_round)
   const main = [...withNext].sort(byNextDate)[0] ?? data.seasons[0]
@@ -35,25 +55,46 @@ export function DashboardSection() {
   return (
     <section className="dashboard" aria-labelledby="home-title">
       <h1 id="home-title">{t('dashboard.hello', { name: me.username })}</h1>
-      {!data.has_driver_profile && (
+      {notice && (
+        <p role="status" className="notice-ok">
+          <Icon name="check" small />
+          {notice}
+        </p>
+      )}
+      {!data.has_driver_profile && !notRacing && (
         <div className="empty-home">
           <span className="champ-icon">
             <Icon name="user" />
           </span>
           <div>
             <p className="empty-title">{t('dashboard.noProfileTitle')}</p>
-            <p className="muted">{t('dashboard.noProfile')}</p>
+            <p className="muted">{me.is_admin ? t('dashboard.noProfileAdmin') : t('dashboard.noProfile')}</p>
           </div>
-          {me.is_admin && (
-            <Link
-              className="button-link"
-              to="/admin/drivers"
-              onClick={() => setMode('admin')}
-            >
-              {t('dashboard.linkDriver')}
-            </Link>
-          )}
+          <div className="empty-home-actions">
+            {me.is_admin && (
+              <button type="button" onClick={() => setLinking(true)}>
+                {t('dashboard.pickProfile')}
+              </button>
+            )}
+            <button type="button" className="secondary" onClick={hideBox}>
+              {t('dashboard.notRacing')}
+            </button>
+          </div>
         </div>
+      )}
+      {me.is_admin && (
+        <Dialog open={linking} title={t('dashboard.pickProfileTitle')} onClose={() => setLinking(false)}>
+          {linking && (
+            <LinkMyProfile
+              userId={me.id}
+              onLinked={(name) => {
+                setLinking(false)
+                setNotice(t('dashboard.linked', { name }))
+                dashboard.reload()
+              }}
+            />
+          )}
+        </Dialog>
       )}
       {data.has_driver_profile && data.seasons.length === 0 && (
         <div className="empty-home">
@@ -534,5 +575,58 @@ function ConditionFacts({ conditions }: { conditions: Conditions | null }) {
         </div>
       )}
     </>
+  )
+}
+
+/** An admin links their own account to a driver profile that has no account yet. */
+function LinkMyProfile({ userId, onLinked }: { userId: number; onLinked: (name: string) => void }) {
+  const { t } = useTranslation()
+  const drivers = useLoad(() => api.GET('/api/drivers'), [])
+  const [value, setValue] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const free = (drivers.data ?? []).filter((driver) => driver.user_id === null)
+  return (
+    <form
+      className="modal-body"
+      aria-label={t('dashboard.pickProfileTitle')}
+      onSubmit={async (event) => {
+        event.preventDefault()
+        const driver = free.find((d) => String(d.id) === value)
+        if (!driver) return
+        setBusy(true)
+        setError(null)
+        const { error: apiError } = await api.POST('/api/drivers/{driver_id}/link', {
+          params: { path: { driver_id: driver.id } },
+          body: { user_id: userId },
+        })
+        setBusy(false)
+        if (apiError) return setError(errorMessage(t, apiError))
+        onLinked(driver.display_name)
+      }}
+    >
+      <h3>{t('dashboard.pickProfileTitle')}</h3>
+      {drivers.data && free.length === 0 ? (
+        <p className="muted">{t('dashboard.noFreeProfiles')}</p>
+      ) : (
+        <Combobox
+          label={t('dashboard.profileLabel')}
+          options={free.map((d) => ({ value: String(d.id), label: d.display_name, hint: d.steam_guid ?? undefined }))}
+          value={value}
+          onChange={setValue}
+          emptyText={t('dashboard.noProfileMatch')}
+        />
+      )}
+      {error && (
+        <p role="alert" className="error">
+          {error}
+        </p>
+      )}
+      <div className="modal-actions">
+        <button type="submit" disabled={busy || !value}>
+          {t('common.save')}
+        </button>
+      </div>
+    </form>
   )
 }

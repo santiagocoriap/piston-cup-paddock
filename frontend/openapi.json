@@ -4218,6 +4218,81 @@
         ]
       }
     },
+    "/api/search": {
+      "get": {
+        "operationId": "apps_dashboard_api_search_all",
+        "summary": "Search All",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "default": "",
+              "title": "Q",
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchHitOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "The search box in the header. It needs two letters or more.",
+        "tags": [
+          "dashboard"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/pending": {
+      "get": {
+        "operationId": "apps_dashboard_api_pending_list",
+        "summary": "Pending List",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PendingOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "What waits for this admin. A user who manages nothing gets an empty list.",
+        "tags": [
+          "dashboard"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/dashboard": {
       "get": {
         "operationId": "apps_dashboard_api_dashboard",
@@ -7230,6 +7305,16 @@
             },
             "title": "Seasons",
             "type": "array"
+          },
+          "latest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LatestSeasonOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -7239,9 +7324,102 @@
           "league_name",
           "can_manage",
           "provisional_reports",
-          "seasons"
+          "seasons",
+          "latest"
         ],
         "title": "ChampionshipDetail",
+        "type": "object"
+      },
+      "LatestSeasonOut": {
+        "properties": {
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "done": {
+            "title": "Done",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "next_round": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NextRoundBrief"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "leader": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leader"
+          }
+        },
+        "required": [
+          "season_id",
+          "name",
+          "done",
+          "total",
+          "next_round",
+          "leader"
+        ],
+        "title": "LatestSeasonOut",
+        "type": "object"
+      },
+      "NextRoundBrief": {
+        "properties": {
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "track_name": {
+            "title": "Track Name",
+            "type": "string"
+          },
+          "layout_name": {
+            "title": "Layout Name",
+            "type": "string"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
+          }
+        },
+        "required": [
+          "round_id",
+          "number",
+          "track_name",
+          "layout_name",
+          "scheduled_at"
+        ],
+        "title": "NextRoundBrief",
         "type": "object"
       },
       "SeasonSummary": {
@@ -13020,6 +13198,114 @@
           "reason"
         ],
         "title": "DecideIn",
+        "type": "object"
+      },
+      "SearchHitOut": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Number"
+          }
+        },
+        "required": [
+          "kind",
+          "label",
+          "detail",
+          "path",
+          "number"
+        ],
+        "title": "SearchHitOut",
+        "type": "object"
+      },
+      "PendingItemOut": {
+        "properties": {
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "championship": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Championship"
+          },
+          "number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Number"
+          }
+        },
+        "required": [
+          "path",
+          "name",
+          "championship",
+          "number"
+        ],
+        "title": "PendingItemOut",
+        "type": "object"
+      },
+      "PendingOut": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PendingItemOut"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "kind",
+          "count",
+          "items"
+        ],
+        "title": "PendingOut",
         "type": "object"
       },
       "ConditionsOut": {

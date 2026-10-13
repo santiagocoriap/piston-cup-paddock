@@ -7,6 +7,7 @@ import { Icon, type IconName } from '../../components/Icon'
 import { Loading } from '../../components/Layout'
 import { auditSentence, formatAuditValue as formatValue, type AuditEntry } from '../../lib/audit'
 import { currentTimeZone } from '../../lib/format'
+import { dayKey, dayTitle as titleOfDay, nearDays } from '../../lib/days'
 import { useLoad } from '../../lib/useLoad'
 
 const TARGET_PATHS: Record<string, (id: number) => string> = {
@@ -43,13 +44,6 @@ function kindOf(entry: AuditEntry): Kind | undefined {
   return KINDS[prefix]
 }
 
-/** The day of a moment in the user timezone, as YYYY-MM-DD, so days sort and compare as text. */
-function dayKey(iso: string | Date): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: currentTimeZone(), year: 'numeric', month: '2-digit', day: '2-digit' }).format(
-    new Date(iso),
-  )
-}
-
 /** Changes in a row that say the same thing about the same target. The newest one leads. */
 type Group = { lead: AuditEntry; more: AuditEntry[] }
 
@@ -83,10 +77,7 @@ export function AuditPage() {
   const [kind, setKind] = useState<Kind | ''>('')
   const [query, setQuery] = useState('')
   // Today and yesterday, read once when the page opens.
-  const [near] = useState(() => {
-    const now = Date.now()
-    return { today: dayKey(new Date(now)), yesterday: dayKey(new Date(now - 86_400_000)) }
-  })
+  const [near] = useState(() => nearDays(Date.now()))
   const championships = useLoad(() => api.GET('/api/championships'), [])
   const audit = useLoad(
     () =>
@@ -98,12 +89,9 @@ export function AuditPage() {
 
   const zone = currentTimeZone()
   const time = new Intl.DateTimeFormat(i18n.language, { timeStyle: 'short', timeZone: zone })
-  const dayTitle = (day: string) => {
-    if (day === near.today) return t('audit.today')
-    if (day === near.yesterday) return t('audit.yesterday')
-    // Noon UTC keeps the same calendar day in every timezone.
-    return new Intl.DateTimeFormat(i18n.language, { dateStyle: 'full', timeZone: 'UTC' }).format(new Date(`${day}T12:00:00Z`))
-  }
+  const dayTitle = (day: string) =>
+    titleOfDay(day, near, i18n.language, { today: t('audit.today'), yesterday: t('audit.yesterday') })
+
 
   const needle = query.trim().toLowerCase()
   const entries = (audit.data ?? []).filter((entry) => {

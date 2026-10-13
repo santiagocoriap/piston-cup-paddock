@@ -6,7 +6,14 @@ export async function signIn(page: Page) {
   await page.getByLabel('Usuario').fill(E2E_ADMIN.username)
   await page.getByLabel('Contraseña').fill(E2E_ADMIN.password)
   await page.getByRole('button', { name: 'Entrar' }).click()
-  await expect(page.getByRole('button', { name: 'Cerrar sesión' })).toBeVisible()
+  // The account menu shows only when the sign-in worked. A phone shows it in the header.
+  await expect(page.getByRole('button', { name: `Menú de ${E2E_ADMIN.username}` })).toBeVisible()
+}
+
+/** Open the account menu and sign out. */
+export async function signOut(page: Page) {
+  await page.getByRole('button', { name: `Menú de ${E2E_ADMIN.username}` }).click()
+  await page.getByRole('menuitem', { name: 'Cerrar sesión' }).click()
 }
 
 /** Fill the fields of one form, found by its title, and send it. */

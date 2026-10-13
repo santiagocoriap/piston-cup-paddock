@@ -1505,6 +1505,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search All
+         * @description The search box in the header. It needs two letters or more.
+         */
+        get: operations["apps_dashboard_api_search_all"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Pending List
+         * @description What waits for this admin. A user who manages nothing gets an empty list.
+         */
+        get: operations["apps_dashboard_api_pending_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/dashboard": {
         parameters: {
             query?: never;
@@ -2658,6 +2698,34 @@ export interface components {
             provisional_reports: boolean;
             /** Seasons */
             seasons: components["schemas"]["SeasonSummary"][];
+            latest: components["schemas"]["LatestSeasonOut"] | null;
+        };
+        /** LatestSeasonOut */
+        LatestSeasonOut: {
+            /** Season Id */
+            season_id: number;
+            /** Name */
+            name: string;
+            /** Done */
+            done: number;
+            /** Total */
+            total: number;
+            next_round: components["schemas"]["NextRoundBrief"] | null;
+            /** Leader */
+            leader: string | null;
+        };
+        /** NextRoundBrief */
+        NextRoundBrief: {
+            /** Round Id */
+            round_id: number;
+            /** Number */
+            number: number;
+            /** Track Name */
+            track_name: string;
+            /** Layout Name */
+            layout_name: string;
+            /** Scheduled At */
+            scheduled_at: string | null;
         };
         /** SeasonSummary */
         SeasonSummary: {
@@ -4482,6 +4550,39 @@ export interface components {
             option_ids: number[];
             /** Reason */
             reason: string;
+        };
+        /** SearchHitOut */
+        SearchHitOut: {
+            /** Kind */
+            kind: string;
+            /** Label */
+            label: string;
+            /** Detail */
+            detail: string;
+            /** Path */
+            path: string;
+            /** Number */
+            number: number | null;
+        };
+        /** PendingItemOut */
+        PendingItemOut: {
+            /** Path */
+            path: string;
+            /** Name */
+            name: string;
+            /** Championship */
+            championship: string | null;
+            /** Number */
+            number: number | null;
+        };
+        /** PendingOut */
+        PendingOut: {
+            /** Kind */
+            kind: string;
+            /** Count */
+            count: number;
+            /** Items */
+            items: components["schemas"]["PendingItemOut"][];
         };
         /** ConditionsOut */
         ConditionsOut: {
@@ -8048,6 +8149,48 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BallotDetail"];
+                };
+            };
+        };
+    };
+    apps_dashboard_api_search_all: {
+        parameters: {
+            query?: {
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchHitOut"][];
+                };
+            };
+        };
+    };
+    apps_dashboard_api_pending_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingOut"][];
                 };
             };
         };
