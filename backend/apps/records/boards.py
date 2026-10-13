@@ -41,6 +41,8 @@ class Board:
     record_ms: int | None = None
     holders: list[RecordLap] = field(default_factory=list)
     history: list[HistoryItem] = field(default_factory=list)
+    # The best eligible lap of each driver, fastest first.
+    ranking: list[RecordLap] = field(default_factory=list)
 
 
 def _order(lap: RecordLap):
@@ -67,6 +69,19 @@ def board(laps: Iterable[RecordLap]) -> list[HistoryItem]:
     return history
 
 
+def ranking(laps: Iterable[RecordLap]) -> list[RecordLap]:
+    """The best eligible lap of each driver, fastest first. With equal times, the earlier lap
+    is first."""
+    best: dict[str, RecordLap] = {}
+    for lap in sorted(laps, key=_order):
+        if lap.ineligible_reason:
+            continue
+        old = best.get(lap.driver_name)
+        if old is None or lap.lap_time_ms < old.lap_time_ms:
+            best[lap.driver_name] = lap
+    return sorted(best.values(), key=lambda lap: (lap.lap_time_ms, _order(lap)))
+
+
 def boards(laps: Iterable[RecordLap], overall: bool = False) -> list[Board]:
     """One board for each layout, car, and category. With overall, one board for each layout
     and category: the car does not count, and the board has car ID 0."""
@@ -78,7 +93,7 @@ def boards(laps: Iterable[RecordLap], overall: bool = False) -> list[Board]:
     for (layout_id, car_id, category), group in groups.items():
         history = board(group)
         records = [item for item in history if item.kind in ("record", "equal")]
-        item = Board(layout_id, car_id, category, history=history)
+        item = Board(layout_id, car_id, category, history=history, ranking=ranking(group))
         if records:
             item.record_ms = min(i.lap.lap_time_ms for i in records)
             item.holders = [i.lap for i in records if i.lap.lap_time_ms == item.record_ms]

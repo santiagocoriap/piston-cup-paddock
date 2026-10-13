@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { ActionForm } from '../components/ActionForm'
+import { Icon } from '../components/Icon'
 import { Loading } from '../components/Layout'
 import { formatDateTime, formatLapTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
@@ -11,6 +12,8 @@ import { useMode } from '../session'
 
 type Board = components['schemas']['BoardOut']
 type RecordLap = components['schemas']['RecordLapOut']
+type RecordsData = components['schemas']['RecordsOut']
+type Championship = components['schemas']['ChampionshipOut']
 type Filters = { layout: string; car: string; carClass: string; category: string; season: string; overall: boolean }
 
 const NO_FILTERS: Filters = { layout: '', car: '', carClass: '', category: '', season: '', overall: false }
@@ -19,6 +22,8 @@ export function RecordsPage() {
   const { t } = useTranslation()
   const { mode } = useMode()
   const [filters, setFilters] = useState<Filters>(NO_FILTERS)
+  const [adding, setAdding] = useState(false)
+  const sessionLabel = useId()
   const records = useLoad(
     () =>
       api.GET('/api/records', {
@@ -35,22 +40,40 @@ export function RecordsPage() {
       }),
     [filters.layout, filters.car, filters.carClass, filters.category, filters.season, filters.overall],
   )
+  const championships = useLoad(
+    () => (mode === 'admin' ? api.GET('/api/championships') : Promise.resolve({ data: [] as Championship[] })),
+    [mode],
+  )
+  const managed = championships.data?.filter((c) => c.can_manage) ?? []
+  const canAdd = mode === 'admin' && managed.length > 0
   const set = (name: keyof Filters, value: string | boolean) => setFilters((old) => ({ ...old, [name]: value }))
+  const filtered = Object.values(filters).some(Boolean)
 
   return (
     <section>
-      <h1>{t('records.title')}</h1>
-      <p className="muted">{t('records.help')}</p>
-      <p className="exports">
-        <a href="/api/records/export.csv" download>
-          {t('exports.records')}
-        </a>
-      </p>
+      <header className="page-head">
+        <div>
+          <h1>{t('records.title')}</h1>
+          <p className="muted">{t('records.help')}</p>
+        </div>
+        <div className="page-actions">
+          <a className="button-link secondary-link" href="/api/records/export.csv" download>
+            <Icon name="download" small />
+            {t('exports.records')}
+          </a>
+          {canAdd && (
+            <button type="button" onClick={() => setAdding(true)}>
+              <Icon name="plus" small />
+              {t('records.add')}
+            </button>
+          )}
+        </div>
+      </header>
       {!records.data ? (
         <Loading failed={records.failed} />
       ) : (
         <>
-          <div className="forms" role="group" aria-label={t('records.filters')}>
+          <div className="forms record-filters" role="group" aria-label={t('records.filters')}>
             <label className="inline-filter">
               {t('records.layout')}
               <select value={filters.layout} onChange={(e) => set('layout', e.target.value)}>
@@ -87,14 +110,6 @@ export function RecordsPage() {
               </label>
             )}
             <label className="inline-filter">
-              {t('records.session')}
-              <select value={filters.category} onChange={(e) => set('category', e.target.value)}>
-                <option value="">{t('records.allSessions')}</option>
-                <option value="qualifying">{t('records.category.qualifying')}</option>
-                <option value="race">{t('records.category.race')}</option>
-              </select>
-            </label>
-            <label className="inline-filter">
               {t('records.season')}
               <select value={filters.season} onChange={(e) => set('season', e.target.value)}>
                 <option value="">{t('records.allTime')}</option>
@@ -105,22 +120,197 @@ export function RecordsPage() {
                 ))}
               </select>
             </label>
-            <label className="check">
-              <input type="checkbox" checked={filters.overall} onChange={(e) => set('overall', e.target.checked)} />
+            <div className="segmented-field">
+              <span id={sessionLabel}>{t('records.session')}</span>
+              <div className="segmented" role="radiogroup" aria-labelledby={sessionLabel}>
+              {[
+                ['', t('records.sessionAll')],
+                ['qualifying', t('records.sessionShort.qualifying')],
+                ['race', t('records.sessionShort.race')],
+              ].map(([value, label]) => (
+                <label key={value}>
+                  <input
+                    type="radio"
+                    name="records-session"
+                    value={value}
+                    checked={filters.category === value}
+                    onChange={() => set('category', value)}
+                  />
+                  <span>{label}</span>
+                </label>
+              ))}
+              </div>
+            </div>
+            <label className="switch">
+              <input type="checkbox" role="switch" checked={filters.overall} onChange={(e) => set('overall', e.target.checked)} />
+              <span className="switch-track" aria-hidden="true" />
               {t('records.overall')}
             </label>
           </div>
-          {records.data.boards.length === 0 && <p>{t('records.empty')}</p>}
-          <div className="boards">
-            {records.data.boards.map((board) => (
-              <BoardCard key={`${board.layout_id}-${board.car_id}-${board.category}`} board={board} onChange={records.reload} />
-            ))}
-          </div>
-          {mode === 'admin' && <ManualRecordForm onSaved={records.reload} />}
+          <ActiveFilters
+            filters={filters}
+            data={records.data}
+            onRemove={(name) => set(name, NO_FILTERS[name])}
+            onClear={() => setFilters(NO_FILTERS)}
+          />
+          {records.data.boards.length === 0 ? (
+            filtered ? (
+              <EmptyRecords title={t('records.noMatch')} text={t('records.noMatchHelp')}>
+                <button type="button" className="secondary" onClick={() => setFilters(NO_FILTERS)}>
+                  {t('records.clearFilters')}
+                </button>
+              </EmptyRecords>
+            ) : (
+              <EmptyRecords title={t('records.emptyTitle')} text={t('records.empty')}>
+                {canAdd && (
+                  <button type="button" onClick={() => setAdding(true)}>
+                    <Icon name="plus" small />
+                    {t('records.addManual')}
+                  </button>
+                )}
+              </EmptyRecords>
+            )
+          ) : (
+            <div className="boards">
+              {records.data.boards.map((board) => (
+                <BoardCard key={`${board.layout_id}-${board.car_id}-${board.category}`} board={board} onChange={records.reload} />
+              ))}
+            </div>
+          )}
         </>
+      )}
+      {canAdd && (
+        <RecordDialog open={adding} title={t('records.addManual')} onClose={() => setAdding(false)}>
+          <ManualRecordForm
+            championships={managed}
+            onSaved={() => {
+              setAdding(false)
+              records.reload()
+            }}
+          />
+        </RecordDialog>
       )}
     </section>
   )
+}
+
+/** The filters that are on, as chips. Each chip removes its filter. */
+function ActiveFilters({
+  filters,
+  data,
+  onRemove,
+  onClear,
+}: {
+  filters: Filters
+  data: RecordsData
+  onRemove: (name: keyof Filters) => void
+  onClear: () => void
+}) {
+  const { t } = useTranslation()
+  const name = (list: { id: number; name: string }[], id: string) => list.find((item) => String(item.id) === id)?.name ?? id
+  const chips: [keyof Filters, string][] = []
+  if (filters.layout) chips.push(['layout', name(data.layouts, filters.layout)])
+  if (filters.car && !filters.overall && !filters.carClass) chips.push(['car', name(data.cars, filters.car)])
+  if (filters.carClass) chips.push(['carClass', name(data.classes, filters.carClass)])
+  if (filters.season) chips.push(['season', name(data.seasons, filters.season)])
+  if (filters.category) chips.push(['category', t(`records.sessionShort.${filters.category}`)])
+  if (filters.overall) chips.push(['overall', t('records.overall')])
+  if (chips.length === 0) return null
+  return (
+    <ul className="filter-chips" aria-label={t('records.activeFilters')}>
+      {chips.map(([key, label]) => (
+        <li key={key} className="filter-chip">
+          {label}
+          <button type="button" aria-label={t('records.removeFilter', { name: label })} onClick={() => onRemove(key)}>
+            <Icon name="close" small />
+          </button>
+        </li>
+      ))}
+      {chips.length > 1 && (
+        <li>
+          <button type="button" className="link" onClick={onClear}>
+            {t('records.clearFilters')}
+          </button>
+        </li>
+      )}
+    </ul>
+  )
+}
+
+const GHOST_ROWS = [72, 58, 64, 50, 68, 54]
+
+/** An empty board list. Faded sample rows move behind the text to show what will be here. */
+function EmptyRecords({ title, text, children }: { title: string; text: string; children?: ReactNode }) {
+  return (
+    <div className="records-empty">
+      <div className="records-empty-rows" aria-hidden="true">
+        {[0, 1].map((copy) => (
+          <div key={copy} className="records-empty-track">
+            {GHOST_ROWS.map((width, i) => (
+              <div key={i} className="records-empty-row">
+                <span className="ghost-dot" />
+                <span className="ghost-bar" style={{ width: `${width}%` }} />
+                <span className="ghost-time" />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="records-empty-body">
+        <span className="records-empty-icon">
+          <Icon name="timer" />
+        </span>
+        <p className="records-empty-title">{title}</p>
+        <p className="muted">{text}</p>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/** A modal dialog. It closes with the close button, Escape, or a click outside it. */
+function RecordDialog({ open, title, onClose, children }: { open: boolean; title: string; onClose: () => void; children: ReactNode }) {
+  const { t } = useTranslation()
+  const ref = useRef<HTMLDialogElement>(null)
+  useEffect(() => {
+    const dialog = ref.current
+    if (!dialog) return
+    // jsdom has no showModal, so the tests use the open attribute.
+    if (open && !dialog.open) {
+      if (typeof dialog.showModal === 'function') dialog.showModal()
+      else dialog.setAttribute('open', '')
+    } else if (!open && dialog.open) {
+      if (typeof dialog.close === 'function') dialog.close()
+      else dialog.removeAttribute('open')
+    }
+  }, [open])
+  return (
+    <dialog
+      ref={ref}
+      className="record-dialog"
+      aria-label={title}
+      onClose={onClose}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose()
+      }}
+    >
+      <button type="button" className="dialog-close" aria-label={t('records.close')} onClick={onClose}>
+        <Icon name="close" />
+      </button>
+      {children}
+    </dialog>
+  )
+}
+
+function gapText(ms: number): string {
+  return ms < 60_000 ? `+${(ms / 1000).toFixed(3)}` : `+${formatLapTime(ms)}`
+}
+
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/)
+  const first = parts[0]?.[0] ?? ''
+  const last = parts.length > 1 ? (parts.at(-1)?.[0] ?? '') : ''
+  return (first + last).toUpperCase() || '?'
 }
 
 function BoardCard({ board, onChange }: { board: Board; onChange: () => void }) {
@@ -128,20 +318,84 @@ function BoardCard({ board, onChange }: { board: Board; onChange: () => void }) 
   const { mode } = useMode()
   const car = board.car_id ? board.car_name : board.car_name || t('records.allCars')
   const title = `${t(`records.category.${board.category}`)}: ${board.track_name} · ${board.layout_name} · ${car}`
+  const record = board.record_ms ?? board.ranking[0]?.lap_time_ms ?? 0
+  const maxGap = Math.max(1, ...board.ranking.map((lap) => lap.lap_time_ms - record))
   return (
     <article className="card board" aria-label={title}>
-      <h2 className="board-title">{title}</h2>
+      <header className="board-head">
+        <span className={`session-pill session-${board.category}`}>{t(`records.sessionShort.${board.category}`)}</span>
+        <h2 className="board-title">
+          {board.track_name} · {board.layout_name}
+          <span className="board-car">{car}</span>
+        </h2>
+      </header>
       {board.record_ms ? (
-        <p className="record-time">
-          {formatLapTime(board.record_ms)}
-          {board.holders.length > 1 && <span className="badge">{t('records.shared')}</span>}
-        </p>
+        <div className="record-hero">
+          <p className="record-time">
+            {formatLapTime(board.record_ms)}
+            {board.holders.length > 1 && <span className="badge">{t('records.shared')}</span>}
+          </p>
+          <p className="record-holder muted">
+            {t('records.holderLabel')} <strong>{board.holders.map((h) => h.driver_name).join(', ')}</strong>
+          </p>
+        </div>
       ) : (
         <p className="muted">—</p>
       )}
-      {board.holders.map((holder) => (
-        <LapDetails key={holder.lap_id} lap={holder} onChange={onChange} />
-      ))}
+
+      {board.ranking.length > 0 && (
+        <table className="leaderboard">
+          <caption className="sr-only">{t('records.ranking')}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{t('records.position')}</th>
+              <th scope="col">{t('records.holder')}</th>
+              <th scope="col" className="num">
+                {t('records.lapTime')}
+              </th>
+              <th scope="col" className="num">
+                {t('records.gap')}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {board.ranking.map((lap, index) => {
+              const gap = lap.lap_time_ms - record
+              // Longer is faster: the record fills the bar, the slowest lap fills a fifth.
+              const pace = gap <= 0 ? 100 : 100 - (gap / maxGap) * 80
+              return (
+                <tr key={lap.lap_id} className={index < 3 ? `podium podium-${index + 1}` : undefined}>
+                  <td>
+                    <span className="position">{index + 1}</span>
+                  </td>
+                  <td>
+                    <span className="driver">
+                      <span className="avatar" aria-hidden="true">
+                        {initials(lap.driver_name)}
+                      </span>
+                      {lap.driver_name}
+                    </span>
+                    <span className="pace" aria-hidden="true">
+                      <span className="pace-bar" style={{ width: `${pace}%` }} />
+                    </span>
+                  </td>
+                  <td className="num mono">{formatLapTime(lap.lap_time_ms)}</td>
+                  <td className="num mono gap">{gap <= 0 ? '—' : gapText(gap)}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      )}
+
+      {board.holders.length > 0 && (
+        <details>
+          <summary>{t('records.details')}</summary>
+          {board.holders.map((holder) => (
+            <LapDetails key={holder.lap_id} lap={holder} onChange={onChange} />
+          ))}
+        </details>
+      )}
 
       <details>
         <summary>{t('records.history')}</summary>
@@ -267,93 +521,88 @@ function LapDetails({ lap, onChange }: { lap: RecordLap; onChange: () => void })
 }
 
 /** An admin adds a historical record with a source. It stays unverified until checked. */
-function ManualRecordForm({ onSaved }: { onSaved: () => void }) {
+function ManualRecordForm({ championships, onSaved }: { championships: Championship[]; onSaved: () => void }) {
   const { t } = useTranslation()
-  const championships = useLoad(() => api.GET('/api/championships'), [])
   const tracks = useLoad(() => api.GET('/api/catalog/tracks'), [])
   const cars = useLoad(() => api.GET('/api/catalog/cars'), [])
-  const managed = championships.data?.filter((c) => c.can_manage) ?? []
-  if (managed.length === 0) return null
   return (
-    <div className="forms">
-      <ActionForm
-        title={t('records.addManual')}
-        submitLabel={t('common.create')}
-        onSubmit={async (form) => {
-          const [minutes, seconds] = String(form.get('time')).split(':')
-          const ms = Math.round((Number(minutes) * 60 + Number(seconds)) * 1000)
-          const { error } = await api.POST('/api/records/manual', {
-            body: {
-              championship_id: Number(form.get('championship_id')),
-              layout_id: Number(form.get('layout_id')),
-              car_id: Number(form.get('car_id')),
-              category: form.get('category') as 'race' | 'qualifying',
-              lap_time_ms: ms,
-              driver_name: String(form.get('driver_name')),
-              date: String(form.get('date')),
-              source: String(form.get('source')),
-            },
-          })
-          if (!error) onSaved()
-          return error
-        }}
-      >
-        <label>
-          {t('records.championship')}
-          <select name="championship_id" required>
-            {managed.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
+    <ActionForm
+      title={t('records.addManual')}
+      submitLabel={t('common.create')}
+      onSubmit={async (form) => {
+        const [minutes, seconds] = String(form.get('time')).split(':')
+        const ms = Math.round((Number(minutes) * 60 + Number(seconds)) * 1000)
+        const { error } = await api.POST('/api/records/manual', {
+          body: {
+            championship_id: Number(form.get('championship_id')),
+            layout_id: Number(form.get('layout_id')),
+            car_id: Number(form.get('car_id')),
+            category: form.get('category') as 'race' | 'qualifying',
+            lap_time_ms: ms,
+            driver_name: String(form.get('driver_name')),
+            date: String(form.get('date')),
+            source: String(form.get('source')),
+          },
+        })
+        if (!error) onSaved()
+        return error
+      }}
+    >
+      <label>
+        {t('records.championship')}
+        <select name="championship_id" required>
+          {championships.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        {t('records.layout')}
+        <select name="layout_id" required>
+          {tracks.data?.flatMap((track) =>
+            track.layouts.map((layout) => (
+              <option key={layout.id} value={layout.id}>
+                {track.name} · {layout.name}
               </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          {t('records.layout')}
-          <select name="layout_id" required>
-            {tracks.data?.flatMap((track) =>
-              track.layouts.map((layout) => (
-                <option key={layout.id} value={layout.id}>
-                  {track.name} · {layout.name}
-                </option>
-              )),
-            )}
-          </select>
-        </label>
-        <label>
-          {t('records.car')}
-          <select name="car_id" required>
-            {cars.data?.map((car) => (
-              <option key={car.id} value={car.id}>
-                {car.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          {t('records.session')}
-          <select name="category" defaultValue="race">
-            <option value="qualifying">{t('records.category.qualifying')}</option>
-            <option value="race">{t('records.category.race')}</option>
-          </select>
-        </label>
-        <label>
-          {t('records.time')}
-          <input name="time" required pattern="\d+:\d{1,2}(\.\d{1,3})?" placeholder="3:09.296" />
-        </label>
-        <label>
-          {t('records.holder')}
-          <input name="driver_name" required maxLength={100} />
-        </label>
-        <label>
-          {t('records.date')}
-          <input name="date" type="date" required />
-        </label>
-        <label>
-          {t('records.manualSourceLabel')}
-          <input name="source" required maxLength={300} />
-        </label>
-      </ActionForm>
-    </div>
+            )),
+          )}
+        </select>
+      </label>
+      <label>
+        {t('records.car')}
+        <select name="car_id" required>
+          {cars.data?.map((car) => (
+            <option key={car.id} value={car.id}>
+              {car.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        {t('records.session')}
+        <select name="category" defaultValue="race">
+          <option value="qualifying">{t('records.category.qualifying')}</option>
+          <option value="race">{t('records.category.race')}</option>
+        </select>
+      </label>
+      <label>
+        {t('records.time')}
+        <input name="time" required pattern="\d+:\d{1,2}(\.\d{1,3})?" placeholder="3:09.296" />
+      </label>
+      <label>
+        {t('records.holder')}
+        <input name="driver_name" required maxLength={100} />
+      </label>
+      <label>
+        {t('records.date')}
+        <input name="date" type="date" required />
+      </label>
+      <label>
+        {t('records.manualSourceLabel')}
+        <input name="source" required maxLength={300} />
+      </label>
+    </ActionForm>
   )
 }

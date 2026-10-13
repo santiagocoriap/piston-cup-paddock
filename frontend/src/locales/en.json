@@ -688,7 +688,7 @@
   "records": {
     "title": "Track records",
     "help": "Only laps from official results count: qualifying and the accepted race start.",
-    "empty": "There are no records yet. They show when an imported round has an official result.",
+    "empty": "They show when an imported round has an official result.",
     "layout": "Track",
     "all": "All tracks",
     "category": {
@@ -741,7 +741,26 @@
     "time": "Time (m:ss.mmm)",
     "manualSourceLabel": "Source (screenshot, video, old file)",
     "carClass": "Class",
-    "noClass": "No class"
+    "noClass": "No class",
+    "emptyTitle": "There are no records yet",
+    "noMatch": "No records for these filters",
+    "noMatchHelp": "Try another track, car, or season.",
+    "clearFilters": "Clear filters",
+    "activeFilters": "Active filters",
+    "removeFilter": "Remove the filter {{name}}",
+    "sessionAll": "Both",
+    "sessionShort": {
+      "qualifying": "Qualifying",
+      "race": "Race"
+    },
+    "add": "Add record",
+    "close": "Close",
+    "ranking": "Best laps",
+    "position": "Pos.",
+    "gap": "Gap",
+    "details": "Record details",
+    "lapTime": "Time",
+    "holderLabel": "Held by"
   },
   "voting": {
     "title": "Ballots",

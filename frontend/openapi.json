@@ -11507,6 +11507,13 @@
             },
             "title": "History",
             "type": "array"
+          },
+          "ranking": {
+            "items": {
+              "$ref": "#/components/schemas/RecordLapOut"
+            },
+            "title": "Ranking",
+            "type": "array"
           }
         },
         "required": [
@@ -11518,7 +11525,8 @@
           "category",
           "record_ms",
           "holders",
-          "history"
+          "history",
+          "ranking"
         ],
         "title": "BoardOut",
         "type": "object"

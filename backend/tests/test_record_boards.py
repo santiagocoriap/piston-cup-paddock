@@ -65,3 +65,19 @@ def test_categories_and_cars_have_separate_boards():
         ]
     )
     assert len(result) == 3
+
+
+def test_ranking_has_the_best_eligible_lap_of_each_driver():
+    laps = [
+        lap(1, 190_000, 1, 1),
+        lap(2, 189_000, 1, 2),
+        lap(3, 191_000, 2, 1),
+        lap(4, 185_000, 3, 1, reason="dsq"),
+        lap(5, 189_000, 4, 3),
+    ]
+    result = boards(laps)[0]
+    assert [(r.driver_name, r.lap_time_ms) for r in result.ranking] == [
+        ("D1", 189_000),
+        ("D4", 189_000),
+        ("D2", 191_000),
+    ]

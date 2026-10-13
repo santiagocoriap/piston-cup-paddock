@@ -688,7 +688,7 @@
   "records": {
     "title": "Récords de pista",
     "help": "Solo cuentan vueltas de resultados oficiales: la clasificación y la largada aceptada de la carrera.",
-    "empty": "Todavía no hay récords. Aparecen cuando una fecha importada tiene resultado oficial.",
+    "empty": "Aparecen cuando una fecha importada tiene resultado oficial.",
     "layout": "Pista",
     "all": "Todas las pistas",
     "category": {
@@ -741,7 +741,26 @@
     "time": "Tiempo (m:ss.mmm)",
     "manualSourceLabel": "Fuente (captura, video, archivo viejo)",
     "carClass": "Clase",
-    "noClass": "Sin clase"
+    "noClass": "Sin clase",
+    "emptyTitle": "Todavía no hay récords",
+    "noMatch": "Ningún récord con estos filtros",
+    "noMatchHelp": "Prueba con otra pista, otro auto u otra temporada.",
+    "clearFilters": "Limpiar filtros",
+    "activeFilters": "Filtros activos",
+    "removeFilter": "Quitar el filtro {{name}}",
+    "sessionAll": "Ambas",
+    "sessionShort": {
+      "qualifying": "Clasificación",
+      "race": "Carrera"
+    },
+    "add": "Agregar récord",
+    "close": "Cerrar",
+    "ranking": "Mejores vueltas",
+    "position": "Pos.",
+    "gap": "Diferencia",
+    "details": "Detalles del récord",
+    "lapTime": "Tiempo",
+    "holderLabel": "En manos de"
   },
   "voting": {
     "title": "Votaciones",

@@ -4063,6 +4063,8 @@ export interface components {
             holders: components["schemas"]["RecordLapOut"][];
             /** History */
             history: components["schemas"]["HistoryOut"][];
+            /** Ranking */
+            ranking: components["schemas"]["RecordLapOut"][];
         };
         /** HistoryOut */
         HistoryOut: {
