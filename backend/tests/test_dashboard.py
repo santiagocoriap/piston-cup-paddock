@@ -115,3 +115,38 @@ def test_briefing_of_a_past_race_shows_the_used_values(api, champ_admin, me, gri
 def test_briefing_has_no_handicap_for_a_user_who_does_not_race(api, champ_admin, rounds):
     briefing = api(champ_admin).get(f"/rounds/{rounds[0].id}").json()["briefing"]
     assert briefing["my_handicap"] is None
+
+
+def test_next_round_shows_the_values_before_the_last_race_and_the_announced_conditions(
+    api, champ_admin, me, grid, rounds
+):
+    admin = api(champ_admin)
+    ana, juan = grid
+    race(admin, rounds[0], [ana, juan])
+    race(admin, rounds[1], [juan, ana])
+    admin.client.patch(
+        f"/api/rounds/{rounds[2].id}/calendar",
+        {"announced_conditions": {"weather": "Despejado", "air_temp_c": 24, "notes": "x"}},
+        content_type="application/json",
+    )
+
+    next_round = api(me).get("/dashboard").json()["seasons"][0]["next_round"]
+    # Ana won R1 (10 kg, 2 %) and carried that into R2. Her 2nd place removes 3 kg and 1 %.
+    assert (next_round["previous_ballast_kg"], next_round["previous_restrictor_pct"]) == (10, 2)
+    assert (next_round["ballast_kg"], next_round["restrictor_pct"]) == (7, 1)
+    assert next_round["conditions"] == {
+        "time_of_day": "",
+        "weather": "Despejado",
+        "air_temp_c": 24,
+        "track_temp_c": None,
+        "grip": "",
+    }
+
+
+def test_next_round_before_the_first_race_has_no_previous_values_or_conditions(
+    api, me, grid, rounds
+):
+    next_round = api(me).get("/dashboard").json()["seasons"][0]["next_round"]
+    assert next_round["previous_ballast_kg"] is None
+    assert next_round["previous_restrictor_pct"] is None
+    assert next_round["conditions"] is None

@@ -40,6 +40,15 @@ class NextRound:
     restrictor_pct: int
     my_attendance: str | None = None
     attending: int = 0  # Drivers who answered yes.
+    # The values the driver carried into the last race. None before the first race.
+    previous_ballast_kg: int | None = None
+    previous_restrictor_pct: int | None = None
+    # The conditions an admin announced for the round. None when nothing is announced.
+    conditions: dict | None = None
+    # Pictures from the game files. None until an admin imports them.
+    track_outline_url: str | None = None
+    track_preview_url: str | None = None
+    car_image_url: str | None = None
 
 
 @dataclass
@@ -127,9 +136,35 @@ def driver_dashboard(user) -> list[SeasonCard]:
                 .values_list("answer", flat=True)
                 .first(),
                 attending=next_round.attendance.filter(answer="yes").count(),
+                conditions=_announced(next_round),
+                track_outline_url=next_round.track_layout.image_url("outline"),
+                track_preview_url=next_round.track_layout.image_url("preview"),
+                car_image_url=entry.car.image_url("preview"),
             )
+            if mine.rounds:
+                last = mine.rounds[-1]
+                if last.used_kg is not None:
+                    previous = (last.used_kg, last.used_pct)
+                else:
+                    before = season_handicaps(season, before_round=rounds[last.round_id])
+                    carried = next(e for e in before.entries if e.entry_id == entry.id)
+                    previous = (carried.next_kg, carried.next_pct)
+                card.next_round.previous_ballast_kg, card.next_round.previous_restrictor_pct = (
+                    previous
+                )
         cards.append(card)
     return cards
+
+
+CONDITION_KEYS = ("time_of_day", "weather", "air_temp_c", "track_temp_c", "grip")
+
+
+def _announced(round_: Round) -> dict | None:
+    announced = round_.announced_conditions or {}
+    values = {key: announced.get(key) for key in CONDITION_KEYS}
+    if not any(value not in (None, "") for value in values.values()):
+        return None
+    return values
 
 
 @dataclass

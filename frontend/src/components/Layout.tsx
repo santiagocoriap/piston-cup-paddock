@@ -1,54 +1,99 @@
 import { useTranslation } from 'react-i18next'
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { useMe, useMode, type Mode } from '../session'
+import { Icon, type IconName } from './Icon'
+import { Logo, LogoMark } from './Logo'
 import { NotificationBell } from './NotificationBell'
+
+function NavItem({ to, icon, label, end }: { to: string; icon: IconName; label: string; end?: boolean }) {
+  return (
+    <NavLink to={to} end={end} className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}>
+      <Icon name={icon} />
+      <span>{label}</span>
+    </NavLink>
+  )
+}
 
 export function Layout({ onSignOut }: { onSignOut: () => void }) {
   const { t } = useTranslation()
   const me = useMe()
-  const { mode } = useMode()
+  const { mode, setMode } = useMode()
   const adminMode = mode === 'admin'
+  const initials = me.username.slice(0, 2).toUpperCase()
 
   return (
     <div className={`app ${adminMode ? 'admin-mode' : ''}`}>
-      <header className="topbar">
-        <span className="brand">{t('app.name')}</span>
-        <nav aria-label={t('nav.main')}>
-          <NavLink to="/" end>
-            {t('nav.championships')}
-          </NavLink>
-          <NavLink to="/records">{t('nav.records')}</NavLink>
+      <aside className="side">
+        <Link to="/" className="side-logo" aria-label={t('app.name')}>
+          <Logo />
+        </Link>
+        <nav className="side-nav" aria-label={t('nav.main')}>
+          <NavItem to="/" end icon="home" label={t('nav.home')} />
+          <NavItem to="/records" icon="timer" label={t('nav.records')} />
+          {adminMode && (me.is_admin || me.can_manage) && (
+            <p className="group" aria-hidden="true">
+              {t('mode.admin')}
+            </p>
+          )}
           {adminMode && me.is_admin && (
             <>
-              <NavLink to="/admin/leagues">{t('nav.leagues')}</NavLink>
-              <NavLink to="/admin/drivers">{t('nav.drivers')}</NavLink>
-              <NavLink to="/admin/catalog">{t('nav.catalog')}</NavLink>
+              <NavItem to="/admin/leagues" icon="layers" label={t('nav.leagues')} />
+              <NavItem to="/admin/drivers" icon="users" label={t('nav.drivers')} />
+              <NavItem to="/admin/catalog" icon="map" label={t('nav.catalog')} />
             </>
           )}
-          {adminMode && me.can_manage && <NavLink to="/admin/accounts">{t('nav.accounts')}</NavLink>}
-          {adminMode && me.can_manage && <NavLink to="/admin/audit">{t('nav.audit')}</NavLink>}
+          {adminMode && me.can_manage && <NavItem to="/admin/accounts" icon="shield" label={t('nav.accounts')} />}
+          {adminMode && me.can_manage && <NavItem to="/admin/audit" icon="history" label={t('nav.audit')} />}
         </nav>
-        {me.can_admin && <ModeSwitch />}
-        <NotificationBell />
-        <span className="user">
-          <NavLink to="/account" aria-label={t('nav.account')}>
-            {me.username}
+        <div className="side-foot">
+          <NavLink to="/account" className="me" aria-label={t('nav.account')}>
+            <span className="avatar" aria-hidden="true">
+              {initials}
+            </span>
+            <div>
+              <b>{me.username}</b>
+              <small>{t('nav.account')}</small>
+            </div>
           </NavLink>
-          <button type="button" className="secondary" onClick={onSignOut}>
-            {t('nav.logout')}
+        </div>
+      </aside>
+      <div className="main">
+        {adminMode && (
+          <div className="mode-banner" role="note">
+            <span className="mode-tag">
+              <Icon name="shield" small />
+              {t('mode.bannerTag')}
+            </span>
+            <span className="muted">{t('mode.bannerText')}</span>
+          </div>
+        )}
+        <header className="topbar">
+          <Link to="/" className="topbar-logo" aria-hidden="true" tabIndex={-1}>
+            <LogoMark size={30} />
+          </Link>
+          <span className="spacer" />
+          {me.can_admin && <ModeSwitch mode={mode} setMode={setMode} />}
+          <NotificationBell />
+          <button
+            type="button"
+            className="icon-button"
+            aria-label={t('nav.logout')}
+            title={t('nav.logout')}
+            onClick={onSignOut}
+          >
+            <Icon name="logout" />
           </button>
-        </span>
-      </header>
-      <main className="content">
-        <Outlet />
-      </main>
+        </header>
+        <main className="content">
+          <Outlet />
+        </main>
+      </div>
     </div>
   )
 }
 
-function ModeSwitch() {
+function ModeSwitch({ mode, setMode }: { mode: Mode; setMode: (mode: Mode) => void }) {
   const { t } = useTranslation()
-  const { mode, setMode } = useMode()
   const navigate = useNavigate()
   const { pathname } = useLocation()
 
@@ -65,10 +110,12 @@ function ModeSwitch() {
           key={option}
           type="button"
           aria-pressed={mode === option}
+          aria-label={t(`mode.${option}`)}
           className={mode === option ? 'on' : ''}
           onClick={() => choose(option)}
         >
-          {t(`mode.${option}`)}
+          <Icon name={option === 'driver' ? 'user' : 'shield'} small />
+          <span>{t(`mode.${option}Short`)}</span>
         </button>
       ))}
     </div>

@@ -37,6 +37,16 @@ You need Docker, [uv](https://docs.astral.sh/uv/), Node 24, and pnpm 10 (`corepa
 
 `pnpm test` runs the backend tests, the frontend tests, and the end-to-end tests. The end-to-end tests start a separate Docker stack (`paddock-e2e`, port 8421) with an empty database, and delete it after the run. Your local app and its data do not change. To keep the test stack after a failure, set `E2E_KEEP_STACK=true`.
 
+## Track and car images
+
+The app shows track maps and car pictures from the Assetto Corsa files. The images belong to Kunos or to the mod author.
+
+1. In the app, go to Admin mode > Pistas y autos > Imágenes del juego, and click "Descargar lista".
+2. On a PC with the game, run `python tools/pack_game_images.py --needed paddock-needed.json`. The script finds the usual Steam folders. Use `--game` for another folder.
+3. Upload `paddock-images.zip` in the same panel.
+
+On a PC that runs the app and the game, one command does all three steps: `cd backend && uv run python manage.py import_game_images "<assettocorsa folder>"`.
+
 ## Deploy, backup, and restore
 
 See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Back up with `docker compose exec web python manage.py backup`.

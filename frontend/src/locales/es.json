@@ -22,7 +22,7 @@
     "main": "Navegación principal",
     "audit": "Historial",
     "records": "Récords",
-    "home": "Mi paddock",
+    "home": "Inicio",
     "account": "Mi cuenta",
     "accounts": "Cuentas"
   },
@@ -141,7 +141,22 @@
     "guidanceFor": "Guía de reinicios de {{name}}",
     "cutoff": "Límite de la primera vuelta (por ejemplo, curva 3)",
     "restartGuidance": "Cuándo se reinicia",
-    "pitBoxes": "Boxes (cupo de la grilla)"
+    "pitBoxes": "Boxes (cupo de la grilla)",
+    "images": {
+      "title": "Imágenes del juego",
+      "help": "Mapas de pista, fotos de pista y fotos de autos, tomados de los archivos de Assetto Corsa. Las imágenes son de Kunos o del autor de cada mod.",
+      "step1": "Descargá la lista de pistas y autos de la liga.",
+      "download": "Descargar lista",
+      "step2": "En una PC con el juego, abrí una terminal en la carpeta del proyecto y corré:",
+      "step3": "Subí el archivo paddock-images.zip que crea el script.",
+      "file": "Archivo ZIP",
+      "upload": "Subir imágenes",
+      "uploading": "Subiendo…",
+      "done": "Listo: {{layouts}} trazados y {{cars}} autos con imágenes.",
+      "missing_one": "{{count}} sin archivos en el ZIP",
+      "missing_other": "{{count}} sin archivos en el ZIP",
+      "author": "autor: {{author}}"
+    }
   },
   "errors": {
     "generic": "Algo salió mal. Intentá de nuevo.",
@@ -182,7 +197,7 @@
     "not_a_result_file": "Este archivo no es un archivo de resultados de AC.",
     "not_json": "El archivo no es JSON.",
     "unknown_session_type": "El archivo tiene un tipo de sesión desconocido.",
-    "file_too_large": "El archivo pesa más de 5 MB.",
+    "file_too_large": "El archivo pesa más de 200 MB.",
     "already_applied": "Este archivo ya está aplicado.",
     "unmatched_drivers": "Hay pilotos sin coincidencia. Vinculalos o ignoralos.",
     "bad_guid": "El GUID no es válido.",
@@ -267,7 +282,9 @@
     "class_exists": "Ya existe una clase con ese nombre.",
     "class_required": "Elegí una clase.",
     "pool_empty": "El pool de condiciones de la temporada está vacío.",
-    "backup_running": "Ya hay un backup en curso."
+    "backup_running": "Ya hay un backup en curso.",
+    "bad_zip": "El archivo no es un ZIP válido.",
+    "too_many_files": "El ZIP tiene demasiados archivos. Usá la lista de la liga."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -311,12 +328,35 @@
     "lapsDown_one": "+{{count}} vuelta",
     "lapsDown_other": "+{{count}} vueltas",
     "handicapChecks": "Lastre o restrictor distinto al asignado",
-    "handicapCheck": "{{name}}: asignado {{assignedKg}} kg y {{assignedPct}} %, corrió con {{observedKg}} kg y {{observedPct}} %."
+    "handicapCheck": "{{name}}: asignado {{assignedKg}} kg y {{assignedPct}} %, corrió con {{observedKg}} kg y {{observedPct}} %.",
+    "sections": "Secciones de la fecha",
+    "tabs": {
+      "race": "Carrera",
+      "laps": "Vueltas",
+      "incidents": "Incidentes",
+      "replay": "Repetición",
+      "restarts": "Reinicios",
+      "telemetry": "Telemetría",
+      "engineer": "Ingeniero",
+      "report": "Reporte"
+    },
+    "beforeRace": "Antes de la carrera: briefing y asistencia",
+    "adminTools": "Herramientas de administración",
+    "officialHelp": "Los puntos, el lastre y los récords de esta fecha ya cuentan.",
+    "provisionalHelp": "Todavía puede cambiar mientras se revisan las protestas.",
+    "minutesLeft_one": "Cierre de protestas · queda {{count}} minuto",
+    "minutesLeft_other": "Cierre de protestas · quedan {{count}} minutos",
+    "windowClosed": "Plazo de protestas cerrado",
+    "protestLink": "Presentar una protesta"
   },
   "mode": {
     "label": "Modo",
     "driver": "Modo piloto",
-    "admin": "Modo admin"
+    "admin": "Modo admin",
+    "driverShort": "Piloto",
+    "adminShort": "Admin",
+    "bannerTag": "MODO ADMINISTRACIÓN",
+    "bannerText": "Los cambios afectan a toda la liga y quedan en el historial."
   },
   "audit": {
     "title": "Historial de cambios",
@@ -406,7 +446,8 @@
       "round.conditions_drawn": "{{actor}} sorteó las condiciones de la fecha {{number}} ({{track}}).",
       "round.conditions_redrawn": "{{actor}} volvió a sortear las condiciones de la fecha {{number}} ({{track}}).",
       "season.conditions_pool": "{{actor}} cambió el pool de condiciones de {{season}}.",
-      "backup.started": "{{actor}} empezó un backup."
+      "backup.started": "{{actor}} empezó un backup.",
+      "catalog.game_images": "{{actor}} importó imágenes del juego: {{layouts}} trazados y {{cars}} autos."
     },
     "fields": {
       "role": "Rol",
@@ -845,7 +886,53 @@
     "myAttendance": "Tu respuesta: {{answer}}",
     "noAttendance": "Todavía no dijiste si venís",
     "attending_one": "{{count}} piloto confirmado",
-    "attending_other": "{{count}} pilotos confirmados"
+    "attending_other": "{{count}} pilotos confirmados",
+    "hello": "Hola, {{name}}",
+    "otherSeasons": "Tus otras temporadas",
+    "question": "¿Vas a correr?",
+    "yes": "Sí, voy",
+    "no": "No puedo",
+    "changeAnswer": "Cambiar respuesta",
+    "carLabel": "Tu auto",
+    "started": "La fecha ya empezó.",
+    "countdown": "Faltan {{days}} días, {{hours}} horas y {{minutes}} minutos",
+    "days_one": "día",
+    "days_other": "días",
+    "hours_one": "hora",
+    "hours_other": "horas",
+    "minutes": "min",
+    "standings": "Ver la clasificación",
+    "winsCount_one": "{{count}} victoria",
+    "winsCount_other": "{{count}} victorias",
+    "handicapFor": "Tu lastre para {{track}}",
+    "ballast": "Lastre",
+    "restrictor": "Restrictor",
+    "ballastHelp": "Peso adicional que llevás en la próxima carrera según tus resultados. Ganar suma peso. Terminar 2.º o peor resta 3 kg.",
+    "restrictorHelp": "Límite aplicado a la potencia del auto. Un porcentaje mayor significa menos potencia disponible.",
+    "ofMax": "{{value}} {{unit}} de un máximo de {{max}} {{unit}}",
+    "max": "Máximo {{max}} {{unit}}",
+    "todo": {
+      "title": "Qué tenés que hacer",
+      "none": "No tenés nada pendiente.",
+      "attend": "Confirmá si vas a {{track}}",
+      "answer": "Responder",
+      "vote": "Votá: {{title}}",
+      "runoff": "Segunda vuelta: {{title}}",
+      "voteDetail": "Votación abierta",
+      "voteAction": "Votar",
+      "report": "Reporte nuevo: R{{round}} · {{track}}",
+      "read": "Leer",
+      "voted": "Ya votaste: {{title}}",
+      "closes": "Cierra {{date}}",
+      "change": "Cambiar"
+    },
+    "noChange": "Igual que antes ({{previous}} {{unit}})",
+    "changed": "Antes {{previous}} {{unit}} · {{change}} {{unit}}",
+    "noConditions": "A confirmar",
+    "noWeather": "Sin dato de clima",
+    "air": "aire {{value}} °C",
+    "track": "pista {{value}} °C",
+    "outlineAlt": "Mapa del trazado {{track}} · {{layout}}"
   },
   "briefing": {
     "title": "Briefing",
@@ -1462,6 +1549,9 @@
     "trackMax": "Pista máx. °C",
     "history_one": "{{count}} sorteo",
     "history_other": "{{count}} sorteos"
+  },
+  "explain": {
+    "what": "¿Qué significa?"
   },
   "backup": {
     "title": "Backups",

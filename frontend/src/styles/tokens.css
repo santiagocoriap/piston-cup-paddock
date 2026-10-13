@@ -1,0 +1,180 @@
+/* Piston Cup Paddock design tokens. Source: the design system tokens.json. Do not edit values here by hand. */
+:root,[data-theme="noche"] {
+  --bg:#0b0b0c;
+  --surface-1:#141416;
+  --surface-2:#1c1c1f;
+  --surface-3:#26262a;
+  --line:#2e2e33;
+  --line-strong:#7a7a84;
+  --ink:#f3f1ee;
+  --ink-2:#c9c6c1;
+  --ink-3:#a19d97;
+  --brand:#d71920;
+  --brand-hover:#b5141a;
+  --on-brand:#ffffff;
+  --brand-ink:#ff6b63;
+  --brand-tint:#3a1214;
+  --admin-surface:#1f0d0e;
+  --danger:#ff7a45;
+  --danger-ink:#ffb08f;
+  --danger-tint:#341a0e;
+  --warning:#f5b700;
+  --warning-ink:#ffd34d;
+  --warning-tint:#2e250a;
+  --success:#3ddc84;
+  --success-ink:#86ecb4;
+  --success-tint:#0f2a1c;
+  --info:#6cb6ff;
+  --info-tint:#0f2236;
+  --pb:#22c55e;
+  --sb:#b47cff;
+  --drv-1:#5ab4ff;
+  --drv-2:#ffb020;
+  --drv-3:#2ed3b7;
+  --drv-4:#ff7ab6;
+  --drv-5:#d9c38c;
+  --drv-6:#c98b5e;
+  --drv-7:#e6e6e6;
+  --drv-8:#9db0cc;
+  --elev-1:0 1px 0 rgba(0,0,0,0.5);
+  --elev-2:0 12px 32px rgba(0,0,0,0.55);
+  }
+
+[data-theme="dia"] {
+  --bg:#f6f5f3;
+  --surface-1:#ffffff;
+  --surface-2:#f0eeeb;
+  --surface-3:#e6e3df;
+  --line:#d9d5cf;
+  --line-strong:#77716a;
+  --ink:#141414;
+  --ink-2:#3d3a36;
+  --ink-3:#5f5a54;
+  --brand:#d71920;
+  --brand-hover:#b5141a;
+  --on-brand:#ffffff;
+  --brand-ink:#b3121a;
+  --brand-tint:#fde8e7;
+  --admin-surface:#fff1f0;
+  --danger:#b93a12;
+  --danger-ink:#8f2a0b;
+  --danger-tint:#fdebe3;
+  --warning:#8a6100;
+  --warning-ink:#6b4b00;
+  --warning-tint:#fff4cc;
+  --success:#1a7f45;
+  --success-ink:#145c33;
+  --success-tint:#e3f6ea;
+  --info:#1f5fa8;
+  --info-tint:#e6f0fb;
+  --pb:#15803d;
+  --sb:#7e22ce;
+  --drv-1:#1f6fc1;
+  --drv-2:#a86b00;
+  --drv-3:#0f8a76;
+  --drv-4:#c2367a;
+  --drv-5:#85723a;
+  --drv-6:#9a5a2c;
+  --drv-7:#3d3d3d;
+  --drv-8:#4f6585;
+  --elev-1:0 1px 2px rgba(20,20,20,0.08);
+  --elev-2:0 12px 32px rgba(20,20,20,0.16);
+  }
+
+:root {
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --space-4:16px;
+  --space-5:24px;
+  --space-6:32px;
+  --space-7:48px;
+  --space-8:64px;
+  --radius-xs:2px;
+  --radius-sm:4px;
+  --radius-md:6px;
+  --radius-lg:10px;
+  --radius-pill:999px;
+  --target-min:44px;
+  --target-dense:36px;
+  --sidebar-w:248px;
+  --content-max:1240px;
+  --measure:68ch;
+  --dur-fast:120ms;
+  --dur-base:200ms;
+  --dur-slow:320ms;
+  --font-sans:Archivo, "Segoe UI", system-ui, sans-serif;
+  --font-display:Archivo, "Arial Narrow", "Segoe UI", system-ui, sans-serif;
+  --font-mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+  }
+
+.t-display-xl {
+  font-family:var(--font-display);
+  font-size:56px;
+  line-height:56px;
+  font-weight:800;
+  }
+
+.t-display {
+  font-family:var(--font-display);
+  font-size:40px;
+  line-height:44px;
+  font-weight:800;
+  }
+
+.t-title {
+  font-family:var(--font-sans);
+  font-size:28px;
+  line-height:34px;
+  font-weight:700;
+  }
+
+.t-heading {
+  font-family:var(--font-sans);
+  font-size:20px;
+  line-height:28px;
+  font-weight:700;
+  }
+
+.t-subheading {
+  font-family:var(--font-sans);
+  font-size:16px;
+  line-height:24px;
+  font-weight:650;
+  }
+
+.t-body {
+  font-family:var(--font-sans);
+  font-size:16px;
+  line-height:24px;
+  font-weight:400;
+  }
+
+.t-body-sm {
+  font-family:var(--font-sans);
+  font-size:14px;
+  line-height:20px;
+  font-weight:400;
+  }
+
+.t-label {
+  font-family:var(--font-sans);
+  font-size:13px;
+  line-height:16px;
+  font-weight:600;
+  }
+
+.t-data {
+  font-family:var(--font-sans);
+  font-size:15px;
+  line-height:20px;
+  font-weight:500;
+  }
+
+.t-data-lg {
+  font-family:var(--font-sans);
+  font-size:32px;
+  line-height:36px;
+  font-weight:700;
+  }
+

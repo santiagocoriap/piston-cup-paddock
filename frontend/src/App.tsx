@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { api, type Me } from './api/client'
 import { Layout } from './components/Layout'
+import { Logo } from './components/Logo'
 import { AccountPage } from './pages/AccountPage'
 import { AccountsPage } from './pages/admin/AccountsPage'
 import { AuditPage } from './pages/admin/AuditPage'
@@ -49,7 +50,9 @@ export default function App() {
   if (onInvite) {
     return (
       <div className="shell narrow">
-        <header className="brand">{t('app.name')}</header>
+        <header className="brand" aria-label={t('app.name')}>
+          <Logo size={48} />
+        </header>
         <InvitePage
           onSignedIn={() => {
             setOnInvite(false)
@@ -63,7 +66,9 @@ export default function App() {
   if (session.status !== 'signed-in') {
     return (
       <div className="shell narrow">
-        <header className="brand">{t('app.name')}</header>
+        <header className="brand" aria-label={t('app.name')}>
+          <Logo size={48} />
+        </header>
         {session.status === 'loading' ? (
           <p>{t('app.loading')}</p>
         ) : (

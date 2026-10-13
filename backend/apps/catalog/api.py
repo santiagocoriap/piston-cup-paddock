@@ -1,14 +1,18 @@
 from datetime import date, timedelta
 
 from django.db import transaction
+from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from ninja import Field, Router, Schema, Status
+from ninja import Field, File, Router, Schema, Status
+from ninja.errors import HttpError
+from ninja.files import UploadedFile
 
 from apps.audit.services import change, record
 from apps.common.api import conflict_on_duplicate, require
 from apps.competition.permissions import manages_any_championship
 
+from .game_images import GameImagesError, import_game_images, needed_keys, open_source
 from .models import Car, CarClass, CarClassMembership, Track, TrackLayout
 
 router = Router(tags=["catalog"])
@@ -28,6 +32,18 @@ class LayoutOut(Schema):
     restart_guidance: str
     first_lap_cutoff: str
     pit_boxes: int | None
+    has_outline: bool
+    has_preview: bool
+    length_m: int | None
+    country: str
+
+    @staticmethod
+    def resolve_has_outline(obj) -> bool:
+        return bool(obj.outline)
+
+    @staticmethod
+    def resolve_has_preview(obj) -> bool:
+        return bool(obj.preview)
 
 
 class GuidanceIn(Schema):
@@ -57,6 +73,18 @@ class CarOut(Schema):
     id: int
     key: str
     name: str
+    has_preview: bool
+    has_badge: bool
+    brand: str
+    author: str
+
+    @staticmethod
+    def resolve_has_preview(obj) -> bool:
+        return bool(obj.preview)
+
+    @staticmethod
+    def resolve_has_badge(obj) -> bool:
+        return bool(obj.badge)
 
 
 @router.get("/tracks", response=list[TrackOut])
@@ -221,3 +249,73 @@ def set_class_cars(request, class_id: int, payload: ClassCarsIn):
             reason=payload.reason,
         )
     return _class_out(item)
+
+
+# Pictures from the game files
+
+
+class NeededTrackOut(Schema):
+    track: str
+    layout: str
+
+
+class NeededOut(Schema):
+    tracks: list[NeededTrackOut]
+    cars: list[str]
+
+
+class GameImagesReportOut(Schema):
+    layouts: list[str]
+    cars: list[str]
+    missing_layouts: list[str]
+    missing_cars: list[str]
+
+
+MAX_ZIP_BYTES = 200 * 1024 * 1024
+
+
+@router.get("/game-images/needed", response=NeededOut)
+def game_images_needed(request):
+    """The track and car folders of the catalog, for tools/pack_game_images.py."""
+    require(manages_any_championship(request.user))
+    return needed_keys()
+
+
+@router.post("/game-images", response=GameImagesReportOut)
+def upload_game_images(request, file: File[UploadedFile]):
+    require(manages_any_championship(request.user))
+    if file.size > MAX_ZIP_BYTES:
+        raise HttpError(400, "file_too_large")
+    try:
+        report = import_game_images(open_source(file), request.user)
+    except GameImagesError as error:
+        raise HttpError(400, error.code) from error
+    return report
+
+
+def _image_response(field_file, content_type: str):
+    if not field_file:
+        raise Http404
+    response = FileResponse(field_file.open("rb"), content_type=content_type)
+    response["X-Content-Type-Options"] = "nosniff"
+    response["Content-Security-Policy"] = "sandbox; default-src 'none'"
+    response["Cache-Control"] = "private, max-age=86400"
+    return response
+
+
+@router.get("/layouts/{layout_id}/images/{kind}")
+def layout_image(request, layout_id: int, kind: str):
+    layout = get_object_or_404(TrackLayout, pk=layout_id)
+    if kind not in ("outline", "preview"):
+        raise Http404
+    return _image_response(getattr(layout, kind), "image/png")
+
+
+@router.get("/cars/{car_id}/images/{kind}")
+def car_image(request, car_id: int, kind: str):
+    car = get_object_or_404(Car, pk=car_id)
+    if kind == "preview":
+        return _image_response(car.preview, "image/jpeg")
+    if kind == "badge":
+        return _image_response(car.badge, "image/png")
+    raise Http404

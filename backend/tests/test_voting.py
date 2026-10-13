@@ -358,3 +358,22 @@ def test_prior_season_must_be_in_the_same_championship(admin, season, other_cham
             {"kind": "track", "title": "x", "prior_season_id": season_id, "min_prior_starts": 1},
         )
         assert response.json()["detail"] == "bad_prior_season"
+
+
+def test_ballot_list_shows_the_deadline_and_whether_i_voted(api, admin, season, layouts, voters):
+    closes = (timezone.now() + timedelta(days=3)).replace(microsecond=0)
+    detail = ballot(admin, season, closes_at=closes.isoformat())
+    for layout in layouts[:3]:
+        detail = add(admin, detail["id"], layout)
+    detail = admin.post(f"/ballots/{detail['id']}/open").json()
+    api(voters[0]).put(
+        f"/ballots/{detail['id']}/vote", {"option_ids": [detail["options"][0]["id"]]}
+    )
+
+    def summary(user):
+        rows = api(user).get(f"/seasons/{season.id}/ballots").json()
+        return next(row for row in rows if row["id"] == detail["id"])
+
+    assert summary(voters[0])["voted"] is True
+    assert summary(voters[1])["voted"] is False
+    assert summary(voters[0])["closes_at"].startswith(closes.strftime("%Y-%m-%dT%H:%M"))

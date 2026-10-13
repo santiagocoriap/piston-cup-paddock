@@ -239,6 +239,77 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/catalog/game-images/needed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Game Images Needed
+         * @description The track and car folders of the catalog, for tools/pack_game_images.py.
+         */
+        get: operations["apps_catalog_api_game_images_needed"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/game-images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Game Images */
+        post: operations["apps_catalog_api_upload_game_images"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/layouts/{layout_id}/images/{kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Layout Image */
+        get: operations["apps_catalog_api_layout_image"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/cars/{car_id}/images/{kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Car Image */
+        get: operations["apps_catalog_api_car_image"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/drivers": {
         parameters: {
             query?: never;
@@ -2324,6 +2395,14 @@ export interface components {
             first_lap_cutoff: string;
             /** Pit Boxes */
             pit_boxes: number | null;
+            /** Has Outline */
+            has_outline: boolean;
+            /** Has Preview */
+            has_preview: boolean;
+            /** Length M */
+            length_m: number | null;
+            /** Country */
+            country: string;
         };
         /** TrackOut */
         TrackOut: {
@@ -2371,6 +2450,14 @@ export interface components {
             key: string;
             /** Name */
             name: string;
+            /** Has Preview */
+            has_preview: boolean;
+            /** Has Badge */
+            has_badge: boolean;
+            /** Brand */
+            brand: string;
+            /** Author */
+            author: string;
         };
         /** CarIn */
         CarIn: {
@@ -2435,6 +2522,31 @@ export interface components {
              * @default
              */
             reason?: string;
+        };
+        /** NeededOut */
+        NeededOut: {
+            /** Tracks */
+            tracks: components["schemas"]["NeededTrackOut"][];
+            /** Cars */
+            cars: string[];
+        };
+        /** NeededTrackOut */
+        NeededTrackOut: {
+            /** Track */
+            track: string;
+            /** Layout */
+            layout: string;
+        };
+        /** GameImagesReportOut */
+        GameImagesReportOut: {
+            /** Layouts */
+            layouts: string[];
+            /** Cars */
+            cars: string[];
+            /** Missing Layouts */
+            missing_layouts: string[];
+            /** Missing Cars */
+            missing_cars: string[];
         };
         /** DriverOut */
         DriverOut: {
@@ -3051,6 +3163,10 @@ export interface components {
             track_name: string;
             /** Layout Name */
             layout_name: string;
+            /** Track Outline Url */
+            track_outline_url: string | null;
+            /** Track Preview Url */
+            track_preview_url: string | null;
             /** Scheduled At */
             scheduled_at: string | null;
             /** Event Timezone */
@@ -4078,6 +4194,10 @@ export interface components {
             parent_id: number | null;
             /** Winners */
             winners: string[];
+            /** Closes At */
+            closes_at: string | null;
+            /** Voted */
+            voted: boolean | null;
         };
         /** BallotDetail */
         BallotDetail: {
@@ -4346,6 +4466,19 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** ConditionsOut */
+        ConditionsOut: {
+            /** Time Of Day */
+            time_of_day?: string | null;
+            /** Weather */
+            weather?: string | null;
+            /** Air Temp C */
+            air_temp_c?: number | null;
+            /** Track Temp C */
+            track_temp_c?: number | null;
+            /** Grip */
+            grip?: string | null;
+        };
         /** DashboardOut */
         DashboardOut: {
             /** Has Driver Profile */
@@ -4384,6 +4517,17 @@ export interface components {
             my_attendance: string | null;
             /** Attending */
             attending: number;
+            /** Previous Ballast Kg */
+            previous_ballast_kg: number | null;
+            /** Previous Restrictor Pct */
+            previous_restrictor_pct: number | null;
+            conditions: components["schemas"]["ConditionsOut"] | null;
+            /** Track Outline Url */
+            track_outline_url: string | null;
+            /** Track Preview Url */
+            track_preview_url: string | null;
+            /** Car Image Url */
+            car_image_url: string | null;
         };
         /** RecentOut */
         RecentOut: {
@@ -5907,6 +6051,98 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CarClassOut"];
                 };
+            };
+        };
+    };
+    apps_catalog_api_game_images_needed: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NeededOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_upload_game_images: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameImagesReportOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_layout_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                layout_id: number;
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_catalog_api_car_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                car_id: number;
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

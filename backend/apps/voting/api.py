@@ -10,7 +10,7 @@ from pydantic import AwareDatetime
 from apps.competition.models import Season
 from apps.competition.permissions import can_manage, can_view
 
-from .models import Ballot, BallotOption, Vote
+from .models import Ballot, BallotOption, BallotVoter, Vote
 from .services import (
     BallotError,
     add_option,
@@ -113,6 +113,9 @@ class BallotSummary(Schema):
     status: str
     parent_id: int | None
     winners: list[str]
+    closes_at: datetime | None
+    # None when the user is not a voter of the ballot.
+    voted: bool | None
 
 
 class BallotDetail(Schema):
@@ -294,6 +297,11 @@ def _settings(payload: BallotSettingsIn) -> dict:
 @router.get("/seasons/{season_id}/ballots", response=list[BallotSummary])
 def list_ballots(request, season_id: int):
     season = _season(request.user, season_id)
+    mine = {
+        voter.ballot_id: voter.id
+        for voter in BallotVoter.objects.filter(ballot__season=season, user=request.user)
+    }
+    voted = set(Vote.objects.filter(voter_id__in=mine.values()).values_list("voter_id", flat=True))
     return [
         BallotSummary(
             id=b.id,
@@ -304,6 +312,8 @@ def list_ballots(request, season_id: int):
             winners=[o.label for o in b.options.all() if o.selected]
             if b.status == Ballot.State.DECIDED
             else [],
+            closes_at=b.closes_at,
+            voted=mine[b.id] in voted if b.id in mine else None,
         )
         for b in season.ballots.prefetch_related("options")
     ]

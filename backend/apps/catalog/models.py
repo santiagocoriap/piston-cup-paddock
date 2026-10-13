@@ -2,6 +2,15 @@ from django.conf import settings
 from django.db import models
 
 
+def layout_image_path(layout, filename):
+    folder = layout.key or "default"
+    return f"catalog/tracks/{layout.track.key}/{folder}/{filename}"
+
+
+def car_image_path(car, filename):
+    return f"catalog/cars/{car.key}/{filename}"
+
+
 class Track(models.Model):
     """A track folder in the AC content, for example ks_highlands."""
 
@@ -26,6 +35,11 @@ class TrackLayout(models.Model):
     first_lap_cutoff = models.CharField(max_length=200, blank=True)
     # The number of pit boxes. A track ballot refuses a layout with fewer boxes than drivers.
     pit_boxes = models.PositiveSmallIntegerField(null=True, blank=True)
+    # From the game files (ui/<layout>/): the track map and a picture. See game_images.py.
+    outline = models.FileField(upload_to=layout_image_path, blank=True)
+    preview = models.FileField(upload_to=layout_image_path, blank=True)
+    length_m = models.PositiveIntegerField(null=True, blank=True)
+    country = models.CharField(max_length=100, blank=True)
 
     class Meta:
         ordering = ["track__name", "name"]
@@ -36,18 +50,31 @@ class TrackLayout(models.Model):
     def __str__(self):
         return f"{self.track.name} - {self.name}"
 
+    def image_url(self, kind: str) -> str | None:
+        """The API path of the outline or preview picture, or None without a picture."""
+        return f"/api/catalog/layouts/{self.id}/images/{kind}" if getattr(self, kind) else None
+
 
 class Car(models.Model):
     """A car folder in the AC content, for example trr_lmdh_acura_arx-06."""
 
     key = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=200)
+    # From the game files: a skin preview, the brand badge, and the text of ui_car.json.
+    preview = models.FileField(upload_to=car_image_path, blank=True)
+    badge = models.FileField(upload_to=car_image_path, blank=True)
+    brand = models.CharField(max_length=100, blank=True)
+    author = models.CharField(max_length=200, blank=True)
 
     class Meta:
         ordering = ["name"]
 
     def __str__(self):
         return self.name
+
+    def image_url(self, kind: str) -> str | None:
+        """The API path of the preview or badge picture, or None without a picture."""
+        return f"/api/catalog/cars/{self.id}/images/{kind}" if getattr(self, kind) else None
 
 
 class CarClass(models.Model):
@@ -61,6 +88,10 @@ class CarClass(models.Model):
 
     def __str__(self):
         return self.name
+
+    def image_url(self, kind: str) -> str | None:
+        """The API path of the preview or badge picture, or None without a picture."""
+        return f"/api/catalog/cars/{self.id}/images/{kind}" if getattr(self, kind) else None
 
 
 class CarClassMembership(models.Model):

@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useParams } from 'react-router'
+import { Link, useParams, useSearchParams } from 'react-router'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
+import { Icon } from '../components/Icon'
 import { Loading } from '../components/Layout'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime, formatLapTime } from '../lib/format'
@@ -28,9 +29,13 @@ type Row = { status: Status | 'absent'; position: string; pole: boolean; fastest
 
 const STATUSES: (Status | 'absent')[] = ['absent', 'finished', 'dnf', 'dns', 'dsq']
 
+const TABS = ['race', 'laps', 'incidents', 'replay', 'restarts', 'telemetry', 'engineer', 'report'] as const
+type Tab = (typeof TABS)[number]
+
 export function RoundPage() {
   const { t, i18n } = useTranslation()
   const roundId = Number(useParams().roundId)
+  const [search, setSearch] = useSearchParams()
   const round = useLoad(
     () => api.GET('/api/rounds/{round_id}', { params: { path: { round_id: roundId } } }),
     [roundId],
@@ -45,27 +50,22 @@ export function RoundPage() {
   const staffView = useAdminView((data?.capabilities.length ?? 0) > 0)
   if (!data) return <Loading failed={round.failed} />
   const may = (capability: string) => staffView && data.capabilities.includes(capability)
-  const rules = data.rules
-  const hasIncidents = data.result?.some((line) => line.incidents !== null && line.incidents !== undefined) ?? false
-  const timeOrGap = (line: NonNullable<typeof data.result>[number]) => {
-    if (line.laps_down) return t('round.lapsDown', { count: line.laps_down })
-    if (line.gap_ms !== null && line.gap_ms !== undefined) return `+${(line.gap_ms / 1000).toFixed(3)}`
-    return formatLapTime(line.total_ms)
-  }
+  const requested = search.get('tab') as Tab | null
+  const tab: Tab = requested && TABS.includes(requested) ? requested : 'race'
+  const hasResult = data.result !== null && data.result !== undefined
   const changed = () => {
     round.reload()
     setSaves((n) => n + 1)
   }
-  return (
-    <section>
-      <p className="muted">
-        {data.championship_name} · <Link to={`/seasons/${data.season_id}`}>{data.season_name}</Link>
-      </p>
-      <h1>
-        {t('round.title', { number: data.number })}: {data.track_name} · {data.layout_name}
-      </h1>
-      <p className="muted">{formatDateTime(data.scheduled_at, i18n.language)}</p>
+  const showTab = (next: Tab) => {
+    const params = new URLSearchParams(search)
+    if (next === 'race') params.delete('tab')
+    else params.set('tab', next)
+    setSearch(params, { replace: true })
+  }
 
+  const briefing = (
+    <>
       <Briefing round={data} />
       <AttendanceCard roundId={data.id} />
       <p>
@@ -73,111 +73,246 @@ export function RoundPage() {
           {t('calendar.addRound')}
         </a>
       </p>
+    </>
+  )
 
-      <h2>{t('round.result')}</h2>
-      <ResultStatus round={data} />
-      {data.handicap_checks.length > 0 && (
-        <div className="card warning" role="status">
-          <strong>{t('round.handicapChecks')}</strong>
-          <ul>
-            {data.handicap_checks.map((c) => (
-              <li key={c.entry_id}>
-                {t('round.handicapCheck', {
-                  name: c.driver_name,
-                  assignedKg: c.assigned_kg,
-                  assignedPct: c.assigned_pct,
-                  observedKg: c.observed_kg,
-                  observedPct: c.observed_pct,
-                })}
-              </li>
-            ))}
-          </ul>
-        </div>
+  return (
+    <section className="round-page">
+      <header className="round-head">
+        <p className="eyebrow">
+          {data.championship_name} · <Link to={`/seasons/${data.season_id}`}>{data.season_name}</Link>
+        </p>
+        <h1 className="round-title">
+          <span className="round-number">{t('round.title', { number: data.number })}</span>
+          <span>
+            {data.track_name} · {data.layout_name}
+          </span>
+        </h1>
+        <p className="muted">{formatDateTime(data.scheduled_at, i18n.language)}</p>
+        {data.track_outline_url && (
+          <img
+            className="round-outline"
+            src={data.track_outline_url}
+            alt={t('dashboard.outlineAlt', { track: data.track_name, layout: data.layout_name })}
+          />
+        )}
+      </header>
+
+      <nav className="round-tabs" aria-label={t('round.sections')}>
+        {TABS.map((name) => (
+          <button
+            key={name}
+            type="button"
+            aria-current={tab === name ? 'page' : undefined}
+            className={tab === name ? 'on' : undefined}
+            onClick={() => showTab(name)}
+          >
+            {t(`round.tabs.${name}`)}
+          </button>
+        ))}
+      </nav>
+
+      {tab === 'race' && (
+        <>
+          {!hasResult && briefing}
+
+          <h2>{t('round.result')}</h2>
+          <StatusBanner round={data} />
+          {data.handicap_checks.length > 0 && (
+            <div className="data-state" role="status">
+              <span className="ds-icon">
+                <Icon name="alert" />
+              </span>
+              <div>
+                <p className="ds-title">{t('round.handicapChecks')}</p>
+                <ul className="ds-body">
+                  {data.handicap_checks.map((c) => (
+                    <li key={c.entry_id}>
+                      {t('round.handicapCheck', {
+                        name: c.driver_name,
+                        assignedKg: c.assigned_kg,
+                        assignedPct: c.assigned_pct,
+                        observedKg: c.observed_kg,
+                        observedPct: c.observed_pct,
+                      })}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+          {hasResult ? <ResultTable round={data} /> : <p>{t('round.noResult')}</p>}
+          <p className="muted round-rules">
+            {t('round.rules', { version: data.rules.version, points: data.rules.points_by_position.join('-') })}{' '}
+            {(data.rules.pole_bonus > 0 || data.rules.fastest_lap_bonus > 0) &&
+              t('round.bonuses', { pole: data.rules.pole_bonus, fastest: data.rules.fastest_lap_bonus })}
+          </p>
+
+          <div className="round-review">
+            <div>
+              <Penalties round={data} adminView={may('penalties')} onChange={changed} />
+            </div>
+            <div id="protests">
+              <Protests round={data} adminView={may('penalties')} onChange={changed} />
+            </div>
+          </div>
+          <Versions round={data} />
+
+          {hasResult && (
+            <details className="round-briefing">
+              <summary>{t('round.beforeRace')}</summary>
+              {briefing}
+            </details>
+          )}
+
+          {(may('results') || may('penalties')) && (
+            <section className="admin-tools" aria-labelledby="admin-tools">
+              <h2 id="admin-tools">
+                <Icon name="shield" />
+                {t('round.adminTools')}
+              </h2>
+              {may('results') && <ApproveButton round={data} onChange={changed} />}
+              {may('results') && (
+                <ImportSection
+                  roundId={data.id}
+                  entries={data.entries}
+                  onApplied={() => {
+                    changed()
+                    setImports((n) => n + 1)
+                  }}
+                />
+              )}
+              {may('results') && <PenaltyLogsSection roundId={data.id} onApplied={changed} />}
+              {may('results') && <ResultForm key={imports} round={data} onSaved={changed} />}
+            </section>
+          )}
+        </>
       )}
-      {may('results') && <ApproveButton round={data} onChange={changed} />}
-      {data.result === null || data.result === undefined ? (
-        <p>{t('round.noResult')}</p>
-      ) : (
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">{t('round.position')}</th>
-                <th scope="col">#</th>
-                <th scope="col">{t('season.driver')}</th>
-                <th scope="col">{t('round.laps')}</th>
-                <th scope="col">{t('round.timeGap')}</th>
-                {hasIncidents && <th scope="col">{t('round.incidents')}</th>}
-                <th scope="col">{t('round.points')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.result.map((line) => (
-                <tr key={line.entry_id}>
-                  <td>{line.position ?? t(`round.short.${line.status}`)}</td>
-                  <td>{line.number}</td>
-                  <td>
-                    <Link to={`/drivers/${line.driver_id}`}>{line.driver_name}</Link>
-                    {line.status === 'dnf' && <span className="badge">DNF</span>}
-                    {penaltyChanged(line) && (
-                      <span
-                        className="badge penalty"
-                        title={t('review.entered', {
-                          value: line.entered_position ?? t(`round.short.${line.entered_status}`),
-                        })}
-                      >
-                        {t('review.penaltyMark')}
-                      </span>
-                    )}
-                    {line.pole && rules.pole_bonus > 0 && <span className="badge">{t('round.pole')}</span>}
-                    {line.fastest_lap && rules.fastest_lap_bonus > 0 && (
-                      <span className="badge">{t('round.fastestLap')}</span>
-                    )}
-                  </td>
-                  <td>{line.laps ?? '—'}</td>
-                  <td>{timeOrGap(line)}</td>
-                  {hasIncidents && <td>{line.incidents ?? '—'}</td>}
-                  <td>{line.points}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+
+      {tab === 'laps' && <LapsSection key={`${imports}-${saves}`} roundId={data.id} />}
+      {tab === 'incidents' && <IncidentsSection roundId={data.id} />}
+      {tab === 'replay' && <ReplaySection roundId={data.id} />}
+      {tab === 'restarts' && (
+        <RestartsSection roundId={data.id} entries={data.entries} adminView={may('restarts')} refresh={saves} />
       )}
-      <p className="muted">
-        {t('round.rules', { version: rules.version, points: rules.points_by_position.join('-') })}{' '}
-        {(rules.pole_bonus > 0 || rules.fastest_lap_bonus > 0) &&
-          t('round.bonuses', { pole: rules.pole_bonus, fastest: rules.fastest_lap_bonus })}
-      </p>
-
-      {may('results') && (
-        <ImportSection
-          roundId={data.id}
-          entries={data.entries}
-          onApplied={() => {
-            changed()
-            setImports((n) => n + 1)
-          }}
-        />
-      )}
-      {may('results') && <PenaltyLogsSection roundId={data.id} onApplied={changed} />}
-      {may('results') && <ResultForm key={imports} round={data} onSaved={changed} />}
-
-      <LapsSection key={`${imports}-${saves}`} roundId={data.id} />
-      <IncidentsSection roundId={data.id} />
-      <ReplaySection roundId={data.id} />
-
-      <Penalties round={data} adminView={may('penalties')} onChange={changed} />
-      <Protests round={data} adminView={may('penalties')} onChange={changed} />
-      <Versions round={data} />
-
-      <RestartsSection roundId={data.id} entries={data.entries} adminView={may('restarts')} refresh={saves} />
-
-      <TelemetrySection roundId={data.id} />
-      <EngineerSection roundId={data.id} />
-
-      <ReportSection target={{ kind: 'round', id: data.id }} adminView={may('reports')} />
+      {tab === 'telemetry' && <TelemetrySection roundId={data.id} />}
+      {tab === 'engineer' && <EngineerSection roundId={data.id} />}
+      {tab === 'report' && <ReportSection target={{ kind: 'round', id: data.id }} adminView={may('reports')} />}
     </section>
+  )
+}
+
+/** The state of the result: provisional with the protest deadline, or official. */
+function StatusBanner({ round }: { round: RoundDetail }) {
+  const { t, i18n } = useTranslation()
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 30_000)
+    return () => window.clearInterval(timer)
+  }, [])
+  if (!round.status) return null
+  const official = round.status === 'official'
+  const deadline = round.protest_deadline
+  const minutesLeft = deadline ? Math.ceil((new Date(deadline).getTime() - now) / 60_000) : null
+  return (
+    <div className={`status-banner ${official ? 'official' : 'provisional'}`} role="status">
+      <span className="status-icon">
+        <Icon name={official ? 'check' : 'clock'} />
+      </span>
+      <div>
+        <div className="status-title">
+          <ResultStatus round={round} />
+        </div>
+        <p className="muted">{official ? t('round.officialHelp') : t('round.provisionalHelp')}</p>
+      </div>
+      {!official && deadline && (
+        <div className="status-clock">
+          <b>{formatTime(deadline, i18n.language)}</b>
+          <span>
+            {round.protest_window_open && minutesLeft !== null && minutesLeft > 0
+              ? t('round.minutesLeft', { count: minutesLeft })
+              : t('round.windowClosed')}
+          </span>
+          {round.can_protest && (
+            <a className="small-link" href="#protests">
+              {t('round.protestLink')}
+            </a>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function formatTime(iso: string, language: string): string {
+  return new Intl.DateTimeFormat(language, { hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
+}
+
+function ResultTable({ round }: { round: RoundDetail }) {
+  const { t } = useTranslation()
+  const lines = round.result ?? []
+  const rules = round.rules
+  const hasIncidents = lines.some((line) => line.incidents !== null && line.incidents !== undefined)
+  const timeOrGap = (line: (typeof lines)[number]) => {
+    if (line.laps_down) return t('round.lapsDown', { count: line.laps_down })
+    if (line.gap_ms !== null && line.gap_ms !== undefined) return `+${(line.gap_ms / 1000).toFixed(3)}`
+    return formatLapTime(line.total_ms)
+  }
+  return (
+    <div className="table-wrap results-table">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">{t('round.position')}</th>
+            <th scope="col">{t('season.driver')}</th>
+            <th scope="col" className="r hide-sm">
+              {t('round.laps')}
+            </th>
+            <th scope="col" className="r">
+              {t('round.timeGap')}
+            </th>
+            {hasIncidents && (
+              <th scope="col" className="r hide-sm">
+                {t('round.incidents')}
+              </th>
+            )}
+            <th scope="col" className="r">
+              {t('round.points')}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {lines.map((line) => (
+            <tr key={line.entry_id} className={line.status === 'dns' || line.status === 'dsq' ? 'dim' : undefined}>
+              <td className="pos">{line.position ?? t(`round.short.${line.status}`)}</td>
+              <td>
+                <span className="car-number">#{line.number}</span>
+                <Link to={`/drivers/${line.driver_id}`}>{line.driver_name}</Link>
+                {line.status === 'dnf' && <span className="badge">DNF</span>}
+                {penaltyChanged(line) && (
+                  <span
+                    className="badge penalty"
+                    title={t('review.entered', {
+                      value: line.entered_position ?? t(`round.short.${line.entered_status}`),
+                    })}
+                  >
+                    {t('review.penaltyMark')}
+                  </span>
+                )}
+                {line.pole && rules.pole_bonus > 0 && <span className="badge">{t('round.pole')}</span>}
+                {line.fastest_lap && rules.fastest_lap_bonus > 0 && (
+                  <span className="badge">{t('round.fastestLap')}</span>
+                )}
+              </td>
+              <td className="r hide-sm">{line.laps ?? '—'}</td>
+              <td className="r">{timeOrGap(line)}</td>
+              {hasIncidents && <td className="r hide-sm">{line.incidents ?? '—'}</td>}
+              <td className="r points">{line.points}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 

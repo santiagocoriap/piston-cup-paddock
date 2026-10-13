@@ -232,4 +232,23 @@ describe('RoundPage', () => {
     expect(within(briefing).getByText('10 kg · 2 %')).toBeInTheDocument()
     expect(within(briefing).getByText(/Plazo de protestas: 60 minutos/)).toBeInTheDocument()
   })
+
+  it('opens the analysis in tabs and keeps the race tab first', async () => {
+    const line = { entry_id: 1, status: 'finished', position: 1, entered_status: 'finished', entered_position: 1, pole: false, fastest_lap: false, number: 1, driver_name: 'Bing', points: 25 }
+    mockApi({ ...noRestarts, 'GET /api/rounds/9': () => json(200, round(false, [line])) })
+    show(DRIVER)
+    const tabs = await screen.findByRole('navigation', { name: 'Secciones de la fecha' })
+    expect(within(tabs).getByRole('button', { name: 'Carrera' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('table')).toBeInTheDocument()
+    await userEvent.click(within(tabs).getByRole('button', { name: 'Reinicios' }))
+    expect(within(tabs).getByRole('button', { name: 'Reinicios' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.queryByRole('table')).not.toBeInTheDocument()
+  })
+
+  it('puts the briefing first before the race and folds it after the result', async () => {
+    mockApi({ ...noRestarts, 'GET /api/rounds/9': () => json(200, round(false)) })
+    show(DRIVER)
+    expect(await screen.findByRole('region', { name: 'Briefing' })).toBeInTheDocument()
+    expect(screen.queryByText('Antes de la carrera: briefing y asistencia')).not.toBeInTheDocument()
+  })
 })

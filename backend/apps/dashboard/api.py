@@ -26,6 +26,14 @@ class RecentOut(Schema):
     points: int
 
 
+class ConditionsOut(Schema):
+    time_of_day: str | None = None
+    weather: str | None = None
+    air_temp_c: int | None = None
+    track_temp_c: int | None = None
+    grip: str | None = None
+
+
 class NextRoundOut(Schema):
     round_id: int
     round_number: int
@@ -37,6 +45,12 @@ class NextRoundOut(Schema):
     restrictor_pct: int
     my_attendance: str | None
     attending: int
+    previous_ballast_kg: int | None
+    previous_restrictor_pct: int | None
+    conditions: ConditionsOut | None
+    track_outline_url: str | None
+    track_preview_url: str | None
+    car_image_url: str | None
 
 
 class NewReportOut(Schema):

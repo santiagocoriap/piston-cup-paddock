@@ -172,6 +172,8 @@ class RoundDetail(Schema):
     championship_name: str
     track_name: str
     layout_name: str
+    track_outline_url: str | None
+    track_preview_url: str | None
     scheduled_at: AwareDatetime | None
     event_timezone: str
     can_manage: bool
@@ -373,6 +375,8 @@ def _round_detail(user, round_: Round) -> RoundDetail:
         championship_name=season.championship.name,
         track_name=round_.track_layout.track.name,
         layout_name=round_.track_layout.name,
+        track_outline_url=round_.track_layout.image_url("outline"),
+        track_preview_url=round_.track_layout.image_url("preview"),
         scheduled_at=round_.scheduled_at,
         event_timezone=season.championship.league.timezone,
         can_manage=can_manage(user, season.championship),

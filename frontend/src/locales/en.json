@@ -22,7 +22,7 @@
     "main": "Main navigation",
     "audit": "History",
     "records": "Records",
-    "home": "My paddock",
+    "home": "Home",
     "account": "My account",
     "accounts": "Accounts"
   },
@@ -141,7 +141,22 @@
     "guidanceFor": "Restart guidance for {{name}}",
     "cutoff": "First-lap cutoff (for example, turn 3)",
     "restartGuidance": "When to restart",
-    "pitBoxes": "Pit boxes (grid capacity)"
+    "pitBoxes": "Pit boxes (grid capacity)",
+    "images": {
+      "title": "Game images",
+      "help": "Track maps, track pictures and car pictures from the Assetto Corsa files. The images belong to Kunos or to the author of each mod.",
+      "step1": "Download the list of league tracks and cars.",
+      "download": "Download list",
+      "step2": "On a PC with the game, open a terminal in the project folder and run:",
+      "step3": "Upload the paddock-images.zip file that the script makes.",
+      "file": "ZIP file",
+      "upload": "Upload images",
+      "uploading": "Uploading…",
+      "done": "Done: {{layouts}} layouts and {{cars}} cars with images.",
+      "missing_one": "{{count}} with no files in the ZIP",
+      "missing_other": "{{count}} with no files in the ZIP",
+      "author": "author: {{author}}"
+    }
   },
   "errors": {
     "generic": "Something went wrong. Try again.",
@@ -182,7 +197,7 @@
     "not_a_result_file": "This file is not an AC result file.",
     "not_json": "The file is not JSON.",
     "unknown_session_type": "The file has an unknown session type.",
-    "file_too_large": "The file is larger than 5 MB.",
+    "file_too_large": "The file is larger than 200 MB.",
     "already_applied": "This file is already applied.",
     "unmatched_drivers": "Some drivers have no match. Link or ignore them.",
     "bad_guid": "The GUID is not valid.",
@@ -267,7 +282,9 @@
     "class_exists": "A class with this name already exists.",
     "class_required": "Choose a class.",
     "pool_empty": "The conditions pool of the season is empty.",
-    "backup_running": "A backup is already running."
+    "backup_running": "A backup is already running.",
+    "bad_zip": "The file is not a valid ZIP.",
+    "too_many_files": "The ZIP has too many files. Use the league list."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -311,12 +328,35 @@
     "lapsDown_one": "+{{count}} lap",
     "lapsDown_other": "+{{count}} laps",
     "handicapChecks": "Ballast or restrictor different from the assigned value",
-    "handicapCheck": "{{name}}: assigned {{assignedKg}} kg and {{assignedPct}} %, raced with {{observedKg}} kg and {{observedPct}} %."
+    "handicapCheck": "{{name}}: assigned {{assignedKg}} kg and {{assignedPct}} %, raced with {{observedKg}} kg and {{observedPct}} %.",
+    "sections": "Round sections",
+    "tabs": {
+      "race": "Race",
+      "laps": "Laps",
+      "incidents": "Incidents",
+      "replay": "Replay",
+      "restarts": "Restarts",
+      "telemetry": "Telemetry",
+      "engineer": "Engineer",
+      "report": "Report"
+    },
+    "beforeRace": "Before the race: briefing and attendance",
+    "adminTools": "Admin tools",
+    "officialHelp": "The points, ballast and records of this round count now.",
+    "provisionalHelp": "It can still change while protests are reviewed.",
+    "minutesLeft_one": "Protests close · {{count}} minute left",
+    "minutesLeft_other": "Protests close · {{count}} minutes left",
+    "windowClosed": "Protest window closed",
+    "protestLink": "Send a protest"
   },
   "mode": {
     "label": "Mode",
     "driver": "Driver mode",
-    "admin": "Admin mode"
+    "admin": "Admin mode",
+    "driverShort": "Driver",
+    "adminShort": "Admin",
+    "bannerTag": "ADMIN MODE",
+    "bannerText": "Changes affect the whole league and stay in the history."
   },
   "audit": {
     "title": "Change history",
@@ -406,7 +446,8 @@
       "round.conditions_drawn": "{{actor}} drew the conditions of round {{number}} ({{track}}).",
       "round.conditions_redrawn": "{{actor}} drew the conditions of round {{number}} ({{track}}) again.",
       "season.conditions_pool": "{{actor}} changed the conditions pool of {{season}}.",
-      "backup.started": "{{actor}} started a backup."
+      "backup.started": "{{actor}} started a backup.",
+      "catalog.game_images": "{{actor}} imported game images: {{layouts}} layouts and {{cars}} cars."
     },
     "fields": {
       "role": "Role",
@@ -845,7 +886,53 @@
     "myAttendance": "Your answer: {{answer}}",
     "noAttendance": "You did not answer yet",
     "attending_one": "{{count}} driver confirmed",
-    "attending_other": "{{count}} drivers confirmed"
+    "attending_other": "{{count}} drivers confirmed",
+    "hello": "Hi, {{name}}",
+    "otherSeasons": "Your other seasons",
+    "question": "Are you racing?",
+    "yes": "Yes, I race",
+    "no": "I cannot",
+    "changeAnswer": "Change answer",
+    "carLabel": "Your car",
+    "started": "The round has started.",
+    "countdown": "{{days}} days, {{hours}} hours and {{minutes}} minutes left",
+    "days_one": "day",
+    "days_other": "days",
+    "hours_one": "hour",
+    "hours_other": "hours",
+    "minutes": "min",
+    "standings": "See the standings",
+    "winsCount_one": "{{count}} win",
+    "winsCount_other": "{{count}} wins",
+    "handicapFor": "Your ballast for {{track}}",
+    "ballast": "Ballast",
+    "restrictor": "Restrictor",
+    "ballastHelp": "Extra weight you carry in the next race because of your results. A win adds weight. A 2nd place or lower removes 3 kg.",
+    "restrictorHelp": "A limit on the engine power. A higher percentage means less power.",
+    "ofMax": "{{value}} {{unit}} of a maximum of {{max}} {{unit}}",
+    "max": "Maximum {{max}} {{unit}}",
+    "todo": {
+      "title": "What to do",
+      "none": "Nothing to do.",
+      "attend": "Tell us if you race at {{track}}",
+      "answer": "Answer",
+      "vote": "Vote: {{title}}",
+      "runoff": "Runoff: {{title}}",
+      "voteDetail": "Open ballot",
+      "voteAction": "Vote",
+      "report": "New report: R{{round}} · {{track}}",
+      "read": "Read",
+      "voted": "You voted: {{title}}",
+      "closes": "Closes {{date}}",
+      "change": "Change"
+    },
+    "noChange": "Same as before ({{previous}} {{unit}})",
+    "changed": "Before {{previous}} {{unit}} · {{change}} {{unit}}",
+    "noConditions": "To be confirmed",
+    "noWeather": "No weather data",
+    "air": "air {{value}} °C",
+    "track": "track {{value}} °C",
+    "outlineAlt": "Map of {{track}} · {{layout}}"
   },
   "briefing": {
     "title": "Briefing",
@@ -1462,6 +1549,9 @@
     "trackMax": "Track max °C",
     "history_one": "{{count}} draw",
     "history_other": "{{count}} draws"
+  },
+  "explain": {
+    "what": "What does it mean?"
   },
   "backup": {
     "title": "Backups",

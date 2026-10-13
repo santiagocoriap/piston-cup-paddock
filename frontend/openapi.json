@@ -603,6 +603,160 @@
         ]
       }
     },
+    "/api/catalog/game-images/needed": {
+      "get": {
+        "operationId": "apps_catalog_api_game_images_needed",
+        "summary": "Game Images Needed",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeededOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "The track and car folders of the catalog, for tools/pack_game_images.py.",
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/game-images": {
+      "post": {
+        "operationId": "apps_catalog_api_upload_game_images",
+        "summary": "Upload Game Images",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameImagesReportOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "format": "binary",
+                    "title": "File",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "file"
+                ],
+                "title": "FileParams",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/layouts/{layout_id}/images/{kind}": {
+      "get": {
+        "operationId": "apps_catalog_api_layout_image",
+        "summary": "Layout Image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layout_id",
+            "schema": {
+              "title": "Layout Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "kind",
+            "schema": {
+              "title": "Kind",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/cars/{car_id}/images/{kind}": {
+      "get": {
+        "operationId": "apps_catalog_api_car_image",
+        "summary": "Car Image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "car_id",
+            "schema": {
+              "title": "Car Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "kind",
+            "schema": {
+              "title": "Kind",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/drivers": {
       "get": {
         "operationId": "apps_identity_drivers_api_list_drivers",
@@ -6355,6 +6509,29 @@
               }
             ],
             "title": "Pit Boxes"
+          },
+          "has_outline": {
+            "title": "Has Outline",
+            "type": "boolean"
+          },
+          "has_preview": {
+            "title": "Has Preview",
+            "type": "boolean"
+          },
+          "length_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Length M"
+          },
+          "country": {
+            "title": "Country",
+            "type": "string"
           }
         },
         "required": [
@@ -6363,7 +6540,11 @@
           "name",
           "restart_guidance",
           "first_lap_cutoff",
-          "pit_boxes"
+          "pit_boxes",
+          "has_outline",
+          "has_preview",
+          "length_m",
+          "country"
         ],
         "title": "LayoutOut",
         "type": "object"
@@ -6467,12 +6648,32 @@
           "name": {
             "title": "Name",
             "type": "string"
+          },
+          "has_preview": {
+            "title": "Has Preview",
+            "type": "boolean"
+          },
+          "has_badge": {
+            "title": "Has Badge",
+            "type": "boolean"
+          },
+          "brand": {
+            "title": "Brand",
+            "type": "string"
+          },
+          "author": {
+            "title": "Author",
+            "type": "string"
           }
         },
         "required": [
           "id",
           "key",
-          "name"
+          "name",
+          "has_preview",
+          "has_badge",
+          "brand",
+          "author"
         ],
         "title": "CarOut",
         "type": "object"
@@ -6641,6 +6842,88 @@
           "car_ids"
         ],
         "title": "ClassCarsIn",
+        "type": "object"
+      },
+      "NeededOut": {
+        "properties": {
+          "tracks": {
+            "items": {
+              "$ref": "#/components/schemas/NeededTrackOut"
+            },
+            "title": "Tracks",
+            "type": "array"
+          },
+          "cars": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Cars",
+            "type": "array"
+          }
+        },
+        "required": [
+          "tracks",
+          "cars"
+        ],
+        "title": "NeededOut",
+        "type": "object"
+      },
+      "NeededTrackOut": {
+        "properties": {
+          "track": {
+            "title": "Track",
+            "type": "string"
+          },
+          "layout": {
+            "title": "Layout",
+            "type": "string"
+          }
+        },
+        "required": [
+          "track",
+          "layout"
+        ],
+        "title": "NeededTrackOut",
+        "type": "object"
+      },
+      "GameImagesReportOut": {
+        "properties": {
+          "layouts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Layouts",
+            "type": "array"
+          },
+          "cars": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Cars",
+            "type": "array"
+          },
+          "missing_layouts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Layouts",
+            "type": "array"
+          },
+          "missing_cars": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Cars",
+            "type": "array"
+          }
+        },
+        "required": [
+          "layouts",
+          "cars",
+          "missing_layouts",
+          "missing_cars"
+        ],
+        "title": "GameImagesReportOut",
         "type": "object"
       },
       "DriverOut": {
@@ -8431,6 +8714,28 @@
             "title": "Layout Name",
             "type": "string"
           },
+          "track_outline_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Outline Url"
+          },
+          "track_preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Preview Url"
+          },
           "scheduled_at": {
             "anyOf": [
               {
@@ -8588,6 +8893,8 @@
           "championship_name",
           "track_name",
           "layout_name",
+          "track_outline_url",
+          "track_preview_url",
           "scheduled_at",
           "event_timezone",
           "can_manage",
@@ -11568,6 +11875,29 @@
             },
             "title": "Winners",
             "type": "array"
+          },
+          "closes_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closes At"
+          },
+          "voted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voted"
           }
         },
         "required": [
@@ -11576,7 +11906,9 @@
           "title",
           "status",
           "parent_id",
-          "winners"
+          "winners",
+          "closes_at",
+          "voted"
         ],
         "title": "BallotSummary",
         "type": "object"
@@ -12641,6 +12973,67 @@
         "title": "DecideIn",
         "type": "object"
       },
+      "ConditionsOut": {
+        "properties": {
+          "time_of_day": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Of Day"
+          },
+          "weather": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weather"
+          },
+          "air_temp_c": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Air Temp C"
+          },
+          "track_temp_c": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Temp C"
+          },
+          "grip": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grip"
+          }
+        },
+        "title": "ConditionsOut",
+        "type": "object"
+      },
       "DashboardOut": {
         "properties": {
           "has_driver_profile": {
@@ -12741,6 +13134,71 @@
           "attending": {
             "title": "Attending",
             "type": "integer"
+          },
+          "previous_ballast_kg": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Ballast Kg"
+          },
+          "previous_restrictor_pct": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Restrictor Pct"
+          },
+          "conditions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConditionsOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "track_outline_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Outline Url"
+          },
+          "track_preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Preview Url"
+          },
+          "car_image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Car Image Url"
           }
         },
         "required": [
@@ -12753,7 +13211,13 @@
           "ballast_kg",
           "restrictor_pct",
           "my_attendance",
-          "attending"
+          "attending",
+          "previous_ballast_kg",
+          "previous_restrictor_pct",
+          "conditions",
+          "track_outline_url",
+          "track_preview_url",
+          "car_image_url"
         ],
         "title": "NextRoundOut",
         "type": "object"

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { formatDateTime } from '../lib/format'
+import { Icon } from './Icon'
 
 type Notifications = components['schemas']['NotificationsOut']
 
@@ -41,12 +42,13 @@ export function NotificationBell() {
     <div className="bell">
       <button
         type="button"
-        className="secondary"
+        className="icon-button"
         aria-expanded={open}
         aria-label={t('notifications.title', { count: unread })}
         onClick={() => setOpen((o) => !o)}
       >
-        🔔{unread > 0 && <span className="bell-count">{unread}</span>}
+        <Icon name="bell" />
+        {unread > 0 && <span className="bell-count">{unread}</span>}
       </button>
       {open && data && (
         <div className="bell-panel card" role="dialog" aria-label={t('notifications.panel')}>

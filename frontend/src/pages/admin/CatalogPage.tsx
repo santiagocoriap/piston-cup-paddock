@@ -5,6 +5,7 @@ import { ActionForm } from '../../components/ActionForm'
 import { Loading } from '../../components/Layout'
 import { useLoad } from '../../lib/useLoad'
 import { CarClassesSection } from './CarClassesSection'
+import { GameImagesSection } from './GameImagesSection'
 
 export function CatalogPage() {
   const { t } = useTranslation()
@@ -15,6 +16,12 @@ export function CatalogPage() {
   return (
     <section>
       <h1>{t('catalog.title')}</h1>
+      <GameImagesSection
+        onImported={() => {
+          tracks.reload()
+          cars.reload()
+        }}
+      />
 
       <h2>{t('catalog.tracks')}</h2>
       {tracks.data.length === 0 && <p>{t('catalog.noTracks')}</p>}
@@ -25,7 +32,11 @@ export function CatalogPage() {
             <ul>
               {track.layouts.map((layout) => (
                 <li key={layout.id}>
+                  {layout.has_outline && (
+                    <img className="thumb" src={`/api/catalog/layouts/${layout.id}/images/outline`} alt="" />
+                  )}
                   {layout.name} <span className="mono muted">{layout.key}</span>
+                  {layout.length_m && <span className="muted"> · {(layout.length_m / 1000).toFixed(3)} km</span>}
                   <GuidanceForm layout={layout} onSaved={tracks.reload} />
                 </li>
               ))}
@@ -39,7 +50,11 @@ export function CatalogPage() {
       <ul className="list">
         {cars.data.map((car) => (
           <li key={car.id}>
+            {car.has_preview && (
+              <img className="thumb car" src={`/api/catalog/cars/${car.id}/images/preview`} alt="" />
+            )}
             {car.name} <span className="mono muted">{car.key}</span>
+            {car.author && <span className="muted"> · {t('catalog.images.author', { author: car.author })}</span>}
           </li>
         ))}
       </ul>

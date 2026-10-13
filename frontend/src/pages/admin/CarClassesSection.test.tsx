@@ -6,9 +6,10 @@ import { CarClassesSection } from './CarClassesSection'
 
 afterEach(() => vi.restoreAllMocks())
 
+const noImages = { has_preview: false, has_badge: false, brand: '', author: '' }
 const cars = [
-  { id: 1, key: 'acura', name: 'Acura' },
-  { id: 2, key: 'cadillac', name: 'Cadillac' },
+  { id: 1, key: 'acura', name: 'Acura', ...noImages },
+  { id: 2, key: 'cadillac', name: 'Cadillac', ...noImages },
 ]
 
 describe('CarClassesSection', () => {
