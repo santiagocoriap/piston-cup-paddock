@@ -336,7 +336,8 @@
       "report.retried": "{{actor}} retried report {{report}} of {{season}}.",
       "incident.reviewed": "{{actor}} reviewed incident {{incident}} of round {{number}}: {{outcome}}.",
       "rules.changed": "{{actor}} made rules version {{version}} of {{season}}.",
-      "result.recalculated": "{{actor}} recalculated round {{number}} ({{track}}) with rules version {{version}}."
+      "result.recalculated": "{{actor}} recalculated round {{number}} ({{track}}) with rules version {{version}}.",
+      "career.adjusted": "{{actor}} adjusted the career of {{driver}} ({{kind}} {{points}})."
     },
     "fields": {
       "role": "Role",
@@ -1202,5 +1203,33 @@
     "previewTable": "Standings with the new rules",
     "now": "Now",
     "withNew": "With the new rules"
+  },
+  "profile": {
+    "level": "Career level",
+    "careerPoints": "Career points",
+    "nextLevel": "Next level at {{points}} points ({{progress}} %)",
+    "raw": "{{points}} official points in total",
+    "seasons": "Seasons",
+    "noSeasons": "No season yet.",
+    "season": "Season",
+    "podiums": "Podiums",
+    "starts": "Starts",
+    "perStart": "Points per start",
+    "safety": "Safety rating",
+    "safetyCounts": "{{laps}} laps, {{points}} incident points",
+    "records": "Records",
+    "noRecords": "No records yet.",
+    "restarts": "Restarts caused (confirmed)",
+    "noRestarts": "No confirmed restart.",
+    "attempt": "start {{number}}",
+    "adjust": "Adjust career points",
+    "adjustKind": "Type",
+    "kinds": {
+      "adjust": "Add or take away",
+      "reset": "Reset to zero"
+    },
+    "adjustPoints": "Points (negative to take away)",
+    "reason": "Reason",
+    "adjustments": "Adjustments"
   }
 }

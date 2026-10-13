@@ -3027,6 +3027,90 @@
         ]
       }
     },
+    "/api/drivers/{driver_id}/profile": {
+      "get": {
+        "operationId": "apps_dashboard_api_driver_profile",
+        "summary": "Driver Profile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "driver_id",
+            "schema": {
+              "title": "Driver Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dashboard"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/drivers/{driver_id}/career": {
+      "post": {
+        "operationId": "apps_dashboard_api_adjust",
+        "summary": "Adjust",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "driver_id",
+            "schema": {
+              "title": "Driver Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dashboard"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdjustIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/seasons/{season_id}/export/results.csv": {
       "get": {
         "operationId": "apps_core_exports_export_results",
@@ -5837,6 +5921,10 @@
             "title": "Number",
             "type": "integer"
           },
+          "driver_id": {
+            "title": "Driver Id",
+            "type": "integer"
+          },
           "driver_name": {
             "title": "Driver Name",
             "type": "string"
@@ -5864,6 +5952,7 @@
           "entry_id",
           "status",
           "number",
+          "driver_id",
           "driver_name",
           "points",
           "entered_status",
@@ -6735,6 +6824,10 @@
             "title": "Number",
             "type": "integer"
           },
+          "driver_id": {
+            "title": "Driver Id",
+            "type": "integer"
+          },
           "driver_name": {
             "title": "Driver Name",
             "type": "string"
@@ -6767,6 +6860,7 @@
           "rank",
           "entry_id",
           "number",
+          "driver_id",
           "driver_name",
           "car_name",
           "team",
@@ -10039,6 +10133,325 @@
           "new_reports"
         ],
         "title": "SeasonCardOut",
+        "type": "object"
+      },
+      "AdjustmentOut": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "points",
+          "reason",
+          "created_by",
+          "created_at"
+        ],
+        "title": "AdjustmentOut",
+        "type": "object"
+      },
+      "CareerOut": {
+        "properties": {
+          "raw_points": {
+            "title": "Raw Points",
+            "type": "integer"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "level": {
+            "title": "Level",
+            "type": "integer"
+          },
+          "next_level_points": {
+            "title": "Next Level Points",
+            "type": "integer"
+          },
+          "adjustments": {
+            "items": {
+              "$ref": "#/components/schemas/AdjustmentOut"
+            },
+            "title": "Adjustments",
+            "type": "array"
+          }
+        },
+        "required": [
+          "raw_points",
+          "points",
+          "level",
+          "next_level_points",
+          "adjustments"
+        ],
+        "title": "CareerOut",
+        "type": "object"
+      },
+      "ProfileOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "can_adjust": {
+            "title": "Can Adjust",
+            "type": "boolean"
+          },
+          "career": {
+            "$ref": "#/components/schemas/CareerOut"
+          },
+          "seasons": {
+            "items": {
+              "$ref": "#/components/schemas/ProfileSeasonOut"
+            },
+            "title": "Seasons",
+            "type": "array"
+          },
+          "safety": {
+            "items": {
+              "$ref": "#/components/schemas/ProfileSafetyOut"
+            },
+            "title": "Safety",
+            "type": "array"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/ProfileRecordOut"
+            },
+            "title": "Records",
+            "type": "array"
+          },
+          "restarts_caused": {
+            "items": {
+              "$ref": "#/components/schemas/ProfileRestartOut"
+            },
+            "title": "Restarts Caused",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "display_name",
+          "can_adjust",
+          "career",
+          "seasons",
+          "safety",
+          "records",
+          "restarts_caused"
+        ],
+        "title": "ProfileOut",
+        "type": "object"
+      },
+      "ProfileRecordOut": {
+        "properties": {
+          "track": {
+            "title": "Track",
+            "type": "string"
+          },
+          "car": {
+            "title": "Car",
+            "type": "string"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "lap_time_ms": {
+            "title": "Lap Time Ms",
+            "type": "integer"
+          },
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "track",
+          "car",
+          "category",
+          "lap_time_ms",
+          "round_id"
+        ],
+        "title": "ProfileRecordOut",
+        "type": "object"
+      },
+      "ProfileRestartOut": {
+        "properties": {
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "attempt": {
+            "title": "Attempt",
+            "type": "integer"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "shared": {
+            "title": "Shared",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "round_id",
+          "label",
+          "attempt",
+          "reason",
+          "shared"
+        ],
+        "title": "ProfileRestartOut",
+        "type": "object"
+      },
+      "ProfileSafetyOut": {
+        "properties": {
+          "championship_name": {
+            "title": "Championship Name",
+            "type": "string"
+          },
+          "rating": {
+            "title": "Rating",
+            "type": "number"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "championship_name",
+          "rating",
+          "status",
+          "laps",
+          "points"
+        ],
+        "title": "ProfileSafetyOut",
+        "type": "object"
+      },
+      "ProfileSeasonOut": {
+        "properties": {
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          },
+          "season_name": {
+            "title": "Season Name",
+            "type": "string"
+          },
+          "championship_name": {
+            "title": "Championship Name",
+            "type": "string"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "entries": {
+            "title": "Entries",
+            "type": "integer"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "wins": {
+            "title": "Wins",
+            "type": "integer"
+          },
+          "podiums": {
+            "title": "Podiums",
+            "type": "integer"
+          },
+          "starts": {
+            "title": "Starts",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "season_id",
+          "season_name",
+          "championship_name",
+          "rank",
+          "entries",
+          "points",
+          "wins",
+          "podiums",
+          "starts"
+        ],
+        "title": "ProfileSeasonOut",
+        "type": "object"
+      },
+      "AdjustIn": {
+        "properties": {
+          "kind": {
+            "enum": [
+              "adjust",
+              "reset"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "points": {
+            "default": 0,
+            "maximum": 10000,
+            "minimum": -10000,
+            "title": "Points",
+            "type": "integer"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "reason"
+        ],
+        "title": "AdjustIn",
         "type": "object"
       },
       "AccountOut": {

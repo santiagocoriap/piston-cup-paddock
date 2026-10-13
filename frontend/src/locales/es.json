@@ -336,7 +336,8 @@
       "report.retried": "{{actor}} reintentó el reporte {{report}} de {{season}}.",
       "incident.reviewed": "{{actor}} revisó el incidente {{incident}} de la fecha {{number}}: {{outcome}}.",
       "rules.changed": "{{actor}} creó la versión {{version}} del reglamento de {{season}}.",
-      "result.recalculated": "{{actor}} recalculó la fecha {{number}} ({{track}}) con el reglamento {{version}}."
+      "result.recalculated": "{{actor}} recalculó la fecha {{number}} ({{track}}) con el reglamento {{version}}.",
+      "career.adjusted": "{{actor}} ajustó la carrera de {{driver}} ({{kind}} {{points}})."
     },
     "fields": {
       "role": "Rol",
@@ -1202,5 +1203,33 @@
     "previewTable": "Tabla con el reglamento nuevo",
     "now": "Ahora",
     "withNew": "Con el reglamento nuevo"
+  },
+  "profile": {
+    "level": "Nivel de carrera",
+    "careerPoints": "Puntos de carrera",
+    "nextLevel": "Próximo nivel con {{points}} puntos ({{progress}} %)",
+    "raw": "{{points}} puntos oficiales en total",
+    "seasons": "Temporadas",
+    "noSeasons": "Todavía no corrió ninguna temporada.",
+    "season": "Temporada",
+    "podiums": "Podios",
+    "starts": "Largadas",
+    "perStart": "Puntos por largada",
+    "safety": "Rating de seguridad",
+    "safetyCounts": "{{laps}} vueltas, {{points}} puntos de incidente",
+    "records": "Récords",
+    "noRecords": "Sin récords todavía.",
+    "restarts": "Reinicios causados (confirmados)",
+    "noRestarts": "Ningún reinicio confirmado.",
+    "attempt": "largada {{number}}",
+    "adjust": "Ajustar puntos de carrera",
+    "adjustKind": "Tipo",
+    "kinds": {
+      "adjust": "Sumar o restar",
+      "reset": "Volver a cero"
+    },
+    "adjustPoints": "Puntos (negativo para restar)",
+    "reason": "Motivo",
+    "adjustments": "Ajustes"
   }
 }

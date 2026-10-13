@@ -1059,6 +1059,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/drivers/{driver_id}/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Driver Profile */
+        get: operations["apps_dashboard_api_driver_profile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/drivers/{driver_id}/career": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Adjust */
+        post: operations["apps_dashboard_api_adjust"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/seasons/{season_id}/export/results.csv": {
         parameters: {
             query?: never;
@@ -2106,6 +2140,8 @@ export interface components {
             fastest_lap?: boolean;
             /** Number */
             number: number;
+            /** Driver Id */
+            driver_id: number;
             /** Driver Name */
             driver_name: string;
             /** Points */
@@ -2402,6 +2438,8 @@ export interface components {
             entry_id: number;
             /** Number */
             number: number;
+            /** Driver Id */
+            driver_id: number;
             /** Driver Name */
             driver_name: string;
             /** Car Name */
@@ -3426,6 +3464,128 @@ export interface components {
             next_round: components["schemas"]["NextRoundOut"] | null;
             /** New Reports */
             new_reports: components["schemas"]["NewReportOut"][];
+        };
+        /** AdjustmentOut */
+        AdjustmentOut: {
+            /** Kind */
+            kind: string;
+            /** Points */
+            points: number;
+            /** Reason */
+            reason: string;
+            /** Created By */
+            created_by: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** CareerOut */
+        CareerOut: {
+            /** Raw Points */
+            raw_points: number;
+            /** Points */
+            points: number;
+            /** Level */
+            level: number;
+            /** Next Level Points */
+            next_level_points: number;
+            /** Adjustments */
+            adjustments: components["schemas"]["AdjustmentOut"][];
+        };
+        /** ProfileOut */
+        ProfileOut: {
+            /** Id */
+            id: number;
+            /** Display Name */
+            display_name: string;
+            /** Can Adjust */
+            can_adjust: boolean;
+            career: components["schemas"]["CareerOut"];
+            /** Seasons */
+            seasons: components["schemas"]["ProfileSeasonOut"][];
+            /** Safety */
+            safety: components["schemas"]["ProfileSafetyOut"][];
+            /** Records */
+            records: components["schemas"]["ProfileRecordOut"][];
+            /** Restarts Caused */
+            restarts_caused: components["schemas"]["ProfileRestartOut"][];
+        };
+        /** ProfileRecordOut */
+        ProfileRecordOut: {
+            /** Track */
+            track: string;
+            /** Car */
+            car: string;
+            /** Category */
+            category: string;
+            /** Lap Time Ms */
+            lap_time_ms: number;
+            /** Round Id */
+            round_id: number;
+        };
+        /** ProfileRestartOut */
+        ProfileRestartOut: {
+            /** Round Id */
+            round_id: number;
+            /** Label */
+            label: string;
+            /** Attempt */
+            attempt: number;
+            /** Reason */
+            reason: string;
+            /** Shared */
+            shared: boolean;
+        };
+        /** ProfileSafetyOut */
+        ProfileSafetyOut: {
+            /** Championship Name */
+            championship_name: string;
+            /** Rating */
+            rating: number;
+            /** Status */
+            status: string;
+            /** Laps */
+            laps: number;
+            /** Points */
+            points: number;
+        };
+        /** ProfileSeasonOut */
+        ProfileSeasonOut: {
+            /** Season Id */
+            season_id: number;
+            /** Season Name */
+            season_name: string;
+            /** Championship Name */
+            championship_name: string;
+            /** Rank */
+            rank: number;
+            /** Entries */
+            entries: number;
+            /** Points */
+            points: number;
+            /** Wins */
+            wins: number;
+            /** Podiums */
+            podiums: number;
+            /** Starts */
+            starts: number;
+        };
+        /** AdjustIn */
+        AdjustIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "adjust" | "reset";
+            /**
+             * Points
+             * @default 0
+             */
+            points?: number;
+            /** Reason */
+            reason: string;
         };
         /** AccountOut */
         AccountOut: {
@@ -6032,6 +6192,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DashboardOut"];
+                };
+            };
+        };
+    };
+    apps_dashboard_api_driver_profile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                driver_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileOut"];
+                };
+            };
+        };
+    };
+    apps_dashboard_api_adjust: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                driver_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdjustIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileOut"];
                 };
             };
         };

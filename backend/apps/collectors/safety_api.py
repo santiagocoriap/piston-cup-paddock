@@ -9,8 +9,8 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from ninja import Router, Schema
 
-from apps.competition.models import Round, Season, Session
-from apps.competition.permissions import can_view
+from apps.competition.models import Championship, Round, Season, Session
+from apps.competition.permissions import can_view, visible_championships
 from apps.imports.models import ImportedLap, ResultImport
 from apps.rules.safety import (
     PROVISIONAL_LAPS,
@@ -123,3 +123,21 @@ def season_safety(request, season_id: int):
         computed_at=timezone.now(),
         drivers=drivers,
     )
+
+
+def driver_ratings(user, driver) -> list[tuple[str, object]]:
+    """The safety rating of one driver in each championship the user can see."""
+    guid = driver.steam_guid
+    championships = Championship.objects.filter(
+        seasons__entries__driver=driver, pk__in=visible_championships(user)
+    ).distinct()
+    result = []
+    for championship in championships:
+        rounds = (
+            Round.objects.filter(season__championship=championship, result__isnull=False)
+            .select_related("season", "track_layout__track")
+            .order_by("scheduled_at", "season__created_at", "number")
+        )
+        inputs = [_round_inputs(r) for r in rounds]
+        result.append((championship.name, rate([i[guid] for i in inputs if guid and guid in i])))
+    return result

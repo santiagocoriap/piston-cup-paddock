@@ -110,3 +110,9 @@ The league agreed to these rules on 2026-10-12 (rules version `safety-1`).
 - A driver is provisional until 50 rated laps.
 - A round without collector events gives no change. Its status is unknown, not zero incidents.
 - Incident points are not blame. Steward decisions and restarts caused stay separate.
+
+## Career level
+
+- Career points are the official points of a driver in all seasons and championships. They do not reset at the end of a season.
+- Career level = 1 + (career points ÷ 100), rounded down. For example, 250 points give level 3.
+- An admin can add or take away career points, or reset the count to zero, with a reason. The race history does not change.

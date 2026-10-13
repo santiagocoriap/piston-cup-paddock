@@ -65,7 +65,9 @@ export function SeasonPage() {
                       {shared && '='}
                     </td>
                     <td>{row.number}</td>
-                    <td>{row.driver_name}</td>
+                    <td>
+                      <Link to={`/drivers/${row.driver_id}`}>{row.driver_name}</Link>
+                    </td>
                     <td className="muted">{row.car_name}</td>
                     {row.rounds.map((score) => (
                       <td

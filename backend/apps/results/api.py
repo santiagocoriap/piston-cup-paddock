@@ -57,6 +57,7 @@ class LineIn(Schema):
 
 class LineOut(LineIn):
     number: int
+    driver_id: int
     driver_name: str
     points: int
     entered_status: Status
@@ -182,6 +183,7 @@ class StandingOut(Schema):
     rank: int
     entry_id: int
     number: int
+    driver_id: int
     driver_name: str
     car_name: str
     team: str
@@ -251,6 +253,7 @@ def _lines(version: ResultVersion) -> list[LineOut]:
             pole=r.pole,
             fastest_lap=r.fastest_lap,
             number=r.entry.number,
+            driver_id=r.entry.driver_id,
             driver_name=r.entry.driver.display_name,
             points=r.points,
             entered_status=r.entered_status,
@@ -530,6 +533,7 @@ def get_standings(request, season_id: int):
             rank=row.rank,
             entry_id=row.entry_id,
             number=entries[row.entry_id].number,
+            driver_id=entries[row.entry_id].driver_id,
             driver_name=entries[row.entry_id].driver.display_name,
             car_name=entries[row.entry_id].car.name,
             team=entries[row.entry_id].team,

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
@@ -64,3 +65,32 @@ class AccountLink(models.Model):
 
     def __str__(self):
         return f"{self.purpose} link for {self.user}"
+
+
+class CareerAdjustment(models.Model):
+    """An admin change to the career points of a driver. The race history stays as it is.
+
+    "adjust" adds points (negative to take away). "reset" starts the career count again from
+    zero: raw_points keeps the official points of the driver at that moment."""
+
+    class Kind(models.TextChoices):
+        ADJUST = "adjust", "Adjust"
+        RESET = "reset", "Reset"
+
+    driver = models.ForeignKey(
+        DriverProfile, on_delete=models.CASCADE, related_name="career_adjustments"
+    )
+    kind = models.CharField(max_length=6, choices=Kind.choices)
+    points = models.IntegerField(default=0)
+    raw_points = models.IntegerField(default=0)
+    reason = models.TextField()
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at", "id"]
+
+    def __str__(self):
+        return f"{self.kind} {self.points} for {self.driver}"

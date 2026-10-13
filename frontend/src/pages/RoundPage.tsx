@@ -83,7 +83,7 @@ export function RoundPage() {
                   <td>{line.position ?? t(`round.short.${line.status}`)}</td>
                   <td>{line.number}</td>
                   <td>
-                    {line.driver_name}
+                    <Link to={`/drivers/${line.driver_id}`}>{line.driver_name}</Link>
                     {line.status === 'dnf' && <span className="badge">DNF</span>}
                     {penaltyChanged(line) && (
                       <span

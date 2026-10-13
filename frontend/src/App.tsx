@@ -18,6 +18,7 @@ import { RoundPage } from './pages/RoundPage'
 import { SeasonPage } from './pages/SeasonPage'
 import { useMode } from './session'
 import { SessionProvider } from './SessionProvider'
+import { DriverProfilePage } from './pages/DriverProfilePage'
 
 type Session = { status: 'loading' } | { status: 'anonymous' } | { status: 'signed-in'; me: Me }
 
@@ -100,6 +101,7 @@ function AppRoutes({
         <Route path="championships/:championshipId" element={<ChampionshipPage />} />
         <Route path="seasons/:seasonId" element={<SeasonPage />} />
         <Route path="rounds/:roundId" element={<RoundPage />} />
+        <Route path="drivers/:driverId" element={<DriverProfilePage />} />
         <Route path="records" element={<RecordsPage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="ballots/:ballotId" element={<BallotPage />} />
