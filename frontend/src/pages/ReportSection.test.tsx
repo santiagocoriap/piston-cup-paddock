@@ -75,3 +75,17 @@ describe('ReportSection for a season', () => {
     await vi.waitFor(() => expect(calls.some((c) => c.key === 'POST /api/seasons/4/reports')).toBe(true))
   })
 })
+
+describe('ReportSection when the result changed', () => {
+  it('shows the outdated note and makes a new version', async () => {
+    const calls = mockApi({
+      'GET /api/rounds/9/reports': () =>
+        json(200, { can_generate: true, ai_configured: true, reports: [report(5, 1, { unread: false, outdated: true })] }),
+      'POST /api/reports/5/regenerate': () => json(200, { can_generate: true, ai_configured: true, reports: [] }),
+    })
+    renderPage(<ReportSection target={{ kind: 'round', id: 9 }} adminView />, { path: '/rounds/:roundId', url: '/rounds/9' })
+    expect(await screen.findByText(/Este reporte está desactualizado/)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Actualizar reporte' }))
+    await vi.waitFor(() => expect(calls.some((c) => c.key === 'POST /api/reports/5/regenerate')).toBe(true))
+  })
+})

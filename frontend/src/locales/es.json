@@ -72,7 +72,8 @@
       "restarts": "Registrar reinicios y decidir responsables",
       "reports": "Generar reportes con IA",
       "records": "Invalidar vueltas de récords"
-    }
+    },
+    "provisionalReports": "Escribir un reporte provisional al aplicar el archivo de carrera (antes de aprobar)"
   },
   "season": {
     "plannedRounds": "{{count}} carreras previstas",
@@ -342,7 +343,8 @@
       "incident.reviewed": "{{actor}} revisó el incidente {{incident}} de la fecha {{number}}: {{outcome}}.",
       "rules.changed": "{{actor}} creó la versión {{version}} del reglamento de {{season}}.",
       "result.recalculated": "{{actor}} recalculó la fecha {{number}} ({{track}}) con el reglamento {{version}}.",
-      "career.adjusted": "{{actor}} ajustó la carrera de {{driver}} ({{kind}} {{points}})."
+      "career.adjusted": "{{actor}} ajustó la carrera de {{driver}} ({{kind}} {{points}}).",
+      "championship.settings": "{{actor}} cambió la configuración de {{name}}."
     },
     "fields": {
       "role": "Rol",
@@ -862,7 +864,9 @@
       "ready": "Listo",
       "failed": "Falló"
     },
-    "facts": "Datos usados"
+    "facts": "Datos usados",
+    "outdated": "Este reporte está desactualizado: el resultado cambió después.",
+    "regenerate": "Actualizar reporte"
   },
   "laps": {
     "title": "Vueltas",

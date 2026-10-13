@@ -298,6 +298,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/championships/{championship_id}/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Championship Settings */
+        patch: operations["apps_competition_api_championship_settings"];
+        trace?: never;
+    };
     "/api/championships/{championship_id}/roles": {
         parameters: {
             query?: never;
@@ -1286,6 +1303,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/reports/{report_id}/regenerate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Regenerate Report */
+        post: operations["apps_reports_api_regenerate_report"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/reports/{report_id}/read": {
         parameters: {
             query?: never;
@@ -1868,6 +1902,8 @@ export interface components {
             league_name: string;
             /** Can Manage */
             can_manage: boolean;
+            /** Provisional Reports */
+            provisional_reports: boolean;
         };
         /** NameIn */
         NameIn: {
@@ -1886,6 +1922,8 @@ export interface components {
             league_name: string;
             /** Can Manage */
             can_manage: boolean;
+            /** Provisional Reports */
+            provisional_reports: boolean;
             /** Seasons */
             seasons: components["schemas"]["SeasonSummary"][];
         };
@@ -1930,6 +1968,11 @@ export interface components {
          * @enum {string}
          */
         Role: "admin" | "driver" | "steward" | "custom";
+        /** ChampionshipSettingsIn */
+        ChampionshipSettingsIn: {
+            /** Provisional Reports */
+            provisional_reports: boolean;
+        };
         /** RoleOut */
         RoleOut: {
             /** Id */
@@ -3708,6 +3751,8 @@ export interface components {
             text: string;
             /** Unread */
             unread: boolean;
+            /** Outdated */
+            outdated: boolean;
             /** Error */
             error?: string | null;
             /** Facts */
@@ -4995,6 +5040,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MemberOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_championship_settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChampionshipSettingsIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChampionshipOut"];
                 };
             };
         };
@@ -6592,6 +6663,28 @@ export interface operations {
                 "application/json": components["schemas"]["ReportIn"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportsOut"];
+                };
+            };
+        };
+    };
+    apps_reports_api_regenerate_report: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {

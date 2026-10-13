@@ -40,6 +40,23 @@ export function ChampionshipPage() {
       </ul>
 
       {adminView && (
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={data.provisional_reports}
+            onChange={async (e) => {
+              await api.PATCH('/api/championships/{championship_id}/settings', {
+                params: { path },
+                body: { provisional_reports: e.target.checked },
+              })
+              championship.reload()
+            }}
+          />
+          {t('championship.provisionalReports')}
+        </label>
+      )}
+
+      {adminView && (
         <div className="forms">
           <ActionForm
             title={t('championship.newSeason')}

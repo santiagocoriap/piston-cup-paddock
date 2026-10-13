@@ -169,6 +169,12 @@ def link_guid(result_import: ResultImport, guid: str, entry_id: int, user) -> No
         )
 
 
+def _provisional_report(round_: Round, user) -> None:
+    from apps.reports.services import auto_request
+
+    auto_request(round_, user)
+
+
 def apply(
     result_import: ResultImport, user, *, statuses: dict[int, str], ignored: list[str]
 ) -> ResultImport:
@@ -237,6 +243,8 @@ def apply(
         result_import.status = ResultImport.State.APPLIED
         result_import.applied_at = timezone.now()
         result_import.save(update_fields=["session", "attempt", "status", "applied_at"])
+        if kind == Session.Kind.RACE and round_.season.championship.provisional_reports:
+            transaction.on_commit(lambda: _provisional_report(round_, user))
         record(
             user,
             "import.applied",

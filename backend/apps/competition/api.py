@@ -94,6 +94,11 @@ class ChampionshipOut(Schema):
     league_id: int
     league_name: str
     can_manage: bool
+    provisional_reports: bool
+
+
+class ChampionshipSettingsIn(Schema):
+    provisional_reports: bool
 
 
 class ChampionshipDetail(ChampionshipOut):
@@ -181,6 +186,7 @@ def _championship_out(user, championship: Championship) -> dict:
         "league_id": championship.league_id,
         "league_name": championship.league.name,
         "can_manage": can_manage(user, championship),
+        "provisional_reports": championship.provisional_reports,
     }
 
 
@@ -323,6 +329,26 @@ def _member_out(member: ChampionshipMember) -> MemberOut:
         custom_role_id=member.custom_role_id,
         custom_role_name=member.custom_role.name if member.custom_role else None,
     )
+
+
+@router.patch("/championships/{championship_id}/settings", response=ChampionshipOut)
+def championship_settings(request, championship_id: int, payload: ChampionshipSettingsIn):
+    championship = _visible_championship(request.user, championship_id)
+    require(can_manage(request.user, championship))
+    old = championship.provisional_reports
+    with transaction.atomic():
+        championship.provisional_reports = payload.provisional_reports
+        championship.save(update_fields=["provisional_reports"])
+        record(
+            request.user,
+            "championship.settings",
+            "championship",
+            championship.id,
+            championship=championship,
+            params={"name": championship.name},
+            changes=[change("provisional_reports", old, payload.provisional_reports)],
+        )
+    return _championship_out(request.user, championship)
 
 
 @router.put("/championships/{championship_id}/members", response=MemberOut)

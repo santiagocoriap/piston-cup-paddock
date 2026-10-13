@@ -46,14 +46,19 @@ def _reason(lap: ImportedLap, category: str, dsq: set[int]) -> str | None:
 
 def candidate_laps(user, layout_id: int | None = None) -> tuple[list[RecordLap], dict]:
     """The laps that the user can see, with the reason when a lap cannot be a record.
-    The second value maps a lap ID to the stored lap, for the details."""
+    The second value maps a lap ID to the stored lap, for the details. With user None, all
+    laps count: the reports use this, because a record does not depend on the reader."""
     laps = ImportedLap.objects.filter(
         entry__isnull=False,
         result_import__status=ResultImport.State.APPLIED,
         result_import__session__kind__in=list(CATEGORIES),
-        result_import__round__season__championship__in=visible_championships(user),
         result_import__round__result__status=RaceResult.State.OFFICIAL,
-    ).select_related(
+    )
+    if user is not None:
+        laps = laps.filter(
+            result_import__round__season__championship__in=visible_championships(user)
+        )
+    laps = laps.select_related(
         "entry__driver",
         "entry__car",
         "result_import__attempt",

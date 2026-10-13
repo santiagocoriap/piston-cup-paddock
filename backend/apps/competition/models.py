@@ -18,6 +18,8 @@ class League(models.Model):
 class Championship(models.Model):
     league = models.ForeignKey(League, on_delete=models.PROTECT, related_name="championships")
     name = models.CharField(max_length=100)
+    # Write a provisional AI report when a race file is applied, before the approval.
+    provisional_reports = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["name"]

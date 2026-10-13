@@ -86,21 +86,29 @@ class SafetyOut(Schema):
     drivers: list[DriverSafetyOut]
 
 
-@router.get("/seasons/{season_id}/safety", response=SafetyOut)
-def season_safety(request, season_id: int):
-    season = get_object_or_404(Season.objects.select_related("championship"), pk=season_id)
-    if not can_view(request.user, season.championship):
-        raise Http404
+def season_ratings(season: Season) -> list[tuple[object, object]]:
+    """(entry, DriverRating) for each entry of the season. The rating counts every round of
+    the championship."""
     rounds = (
         Round.objects.filter(season__championship=season.championship, result__isnull=False)
         .select_related("season", "track_layout__track")
         .order_by("scheduled_at", "season__created_at", "number")
     )
     by_round = [_round_inputs(r) for r in rounds]
-    drivers = []
+    rows = []
     for entry in season.entries.select_related("driver").order_by("number"):
         guid = entry.driver.steam_guid
-        rating = rate([inputs[guid] for inputs in by_round if guid and guid in inputs])
+        rows.append((entry, rate([i[guid] for i in by_round if guid and guid in i])))
+    return rows
+
+
+@router.get("/seasons/{season_id}/safety", response=SafetyOut)
+def season_safety(request, season_id: int):
+    season = get_object_or_404(Season.objects.select_related("championship"), pk=season_id)
+    if not can_view(request.user, season.championship):
+        raise Http404
+    drivers = []
+    for entry, rating in season_ratings(season):
         drivers.append(
             DriverSafetyOut(
                 entry_id=entry.id,

@@ -13,8 +13,10 @@ from .models import RaceReport
 from .services import (
     ReportError,
     ai_configured,
+    is_outdated,
     mark_read,
     read_ids,
+    regenerate,
     request_report,
     request_season_report,
 )
@@ -36,6 +38,7 @@ class ReportOut(Schema):
     generated_at: datetime | None
     text: str
     unread: bool
+    outdated: bool
     error: str | None = None  # Admins only.
     facts: dict | None = None  # Admins only.
 
@@ -90,6 +93,7 @@ def _reports_out(user, reports, championship) -> ReportsOut:
                 generated_at=r.generated_at,
                 text=r.text,
                 unread=r.status == RaceReport.State.READY and r.id not in read,
+                outdated=r.status == RaceReport.State.READY and is_outdated(r),
                 error=r.error if admin else None,
                 facts=r.facts if admin else None,
             )
@@ -143,6 +147,28 @@ def create_season_report(request, season_id: int, payload: ReportIn):
     except ReportError as error:
         raise HttpError(400, str(error)) from error
     return _reports_out(request.user, _season_reports(season), season.championship)
+
+
+@router.post("/reports/{report_id}/regenerate", response=ReportsOut)
+def regenerate_report(request, report_id: int):
+    report = get_object_or_404(
+        RaceReport.objects.select_related("season__championship", "round"), pk=report_id
+    )
+    championship = report.season.championship
+    if not can_view(request.user, championship):
+        raise Http404
+    if not can(request.user, championship, "reports"):
+        raise HttpError(403, "forbidden")
+    try:
+        regenerate(report, request.user)
+    except ReportError as error:
+        raise HttpError(400, str(error)) from error
+    reports = (
+        report.round.reports.all()
+        if report.kind == RaceReport.Kind.RACE
+        else _season_reports(report.season)
+    )
+    return _reports_out(request.user, reports, championship)
 
 
 @router.post("/reports/{report_id}/read", response=ReadOut)

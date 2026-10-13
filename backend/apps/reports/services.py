@@ -132,6 +132,31 @@ def retry_report(report: RaceReport, user) -> RaceReport:
     return report
 
 
+def is_outdated(report: RaceReport) -> bool:
+    """A race report is outdated when the result has a newer version or a new status. A
+    season report is outdated when a result of the season changed after the report."""
+    if report.kind == RaceReport.Kind.RACE:
+        result = getattr(report.round, "result", None)
+        if result is None:
+            return False
+        return (
+            result.current_version_id != report.source_version_id
+            or result.status != report.result_status
+        )
+    from apps.results.models import RaceResult
+
+    return RaceResult.objects.filter(
+        round__season=report.season, updated_at__gt=report.created_at
+    ).exists()
+
+
+def regenerate(report: RaceReport, user) -> RaceReport:
+    """A new version of the report with the same language and tone, from the current facts."""
+    if report.kind == RaceReport.Kind.RACE:
+        return request_report(report.round, user, language=report.language, tone=report.tone)
+    return request_season_report(report.season, user, language=report.language, tone=report.tone)
+
+
 def _defer(report_id: int) -> None:
     from .tasks import generate_report
 

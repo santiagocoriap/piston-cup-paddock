@@ -150,6 +150,55 @@ def _standings(round_: Round) -> list[dict]:
     return rows
 
 
+def _incidents(round_: Round) -> tuple[list[dict], bool]:
+    """Contacts of the accepted race start. They do not say who caused a contact."""
+    from apps.collectors.incident_api import accepted_race_incidents
+
+    incidents, names, has_events = accepted_race_incidents(round_)
+    return [
+        {
+            "ref": f"incident:{incident.key}",
+            "lap": incident.events[0].lap,
+            "type": "car_contact" if incident.kind == "car" else "track_contact",
+            "drivers": sorted(names.get(car, car) for car in incident.cars),
+            "impact_kmh": round(incident.max_speed),
+        }
+        for incident in incidents
+    ], has_events
+
+
+def _records(round_ids: set[int], layout_ids: set[int]) -> list[dict]:
+    """Track records set or equaled in these rounds. Only official results set records."""
+    from apps.records.boards import boards
+    from apps.records.services import candidate_laps
+
+    laps, details = candidate_laps(None)
+    laps = [lap for lap in laps if lap.layout_id in layout_ids]
+    rows = []
+    for board in boards(laps):
+        previous = None
+        for item in board.history:
+            if item.kind == "removed":
+                continue
+            if item.lap.round_id in round_ids:
+                lap = details[item.lap.lap_id]
+                rows.append(
+                    {
+                        "ref": f"imported_lap:{item.lap.lap_id}",
+                        "driver": item.lap.driver_name,
+                        "track": str(lap.result_import.round.track_layout),
+                        "car": lap.entry.car.name,
+                        "category": board.category,
+                        "time": lap_time(item.lap.lap_time_ms),
+                        "kind": "new_record" if item.kind == "record" else "equal_record",
+                        "previous_record": lap_time(previous),
+                    }
+                )
+            if item.kind == "record":
+                previous = item.lap.lap_time_ms
+    return rows
+
+
 def round_facts(round_: Round) -> tuple[dict, ResultVersion | None]:
     """The facts of the round and the result version that they come from."""
     result = RaceResult.objects.filter(round=round_).select_related("current_version").first()
@@ -171,8 +220,11 @@ def round_facts(round_: Round) -> tuple[dict, ResultVersion | None]:
         "laps": _laps(round_),
         "restarts": _restarts(round_),
         "standings": [],
+        "incidents": [],
+        "records": [],
         "data_gaps": [],
     }
+    facts["incidents"], has_events = _incidents(round_)
     if version is None:
         facts["data_gaps"].append("no_result")
     else:
@@ -184,9 +236,14 @@ def round_facts(round_: Round) -> tuple[dict, ResultVersion | None]:
         facts["classification"] = _classification(version)
         facts["penalties"] = _penalties(result)
         facts["standings"] = _standings(round_)
+        if result.status == RaceResult.State.OFFICIAL:
+            facts["records"] = _records({round_.id}, {round_.track_layout_id})
+        else:
+            facts["data_gaps"].append("records_after_official_result")
     if not facts["laps"]:
         facts["data_gaps"].append("no_lap_data")
-    facts["data_gaps"].append("no_incident_data")
+    if not has_events:
+        facts["data_gaps"].append("no_incident_data")
     return facts, version
 
 
@@ -240,12 +297,46 @@ def season_facts(season) -> dict:
         )
     )
     remaining = max(season.planned_round_count - len(official), 0)
+    incident_counts: dict[str, int] = {}
+    any_events = False
+    for round_ in official:
+        incidents, has_events = _incidents(round_)
+        any_events = any_events or has_events
+        for incident in incidents:
+            for name in incident["drivers"]:
+                incident_counts[name] = incident_counts.get(name, 0) + 1
+    progression = []
+    for round_ in official:
+        after = season_standings(season, up_to_round=round_.number, official_only=True)
+        leaders = [names[row.entry_id] for row in after if row.rank == 1]
+        progression.append(
+            {
+                "ref": f"standings:season:{season.id}:after_round:{round_.number}",
+                "round": round_.number,
+                "leaders": leaders,
+                "points": after[0].points if after else 0,
+            }
+        )
+    from apps.collectors.safety_api import season_ratings
+
+    safety = [
+        {
+            "ref": f"safety:season:{season.id}:entry:{entry.id}",
+            "driver": entry.driver.display_name,
+            "rating": rating.rating,
+            "status": rating.status,
+            "incidents_this_season": incident_counts.get(entry.driver.display_name, 0),
+        }
+        for entry, rating in season_ratings(season)
+        if rating.status != "unknown"
+    ]
     gaps = []
     if not official:
         gaps.append("no_official_rounds")
     if not any(r["fastest_lap"] for r in rounds):
         gaps.append("no_race_details")
-    gaps.append("no_incident_data")
+    if not any_events:
+        gaps.append("no_incident_data")
     return {
         "season": {
             "ref": f"season:{season.id}",
@@ -269,6 +360,9 @@ def season_facts(season) -> dict:
                 for c in restarts.caused
             ],
         },
+        "title_progression": progression,
+        "records": _records({r.id for r in official}, {r.track_layout_id for r in official}),
+        "safety": safety,
         "data_gaps": gaps,
     }
 

@@ -72,7 +72,8 @@
       "restarts": "Record restarts and decide responsibility",
       "reports": "Generate AI reports",
       "records": "Invalidate record laps"
-    }
+    },
+    "provisionalReports": "Write a provisional report when the race file is applied (before approval)"
   },
   "season": {
     "plannedRounds": "{{count}} planned rounds",
@@ -342,7 +343,8 @@
       "incident.reviewed": "{{actor}} reviewed incident {{incident}} of round {{number}}: {{outcome}}.",
       "rules.changed": "{{actor}} made rules version {{version}} of {{season}}.",
       "result.recalculated": "{{actor}} recalculated round {{number}} ({{track}}) with rules version {{version}}.",
-      "career.adjusted": "{{actor}} adjusted the career of {{driver}} ({{kind}} {{points}})."
+      "career.adjusted": "{{actor}} adjusted the career of {{driver}} ({{kind}} {{points}}).",
+      "championship.settings": "{{actor}} changed the settings of {{name}}."
     },
     "fields": {
       "role": "Role",
@@ -862,7 +864,9 @@
       "ready": "Ready",
       "failed": "Failed"
     },
-    "facts": "Facts used"
+    "facts": "Facts used",
+    "outdated": "This report is outdated: the result changed after it.",
+    "regenerate": "Update report"
   },
   "laps": {
     "title": "Laps",

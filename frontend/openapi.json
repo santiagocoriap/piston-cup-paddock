@@ -802,6 +802,53 @@
         ]
       }
     },
+    "/api/championships/{championship_id}/settings": {
+      "patch": {
+        "operationId": "apps_competition_api_championship_settings",
+        "summary": "Championship Settings",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "championship_id",
+            "schema": {
+              "title": "Championship Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChampionshipOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChampionshipSettingsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/championships/{championship_id}/roles": {
       "get": {
         "operationId": "apps_competition_api_list_roles",
@@ -3625,6 +3672,43 @@
         ]
       }
     },
+    "/api/reports/{report_id}/regenerate": {
+      "post": {
+        "operationId": "apps_reports_api_regenerate_report",
+        "summary": "Regenerate Report",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "schema": {
+              "title": "Report Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/reports/{report_id}/read": {
       "post": {
         "operationId": "apps_reports_api_read_report",
@@ -5147,6 +5231,10 @@
           "can_manage": {
             "title": "Can Manage",
             "type": "boolean"
+          },
+          "provisional_reports": {
+            "title": "Provisional Reports",
+            "type": "boolean"
           }
         },
         "required": [
@@ -5154,7 +5242,8 @@
           "name",
           "league_id",
           "league_name",
-          "can_manage"
+          "can_manage",
+          "provisional_reports"
         ],
         "title": "ChampionshipOut",
         "type": "object"
@@ -5196,6 +5285,10 @@
             "title": "Can Manage",
             "type": "boolean"
           },
+          "provisional_reports": {
+            "title": "Provisional Reports",
+            "type": "boolean"
+          },
           "seasons": {
             "items": {
               "$ref": "#/components/schemas/SeasonSummary"
@@ -5210,6 +5303,7 @@
           "league_id",
           "league_name",
           "can_manage",
+          "provisional_reports",
           "seasons"
         ],
         "title": "ChampionshipDetail",
@@ -5335,6 +5429,19 @@
         ],
         "title": "Role",
         "type": "string"
+      },
+      "ChampionshipSettingsIn": {
+        "properties": {
+          "provisional_reports": {
+            "title": "Provisional Reports",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "provisional_reports"
+        ],
+        "title": "ChampionshipSettingsIn",
+        "type": "object"
       },
       "RoleOut": {
         "properties": {
@@ -10823,6 +10930,10 @@
             "title": "Unread",
             "type": "boolean"
           },
+          "outdated": {
+            "title": "Outdated",
+            "type": "boolean"
+          },
           "error": {
             "anyOf": [
               {
@@ -10860,7 +10971,8 @@
           "created_at",
           "generated_at",
           "text",
-          "unread"
+          "unread",
+          "outdated"
         ],
         "title": "ReportOut",
         "type": "object"

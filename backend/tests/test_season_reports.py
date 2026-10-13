@@ -7,6 +7,7 @@ from apps.competition.models import ChampionshipMember, Round, SeasonEntry
 from apps.identity.models import DriverProfile
 from apps.reports import services
 from apps.reports.models import RaceReport
+from apps.reports.prompt import SEASON_PROMPT_VERSION
 from apps.reports.services import generate
 from apps.restarts.models import Restart
 
@@ -69,7 +70,7 @@ def test_facts_from_official_rounds(api, night, ai):
 
     report = generate(RaceReport.objects.get(kind="season").id)
     assert report.status == "ready"
-    assert report.prompt_version == "season-1"
+    assert report.prompt_version == SEASON_PROMPT_VERSION
     assert "season report" in ai.calls[0]["messages"][0]["content"]
 
 

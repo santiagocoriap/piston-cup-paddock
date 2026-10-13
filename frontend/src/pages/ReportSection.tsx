@@ -42,9 +42,24 @@ export function ReportSection({ target, adminView }: { target: Target; adminView
   if (!data) return null
   const ready = data.reports.filter((r) => r.status === 'ready')
   const [latest, ...older] = ready
+
+  async function regenerate(id: number) {
+    const { error } = await api.POST('/api/reports/{report_id}/regenerate', { params: { path: { report_id: id } } })
+    if (!error) reload()
+  }
   return (
     <section aria-label={t(`${prefix}.title`)}>
       <h2>{t(`${prefix}.title`)}</h2>
+      {latest?.outdated && (
+        <p className="warning" role="status">
+          {t('report.outdated')}{' '}
+          {adminView && data.can_generate && (
+            <button type="button" className="link-button" onClick={() => regenerate(latest.id)}>
+              {t('report.regenerate')}
+            </button>
+          )}
+        </p>
+      )}
       {latest ? <ReportText report={latest} open target={target.kind} /> : <p className="muted">{t('report.none')}</p>}
       {older.length > 0 && (
         <details>
