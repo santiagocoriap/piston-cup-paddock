@@ -2592,6 +2592,15 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** LeagueChampionshipOut */
+        LeagueChampionshipOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Season Count */
+            season_count: number;
+        };
         /** LeagueOut */
         LeagueOut: {
             /** Id */
@@ -2600,6 +2609,8 @@ export interface components {
             name: string;
             /** Timezone */
             timezone: string;
+            /** Championships */
+            championships: components["schemas"]["LeagueChampionshipOut"][];
         };
         /** LeagueIn */
         LeagueIn: {

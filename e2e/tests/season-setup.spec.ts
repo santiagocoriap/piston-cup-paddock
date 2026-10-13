@@ -19,13 +19,20 @@ test('an admin sets up a season without voting and enters a result', async ({ pa
   await page.getByRole('button', { name: 'Modo admin' }).click()
 
   // League and championship
-  await page.getByRole('link', { name: 'Ligas' }).click()
+  await page.getByRole('link', { name: 'Ligas', exact: true }).click()
+  // The button is in the page header, or in the empty state when there are no leagues.
+  await page.getByRole('button', { name: 'Nueva liga' }).click()
   await submitForm(page, 'Nueva liga', { Nombre: names.league })
-  await expect(page.getByRole('listitem').filter({ hasText: names.league })).toBeVisible()
-  await submitForm(page, 'Nuevo campeonato', { Nombre: names.championship }, { Liga: names.league })
+  const leagueCard = page.getByRole('article', { name: names.league })
+  await expect(leagueCard).toBeVisible()
+  await leagueCard.getByRole('button', { name: 'Nuevo campeonato' }).click()
+  await submitForm(page, `Nuevo campeonato: ${names.league}`, { 'Nombre del campeonato': names.championship })
+  await expect(leagueCard.getByRole('status')).toContainText(names.championship)
+  await expect(leagueCard.getByRole('listitem').filter({ hasText: names.championship })).toBeVisible()
 
   // A driver profile without an account
-  await page.getByRole('link', { name: 'Pilotos' }).click()
+  await page.getByRole('link', { name: 'Pilotos', exact: true }).click()
+  await page.getByRole('button', { name: 'Nuevo piloto' }).click()
   await submitForm(page, 'Nuevo piloto', { 'Nombre visible': names.driver })
   await expect(page.getByRole('row').filter({ hasText: names.driver })).toContainText('Sin cuenta')
 

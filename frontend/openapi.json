@@ -7070,6 +7070,29 @@
         "title": "MergeIn",
         "type": "object"
       },
+      "LeagueChampionshipOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "season_count": {
+            "title": "Season Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "season_count"
+        ],
+        "title": "LeagueChampionshipOut",
+        "type": "object"
+      },
       "LeagueOut": {
         "properties": {
           "id": {
@@ -7083,12 +7106,20 @@
           "timezone": {
             "title": "Timezone",
             "type": "string"
+          },
+          "championships": {
+            "items": {
+              "$ref": "#/components/schemas/LeagueChampionshipOut"
+            },
+            "title": "Championships",
+            "type": "array"
           }
         },
         "required": [
           "id",
           "name",
-          "timezone"
+          "timezone",
+          "championships"
         ],
         "title": "LeagueOut",
         "type": "object"

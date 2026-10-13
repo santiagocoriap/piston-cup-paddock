@@ -1,6 +1,7 @@
 from typing import Literal
 
 from django.db import transaction
+from django.db.models import Count, Prefetch
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -45,10 +46,25 @@ class LeagueIn(Schema):
     timezone: str = Field(DEFAULT_EVENT_TIMEZONE, max_length=64)
 
 
+class LeagueChampionshipOut(Schema):
+    id: int
+    name: str
+    season_count: int
+
+
 class LeagueOut(Schema):
     id: int
     name: str
     timezone: str
+    championships: list[LeagueChampionshipOut]
+
+    @staticmethod
+    def resolve_championships(league):
+        # The list prefetches the championships with a season count. A new league has none.
+        return [
+            {"id": c.id, "name": c.name, "season_count": getattr(c, "season_count", 0)}
+            for c in league.championships.all()
+        ]
 
 
 class SeasonIn(Schema):
@@ -308,7 +324,10 @@ def _season_detail(user, season: Season) -> SeasonDetail:
 @router.get("/leagues", response=list[LeagueOut])
 def list_leagues(request):
     require(is_league_admin(request.user))
-    return League.objects.order_by("name")
+    championships = Championship.objects.annotate(season_count=Count("seasons")).order_by("name")
+    return League.objects.order_by("name").prefetch_related(
+        Prefetch("championships", queryset=championships)
+    )
 
 
 @router.post("/leagues", response={201: LeagueOut})

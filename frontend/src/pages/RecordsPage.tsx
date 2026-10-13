@@ -1,9 +1,11 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
+import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { ActionForm } from '../components/ActionForm'
+import { Dialog } from '../components/Dialog'
+import { EmptyState } from '../components/EmptyState'
 import { Icon } from '../components/Icon'
 import { Loading } from '../components/Layout'
 import { formatDateTime, formatLapTime } from '../lib/format'
@@ -155,20 +157,20 @@ export function RecordsPage() {
           />
           {records.data.boards.length === 0 ? (
             filtered ? (
-              <EmptyRecords title={t('records.noMatch')} text={t('records.noMatchHelp')}>
+              <EmptyState icon="timer" title={t('records.noMatch')} text={t('records.noMatchHelp')}>
                 <button type="button" className="secondary" onClick={() => setFilters(NO_FILTERS)}>
                   {t('records.clearFilters')}
                 </button>
-              </EmptyRecords>
+              </EmptyState>
             ) : (
-              <EmptyRecords title={t('records.emptyTitle')} text={t('records.empty')}>
+              <EmptyState icon="timer" title={t('records.emptyTitle')} text={t('records.empty')}>
                 {canAdd && (
                   <button type="button" onClick={() => setAdding(true)}>
                     <Icon name="plus" small />
                     {t('records.addManual')}
                   </button>
                 )}
-              </EmptyRecords>
+              </EmptyState>
             )
           ) : (
             <div className="boards">
@@ -180,7 +182,7 @@ export function RecordsPage() {
         </>
       )}
       {canAdd && (
-        <RecordDialog open={adding} title={t('records.addManual')} onClose={() => setAdding(false)}>
+        <Dialog open={adding} title={t('records.addManual')} onClose={() => setAdding(false)}>
           <ManualRecordForm
             championships={managed}
             onSaved={() => {
@@ -188,7 +190,7 @@ export function RecordsPage() {
               records.reload()
             }}
           />
-        </RecordDialog>
+        </Dialog>
       )}
     </section>
   )
@@ -234,71 +236,6 @@ function ActiveFilters({
         </li>
       )}
     </ul>
-  )
-}
-
-const GHOST_ROWS = [72, 58, 64, 50, 68, 54]
-
-/** An empty board list. Faded sample rows move behind the text to show what will be here. */
-function EmptyRecords({ title, text, children }: { title: string; text: string; children?: ReactNode }) {
-  return (
-    <div className="records-empty">
-      <div className="records-empty-rows" aria-hidden="true">
-        {[0, 1].map((copy) => (
-          <div key={copy} className="records-empty-track">
-            {GHOST_ROWS.map((width, i) => (
-              <div key={i} className="records-empty-row">
-                <span className="ghost-dot" />
-                <span className="ghost-bar" style={{ width: `${width}%` }} />
-                <span className="ghost-time" />
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-      <div className="records-empty-body">
-        <span className="records-empty-icon">
-          <Icon name="timer" />
-        </span>
-        <p className="records-empty-title">{title}</p>
-        <p className="muted">{text}</p>
-        {children}
-      </div>
-    </div>
-  )
-}
-
-/** A modal dialog. It closes with the close button, Escape, or a click outside it. */
-function RecordDialog({ open, title, onClose, children }: { open: boolean; title: string; onClose: () => void; children: ReactNode }) {
-  const { t } = useTranslation()
-  const ref = useRef<HTMLDialogElement>(null)
-  useEffect(() => {
-    const dialog = ref.current
-    if (!dialog) return
-    // jsdom has no showModal, so the tests use the open attribute.
-    if (open && !dialog.open) {
-      if (typeof dialog.showModal === 'function') dialog.showModal()
-      else dialog.setAttribute('open', '')
-    } else if (!open && dialog.open) {
-      if (typeof dialog.close === 'function') dialog.close()
-      else dialog.removeAttribute('open')
-    }
-  }, [open])
-  return (
-    <dialog
-      ref={ref}
-      className="record-dialog"
-      aria-label={title}
-      onClose={onClose}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose()
-      }}
-    >
-      <button type="button" className="dialog-close" aria-label={t('records.close')} onClick={onClose}>
-        <Icon name="close" />
-      </button>
-      {children}
-    </dialog>
   )
 }
 
