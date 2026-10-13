@@ -118,3 +118,14 @@ def test_round_and_season_give_the_event_timezone(api, champ_admin, season, layo
     assert client.get(f"/seasons/{season.id}").json()["event_timezone"] == (
         "America/Argentina/Buenos_Aires"
     )
+
+
+def test_round_gives_the_championship_for_the_breadcrumbs(api, champ_admin, season, layout):
+    from apps.competition.models import Round
+
+    round_ = Round.objects.create(season=season, number=1, track_layout=layout)
+    detail = api(champ_admin).get(f"/rounds/{round_.id}").json()
+    assert (detail["championship_id"], detail["championship_name"]) == (
+        season.championship_id,
+        season.championship.name,
+    )

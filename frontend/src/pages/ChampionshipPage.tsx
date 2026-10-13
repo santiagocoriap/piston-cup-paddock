@@ -8,6 +8,7 @@ import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { CollectorsSection } from './CollectorsSection'
 import { HealthSection } from './HealthSection'
+import { Breadcrumbs } from '../components/Breadcrumbs'
 
 export function ChampionshipPage() {
   const { t } = useTranslation()
@@ -23,6 +24,7 @@ export function ChampionshipPage() {
   if (!data) return <Loading failed={championship.failed} />
   return (
     <section>
+      <Breadcrumbs items={[{ label: data.name }]} />
       <p className="muted">{data.league_name}</p>
       <h1>{data.name}</h1>
 

@@ -3,38 +3,18 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../../api/client'
 import type { components } from '../../api/schema'
 import { ActionForm } from '../../components/ActionForm'
-import { useLoad } from '../../lib/useLoad'
 
 type CarClass = components['schemas']['CarClassOut']
 type Car = components['schemas']['CarOut']
 
 /** Car classes and their cars. A change keeps the old rows in the history. */
-export function CarClassesSection({ cars }: { cars: Car[] }) {
+export function CarClassesSection({ cars, classes, onSaved }: { cars: Car[]; classes: CarClass[]; onSaved: () => void }) {
   const { t } = useTranslation()
-  const classes = useLoad(() => api.GET('/api/catalog/classes'), [])
   return (
-    <section aria-label={t('classes.title')}>
-      <h2>{t('classes.title')}</h2>
-      {classes.data?.length === 0 && <p>{t('classes.none')}</p>}
-      {classes.data?.map((item) => (
-        <ClassCard key={item.id} item={item} cars={cars} onSaved={classes.reload} />
+    <section aria-label={t('classes.title')} className="class-list">
+      {classes.map((item) => (
+        <ClassCard key={item.id} item={item} cars={cars} onSaved={onSaved} />
       ))}
-      <div className="forms">
-        <ActionForm
-          title={t('classes.new')}
-          submitLabel={t('common.create')}
-          onSubmit={async (form) => {
-            const { error } = await api.POST('/api/catalog/classes', { body: { name: String(form.get('name')) } })
-            if (!error) classes.reload()
-            return error
-          }}
-        >
-          <label>
-            {t('classes.name')}
-            <input name="name" required maxLength={60} />
-          </label>
-        </ActionForm>
-      </div>
     </section>
   )
 }
@@ -44,7 +24,7 @@ function ClassCard({ item, cars, onSaved }: { item: CarClass; cars: Car[]; onSav
   const [editing, setEditing] = useState(false)
   const names = cars.filter((c) => item.car_ids.includes(c.id)).map((c) => c.name)
   return (
-    <div className="card">
+    <div className="card class-card">
       <h3>{item.name}</h3>
       <p>{names.length > 0 ? names.join(', ') : t('classes.noCars')}</p>
       <button type="button" className="secondary small" onClick={() => setEditing((e) => !e)}>

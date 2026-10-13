@@ -37,15 +37,16 @@ test('an admin sets up a season without voting and enters a result', async ({ pa
   await expect(page.getByRole('row').filter({ hasText: names.driver })).toContainText('Sin cuenta')
 
   // Track, layout, and car
-  await page.getByRole('link', { name: 'Pistas y autos' }).click()
+  await page.getByRole('link', { name: 'Pistas y autos', exact: true }).click()
+  await page.getByRole('button', { name: 'Nueva pista' }).click()
   await submitForm(page, 'Nueva pista', { 'Carpeta en AC': `ks_highlands_${run}`, Nombre: names.track })
-  await expect(page.getByText(names.track).first()).toBeVisible()
-  await submitForm(
-    page,
-    'Nuevo trazado',
-    { 'Carpeta en AC': 'layout_long', Nombre: 'Long' },
-    { Pista: names.track },
-  )
+  const trackCard = page.getByRole('article', { name: names.track })
+  await expect(trackCard).toBeVisible()
+  await trackCard.getByRole('button', { name: 'Nuevo trazado' }).click()
+  await submitForm(page, `Nuevo trazado: ${names.track}`, { 'Carpeta en AC': 'layout_long', Nombre: 'Long' })
+  await expect(trackCard.getByRole('status')).toContainText('Long')
+  await page.getByRole('tab', { name: /Autos/ }).click()
+  await page.getByRole('button', { name: 'Nuevo auto' }).click()
   await submitForm(page, 'Nuevo auto', { 'Carpeta en AC': `acura_${run}`, Nombre: names.car })
   await expect(page.getByText(names.car)).toBeVisible()
 

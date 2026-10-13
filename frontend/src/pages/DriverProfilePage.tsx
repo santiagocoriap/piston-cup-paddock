@@ -7,13 +7,16 @@ import { ActionForm } from '../components/ActionForm'
 import { Loading } from '../components/Layout'
 import { formatDateTime, formatLapTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
-import { useAdminView } from '../session'
+import { useAdminView, useMe, useMode } from '../session'
+import { Breadcrumbs } from '../components/Breadcrumbs'
 
 type Profile = components['schemas']['ProfileOut']
 
 /** One driver: career level, seasons, safety, records, and restarts caused. */
 export function DriverProfilePage() {
   const { t, i18n } = useTranslation()
+  const me = useMe()
+  const { mode } = useMode()
   const driverId = Number(useParams().driverId)
   const load = useLoad(
     () => api.GET('/api/drivers/{driver_id}/profile', { params: { path: { driver_id: driverId } } }),
@@ -22,12 +25,17 @@ export function DriverProfilePage() {
   const [override, setOverride] = useState<Profile | null>(null)
   const data = override ?? load.data
   const adminView = useAdminView(data?.can_adjust ?? false)
+  // The admin list of drivers exists only for a league admin in the admin mode.
+  const adminPages = me.is_admin && mode === 'admin'
   if (!data) return <Loading failed={load.failed} />
   const career = data.career
   const progress = Math.round(((career.points % 100) / 100) * 100)
 
   return (
     <section>
+      <Breadcrumbs
+        items={[...(adminPages ? [{ label: t('nav.drivers'), to: '/admin/drivers' }] : []), { label: data.display_name }]}
+      />
       <h1>{data.display_name}</h1>
       <div className="stats">
         <div>

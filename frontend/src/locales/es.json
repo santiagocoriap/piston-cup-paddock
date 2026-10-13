@@ -26,7 +26,8 @@
     "account": "Mi cuenta",
     "accounts": "Cuentas",
     "hideSide": "Ocultar el menú lateral",
-    "showSide": "Mostrar el menú lateral"
+    "showSide": "Mostrar el menú lateral",
+    "breadcrumbs": "Ruta de navegación"
   },
   "common": {
     "create": "Crear",
@@ -200,11 +201,32 @@
       "done": "Listo: {{layouts}} trazados y {{cars}} autos con imágenes.",
       "missing_one": "{{count}} sin archivos en el ZIP",
       "missing_other": "{{count}} sin archivos en el ZIP",
-      "author": "autor: {{author}}"
+      "author": "autor: {{author}}",
+      "step1Title": "Bajar la lista",
+      "step2Title": "Correr el script",
+      "step3Title": "Subir el ZIP",
+      "stepDone": "Hecho",
+      "copy": "Copiar el comando",
+      "copied": "Copiado",
+      "dropHere": "Arrastrá el ZIP acá o hacé clic para elegirlo.",
+      "wrongType": "El archivo tiene que ser un .zip.",
+      "chosen": "{{name}} · {{size}}"
     },
     "noImage": "Sin imagen todavía",
     "pitBoxes_one": "{{count}} box",
-    "pitBoxes_other": "{{count}} boxes"
+    "pitBoxes_other": "{{count}} boxes",
+    "help": "Las pistas, los autos y las clases de autos que usa la liga.",
+    "sections": "Secciones del catálogo",
+    "tabImages": "Imágenes",
+    "missingImages_one": "{{count}} sin imagen",
+    "missingImages_other": "{{count}} sin imagen",
+    "layoutCount_one": "{{count}} trazado",
+    "layoutCount_other": "{{count}} trazados",
+    "noLayouts": "Esta pista todavía no tiene trazados.",
+    "tracksEmptyText": "Agregá la primera pista. Después agregás sus trazados.",
+    "carsEmptyText": "Agregá el primer auto con su carpeta en AC.",
+    "newLayoutFor": "Nuevo trazado: {{name}}",
+    "layoutCreated": "Trazado «{{name}}» creado."
   },
   "errors": {
     "generic": "Algo salió mal. Intentá de nuevo.",
@@ -527,7 +549,29 @@
       "driver": "Piloto"
     },
     "none": "—",
-    "pts": "{{count}} pts"
+    "pts": "{{count}} pts",
+    "help": "Cada cambio de un admin queda acá: quién lo hizo, cuándo y por qué.",
+    "search": "Buscar en el historial",
+    "searchPlaceholder": "Persona, cambio o motivo",
+    "kindLabel": "Tipo de cambio",
+    "kinds": {
+      "all": "Todo",
+      "results": "Resultados",
+      "penalties": "Sanciones",
+      "season": "Temporadas",
+      "people": "Pilotos y cuentas",
+      "catalog": "Catálogo",
+      "reports": "Reportes"
+    },
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "more_one": "{{count}} más como este",
+    "more_other": "{{count}} más como este",
+    "count_one": "{{count}} cambio",
+    "count_other": "{{count}} cambios",
+    "noMatch": "Ningún cambio coincide con estos filtros.",
+    "limitNote": "Se ven los últimos {{count}} cambios.",
+    "open": "Abrir"
   },
   "restarts": {
     "title": "Largadas y reinicios",
@@ -1063,7 +1107,21 @@
     "openLink": "Tiene un link sin usar",
     "lastLogin": "Último ingreso",
     "never": "Nunca",
-    "championships": "Campeonatos"
+    "championships": "Campeonatos",
+    "search": "Buscar cuenta",
+    "searchPlaceholder": "Usuario, piloto o campeonato",
+    "count_one": "{{count}} cuenta",
+    "count_other": "{{count}} cuentas",
+    "noMatch": "Ninguna cuenta coincide con «{{query}}».",
+    "actions": "Acciones de {{name}}",
+    "actionsColumn": "Acciones",
+    "inviteLink": "Nuevo link de invitación",
+    "resetLink": "Nuevo link para cambiar la contraseña",
+    "linkHelp": "Copiá el link y mandalo por el chat de la liga. Sirve una sola vez.",
+    "linkTitle": "Link listo",
+    "done": "Listo",
+    "pendingShort": "Esperando contraseña",
+    "roleHint": "Elegí un campeonato para darle un rol."
   },
   "invite": {
     "title": "Elegí tu contraseña",
@@ -1605,7 +1663,8 @@
     "cars": "Autos",
     "reason": "Motivo del cambio",
     "history": "Historial",
-    "today": "hoy"
+    "today": "hoy",
+    "emptyText": "Una clase agrupa autos parecidos, por ejemplo LMDh o GT3."
   },
   "draw": {
     "button": "Sortear condiciones",

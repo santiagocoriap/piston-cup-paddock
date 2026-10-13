@@ -17,6 +17,7 @@ import { SafetySection } from './SafetySection'
 import { TitleSection } from './TitleSection'
 import { HandicapsSection } from './HandicapsSection'
 import { ConditionsPoolForm } from './ConditionsDraw'
+import { Breadcrumbs } from '../components/Breadcrumbs'
 
 export function SeasonPage() {
   const { t, i18n } = useTranslation()
@@ -54,11 +55,11 @@ export function SeasonPage() {
 
   return (
     <section className="season-page">
+      <Breadcrumbs
+        items={[{ label: data.championship_name, to: `/championships/${data.championship_id}` }, { label: data.name }]}
+      />
       <header className="season-hero">
         <div>
-          <p className="eyebrow">
-            <Link to={`/championships/${data.championship_id}`}>{data.championship_name}</Link>
-          </p>
           <h1 className="season-title">{data.name}</h1>
           <p className="season-actions">
             <a className="small-link" href={`/api/seasons/${seasonId}/calendar.ics`} download>

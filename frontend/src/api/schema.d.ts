@@ -3168,6 +3168,8 @@ export interface components {
             season_id: number;
             /** Season Name */
             season_name: string;
+            /** Championship Id */
+            championship_id: number;
             /** Championship Name */
             championship_name: string;
             /** Track Name */
@@ -4220,6 +4222,8 @@ export interface components {
             season_id: number;
             /** Season Name */
             season_name: string;
+            /** Championship Id */
+            championship_id: number;
             /** Championship Name */
             championship_name: string;
             /** Kind */

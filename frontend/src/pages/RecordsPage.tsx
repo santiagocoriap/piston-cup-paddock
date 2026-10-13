@@ -9,8 +9,10 @@ import { EmptyState } from '../components/EmptyState'
 import { Icon } from '../components/Icon'
 import { Loading } from '../components/Layout'
 import { formatDateTime, formatLapTime } from '../lib/format'
+import { initials } from '../lib/initials'
 import { useLoad } from '../lib/useLoad'
 import { useMode } from '../session'
+import { Breadcrumbs } from '../components/Breadcrumbs'
 
 type Board = components['schemas']['BoardOut']
 type RecordLap = components['schemas']['RecordLapOut']
@@ -53,6 +55,7 @@ export function RecordsPage() {
 
   return (
     <section>
+      <Breadcrumbs items={[{ label: t('nav.records') }]} />
       <header className="page-head">
         <div>
           <h1>{t('records.title')}</h1>
@@ -241,13 +244,6 @@ function ActiveFilters({
 
 function gapText(ms: number): string {
   return ms < 60_000 ? `+${(ms / 1000).toFixed(3)}` : `+${formatLapTime(ms)}`
-}
-
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/)
-  const first = parts[0]?.[0] ?? ''
-  const last = parts.length > 1 ? (parts.at(-1)?.[0] ?? '') : ''
-  return (first + last).toUpperCase() || '?'
 }
 
 function BoardCard({ board, onChange }: { board: Board; onChange: () => void }) {

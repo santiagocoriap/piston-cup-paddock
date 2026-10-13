@@ -106,3 +106,9 @@ def test_admin_reminds_now(admin, season, voters):  # noqa: F811
     detail = admin.post(f"/ballots/{ballot_id}/remind").json()
     assert detail["reminded_at"] is not None
     assert Notification.objects.filter(kind="ballot.reminder").count() == 5  # 4 drivers, 1 admin
+
+
+def test_ballot_gives_the_championship_for_the_breadcrumbs(admin, season):  # noqa: F811
+    ballot_id = label_ballot(admin, season)
+    detail = admin.get(f"/ballots/{ballot_id}").json()
+    assert detail["championship_id"] == season.championship_id

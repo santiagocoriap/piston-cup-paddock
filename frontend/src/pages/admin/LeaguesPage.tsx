@@ -10,6 +10,7 @@ import { Icon } from '../../components/Icon'
 import { Loading } from '../../components/Layout'
 import { errorMessage } from '../../lib/errors'
 import { useLoad } from '../../lib/useLoad'
+import { Breadcrumbs } from '../../components/Breadcrumbs'
 
 type League = components['schemas']['LeagueOut']
 
@@ -27,6 +28,7 @@ export function LeaguesPage() {
 
   return (
     <section>
+      <Breadcrumbs items={[{ label: t('nav.leagues') }]} />
       <header className="page-head">
         <div>
           <h1>{t('leagues.title')}</h1>

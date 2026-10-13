@@ -9,7 +9,8 @@ test('an admin invites a driver, and the driver sets a password and signs in', a
   const username = `driver_${Date.now().toString(36)}`
   await signIn(page)
   await page.getByRole('button', { name: 'Modo admin' }).click()
-  await page.getByRole('link', { name: 'Cuentas' }).click()
+  await page.getByRole('link', { name: 'Cuentas', exact: true }).click()
+  await page.getByRole('button', { name: 'Nueva cuenta' }).click()
   await submitForm(page, 'Nueva cuenta', { Usuario: username })
 
   const box = page.getByRole('region', { name: `Link para ${username}` })

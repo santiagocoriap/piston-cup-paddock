@@ -8733,6 +8733,10 @@
             "title": "Season Name",
             "type": "string"
           },
+          "championship_id": {
+            "title": "Championship Id",
+            "type": "integer"
+          },
           "championship_name": {
             "title": "Championship Name",
             "type": "string"
@@ -8921,6 +8925,7 @@
           "number",
           "season_id",
           "season_name",
+          "championship_id",
           "championship_name",
           "track_name",
           "layout_name",
@@ -11966,6 +11971,10 @@
             "title": "Season Name",
             "type": "string"
           },
+          "championship_id": {
+            "title": "Championship Id",
+            "type": "integer"
+          },
           "championship_name": {
             "title": "Championship Name",
             "type": "string"
@@ -12226,6 +12235,7 @@
           "id",
           "season_id",
           "season_name",
+          "championship_id",
           "championship_name",
           "kind",
           "title",

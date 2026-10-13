@@ -33,6 +33,8 @@ const PATHS = {
   search: ['C11 11 7', 'm21 21-4.3-4.3'],
   swap: ['m16 3 4 4-4 4', 'M20 7H4', 'm8 21-4-4 4-4', 'M4 17h16'],
   plus: ['M12 5v14', 'M5 12h14'],
+  copy: ['M8 8h12v12H8z', 'M16 8V4H4v12h4'],
+  upload: ['M12 20V8', 'm7 13 5-5 5 5', 'M5 4h14'],
   download: ['M12 4v12', 'm7 11 5 5 5-5', 'M5 20h14'],
   thermometer: ['M14 4v10.5a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0z'],
 } as const

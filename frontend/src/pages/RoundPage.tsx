@@ -22,6 +22,7 @@ import { RestartsSection } from './RestartsSection'
 import { ApproveButton, Penalties, Protests, ResultStatus, Versions } from './ResultReview'
 import { TelemetrySection } from './TelemetrySection'
 import { AttendanceCard } from './AttendanceCard'
+import { Breadcrumbs } from '../components/Breadcrumbs'
 
 type RoundDetail = components['schemas']['RoundDetail']
 type Status = components['schemas']['LineIn']['status']
@@ -78,10 +79,14 @@ export function RoundPage() {
 
   return (
     <section className="round-page">
+      <Breadcrumbs
+        items={[
+          { label: data.championship_name, to: `/championships/${data.championship_id}` },
+          { label: data.season_name, to: `/seasons/${data.season_id}` },
+          { label: t('round.title', { number: data.number }) },
+        ]}
+      />
       <header className="round-head">
-        <p className="eyebrow">
-          {data.championship_name} · <Link to={`/seasons/${data.season_id}`}>{data.season_name}</Link>
-        </p>
         <h1 className="round-title">
           <span className="round-number">{t('round.title', { number: data.number })}</span>
           <span>

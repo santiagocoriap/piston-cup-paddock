@@ -5,6 +5,7 @@ import { errorMessage } from '../lib/errors'
 import { useMe, useUpdateMe } from '../session'
 import { TelemetryCard } from './TelemetryCard'
 import { CalendarFeedCard } from './CalendarFeedCard'
+import { Breadcrumbs } from '../components/Breadcrumbs'
 
 const COMMON_ZONES = [
   'America/Argentina/Buenos_Aires',
@@ -57,6 +58,7 @@ export function AccountPage() {
 
   return (
     <section className="narrow-section">
+      <Breadcrumbs items={[{ label: t('nav.account') }]} />
       <h1>{t('account.title')}</h1>
       <form className="card" onSubmit={submit} aria-label={t('account.title')}>
         <label>

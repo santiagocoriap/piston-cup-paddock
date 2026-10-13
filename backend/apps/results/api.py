@@ -169,6 +169,7 @@ class RoundDetail(Schema):
     number: int
     season_id: int
     season_name: str
+    championship_id: int
     championship_name: str
     track_name: str
     layout_name: str
@@ -372,6 +373,7 @@ def _round_detail(user, round_: Round) -> RoundDetail:
         number=round_.number,
         season_id=season.id,
         season_name=season.name,
+        championship_id=season.championship.id,
         championship_name=season.championship.name,
         track_name=round_.track_layout.track.name,
         layout_name=round_.track_layout.name,

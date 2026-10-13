@@ -122,6 +122,7 @@ class BallotDetail(Schema):
     id: int
     season_id: int
     season_name: str
+    championship_id: int
     championship_name: str
     kind: str
     title: str
@@ -223,6 +224,7 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
         id=ballot.id,
         season_id=ballot.season_id,
         season_name=ballot.season.name,
+        championship_id=ballot.season.championship.id,
         championship_name=ballot.season.championship.name,
         kind=ballot.kind,
         title=ballot.title,

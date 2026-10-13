@@ -9,6 +9,7 @@ import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
+import { Breadcrumbs } from '../components/Breadcrumbs'
 
 type Ballot = components['schemas']['BallotDetail']
 
@@ -25,9 +26,13 @@ export function BallotPage() {
 
   return (
     <section>
-      <p className="muted">
-        {data.championship_name} · <Link to={`/seasons/${data.season_id}`}>{data.season_name}</Link>
-      </p>
+      <Breadcrumbs
+        items={[
+          { label: data.championship_name, to: `/championships/${data.championship_id}` },
+          { label: data.season_name, to: `/seasons/${data.season_id}` },
+          { label: data.title },
+        ]}
+      />
       <h1>
         {data.title} <span className={`badge ballot-${data.status}`}>{t(`voting.status.${data.status}`)}</span>
       </h1>

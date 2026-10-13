@@ -26,7 +26,8 @@
     "account": "My account",
     "accounts": "Accounts",
     "hideSide": "Hide the side menu",
-    "showSide": "Show the side menu"
+    "showSide": "Show the side menu",
+    "breadcrumbs": "Breadcrumb"
   },
   "common": {
     "create": "Create",
@@ -200,11 +201,32 @@
       "done": "Done: {{layouts}} layouts and {{cars}} cars with images.",
       "missing_one": "{{count}} with no files in the ZIP",
       "missing_other": "{{count}} with no files in the ZIP",
-      "author": "author: {{author}}"
+      "author": "author: {{author}}",
+      "step1Title": "Get the list",
+      "step2Title": "Run the script",
+      "step3Title": "Upload the ZIP",
+      "stepDone": "Done",
+      "copy": "Copy the command",
+      "copied": "Copied",
+      "dropHere": "Drop the ZIP here, or click to pick it.",
+      "wrongType": "The file must be a .zip.",
+      "chosen": "{{name}} · {{size}}"
     },
     "noImage": "No image yet",
     "pitBoxes_one": "{{count}} pit box",
-    "pitBoxes_other": "{{count}} pit boxes"
+    "pitBoxes_other": "{{count}} pit boxes",
+    "help": "The tracks, cars, and car classes that the league uses.",
+    "sections": "Catalog sections",
+    "tabImages": "Images",
+    "missingImages_one": "{{count}} without an image",
+    "missingImages_other": "{{count}} without an image",
+    "layoutCount_one": "{{count}} layout",
+    "layoutCount_other": "{{count}} layouts",
+    "noLayouts": "This track has no layouts yet.",
+    "tracksEmptyText": "Add the first track. Then add its layouts.",
+    "carsEmptyText": "Add the first car with its AC folder.",
+    "newLayoutFor": "New layout: {{name}}",
+    "layoutCreated": "Layout “{{name}}” created."
   },
   "errors": {
     "generic": "Something went wrong. Try again.",
@@ -527,7 +549,29 @@
       "driver": "Driver"
     },
     "none": "—",
-    "pts": "{{count}} pts"
+    "pts": "{{count}} pts",
+    "help": "Every change by an admin is here: who made it, when, and why.",
+    "search": "Search the history",
+    "searchPlaceholder": "Person, change, or reason",
+    "kindLabel": "Kind of change",
+    "kinds": {
+      "all": "All",
+      "results": "Results",
+      "penalties": "Penalties",
+      "season": "Seasons",
+      "people": "Drivers and accounts",
+      "catalog": "Catalog",
+      "reports": "Reports"
+    },
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "more_one": "{{count}} more like this",
+    "more_other": "{{count}} more like this",
+    "count_one": "{{count}} change",
+    "count_other": "{{count}} changes",
+    "noMatch": "No change matches these filters.",
+    "limitNote": "You see the last {{count}} changes.",
+    "open": "Open"
   },
   "restarts": {
     "title": "Starts and restarts",
@@ -1063,7 +1107,21 @@
     "openLink": "Has an unused link",
     "lastLogin": "Last sign-in",
     "never": "Never",
-    "championships": "Championships"
+    "championships": "Championships",
+    "search": "Search accounts",
+    "searchPlaceholder": "Username, driver, or championship",
+    "count_one": "{{count}} account",
+    "count_other": "{{count}} accounts",
+    "noMatch": "No account matches “{{query}}”.",
+    "actions": "Actions for {{name}}",
+    "actionsColumn": "Actions",
+    "inviteLink": "New invite link",
+    "resetLink": "New link to change the password",
+    "linkHelp": "Copy the link and send it in the league chat. It works one time only.",
+    "linkTitle": "Link ready",
+    "done": "Done",
+    "pendingShort": "Waiting for a password",
+    "roleHint": "Pick a championship to give a role."
   },
   "invite": {
     "title": "Choose your password",
@@ -1605,7 +1663,8 @@
     "cars": "Cars",
     "reason": "Reason for the change",
     "history": "History",
-    "today": "today"
+    "today": "today",
+    "emptyText": "A class groups similar cars, for example LMDh or GT3."
   },
   "draw": {
     "button": "Draw conditions",
