@@ -40,7 +40,7 @@ export function TelemetrySection({ roundId }: { roundId: number }) {
   )
 }
 
-/** Speed (and pedals with full access) against the track position. */
+/** Speed against the track position. With full access: pedals, steering, and gear too. */
 function TraceChart({ lap }: { lap: LapDetail }) {
   const { t } = useTranslation()
   const pos = lap.channels.pos ?? []
@@ -63,6 +63,45 @@ function TraceChart({ lap }: { lap: LapDetail }) {
         {lap.driver_name} · {t('laps.lapNumber', { number: lap.lap_number })} · {t('telemetry.speed', { max: Math.round(top) })}
         {lap.access === 'full' ? ` · ${t('telemetry.pedals')}` : ` · ${t('telemetry.noInputs')}`}
       </figcaption>
+      {lap.channels.steer && <SteerChart pos={pos} steer={lap.channels.steer} name={lap.driver_name} />}
+      {lap.channels.gear && <GearChart pos={pos} gear={lap.channels.gear} name={lap.driver_name} />}
     </figure>
+  )
+}
+
+const WIDTH = 640
+const SMALL = 90
+const px = (p: number) => 8 + p * (WIDTH - 16)
+
+/** Steering against the track position. The middle line is straight ahead. */
+function SteerChart({ pos, steer, name }: { pos: number[]; steer: number[]; name: string }) {
+  const { t } = useTranslation()
+  const top = Math.max(...steer.map(Math.abs), 0.01)
+  const middle = SMALL / 2
+  const points = steer.map((v, i) => `${px(pos[i])},${middle - (v / top) * (middle - 6)}`).join(' ')
+  return (
+    <>
+      <svg viewBox={`0 0 ${WIDTH} ${SMALL}`} role="img" aria-label={t('telemetry.steerChart', { name })}>
+        <line x1={8} x2={WIDTH - 8} y1={middle} y2={middle} stroke="currentColor" strokeOpacity={0.3} />
+        <polyline points={points} fill="none" stroke="#fbbf24" strokeWidth={1.5} />
+      </svg>
+      <figcaption>{t('telemetry.steer')}</figcaption>
+    </>
+  )
+}
+
+/** The gear against the track position, as steps. */
+function GearChart({ pos, gear, name }: { pos: number[]; gear: number[]; name: string }) {
+  const { t } = useTranslation()
+  const top = Math.max(...gear, 1)
+  const y = (g: number) => SMALL - 6 - (Math.max(g, 0) / top) * (SMALL - 12)
+  const points = gear.flatMap((g, i) => (i === 0 ? [`${px(pos[0])},${y(g)}`] : [`${px(pos[i])},${y(gear[i - 1])}`, `${px(pos[i])},${y(g)}`])).join(' ')
+  return (
+    <>
+      <svg viewBox={`0 0 ${WIDTH} ${SMALL}`} role="img" aria-label={t('telemetry.gearChart', { name })}>
+        <polyline points={points} fill="none" stroke="#c084fc" strokeWidth={1.5} />
+      </svg>
+      <figcaption>{t('telemetry.gear', { max: top })}</figcaption>
+    </>
   )
 }

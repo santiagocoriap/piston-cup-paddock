@@ -11,6 +11,7 @@ from apps.collectors.safety_api import router as safety_router
 from apps.community.api import router as community_router
 from apps.competition.api import router as competition_router
 from apps.core.api import router as core_router
+from apps.core.backup_api import router as backup_router
 from apps.core.exports import router as exports_router
 from apps.dashboard.api import router as dashboard_router
 from apps.handicaps.api import router as handicaps_router
@@ -29,6 +30,7 @@ from apps.voting.api import router as voting_router
 # Every endpoint needs a signed-in user, unless it sets auth=None.
 api = NinjaAPI(title="Piston Cup Paddock", version="0.1.0", urls_namespace="api", auth=django_auth)
 api.add_router("/", core_router)
+api.add_router("/", backup_router)
 api.add_router("/auth", auth_router)
 api.add_router("/catalog", catalog_router)
 api.add_router("/", drivers_router)

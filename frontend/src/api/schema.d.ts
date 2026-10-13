@@ -21,6 +21,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/backups/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Backup Status */
+        get: operations["apps_core_backup_api_backup_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/backups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start Backup */
+        post: operations["apps_core_backup_api_start_backup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/csrf": {
         parameters: {
             query?: never;
@@ -2205,6 +2239,36 @@ export interface components {
             status: string;
             /** Database */
             database: boolean;
+        };
+        /** BackupRunOut */
+        BackupRunOut: {
+            /** Status */
+            status: string;
+            /** File Name */
+            file_name: string;
+            /** Size Bytes */
+            size_bytes: number | null;
+            /** Rows */
+            rows: number | null;
+            /** Files */
+            files: number | null;
+            /** Error */
+            error: string;
+            /** Started By */
+            started_by: string | null;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /** Finished At */
+            finished_at: string | null;
+        };
+        /** BackupStatusOut */
+        BackupStatusOut: {
+            last: components["schemas"]["BackupRunOut"] | null;
+            /** Last Ok At */
+            last_ok_at: string | null;
         };
         /** Me */
         Me: {
@@ -5452,6 +5516,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    apps_core_backup_api_backup_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BackupStatusOut"];
+                };
+            };
+        };
+    };
+    apps_core_backup_api_start_backup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BackupStatusOut"];
                 };
             };
         };

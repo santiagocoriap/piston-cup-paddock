@@ -120,6 +120,7 @@ USE_TZ = True
 
 # Uploaded evidence, for example result files. Docker keeps it in the media-data volume.
 MEDIA_ROOT = Path(env("MEDIA_ROOT", str(BASE_DIR / "media")))
+BACKUP_ROOT = Path(env("BACKUP_ROOT", str(BASE_DIR / "backups")))
 MEDIA_URL = "/media/"
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024

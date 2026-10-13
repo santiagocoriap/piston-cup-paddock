@@ -38,6 +38,60 @@
         ]
       }
     },
+    "/api/backups/status": {
+      "get": {
+        "operationId": "apps_core_backup_api_backup_status",
+        "summary": "Backup Status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupStatusOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "backups"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/backups": {
+      "post": {
+        "operationId": "apps_core_backup_api_start_backup",
+        "summary": "Start Backup",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupStatusOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "backups"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/auth/csrf": {
       "get": {
         "operationId": "apps_identity_api_csrf",
@@ -6035,6 +6089,128 @@
           "database"
         ],
         "title": "Health",
+        "type": "object"
+      },
+      "BackupRunOut": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "file_name": {
+            "title": "File Name",
+            "type": "string"
+          },
+          "size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size Bytes"
+          },
+          "rows": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rows"
+          },
+          "files": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Files"
+          },
+          "error": {
+            "title": "Error",
+            "type": "string"
+          },
+          "started_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started By"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          }
+        },
+        "required": [
+          "status",
+          "file_name",
+          "size_bytes",
+          "rows",
+          "files",
+          "error",
+          "started_by",
+          "started_at",
+          "finished_at"
+        ],
+        "title": "BackupRunOut",
+        "type": "object"
+      },
+      "BackupStatusOut": {
+        "properties": {
+          "last": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BackupRunOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "last_ok_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Ok At"
+          }
+        },
+        "required": [
+          "last",
+          "last_ok_at"
+        ],
+        "title": "BackupStatusOut",
         "type": "object"
       },
       "Me": {

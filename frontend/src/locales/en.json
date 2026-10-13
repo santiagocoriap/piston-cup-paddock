@@ -266,7 +266,8 @@
     "same_decider": "Another person must decide the appeal.",
     "class_exists": "A class with this name already exists.",
     "class_required": "Choose a class.",
-    "pool_empty": "The conditions pool of the season is empty."
+    "pool_empty": "The conditions pool of the season is empty.",
+    "backup_running": "A backup is already running."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -404,7 +405,8 @@
       "class.cars_changed": "{{actor}} changed the cars of the class {{name}}.",
       "round.conditions_drawn": "{{actor}} drew the conditions of round {{number}} ({{track}}).",
       "round.conditions_redrawn": "{{actor}} drew the conditions of round {{number}} ({{track}}) again.",
-      "season.conditions_pool": "{{actor}} changed the conditions pool of {{season}}."
+      "season.conditions_pool": "{{actor}} changed the conditions pool of {{season}}.",
+      "backup.started": "{{actor}} started a backup."
     },
     "fields": {
       "role": "Role",
@@ -1137,7 +1139,11 @@
     "chart": "Speed of {{name}}",
     "speed": "speed (max {{max}} km/h)",
     "pedals": "green: throttle, red: brake",
-    "noInputs": "no pedals: the driver does not share them"
+    "noInputs": "no pedals: the driver does not share them",
+    "steerChart": "Steering of {{name}}",
+    "gearChart": "Gears of {{name}}",
+    "steer": "steering: the middle line is straight ahead",
+    "gear": "gear (max {{max}})"
   },
   "compare": {
     "title": "Compare laps",
@@ -1456,5 +1462,19 @@
     "trackMax": "Track max °C",
     "history_one": "{{count}} draw",
     "history_other": "{{count}} draws"
+  },
+  "backup": {
+    "title": "Backups",
+    "never": "There is no backup yet.",
+    "status": {
+      "ok": "ok",
+      "failed": "failed",
+      "running": "running"
+    },
+    "contents": "{{rows}} rows, {{files}} files",
+    "by": "by {{name}}",
+    "lastOk": "Last good backup: {{date}}",
+    "start": "Back up now",
+    "refresh": "Refresh"
   }
 }

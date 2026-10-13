@@ -1,9 +1,9 @@
-from datetime import datetime
 from pathlib import Path
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 
-from apps.core.backup import create_backup
+from apps.core.backup import create_backup, run_backup
+from apps.core.models import BackupRun
 
 
 class Command(BaseCommand):
@@ -17,7 +17,15 @@ class Command(BaseCommand):
 
     def handle(self, *args, output, **options):
         if output is None:
-            output = f"backups/paddock-{datetime.now():%Y%m%d-%H%M%S}.zip"
+            run = BackupRun.objects.create()
+            run_backup(run)
+            if run.status == BackupRun.Status.FAILED:
+                raise CommandError(f"The backup failed: {run.error}")
+            message = (
+                f"Backup written to backups/{run.file_name}: {run.rows} rows, {run.files} files."
+            )
+            self.stdout.write(self.style.SUCCESS(message))
+            return
         path = Path(output)
         manifest = create_backup(path)
         rows = sum(manifest["rows"].values())

@@ -19,8 +19,16 @@ from django.apps import apps
 from django.conf import settings
 from django.core import management
 from django.db import transaction
+from django.utils import timezone
 
-EXCLUDED = ["contenttypes", "auth.permission", "sessions", "admin.logentry", "procrastinate"]
+EXCLUDED = [
+    "contenttypes",
+    "auth.permission",
+    "sessions",
+    "admin.logentry",
+    "procrastinate",
+    "core.backuprun",
+]
 FORMAT_VERSION = 1
 
 
@@ -99,3 +107,26 @@ def restore_backup(source: Path) -> dict:
     if _counts() != manifest["rows"]:
         raise BackupError("The restored row counts differ from the backup.")
     return manifest
+
+
+def backup_dir() -> Path:
+    return Path(settings.BACKUP_ROOT)
+
+
+def run_backup(run) -> None:
+    """Do the backup of one run record, and write the result into the record."""
+    path = backup_dir() / f"paddock-{run.started_at:%Y%m%d-%H%M%S}.zip"
+    try:
+        manifest = create_backup(path)
+    except Exception as error:  # The card shows any failure. The admin needs the message.
+        run.status = run.Status.FAILED
+        run.error = str(error)[:1000] or error.__class__.__name__
+        path.unlink(missing_ok=True)
+    else:
+        run.status = run.Status.OK
+        run.file_name = path.name
+        run.size_bytes = path.stat().st_size
+        run.rows = sum(manifest["rows"].values())
+        run.files = len(manifest["files"])
+    run.finished_at = timezone.now()
+    run.save()

@@ -59,6 +59,8 @@ One command backs up the database and the stored files (the result files) into o
 docker compose exec web python manage.py backup
 ```
 
+A league admin can also start a backup from the data health card of a championship. The card shows the last backup, its size, and its result. The worker does the backup, so the `worker` service also needs the `backups` volume.
+
 The file goes to the `backups` volume, for example `backups/paddock-20261012-213000.zip`. Copy it out of the container and keep it on another computer:
 
 ```bash

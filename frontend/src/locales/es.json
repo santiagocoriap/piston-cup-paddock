@@ -266,7 +266,8 @@
     "same_decider": "Otra persona tiene que decidir la apelación.",
     "class_exists": "Ya existe una clase con ese nombre.",
     "class_required": "Elegí una clase.",
-    "pool_empty": "El pool de condiciones de la temporada está vacío."
+    "pool_empty": "El pool de condiciones de la temporada está vacío.",
+    "backup_running": "Ya hay un backup en curso."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -404,7 +405,8 @@
       "class.cars_changed": "{{actor}} cambió los autos de la clase {{name}}.",
       "round.conditions_drawn": "{{actor}} sorteó las condiciones de la fecha {{number}} ({{track}}).",
       "round.conditions_redrawn": "{{actor}} volvió a sortear las condiciones de la fecha {{number}} ({{track}}).",
-      "season.conditions_pool": "{{actor}} cambió el pool de condiciones de {{season}}."
+      "season.conditions_pool": "{{actor}} cambió el pool de condiciones de {{season}}.",
+      "backup.started": "{{actor}} empezó un backup."
     },
     "fields": {
       "role": "Rol",
@@ -1137,7 +1139,11 @@
     "chart": "Velocidad de {{name}}",
     "speed": "velocidad (máx. {{max}} km/h)",
     "pedals": "verde: acelerador, rojo: freno",
-    "noInputs": "sin pedales: el piloto no los comparte"
+    "noInputs": "sin pedales: el piloto no los comparte",
+    "steerChart": "Volante de {{name}}",
+    "gearChart": "Marchas de {{name}}",
+    "steer": "volante: la línea del medio es el volante derecho",
+    "gear": "marcha (máx. {{max}})"
   },
   "compare": {
     "title": "Comparar vueltas",
@@ -1456,5 +1462,19 @@
     "trackMax": "Pista máx. °C",
     "history_one": "{{count}} sorteo",
     "history_other": "{{count}} sorteos"
+  },
+  "backup": {
+    "title": "Backups",
+    "never": "Todavía no hay ningún backup.",
+    "status": {
+      "ok": "correcto",
+      "failed": "falló",
+      "running": "en curso"
+    },
+    "contents": "{{rows}} filas, {{files}} archivos",
+    "by": "por {{name}}",
+    "lastOk": "Último backup correcto: {{date}}",
+    "start": "Hacer backup ahora",
+    "refresh": "Actualizar"
   }
 }

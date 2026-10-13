@@ -6,12 +6,15 @@ import type { components } from '../api/schema'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { useMe } from '../session'
+import { BackupStatus } from './BackupStatus'
 
 type Health = components['schemas']['HealthOut']
 
 /** Collector status, missing data of recent rounds, and failed tasks, in one card. */
 export function HealthSection({ championshipId }: { championshipId: number }) {
   const { t, i18n } = useTranslation()
+  const me = useMe()
   const load = useLoad(
     () => api.GET('/api/championships/{championship_id}/health', { params: { path: { championship_id: championshipId } } }),
     [championshipId],
@@ -100,6 +103,7 @@ export function HealthSection({ championshipId }: { championshipId: number }) {
           {error}
         </p>
       )}
+      {me.is_admin && <BackupStatus />}
     </div>
   )
 }
