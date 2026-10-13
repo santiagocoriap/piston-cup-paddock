@@ -88,14 +88,33 @@ describe('SeasonPage', () => {
     mockApi({ 'GET /api/seasons/5': () => json(200, season(true)), ...standings })
     renderPage(<SeasonPage />, { path: '/seasons/:seasonId', url: '/seasons/5', mode: 'driver' })
     await screen.findAllByRole('table')
-    expect(screen.queryByRole('form', { name: 'Agregar fecha' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Administrar' })).not.toBeInTheDocument()
   })
 
   it('hides the forms from a driver', async () => {
     mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
     show(DRIVER)
     await screen.findAllByRole('table')
-    expect(screen.queryByRole('form', { name: 'Agregar fecha' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Administrar' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Inscribir piloto' })).not.toBeInTheDocument()
+  })
+
+  it('puts the calendar and the 3 exports in one download menu', async () => {
+    mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
+    show(DRIVER)
+    await userEvent.click(await screen.findByRole('button', { name: 'Descargar' }))
+    expect(screen.getByRole('link', { name: 'Calendario (.ics)' })).toHaveAttribute('href', '/api/seasons/5/calendar.ics')
+    expect(screen.getByRole('link', { name: 'Reinicios (CSV)' })).toHaveAttribute(
+      'href',
+      '/api/seasons/5/export/restarts.csv',
+    )
+  })
+
+  it('marks the next round with a status for screen readers', async () => {
+    mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
+    show(DRIVER)
+    const link = await screen.findByRole('link', { name: 'Highlands · Long' })
+    expect(link.closest('tr')).toHaveTextContent('Próxima')
   })
 
   it('sends a new round with the timezone of the browser', async () => {
@@ -106,6 +125,8 @@ describe('SeasonPage', () => {
       ...catalog,
     })
     show()
+    await userEvent.click(await screen.findByRole('button', { name: 'Administrar' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Agregar fecha' }))
     const form = await screen.findByRole('form', { name: 'Agregar fecha' })
     await within(form).findByRole('option', { name: 'Highlands · Long' }) // Wait for the list.
     await userEvent.selectOptions(await within(form).findByLabelText('Pista y trazado'), '4')
@@ -130,6 +151,7 @@ describe('SeasonPage', () => {
       'GET /api/drivers': () => json(200, [{ id: 3, display_name: 'Bing', steam_guid: null, user_id: null, username: null }]),
     })
     show()
+    await userEvent.click(await screen.findByRole('button', { name: 'Inscribir piloto' }))
     const form = await screen.findByRole('form', { name: 'Inscribir piloto' })
     await within(form).findByRole('option', { name: 'Bing' }) // Wait for the list.
     await userEvent.selectOptions(await within(form).findByLabelText('Piloto'), '3')

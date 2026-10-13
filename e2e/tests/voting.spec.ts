@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { signIn, submitForm } from './helpers'
+import { openAdminForm, signIn, submitForm } from './helpers'
 
 async function api(page: Page, method: 'POST' | 'PUT', path: string, data: unknown) {
   const cookies = await page.context().cookies()
@@ -37,11 +37,13 @@ test('an admin fixes a track, runs a track vote, and the winners fill the calend
   await page.getByRole('button', { name: 'Modo admin' }).click()
   await page.goto(`/seasons/${season.id}`)
 
-  // A fixed track leaves two voted slots.
+  // A fixed track leaves two voted slots. The calendar forms open from the "Administrar" menu.
+  await openAdminForm(page, 'calendar', 'Reservar pista fija')
   await submitForm(page, 'Reservar pista fija', {}, { 'Pista y trazado': `Spa ${run} · GP` })
   await expect(page.getByText('2 fechas libres para votar')).toBeVisible()
 
-  // A track ballot with two choices for each driver.
+  // A track ballot with two choices for each driver. The first step of the form has these fields.
+  await openAdminForm(page, 'ballots', 'Nueva votación')
   await submitForm(page, 'Nueva votación', { Título: `Pistas ${run}`, 'Opciones por piloto': '2' })
   await page.getByRole('link', { name: `Pistas ${run}` }).click()
   for (const name of ['Monza', 'Imola', 'Suzuka']) {

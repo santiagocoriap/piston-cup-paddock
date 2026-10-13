@@ -53,6 +53,15 @@ class NextRoundOut(Schema):
     track_outline_url: str | None
     track_preview_url: str | None
     car_image_url: str | None
+    ballast_cap: int
+    restrictor_cap: int
+
+
+class NearbyOut(Schema):
+    rank: int
+    name: str
+    points: int
+    me: bool
 
 
 class NewReportOut(Schema):
@@ -75,6 +84,8 @@ class SeasonCardOut(Schema):
     recent: list[RecentOut]
     next_round: NextRoundOut | None
     new_reports: list[NewReportOut]
+    history: list[RecentOut]
+    nearby: list[NearbyOut]
 
 
 class DashboardOut(Schema):

@@ -31,14 +31,15 @@ function NavItem({ to, icon, label, end, count }: NavEntry) {
       to={to}
       end={end}
       data-label={label}
+      // One name for every browser. Without it, Chrome reads "Cuentas , 1 pendiente".
+      aria-label={count ? `${label}, ${t('nav.pendingCount', { count })}` : undefined}
       className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}
     >
       <Icon name={icon} />
       <span className="nav-label">{label}</span>
       {count !== undefined && count > 0 && (
-        <span className="nav-count">
-          <span aria-hidden="true">{count}</span>
-          <span className="sr-only">{`, ${t('nav.pendingCount', { count })}`}</span>
+        <span className="nav-count" aria-hidden="true">
+          {count}
         </span>
       )}
     </NavLink>

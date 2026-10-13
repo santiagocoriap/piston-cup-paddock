@@ -4604,6 +4604,17 @@ export interface components {
             /** Seasons */
             seasons: components["schemas"]["SeasonCardOut"][];
         };
+        /** NearbyOut */
+        NearbyOut: {
+            /** Rank */
+            rank: number;
+            /** Name */
+            name: string;
+            /** Points */
+            points: number;
+            /** Me */
+            me: boolean;
+        };
         /** NewReportOut */
         NewReportOut: {
             /** Round Id */
@@ -4646,6 +4657,10 @@ export interface components {
             track_preview_url: string | null;
             /** Car Image Url */
             car_image_url: string | null;
+            /** Ballast Cap */
+            ballast_cap: number;
+            /** Restrictor Cap */
+            restrictor_cap: number;
         };
         /** RecentOut */
         RecentOut: {
@@ -4689,6 +4704,10 @@ export interface components {
             next_round: components["schemas"]["NextRoundOut"] | null;
             /** New Reports */
             new_reports: components["schemas"]["NewReportOut"][];
+            /** History */
+            history: components["schemas"]["RecentOut"][];
+            /** Nearby */
+            nearby: components["schemas"]["NearbyOut"][];
         };
         /** AdjustmentOut */
         AdjustmentOut: {

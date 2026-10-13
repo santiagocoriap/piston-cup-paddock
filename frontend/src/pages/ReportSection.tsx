@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent, type SyntheticEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../api/client'
+import { AdminActions } from '../components/AdminActions'
 import type { components } from '../api/schema'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
@@ -49,7 +50,22 @@ export function ReportSection({ target, adminView }: { target: Target; adminView
   }
   return (
     <section aria-label={t(`${prefix}.title`)}>
-      <h2>{t(`${prefix}.title`)}</h2>
+      <div className="section-head">
+        <h2>{t(`${prefix}.title`)}</h2>
+        {adminView && data.can_generate && (
+          <AdminActions
+            actions={[
+              {
+                id: 'generate',
+                label: t('report.generate'),
+                content: () => (
+                  <ReportAdmin target={target} reports={data.reports} aiConfigured={data.ai_configured} onChange={reload} />
+                ),
+              },
+            ]}
+          />
+        )}
+      </div>
       {latest?.outdated && (
         <p className="warning" role="status">
           {t('report.outdated')}{' '}
@@ -68,9 +84,6 @@ export function ReportSection({ target, adminView }: { target: Target; adminView
             <ReportText key={report.id} report={report} target={target.kind} />
           ))}
         </details>
-      )}
-      {adminView && data.can_generate && (
-        <ReportAdmin target={target} reports={data.reports} aiConfigured={data.ai_configured} onChange={reload} />
       )}
     </section>
   )

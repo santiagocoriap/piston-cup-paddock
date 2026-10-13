@@ -13,7 +13,7 @@ const list = (value: FormDataEntryValue | null) =>
 const number = (value: FormDataEntryValue | null) => (value === null || value === '' ? null : Number(value))
 
 /** The conditions pool of a season. The draw picks from these values. */
-export function ConditionsPoolForm({ seasonId }: { seasonId: number }) {
+export function ConditionsPoolForm({ seasonId, onDone }: { seasonId: number; onDone?: () => void }) {
   const { t } = useTranslation()
   const path = { season_id: seasonId }
   const pool = useLoad(() => api.GET('/api/seasons/{season_id}/conditions-pool', { params: { path } }), [seasonId])
@@ -24,6 +24,7 @@ export function ConditionsPoolForm({ seasonId }: { seasonId: number }) {
       <ActionForm
         title={t('draw.poolTitle')}
         submitLabel={t('common.save')}
+        onDone={onDone}
         onSubmit={async (form) => {
           const { error } = await api.PUT('/api/seasons/{season_id}/conditions-pool', {
             params: { path },

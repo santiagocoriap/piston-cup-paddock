@@ -150,3 +150,32 @@ def test_next_round_before_the_first_race_has_no_previous_values_or_conditions(
     assert next_round["previous_ballast_kg"] is None
     assert next_round["previous_restrictor_pct"] is None
     assert next_round["conditions"] is None
+
+
+def test_dashboard_gives_the_caps_the_history_and_the_drivers_near_me(
+    api, champ_admin, me, grid, rounds, season, car
+):
+    from apps.rules.models import RulesVersion
+
+    admin = api(champ_admin)
+    ana, juan = grid
+    pedro = SeasonEntry.objects.create(
+        season=season, driver=DriverProfile.objects.create(display_name="Pedro"), car=car, number=9
+    )
+    rules = RulesVersion.current_for(season)
+    rules.ballast_cap, rules.restrictor_cap = 60, 4
+    rules.save()
+    race(admin, rounds[0], [juan, ana, pedro])
+    race(admin, rounds[1], [juan, ana, pedro])
+
+    card = api(me).get("/dashboard").json()["seasons"][0]
+
+    assert (card["next_round"]["ballast_cap"], card["next_round"]["restrictor_cap"]) == (60, 4)
+    # Every result in round order, for the trend line.
+    assert [(r["round_number"], r["position"]) for r in card["history"]] == [(1, 2), (2, 2)]
+    # Ana is second: Juan is above her and Pedro is below her.
+    assert [(n["rank"], n["name"], n["me"]) for n in card["nearby"]] == [
+        (1, "Juan", False),
+        (2, "Ana", True),
+        (3, "Pedro", False),
+    ]

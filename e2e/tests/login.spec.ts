@@ -29,7 +29,7 @@ test('the health check reports the database', async ({ request }) => {
 
 test('the home page shows the dashboard and fits the screen', async ({ page }) => {
   await signIn(page)
-  await expect(page.getByRole('heading', { name: 'Mi paddock' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: /^Hola, / })).toBeVisible()
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   )

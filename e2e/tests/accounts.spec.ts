@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { signIn, submitForm } from './helpers'
+import { navLink, signIn, submitForm } from './helpers'
 
 test('an admin invites a driver, and the driver sets a password and signs in', async ({
   page,
@@ -9,7 +9,7 @@ test('an admin invites a driver, and the driver sets a password and signs in', a
   const username = `driver_${Date.now().toString(36)}`
   await signIn(page)
   await page.getByRole('button', { name: 'Modo admin' }).click()
-  await page.getByRole('link', { name: 'Cuentas', exact: true }).click()
+  await navLink(page, 'Cuentas').click()
   await page.getByRole('button', { name: 'Nueva cuenta' }).click()
   await submitForm(page, 'Nueva cuenta', { Usuario: username })
 
@@ -25,7 +25,7 @@ test('an admin invites a driver, and the driver sets a password and signs in', a
   await driver.getByLabel('Contraseña', { exact: true }).fill('driver-pass-5521')
   await driver.getByLabel('Repetí la contraseña').fill('driver-pass-5521')
   await driver.getByRole('button', { name: 'Guardar y entrar' }).click()
-  await expect(driver.getByRole('heading', { name: 'Mi paddock' })).toBeVisible()
+  await expect(driver.getByRole('heading', { level: 1, name: `Hola, ${username}` })).toBeVisible()
   expect(new URL(driver.url()).hash).toBe('')
 
   // The same link does not work a second time.

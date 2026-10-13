@@ -44,6 +44,8 @@ describe('ReportSection', () => {
       'POST /api/rounds/9/reports': () => json(200, { can_generate: true, ai_configured: false, reports: [] }),
     })
     renderPage(<ReportSection target={{ kind: 'round', id: 9 }} adminView />, page)
+    expect(await screen.findByText('Todavía no hay reporte.')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Generar reporte' }))
     expect(await screen.findByText(/La IA no tiene clave/)).toBeInTheDocument()
     expect(screen.getByText(/ai_not_configured/)).toBeInTheDocument()
     expect(screen.getByText('Todavía no hay reporte.')).toBeInTheDocument()
@@ -71,6 +73,7 @@ describe('ReportSection for a season', () => {
     expect(await screen.findByRole('heading', { name: 'Reporte de la temporada' })).toBeInTheDocument()
     expect(screen.getByText(/Temporada en curso, solo fechas oficiales/)).toBeInTheDocument()
     expect(screen.getByText('Driver 01 lidera.')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Generar reporte' }))
     await userEvent.click(screen.getByRole('button', { name: 'Generar' }))
     await vi.waitFor(() => expect(calls.some((c) => c.key === 'POST /api/seasons/4/reports')).toBe(true))
   })

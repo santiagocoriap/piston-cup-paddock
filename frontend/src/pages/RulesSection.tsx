@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../api/client'
+import { AdminActions } from '../components/AdminActions'
 import type { components } from '../api/schema'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
@@ -52,7 +53,7 @@ export function RulesSection({ seasonId, adminView }: { seasonId: number; adminV
     else setMessage({ kind: 'error', text: errorMessage(t, error) })
   }
 
-  async function save(event: FormEvent<HTMLFormElement>) {
+  async function save(event: FormEvent<HTMLFormElement>, close: () => void) {
     event.preventDefault()
     const form = new FormData(event.currentTarget)
     if (form.get('recalculate') === 'on' && !window.confirm(t('rulesEditor.confirmRecalculate'))) return
@@ -64,14 +65,81 @@ export function RulesSection({ seasonId, adminView }: { seasonId: number; adminV
     else {
       setPreview(null)
       setMessage({ kind: 'status', text: t('rulesEditor.saved') })
+      close()
       load.reload()
     }
   }
 
+  const editor = (close: () => void) => (
+    <form className="card" onSubmit={(event) => save(event, close)} aria-label={t('rulesEditor.edit')}>
+      <h3>{t('rulesEditor.edit')}</h3>
+      <label>
+        {t('rulesEditor.points')}
+        <input name="points_by_position" defaultValue={current.points_by_position.join(', ')} required />
+      </label>
+      <label>
+        {t('rulesEditor.pole')}
+        <input name="pole_bonus" type="number" min={0} max={50} defaultValue={current.pole_bonus} />
+      </label>
+      <label>
+        {t('rulesEditor.fastestLap')}
+        <input name="fastest_lap_bonus" type="number" min={0} max={50} defaultValue={current.fastest_lap_bonus} />
+      </label>
+      <label>
+        {t('rulesEditor.ballastSteps')}
+        <input name="ballast_steps" defaultValue={current.ballast_steps.join(', ')} />
+      </label>
+      <label>
+        {t('rulesEditor.ballastCap')}
+        <input name="ballast_cap" type="number" min={0} max={200} defaultValue={current.ballast_cap} />
+      </label>
+      <label>
+        {t('rulesEditor.ballastReduction')}
+        <input name="ballast_reduction" type="number" min={0} max={200} defaultValue={current.ballast_reduction} />
+      </label>
+      <label>
+        {t('rulesEditor.restrictorSteps')}
+        <input name="restrictor_steps" defaultValue={current.restrictor_steps.join(', ')} />
+      </label>
+      <label>
+        {t('rulesEditor.restrictorCap')}
+        <input name="restrictor_cap" type="number" min={0} max={100} defaultValue={current.restrictor_cap} />
+      </label>
+      <label>
+        {t('rulesEditor.restrictorReduction')}
+        <input name="restrictor_reduction" type="number" min={0} max={100} defaultValue={current.restrictor_reduction} />
+      </label>
+      <label>
+        {t('rulesEditor.reason')}
+        <input name="reason" required maxLength={500} />
+      </label>
+      <label className="check">
+        <input type="checkbox" name="recalculate" />
+        {t('rulesEditor.recalculateLabel')}
+      </label>
+      <p className="muted">{t('rulesEditor.recalculateHelp')}</p>
+      <button type="button" onClick={(e) => showPreview(e.currentTarget.form!)}>
+        {t('rulesEditor.preview')}
+      </button>{' '}
+      <button type="submit">{t('rulesEditor.save')}</button>
+      {message?.kind === 'error' && (
+        <p role="alert" className="error">
+          {message.text}
+        </p>
+      )}
+      {preview && <Preview rows={preview} />}
+    </form>
+  )
+
   return (
     <section aria-label={t('rulesEditor.title')}>
-      <h2>{t('rulesEditor.title')}</h2>
-      <RulesSummary version={current} />
+      <div className="section-head">
+        <h2>{t('rulesEditor.title')}</h2>
+        {adminView && data.can_edit && (
+          <AdminActions actions={[{ id: 'edit', label: t('rulesEditor.edit'), content: editor }]} />
+        )}
+      </div>
+      <RulesCard version={current} />
       {older.length > 0 && (
         <details>
           <summary>{t('rulesEditor.history', { count: older.length })}</summary>
@@ -88,67 +156,52 @@ export function RulesSection({ seasonId, adminView }: { seasonId: number; adminV
           </ul>
         </details>
       )}
-      {adminView && data.can_edit && (
-        <form className="card" onSubmit={save} aria-label={t('rulesEditor.edit')}>
-          <h3>{t('rulesEditor.edit')}</h3>
-          <label>
-            {t('rulesEditor.points')}
-            <input name="points_by_position" defaultValue={current.points_by_position.join(', ')} required />
-          </label>
-          <label>
-            {t('rulesEditor.pole')}
-            <input name="pole_bonus" type="number" min={0} max={50} defaultValue={current.pole_bonus} />
-          </label>
-          <label>
-            {t('rulesEditor.fastestLap')}
-            <input name="fastest_lap_bonus" type="number" min={0} max={50} defaultValue={current.fastest_lap_bonus} />
-          </label>
-          <label>
-            {t('rulesEditor.ballastSteps')}
-            <input name="ballast_steps" defaultValue={current.ballast_steps.join(', ')} />
-          </label>
-          <label>
-            {t('rulesEditor.ballastCap')}
-            <input name="ballast_cap" type="number" min={0} max={200} defaultValue={current.ballast_cap} />
-          </label>
-          <label>
-            {t('rulesEditor.ballastReduction')}
-            <input name="ballast_reduction" type="number" min={0} max={200} defaultValue={current.ballast_reduction} />
-          </label>
-          <label>
-            {t('rulesEditor.restrictorSteps')}
-            <input name="restrictor_steps" defaultValue={current.restrictor_steps.join(', ')} />
-          </label>
-          <label>
-            {t('rulesEditor.restrictorCap')}
-            <input name="restrictor_cap" type="number" min={0} max={100} defaultValue={current.restrictor_cap} />
-          </label>
-          <label>
-            {t('rulesEditor.restrictorReduction')}
-            <input name="restrictor_reduction" type="number" min={0} max={100} defaultValue={current.restrictor_reduction} />
-          </label>
-          <label>
-            {t('rulesEditor.reason')}
-            <input name="reason" required maxLength={500} />
-          </label>
-          <label className="check">
-            <input type="checkbox" name="recalculate" />
-            {t('rulesEditor.recalculateLabel')}
-          </label>
-          <p className="muted">{t('rulesEditor.recalculateHelp')}</p>
-          <button type="button" onClick={(e) => showPreview(e.currentTarget.form!)}>
-            {t('rulesEditor.preview')}
-          </button>{' '}
-          <button type="submit">{t('rulesEditor.save')}</button>
-          {preview && <Preview rows={preview} />}
-        </form>
-      )}
-      {message && (
-        <p role={message.kind === 'error' ? 'alert' : 'status'} className={message.kind === 'error' ? 'error' : 'success'}>
+      {message?.kind === 'status' && (
+        <p role="status" className="success">
           {message.text}
         </p>
       )}
     </section>
+  )
+}
+
+/** The current rules: the points of each position as chips, then the bonuses and the handicap caps. */
+function RulesCard({ version }: { version: Version }) {
+  const { t } = useTranslation()
+  const steps = (values: number[], unit: string, cap: number) =>
+    t('rulesCard.steps', { steps: `${values.join('/')} ${unit}`, cap: `${cap} ${unit}` })
+  return (
+    <div className="rules-card">
+      <p className="rules-label">
+        {t('rulesCard.points')} <span className="muted">· {t('rulesEditor.version', { number: version.number })}</span>
+      </p>
+      <ol className="points-chips">
+        {version.points_by_position.map((points, index) => (
+          <li key={index}>
+            <span>P{index + 1}</span>
+            <b>{points}</b>
+          </li>
+        ))}
+      </ol>
+      <dl className="rules-facts">
+        <div>
+          <dt>{t('rulesCard.pole')}</dt>
+          <dd>+{version.pole_bonus}</dd>
+        </div>
+        <div>
+          <dt>{t('rulesCard.fastest')}</dt>
+          <dd>+{version.fastest_lap_bonus}</dd>
+        </div>
+        <div>
+          <dt>{t('rulesCard.ballast')}</dt>
+          <dd>{steps(version.ballast_steps, 'kg', version.ballast_cap)}</dd>
+        </div>
+        <div>
+          <dt>{t('rulesCard.restrictor')}</dt>
+          <dd>{steps(version.restrictor_steps, '%', version.restrictor_cap)}</dd>
+        </div>
+      </dl>
+    </div>
   )
 }
 

@@ -2761,6 +2761,177 @@ td.row-actions {
   color: var(--ink-3);
 }
 
+/* ---------- Driver home: results, trend, drivers near me, countdown ---------- */
+.trend {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 var(--space-3);
+  overflow: visible;
+}
+
+.trend .trend-scale {
+  fill: var(--ink-3);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.trend polyline {
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.trend .trend-top {
+  stroke: var(--line);
+  stroke-dasharray: 4 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.trend circle {
+  fill: var(--surface-1);
+  stroke: var(--ink-2);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.trend circle.last {
+  fill: var(--brand);
+  stroke: var(--brand);
+}
+
+.result-chips {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.result-chip a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: var(--space-3);
+  align-items: center;
+  min-height: var(--target-min);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.result-chip a:hover {
+  background: var(--surface-2);
+}
+
+.result-round {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-place {
+  font-weight: 700;
+}
+
+.result-points {
+  min-width: 52px;
+  color: var(--ink-2);
+  text-align: right;
+}
+
+.result-chip.win a {
+  border-left-color: var(--drv-5);
+  background: color-mix(in srgb, var(--drv-5) 12%, var(--surface-1));
+}
+
+.result-chip.win .result-place {
+  color: var(--drv-5);
+}
+
+.result-chip.podium a {
+  border-left-color: var(--ink-3);
+}
+
+.result-chip.out a {
+  border-left-color: var(--danger);
+}
+
+.result-chip.out .result-place {
+  color: var(--danger-ink);
+}
+
+table.nearby {
+  margin: var(--space-2) 0 var(--space-3);
+  font-size: 14px;
+}
+
+table.nearby td {
+  padding: 6px var(--space-2);
+}
+
+table.nearby td:first-child {
+  width: 1%;
+  color: var(--ink-2);
+}
+
+table.nearby td:nth-child(3),
+table.nearby td:nth-child(4) {
+  width: 1%;
+  text-align: right;
+}
+
+table.nearby tr.me-row td {
+  background: var(--brand-tint);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.nearby-gap {
+  color: var(--ink-2);
+}
+
+/* Each new value of the countdown flips in, like a timing board. */
+.countdown b.flip {
+  display: inline-block;
+  animation: flip-in var(--dur-slow) cubic-bezier(0.2, 0.7, 0.2, 1);
+  transform-origin: 50% 0;
+}
+
+@keyframes flip-in {
+  from {
+    opacity: 0;
+    transform: perspective(200px) rotateX(-80deg);
+  }
+}
+
+.hero-live {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.live-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--brand);
+  animation: live-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
 /* ---------- Tabs with counts ---------- */
 .tab-row {
   display: flex;
@@ -3176,20 +3347,6 @@ label.dropzone:focus-within {
   line-height: 36px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-}
-
-.recent {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.recent li {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-4);
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--line);
 }
 
 .next-round {
@@ -4983,30 +5140,452 @@ textarea:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 
-.admin-block {
-  margin-top: var(--space-4);
-  border: 1px solid var(--line);
-  border-top: 3px solid var(--brand);
-  border-radius: var(--radius-md);
-  background: var(--admin-surface);
+/* A section title with its admin button or menu on the right. */
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-3);
 }
 
-.admin-block > summary {
+.section-head > h2 {
+  margin: 0;
+}
+
+.section-head .explainer {
+  flex: 1 1 100%;
+}
+
+.admin-actions {
+  display: inline-flex;
+}
+
+.admin-actions > button.small,
+.admin-actions .menu-trigger {
+  gap: var(--space-2);
+  margin-left: 0;
+}
+
+/* A labelled menu button, like "Administrar" or "Descargar". */
+.menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0;
+}
+
+.menu-trigger .icon:last-child {
+  transform: rotate(90deg);
+  opacity: 0.7;
+}
+
+.row-menu-list .row-menu-link {
   display: flex;
   align-items: center;
+  min-height: var(--target-dense);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-xs);
+  color: var(--ink);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.row-menu-list .row-menu-link:hover {
+  background: var(--surface-3);
+}
+
+/* The admin forms in a dialog: the form fills the dialog, with no second border. */
+.admin-dialog {
+  padding: var(--space-5);
+}
+
+.admin-dialog .forms {
+  margin-top: 0;
+}
+
+.admin-dialog .card {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.admin-dialog .card > h3 {
+  margin-top: 0;
+  padding-right: var(--space-7);
+}
+
+/* A form in steps: a rail of numbered steps, one step visible, then the buttons. */
+.step-rail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-2);
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step-tab {
+  justify-content: flex-start;
+  gap: var(--space-2);
+  width: 100%;
   min-height: var(--target-min);
-  padding: 0 var(--space-4);
-  cursor: pointer;
+  padding: 0 var(--space-3);
+  border-color: var(--line);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 14px;
+  text-align: left;
+}
+
+.step-tab.current {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+  color: var(--ink);
+}
+
+.step-tab.done {
+  color: var(--ink);
+}
+
+.step-number {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.step-tab.current .step-number {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.step-tab.done .step-number {
+  border-color: var(--success);
+  color: var(--success-ink);
+}
+
+fieldset.form-step {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  grid-column: 1 / -1;
+  gap: var(--space-4) var(--space-5);
+  align-items: end;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+fieldset.form-step[hidden] {
+  display: none;
+}
+
+fieldset.form-step > .field-row,
+fieldset.form-step > p,
+fieldset.form-step > label.check {
+  grid-column: 1 / -1;
+}
+
+.step-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  grid-column: 1 / -1;
+}
+
+.step-actions .step-count {
+  margin-right: auto;
+  font-size: 14px;
+}
+
+@media (max-width: 640px) {
+  .step-rail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Title fight: points now (solid), the maximum possible (light), and the line that wins the title. */
+.title-bars {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.title-bars li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-1) var(--space-3);
+  align-items: center;
+}
+
+.title-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
   font-weight: 650;
 }
 
-.admin-block[open] > summary {
-  border-bottom: 1px solid var(--line);
+.title-name .badge {
+  margin-left: 0;
+  height: 22px;
+  font-size: 12px;
+  color: var(--ink-2);
 }
 
-.admin-block-body {
-  padding: 0 var(--space-4) var(--space-4);
+.title-name .badge.title-own {
+  border-color: var(--success);
+  background: var(--success-tint);
+  color: var(--success-ink);
+}
+
+.title-track {
+  position: relative;
+  grid-column: 1;
+  height: 12px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+}
+
+.title-max,
+.title-now {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: var(--radius-pill);
+}
+
+.title-max {
+  background: var(--brand-tint);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.title-now {
+  background: var(--brand);
+}
+
+.title-line {
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--ink);
+}
+
+.title-nums {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  min-width: 64px;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.title-nums small {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.title-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  font-size: 13px;
+}
+
+.title-legend .key {
+  display: inline-block;
+  width: 14px;
+  height: 10px;
+  margin-left: var(--space-2);
+  border-radius: var(--radius-xs);
+}
+
+.title-legend .key:first-child {
+  margin-left: 0;
+}
+
+.title-legend .key.now {
+  background: var(--brand);
+}
+
+.title-legend .key.max {
+  background: var(--brand-tint);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.title-legend .key.line {
+  width: 2px;
+  height: 14px;
+  background: var(--ink);
+}
+
+/* Safety: the rating number and a colored status label. */
+.safety-cell {
+  white-space: nowrap;
+}
+
+.safety-rating {
+  font-variant-numeric: tabular-nums;
+}
+
+.safety-rating.unknown {
+  color: var(--ink-3);
+}
+
+.safety-rating.provisional,
+.safety-rating.rated {
+  color: var(--ink);
+}
+
+.badge.safety-unknown {
+  border-style: dashed;
+  color: var(--ink-3);
+}
+
+.badge.safety-provisional {
+  border-color: var(--warning);
+  background: var(--warning-tint);
+  color: var(--warning-ink);
+}
+
+.badge.safety-rated {
+  border-color: var(--success);
+  background: var(--success-tint);
+  color: var(--success-ink);
+}
+
+/* Rules: the points of each position as chips, then the bonuses and the caps. */
+.rules-card {
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.rules-label {
+  margin: 0 0 var(--space-2);
+  font-weight: 650;
+}
+
+.points-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.points-chips li {
+  display: grid;
+  min-width: 44px;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  text-align: center;
+}
+
+.points-chips span {
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.points-chips b {
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.points-chips li:first-child {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+}
+
+.rules-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.rules-facts dt {
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rules-facts dd {
+  margin: 2px 0 0;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Calendar: a dot for each round status. */
+.round-status {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.round-dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.round-dot.done {
+  background: var(--success);
+}
+
+.round-dot.next {
+  background: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-tint);
+}
+
+.round-dot.later {
+  border: 2px solid var(--line-strong);
+}
+
+.round-dot.cancelled {
+  background: var(--danger);
+}
+
+.calendar-table td.row-actions {
+  width: 1%;
+}
+
+/* The hidden header text stays inside the table, so the page does not scroll sideways. */
+.calendar-table th.row-actions {
+  position: relative;
+}
+
+/* The side navigation shows the section on the screen. */
+.season-nav a.active {
+  background: var(--brand-tint);
+  color: var(--ink);
+  box-shadow: inset 3px 0 0 var(--brand);
 }
 
 @media (max-width: 1280px) {
@@ -5041,7 +5620,7 @@ textarea:focus-visible {
   }
 
   .season-pair {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

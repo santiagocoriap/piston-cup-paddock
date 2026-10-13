@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test'
+import { expect, type Locator, type Page } from '@playwright/test'
 import { E2E_ADMIN } from '../fixtures'
 
 export async function signIn(page: Page) {
@@ -38,3 +38,20 @@ export async function submitForm(
   }
   await form.locator('button[type=submit]').click()
 }
+
+/** A link of the side menu. A count can follow the name, for example "Cuentas, 1 pendiente". */
+export function navLink(page: Page, name: string): Locator {
+  return page
+    .getByRole('navigation', { name: 'Navegación principal' })
+    .getByRole('link', { name: new RegExp(`^${name}( ?,|$)`) })
+}
+
+/** Open an admin form of a season page section in its dialog. A section with one form has a button
+ * with the form name. A section with more forms has an "Administrar" menu. */
+export async function openAdminForm(page: Page, sectionId: string, name: string) {
+  const section = page.locator(`#${sectionId}`)
+  const button = section.getByRole('button', { name, exact: true })
+  if ((await button.count()) === 0) await section.getByRole('button', { name: 'Administrar', exact: true }).click()
+  await button.click()
+}
+

@@ -57,7 +57,10 @@
     "key": "Carpeta en AC",
     "select": "Elegí una opción",
     "close": "Cerrar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "next": "Siguiente",
+    "back": "Atrás",
+    "stepOf": "Paso {{current}} de {{total}}"
   },
   "championships": {
     "title": "Campeonatos",
@@ -136,7 +139,13 @@
     "addEntry": "Inscribir piloto",
     "protestWindow": "Plazo de protestas (minutos)",
     "settings": "Configuración de la temporada",
-    "provisionalNote": "Las celdas en cursiva son resultados provisionales."
+    "provisionalNote": "Las celdas en cursiva son resultados provisionales.",
+    "download": "Descargar",
+    "downloads": {
+      "calendar": "Calendario (.ics)",
+      "csv": "{{name}} (CSV)"
+    },
+    "roundLabel": "Fecha {{number}}"
   },
   "leagues": {
     "title": "Ligas",
@@ -979,7 +988,12 @@
     "remindNow": "Recordar ahora a quien no votó",
     "reminded": "Recordatorio enviado.",
     "carClass": "Clase",
-    "freeLabel": "Texto libre (abajo)"
+    "freeLabel": "Texto libre (abajo)",
+    "steps": {
+      "what": "Qué se vota",
+      "who": "Quién ve qué y cuándo",
+      "advanced": "Opciones avanzadas"
+    }
   },
   "calendar": {
     "fixed": "Reservar pista fija",
@@ -999,7 +1013,13 @@
     "feedHelp": "Suscribite a esta dirección desde Google Calendar o el calendario del teléfono. Se actualiza solo con las fechas de tus campeonatos. No la compartas.",
     "feedAddress": "Dirección del calendario",
     "newAddress": "Crear una dirección nueva",
-    "confirmNew": "La dirección anterior deja de funcionar. ¿Seguro?"
+    "confirmNew": "La dirección anterior deja de funcionar. ¿Seguro?",
+    "status": {
+      "done": "Corrida",
+      "next": "Próxima",
+      "later": "Por correr",
+      "cancelled": "Cancelada"
+    }
   },
   "dashboard": {
     "title": "Mi paddock",
@@ -1050,13 +1070,11 @@
     "todo": {
       "title": "Qué tenés que hacer",
       "none": "No tenés nada pendiente.",
-      "attend": "Confirmá si vas a {{track}}",
-      "answer": "Responder",
       "vote": "Votá: {{title}}",
       "runoff": "Segunda vuelta: {{title}}",
       "voteDetail": "Votación abierta",
       "voteAction": "Votar",
-      "report": "Reporte nuevo: R{{round}} · {{track}}",
+      "report": "Reporte nuevo: Fecha {{round}} · {{track}}",
       "read": "Leer",
       "voted": "Ya votaste: {{title}}",
       "closes": "Cierra {{date}}",
@@ -1066,8 +1084,8 @@
     "changed": "Antes {{previous}} {{unit}} · {{change}} {{unit}}",
     "noConditions": "A confirmar",
     "noWeather": "Sin dato de clima",
-    "air": "aire {{value}} °C",
-    "track": "pista {{value}} °C",
+    "air": "aire {{value}} °C",
+    "track": "pista {{value}} °C",
     "outlineAlt": "Mapa del trazado {{track}} · {{layout}}",
     "noProfileTitle": "Todavía no corrés con esta cuenta",
     "noSeasonsTitle": "Todavía no tenés una temporada",
@@ -1078,7 +1096,15 @@
     "noFreeProfiles": "No hay perfiles sin cuenta. Creá uno en Pilotos.",
     "noProfileMatch": "Ningún perfil coincide.",
     "notRacing": "No corro en esta liga",
-    "linked": "Tu cuenta quedó vinculada a {{name}}."
+    "linked": "Tu cuenta quedó vinculada a {{name}}.",
+    "live": "En curso",
+    "liveLink": "Ver la fecha",
+    "trend": "Posición por fecha",
+    "nearby": "Los pilotos cerca tuyo",
+    "you": "Vos",
+    "points_one": "{{count}} pt",
+    "points_other": "{{count}} pts",
+    "trendScale": "P{{position}}"
   },
   "briefing": {
     "title": "Briefing",
@@ -1310,7 +1336,13 @@
     "limits": {
       "rules_changed": "Las reglas cambiaron durante la temporada. Las fechas que quedan usan las reglas actuales.",
       "provisional_results": "Algunos resultados son provisionales. El cálculo puede cambiar."
-    }
+    },
+    "now": "Puntos ahora",
+    "max": "Máximo posible",
+    "line": "{{name}} es campeón con {{points}} pts",
+    "ownShort": "Depende de sí mismo",
+    "helpShort": "Necesita ayuda",
+    "barLabel": "{{name}}: {{points}} pts ahora, máximo posible {{best}}"
   },
   "seasonReport": {
     "title": "Reporte de la temporada",
@@ -1547,7 +1579,8 @@
     },
     "history": "Cambios de {{name}}",
     "unknownRound": "sin eventos del colector: sin cambio (no cuenta como carrera limpia).",
-    "change": "{{laps}} vueltas {{up}}, {{points}} puntos {{down}} = {{total}} → {{after}}"
+    "change": "{{laps}} vueltas {{up}}, {{points}} puntos {{down}} = {{total}} → {{after}}",
+    "howItWorks": "Cómo se calcula"
   },
   "replay": {
     "title": "Repetición de posiciones",
@@ -1669,7 +1702,8 @@
     "cloneTitle": "Copiar a una temporada nueva",
     "clone": "Crear temporada",
     "cloneName": "Nombre de la temporada nueva",
-    "cloneHelp": "Copia los pilotos inscriptos, el reglamento actual y las pistas fijas (sin fecha). No copia resultados."
+    "cloneHelp": "Copia los pilotos inscriptos, el reglamento actual y las pistas fijas (sin fecha). No copia resultados.",
+    "menu": "Acciones de la fecha {{number}}"
   },
   "protestExtras": {
     "addEvidence": "Agregar prueba",
@@ -1767,7 +1801,14 @@
     "next": "Próxima fecha"
   },
   "seasonAdmin": {
-    "calendar": "Administrar el calendario",
-    "entries": "Administrar pilotos y configuración"
+    "manage": "Administrar"
+  },
+  "rulesCard": {
+    "points": "Puntos por puesto",
+    "pole": "Pole",
+    "fastest": "Vuelta rápida",
+    "ballast": "Lastre",
+    "restrictor": "Restrictor",
+    "steps": "{{steps}} · máx. {{cap}}"
   }
 }

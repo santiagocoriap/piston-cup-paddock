@@ -30,61 +30,76 @@ function conditionsFrom(form: FormData) {
   return filled ? conditions : undefined
 }
 
-/** Admin forms for the calendar: reserve a fixed track, and set a round position or date. */
-export function CalendarAdmin({ season, onChange }: { season: SeasonDetail; onChange: () => void }) {
+/** Admin forms for the calendar: reserve a fixed track, and set a round position or date.
+ * "only" shows one of the 2 forms, for a dialog. */
+export function CalendarAdmin({
+  season,
+  onChange,
+  only,
+  onDone,
+}: {
+  season: SeasonDetail
+  onChange: () => void
+  only?: 'fixed' | 'edit'
+  onDone?: () => void
+}) {
   const { t } = useTranslation()
   const tracks = useLoad(() => api.GET('/api/catalog/tracks'), [])
 
   return (
     <div className="forms">
-      <ActionForm
-        title={t('calendar.fixed')}
-        submitLabel={t('common.add')}
-        onSubmit={async (form) => {
-          const { error } = await api.POST('/api/seasons/{season_id}/fixed-rounds', {
-            params: { path: { season_id: season.id } },
-            body: {
-              track_layout_id: Number(form.get('track_layout_id')),
-              number: optionalNumber(form.get('number')),
-              scheduled_at: optionalDate(form.get('scheduled_at')),
-            },
-          })
-          if (!error) onChange()
-          return error
-        }}
-      >
-        <p className="muted">{t('calendar.fixedHelp')}</p>
-        <label>
-          {t('season.layout')}
-          <select name="track_layout_id" required defaultValue="">
-            <option value="" disabled>
-              {t('common.select')}
-            </option>
-            {tracks.data?.map((track) =>
-              track.layouts.map((layout) => (
-                <option key={layout.id} value={layout.id}>
-                  {track.name} · {layout.name}
-                </option>
-              )),
-            )}
-          </select>
-        </label>
-        <div className="field-row">
+      {only !== 'edit' && (
+        <ActionForm
+          title={t('calendar.fixed')}
+          submitLabel={t('common.add')}
+          onDone={onDone}
+          onSubmit={async (form) => {
+            const { error } = await api.POST('/api/seasons/{season_id}/fixed-rounds', {
+              params: { path: { season_id: season.id } },
+              body: {
+                track_layout_id: Number(form.get('track_layout_id')),
+                number: optionalNumber(form.get('number')),
+                scheduled_at: optionalDate(form.get('scheduled_at')),
+              },
+            })
+            if (!error) onChange()
+            return error
+          }}
+        >
+          <p className="muted">{t('calendar.fixedHelp')}</p>
           <label>
-            {t('calendar.position')}
-            <input name="number" type="number" min={1} max={99} />
+            {t('season.layout')}
+            <select name="track_layout_id" required defaultValue="">
+              <option value="" disabled>
+                {t('common.select')}
+              </option>
+              {tracks.data?.map((track) =>
+                track.layouts.map((layout) => (
+                  <option key={layout.id} value={layout.id}>
+                    {track.name} · {layout.name}
+                  </option>
+                )),
+              )}
+            </select>
           </label>
-          <label>
-            {t('calendar.date')}
-            <input name="scheduled_at" type="datetime-local" />
-          </label>
-        </div>
-      </ActionForm>
+          <div className="field-row">
+            <label>
+              {t('calendar.position')}
+              <input name="number" type="number" min={1} max={99} />
+            </label>
+            <label>
+              {t('calendar.date')}
+              <input name="scheduled_at" type="datetime-local" />
+            </label>
+          </div>
+        </ActionForm>
+      )}
 
-      {season.rounds.length > 0 && (
+      {only !== 'fixed' && season.rounds.length > 0 && (
         <ActionForm
           title={t('calendar.edit')}
           submitLabel={t('common.save')}
+          onDone={onDone}
           onSubmit={async (form) => {
             const { error } = await api.PATCH('/api/rounds/{round_id}/calendar', {
               params: { path: { round_id: Number(form.get('round_id')) } },
@@ -106,7 +121,7 @@ export function CalendarAdmin({ season, onChange }: { season: SeasonDetail; onCh
               </option>
               {season.rounds.map((round) => (
                 <option key={round.id} value={round.id}>
-                  R{round.number} · {round.track_name} · {round.layout_name}
+                  {t('season.roundLabel', { number: round.number })} · {round.track_name} · {round.layout_name}
                 </option>
               ))}
             </select>

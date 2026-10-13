@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { signIn } from './helpers'
+import { navLink, signIn } from './helpers'
 
 const LOG_FOLDER = fileURLToPath(
   new URL('../../samples/2026-10-11-ks-highlands/realpenalty/', import.meta.url),
@@ -33,6 +33,8 @@ async function apiPost(page: Page, path: string, data: unknown) {
 
 test('an admin imports a real AC result file and applies it', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'One run is enough. The flow writes data.')
+  // The flow waits for the worker to write the race report, so it needs more than 30 seconds.
+  test.slow()
   await signIn(page)
   const run = Date.now().toString(36)
 
@@ -84,9 +86,12 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
   await expect(page.getByText('Se agregan 20 reinicios antes de la carrera que cuenta.')).toBeVisible()
   await page.getByRole('button', { name: 'Aplicar los logs' }).click()
   await expect(page.getByText('Logs aplicados.')).toBeVisible()
+  // The round page has a tab for each part.
+  await page.getByRole('button', { name: 'Reinicios' }).click()
   await expect(page.getByText('20 reinicios antes de la largada aceptada')).toBeVisible()
 
   // The lap tables mark best laps and show the pit laps from the logs.
+  await page.getByRole('button', { name: 'Vueltas' }).click()
   const laps = page.getByRole('region', { name: 'Vueltas' })
   await expect(laps.getByRole('img', { name: 'Tiempo de vuelta por vuelta' })).toBeVisible()
   await expect(laps.getByText('Teórica').first()).toBeVisible()
@@ -95,10 +100,15 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
   await expect(page.getByRole('table', { name: 'Comparación de las dos vueltas' })).toBeVisible()
 
   // The worker writes the race report. Without an AI key it fails, and the results stay.
+  await page.getByRole('button', { name: 'Reporte' }).click()
+  await page.getByRole('button', { name: 'Generar reporte' }).click()
   await page.getByRole('form', { name: 'Generar reporte' }).getByRole('button', { name: 'Generar' }).click()
   await expect(page.getByText(/Reporte 1 · (Falló|Listo)/)).toBeVisible({ timeout: 30_000 })
+  // The dialog stays open to show the report status. Escape closes it.
+  await page.keyboard.press('Escape')
 
   // The same file again adds nothing.
+  await page.getByRole('button', { name: 'Carrera' }).click()
   await page.getByLabel('Archivo de resultados', { exact: true }).setInputFiles(RACE_FILE)
   await page.getByRole('form', { name: 'Importar archivo de resultados' }).getByRole('button', { name: 'Subir y revisar' }).click()
   await expect(page.getByText('Este archivo ya estaba subido. No se agregó nada.')).toBeVisible()
@@ -114,7 +124,7 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
   await page.goto(`/rounds/${round.id}`)
   await page.getByRole('button', { name: 'Aprobar como oficial' }).click()
   await expect(page.getByText('Oficial', { exact: true })).toBeVisible()
-  await page.getByRole('link', { name: 'Récords' }).click()
+  await navLink(page, 'Récords').click()
   const raceBoard = page.getByRole('article', { name: /Récord de carrera: Highlands · Long · Acura/ })
   await expect(raceBoard).toContainText('3:09.296')
   await expect(raceBoard).toContainText('Driver 01')

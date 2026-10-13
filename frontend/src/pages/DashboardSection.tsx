@@ -19,9 +19,6 @@ type Ballot = components['schemas']['BallotSummary']
 type Conditions = components['schemas']['ConditionsOut']
 type Answer = 'yes' | 'maybe' | 'no'
 
-const MAX_KG = 45
-const MAX_PCT = 5
-
 /** The first thing a driver sees: the next race, what to do, the position, and the last results. */
 export function DashboardSection() {
   const { t } = useTranslation()
@@ -124,7 +121,7 @@ export function DashboardSection() {
                   </span>
                   {card.next_round && (
                     <Link to={`/rounds/${card.next_round.round_id}`}>
-                      R{card.next_round.round_number} · {card.next_round.track_name}
+                      {t('round.title', { number: card.next_round.round_number })} · {card.next_round.track_name}
                     </Link>
                   )}
                 </li>
@@ -169,7 +166,7 @@ function SeasonHome({ card }: { card: Card }) {
       )}
       <div className="home-grid">
         <div>
-          <ToDo card={card} mine={mine} openBallots={openBallots} />
+          <ToDo card={card} openBallots={openBallots} />
           <Recent card={card} />
         </div>
         <div className="home-side">
@@ -220,7 +217,7 @@ function NextRace({
             {t('dashboard.next')}
           </span>
           <span>
-            R{next.round_number} · {card.championship_name} · {card.season_name}
+            {t('round.title', { number: next.round_number })} · {card.championship_name} · {card.season_name}
           </span>
         </p>
         <h2 id="next-race" className="hero-title">
@@ -232,7 +229,7 @@ function NextRace({
             <EventTime iso={next.scheduled_at} eventTimeZone={next.event_timezone} />
           </span>
         </p>
-        {next.scheduled_at && <Countdown iso={next.scheduled_at} />}
+        {next.scheduled_at && <Countdown iso={next.scheduled_at} roundId={next.round_id} />}
         {answered ? (
           <div className="hero-answer" role="status">
             <StatusBadge status={mine === 'yes' ? 'confirmed' : mine === 'maybe' ? 'pending' : 'unknown'}>
@@ -294,7 +291,7 @@ function NextRace({
   )
 }
 
-function Countdown({ iso }: { iso: string }) {
+function Countdown({ iso, roundId }: { iso: string; roundId: number }) {
   const { t } = useTranslation()
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => {
@@ -302,7 +299,14 @@ function Countdown({ iso }: { iso: string }) {
     return () => window.clearInterval(timer)
   }, [])
   const left = new Date(iso).getTime() - now
-  if (left <= 0) return <p className="hero-live">{t('dashboard.started')}</p>
+  if (left <= 0)
+    return (
+      <p className="hero-live">
+        <span className="live-dot" aria-hidden="true" />
+        <b>{t('dashboard.live')}</b>
+        <Link to={`/rounds/${roundId}`}>{t('dashboard.liveLink')}</Link>
+      </p>
+    )
   const minutes = Math.floor(left / 60_000)
   const days = Math.floor(minutes / 1440)
   const hours = Math.floor((minutes % 1440) / 60)
@@ -311,24 +315,23 @@ function Countdown({ iso }: { iso: string }) {
   return (
     <div className="countdown" role="timer" aria-label={label}>
       <div>
-        <b>{days}</b>
+        <FlipValue value={String(days)} />
         <span>{t('dashboard.days', { count: days })}</span>
       </div>
       <div>
-        <b>{hours}</b>
+        <FlipValue value={String(hours)} />
         <span>{t('dashboard.hours', { count: hours })}</span>
       </div>
       <div>
-        <b>{String(mins).padStart(2, '0')}</b>
+        <FlipValue value={String(mins).padStart(2, '0')} />
         <span>{t('dashboard.minutes')}</span>
       </div>
     </div>
   )
 }
 
-function ToDo({ card, mine, openBallots }: { card: Card; mine: string | null; openBallots: Ballot[] }) {
+function ToDo({ card, openBallots }: { card: Card; openBallots: Ballot[] }) {
   const { t, i18n } = useTranslation()
-  const next = card.next_round
   const items: {
     key: string
     urgent: boolean
@@ -339,16 +342,6 @@ function ToDo({ card, mine, openBallots }: { card: Card; mine: string | null; op
     to: string
     action: string
   }[] = []
-  if (next && !mine)
-    items.push({
-      key: 'attend',
-      urgent: true,
-      icon: 'clock',
-      title: t('dashboard.todo.attend', { track: next.track_name }),
-      detail: t('dashboard.attending', { count: next.attending }),
-      to: `/rounds/${next.round_id}`,
-      action: t('dashboard.todo.answer'),
-    })
   for (const ballot of openBallots) {
     const voted = ballot.voted === true
     const closes = ballot.closes_at ? formatDateTime(ballot.closes_at, i18n.language) : null
@@ -407,29 +400,87 @@ function ToDo({ card, mine, openBallots }: { card: Card; mine: string | null; op
   )
 }
 
+type Result = Card['history'][number]
+
+/** "win", "podium", "out" (DNF, DNS, or DSQ), or "" for any other finish. */
+function resultTone(result: Result): string {
+  if (result.status !== 'finished') return 'out'
+  if (result.position === 1) return 'win'
+  if (result.position !== null && result.position <= 3) return 'podium'
+  return ''
+}
+
 function Recent({ card }: { card: Card }) {
   const { t } = useTranslation()
+  const newest = [...card.history].reverse().slice(0, 5)
   return (
     <section aria-labelledby="recent">
       <h2 id="recent">{t('dashboard.recent')}</h2>
-      {card.recent.length === 0 ? (
+      {newest.length === 0 ? (
         <p className="muted">{t('dashboard.noRecent')}</p>
       ) : (
-        <ol className="recent">
-          {card.recent.map((result) => (
-            <li key={result.round_id}>
-              <Link to={`/rounds/${result.round_id}`}>
-                R{result.round_number} · {result.track_name}
-              </Link>
-              <span className="num">
-                {result.position ? `P${result.position}` : result.status.toUpperCase()}
-                {result.status === 'dnf' && result.position ? ' DNF' : ''} · {result.points} pts
-              </span>
-            </li>
-          ))}
-        </ol>
+        <>
+          <Trend history={card.history} entries={card.entries} />
+          <ol className="result-chips">
+            {newest.map((result) => (
+              <li key={result.round_id} className={`result-chip ${resultTone(result)}`.trim()}>
+                <Link to={`/rounds/${result.round_id}`}>
+                  <span className="result-round">
+                    {t('round.title', { number: result.round_number })} · {result.track_name}
+                  </span>
+                  <span className="result-place num">
+                    {result.position ? `P${result.position}` : result.status.toUpperCase()}
+                    {result.status !== 'finished' && result.position ? ` ${result.status.toUpperCase()}` : ''}
+                  </span>
+                  <span className="result-points num">{t('dashboard.points', { count: result.points })}</span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </>
       )}
     </section>
+  )
+}
+
+/** The position in each round as a small line. P1 is at the top. */
+function Trend({ history, entries }: { history: Result[]; entries: number }) {
+  const { t } = useTranslation()
+  const placed = history.filter((r) => r.position !== null)
+  if (placed.length < 2) return null
+  const width = 400
+  const height = 72
+  const pad = 8
+  const left = 34
+  const worst = Math.max(2, entries, ...placed.map((r) => r.position ?? 1))
+  const x = (index: number) => left + (index * (width - left - pad)) / (placed.length - 1)
+  const y = (position: number) => pad + ((position - 1) * (height - 2 * pad)) / (worst - 1)
+  const points = placed.map((r, index) => `${x(index)},${y(r.position ?? worst)}`).join(' ')
+  const label = `${t('dashboard.trend')}: ${placed
+    .map((r) => `${t('round.title', { number: r.round_number })} P${r.position}`)
+    .join(', ')}`
+  return (
+    <svg className="trend" viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label}>
+      <text className="trend-scale" x={0} y={y(1) + 4} aria-hidden="true">
+        {t('dashboard.trendScale', { position: 1 })}
+      </text>
+      <text className="trend-scale" x={0} y={y(worst) + 4} aria-hidden="true">
+        {t('dashboard.trendScale', { position: worst })}
+      </text>
+      <line className="trend-top" x1={left} x2={width - pad} y1={y(1)} y2={y(1)} />
+      <polyline points={points} />
+      {placed.map((r, index) => (
+        <circle
+          key={r.round_id}
+          className={index === placed.length - 1 ? 'last' : undefined}
+          cx={x(index)}
+          cy={y(r.position ?? worst)}
+          r={index === placed.length - 1 ? 4.5 : 3}
+        >
+          <title>{`${t('round.title', { number: r.round_number })} · P${r.position}`}</title>
+        </circle>
+      ))}
+    </svg>
   )
 }
 
@@ -446,10 +497,38 @@ function Standing({ card }: { card: Card }) {
         {card.points} pts · {gap > 0 ? t('dashboard.gap', { count: gap }) : t('dashboard.leader')} ·{' '}
         {t('dashboard.winsCount', { count: card.wins })}
       </p>
+      {card.nearby.length > 1 && (
+        <table className="nearby">
+          <caption className="sr-only">{t('dashboard.nearby')}</caption>
+          <tbody>
+            {card.nearby.map((row) => {
+              const diff = row.points - card.points
+              return (
+                <tr key={row.rank} className={row.me ? 'me-row' : undefined}>
+                  <td className="num">P{row.rank}</td>
+                  <td>{row.me ? t('dashboard.you') : row.name}</td>
+                  <td className="num">{row.points}</td>
+                  <td className="num nearby-gap">{row.me ? '' : diff > 0 ? `+${diff}` : `−${Math.abs(diff)}`}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      )}
       <Link className="small-link" to={`/seasons/${card.season_id}`}>
         {t('dashboard.standings')}
       </Link>
     </section>
+  )
+}
+
+/** A value that flips like a timing board when it changes. */
+function FlipValue({ value }: { value: string }) {
+  // A new key starts the animation again for each new value.
+  return (
+    <b className="flip" key={value}>
+      {value}
+    </b>
   )
 }
 
@@ -462,14 +541,14 @@ function Handicap({ next }: { next: NextRound }) {
         label={t('dashboard.ballast')}
         value={next.ballast_kg}
         previous={next.previous_ballast_kg}
-        max={MAX_KG}
+        max={next.ballast_cap}
         unit="kg"
       />
       <Scale
         label={t('dashboard.restrictor')}
         value={next.restrictor_pct}
         previous={next.previous_restrictor_pct}
-        max={MAX_PCT}
+        max={next.restrictor_cap}
         unit="%"
       />
       <div>

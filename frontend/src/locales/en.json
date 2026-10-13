@@ -57,7 +57,10 @@
     "key": "AC folder",
     "select": "Select an option",
     "close": "Close",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "next": "Next",
+    "back": "Back",
+    "stepOf": "Step {{current}} of {{total}}"
   },
   "championships": {
     "title": "Championships",
@@ -136,7 +139,13 @@
     "addEntry": "Add entry",
     "protestWindow": "Protest window (minutes)",
     "settings": "Season settings",
-    "provisionalNote": "Cells in italics are provisional results."
+    "provisionalNote": "Cells in italics are provisional results.",
+    "download": "Download",
+    "downloads": {
+      "calendar": "Calendar (.ics)",
+      "csv": "{{name}} (CSV)"
+    },
+    "roundLabel": "Round {{number}}"
   },
   "leagues": {
     "title": "Leagues",
@@ -979,7 +988,12 @@
     "remindNow": "Remind the drivers who did not vote",
     "reminded": "Reminder sent.",
     "carClass": "Class",
-    "freeLabel": "Free text (below)"
+    "freeLabel": "Free text (below)",
+    "steps": {
+      "what": "What is voted",
+      "who": "Who sees what, and when",
+      "advanced": "Advanced options"
+    }
   },
   "calendar": {
     "fixed": "Reserve a fixed track",
@@ -999,7 +1013,13 @@
     "feedHelp": "Subscribe to this address in Google Calendar or your phone calendar. It updates with the rounds of your championships. Do not share it.",
     "feedAddress": "Calendar address",
     "newAddress": "Make a new address",
-    "confirmNew": "The old address stops working. Continue?"
+    "confirmNew": "The old address stops working. Continue?",
+    "status": {
+      "done": "Raced",
+      "next": "Next",
+      "later": "Upcoming",
+      "cancelled": "Cancelled"
+    }
   },
   "dashboard": {
     "title": "My paddock",
@@ -1050,13 +1070,11 @@
     "todo": {
       "title": "What to do",
       "none": "Nothing to do.",
-      "attend": "Tell us if you race at {{track}}",
-      "answer": "Answer",
       "vote": "Vote: {{title}}",
       "runoff": "Runoff: {{title}}",
       "voteDetail": "Open ballot",
       "voteAction": "Vote",
-      "report": "New report: R{{round}} · {{track}}",
+      "report": "New report: Round {{round}} · {{track}}",
       "read": "Read",
       "voted": "You voted: {{title}}",
       "closes": "Closes {{date}}",
@@ -1066,8 +1084,8 @@
     "changed": "Before {{previous}} {{unit}} · {{change}} {{unit}}",
     "noConditions": "To be confirmed",
     "noWeather": "No weather data",
-    "air": "air {{value}} °C",
-    "track": "track {{value}} °C",
+    "air": "air {{value}} °C",
+    "track": "track {{value}} °C",
     "outlineAlt": "Map of {{track}} · {{layout}}",
     "noProfileTitle": "You do not race with this account yet",
     "noSeasonsTitle": "You have no season yet",
@@ -1078,7 +1096,15 @@
     "noFreeProfiles": "There is no profile without an account. Make one in Drivers.",
     "noProfileMatch": "No profile matches.",
     "notRacing": "I do not race in this league",
-    "linked": "Your account is now linked to {{name}}."
+    "linked": "Your account is now linked to {{name}}.",
+    "live": "Live",
+    "liveLink": "Open the round",
+    "trend": "Position by round",
+    "nearby": "The drivers near you",
+    "you": "You",
+    "points_one": "{{count}} pt",
+    "points_other": "{{count}} pts",
+    "trendScale": "P{{position}}"
   },
   "briefing": {
     "title": "Briefing",
@@ -1310,7 +1336,13 @@
     "limits": {
       "rules_changed": "The rules changed in the season. The remaining rounds use the current rules.",
       "provisional_results": "Some results are provisional. The math can change."
-    }
+    },
+    "now": "Points now",
+    "max": "Maximum possible",
+    "line": "{{name}} wins the title with {{points}} pts",
+    "ownShort": "In own hands",
+    "helpShort": "Needs help",
+    "barLabel": "{{name}}: {{points}} pts now, maximum possible {{best}}"
   },
   "seasonReport": {
     "title": "Season report",
@@ -1547,7 +1579,8 @@
     },
     "history": "Changes of {{name}}",
     "unknownRound": "no collector events: no change (it does not count as a clean race).",
-    "change": "{{laps}} laps {{up}}, {{points}} points {{down}} = {{total}} → {{after}}"
+    "change": "{{laps}} laps {{up}}, {{points}} points {{down}} = {{total}} → {{after}}",
+    "howItWorks": "How it works"
   },
   "replay": {
     "title": "Position replay",
@@ -1669,7 +1702,8 @@
     "cloneTitle": "Copy to a new season",
     "clone": "Create season",
     "cloneName": "Name of the new season",
-    "cloneHelp": "It copies the entries, the current rules, and the fixed tracks (with no date). It does not copy results."
+    "cloneHelp": "It copies the entries, the current rules, and the fixed tracks (with no date). It does not copy results.",
+    "menu": "Actions for round {{number}}"
   },
   "protestExtras": {
     "addEvidence": "Add evidence",
@@ -1767,7 +1801,14 @@
     "next": "Next round"
   },
   "seasonAdmin": {
-    "calendar": "Manage the calendar",
-    "entries": "Manage drivers and settings"
+    "manage": "Manage"
+  },
+  "rulesCard": {
+    "points": "Points by position",
+    "pole": "Pole",
+    "fastest": "Fastest lap",
+    "ballast": "Ballast",
+    "restrictor": "Restrictor",
+    "steps": "{{steps}} · max. {{cap}}"
   }
 }

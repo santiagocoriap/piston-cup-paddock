@@ -13390,6 +13390,34 @@
         "title": "DashboardOut",
         "type": "object"
       },
+      "NearbyOut": {
+        "properties": {
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "me": {
+            "title": "Me",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "rank",
+          "name",
+          "points",
+          "me"
+        ],
+        "title": "NearbyOut",
+        "type": "object"
+      },
       "NewReportOut": {
         "properties": {
           "round_id": {
@@ -13534,6 +13562,14 @@
               }
             ],
             "title": "Car Image Url"
+          },
+          "ballast_cap": {
+            "title": "Ballast Cap",
+            "type": "integer"
+          },
+          "restrictor_cap": {
+            "title": "Restrictor Cap",
+            "type": "integer"
           }
         },
         "required": [
@@ -13552,7 +13588,9 @@
           "conditions",
           "track_outline_url",
           "track_preview_url",
-          "car_image_url"
+          "car_image_url",
+          "ballast_cap",
+          "restrictor_cap"
         ],
         "title": "NextRoundOut",
         "type": "object"
@@ -13667,6 +13705,20 @@
             },
             "title": "New Reports",
             "type": "array"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/RecentOut"
+            },
+            "title": "History",
+            "type": "array"
+          },
+          "nearby": {
+            "items": {
+              "$ref": "#/components/schemas/NearbyOut"
+            },
+            "title": "Nearby",
+            "type": "array"
           }
         },
         "required": [
@@ -13682,7 +13734,9 @@
           "leader_points",
           "recent",
           "next_round",
-          "new_reports"
+          "new_reports",
+          "history",
+          "nearby"
         ],
         "title": "SeasonCardOut",
         "type": "object"

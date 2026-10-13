@@ -62,6 +62,7 @@ describe('HandicapsSection', () => {
 
   it('sends a manual adjustment with a reason', async () => {
     const calls = show(true, { 'POST /api/seasons/5/handicaps/adjustments': () => json(200, data) })
+    await userEvent.click(await screen.findByRole('button', { name: 'Ajustar lastre y restrictor' }))
     const form = await screen.findByRole('form', { name: 'Ajustar lastre y restrictor' })
     await userEvent.selectOptions(within(form).getByLabelText('Piloto'), '1')
     await userEvent.type(within(form).getByLabelText('Lastre (kg)'), '5')
@@ -72,5 +73,7 @@ describe('HandicapsSection', () => {
     expect(body).toEqual({
       entry_id: 1, round_id: 3, ballast_kg: 5, restrictor_pct: 0, mode: 'temporary', reason: 'Problema con el auto',
     })
+    // The dialog closes after the save.
+    await vi.waitFor(() => expect(screen.queryByRole('form', { name: 'Ajustar lastre y restrictor' })).not.toBeInTheDocument())
   })
 })
