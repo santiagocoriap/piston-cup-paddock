@@ -20,6 +20,7 @@ export function BallotsSection({
   adminView: boolean
 }) {
   const { t } = useTranslation()
+  const tracks = useLoad(() => api.GET('/api/catalog/tracks'), [])
   const path = { season_id: seasonId }
   const ballots = useLoad(() => api.GET('/api/seasons/{season_id}/ballots', { params: { path } }), [seasonId])
   const championship = useLoad(
@@ -58,6 +59,7 @@ export function BallotsSection({
             submitLabel={t('common.create')}
             onSubmit={async (form) => {
               const closes = form.get('closes_at')
+              const opens = form.get('opens_at')
               const runoffs = form.get('max_runoffs')
               const { error } = await api.POST('/api/seasons/{season_id}/ballots', {
                 params: { path },
@@ -71,6 +73,12 @@ export function BallotsSection({
                   choice_visibility: form.get('choice_visibility') as BallotIn['choice_visibility'],
                   allow_vote_changes: form.get('allow_vote_changes') === 'on',
                   closes_at: closes ? localInputToIso(String(closes)) : undefined,
+                  opens_at: opens ? localInputToIso(String(opens)) : undefined,
+                  remind_hours_before: Number(form.get('remind_hours_before') ?? 24),
+                  min_participation_pct: Number(form.get('min_participation_pct') || 0),
+                  low_participation_action: form.get('low_participation_action') as 'admin' | 'count',
+                  show_voter_names: form.get('show_voter_names') === 'on',
+                  excluded_track_ids: form.getAll('excluded_track_ids').map(Number),
                   max_runoffs: runoffs ? Number(runoffs) : undefined,
                   prior_season_id: form.get('prior_season_id') ? Number(form.get('prior_season_id')) : undefined,
                   min_prior_starts: Number(form.get('min_prior_starts') || 0),
@@ -135,9 +143,48 @@ export function BallotsSection({
             <p className="muted">{t('voting.adminNote')}</p>
             <div className="field-row">
               <label>
+                {t('voting.opensLabel')}
+                <input name="opens_at" type="datetime-local" />
+              </label>
+              <label>
                 {t('voting.closesLabel')}
                 <input name="closes_at" type="datetime-local" />
               </label>
+              <label>
+                {t('voting.remindHours')}
+                <input name="remind_hours_before" type="number" min={0} max={168} defaultValue={24} />
+              </label>
+            </div>
+            <div className="field-row">
+              <label>
+                {t('voting.minParticipation')}
+                <input name="min_participation_pct" type="number" min={0} max={100} defaultValue={0} />
+              </label>
+              <label>
+                {t('voting.lowParticipation')}
+                <select name="low_participation_action" defaultValue="admin">
+                  <option value="admin">{t('voting.lowActions.admin')}</option>
+                  <option value="count">{t('voting.lowActions.count')}</option>
+                </select>
+              </label>
+            </div>
+            {kind === 'track' && tracks.data && (
+              <label>
+                {t('voting.excludedTracks')}
+                <select name="excluded_track_ids" multiple size={4}>
+                  {tracks.data.map((track) => (
+                    <option key={track.id} value={track.id}>
+                      {track.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <label className="check">
+              <input type="checkbox" name="show_voter_names" />
+              {t('voting.showVoterNames')}
+            </label>
+            <div className="field-row">
               <label>
                 {t('voting.maxRunoffs')}
                 <input name="max_runoffs" type="number" min={0} max={20} />

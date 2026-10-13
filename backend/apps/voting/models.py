@@ -47,6 +47,21 @@ class Ballot(models.Model):
     )
     allow_vote_changes = models.BooleanField(default=True)
     closes_at = models.DateTimeField(null=True, blank=True)
+    # The worker opens a draft at opens_at and closes an open ballot at closes_at.
+    opens_at = models.DateTimeField(null=True, blank=True)
+    # A reminder to the voters with no vote, this many hours before the close. 0: no reminder.
+    remind_hours_before = models.PositiveSmallIntegerField(default=24)
+    reminded_at = models.DateTimeField(null=True, blank=True)
+    # The share of voters who must vote. 0: no minimum.
+    min_participation_pct = models.PositiveSmallIntegerField(default=0)
+    # "admin": with too few votes the ballot closes with no winner, and an admin decides.
+    # "count": the votes count anyway.
+    low_participation_action = models.CharField(max_length=5, default="admin")
+    low_participation = models.BooleanField(default=False)
+    # True: everybody sees who voted (not what they chose, unless choices are visible).
+    show_voter_names = models.BooleanField(default=False)
+    # Tracks that this ballot does not accept, for example a venue of the last season.
+    excluded_track_ids = models.JSONField(default=list)
     # Eligibility. The app freezes the voter list when the ballot opens.
     eligible_roles = models.JSONField(default=list)  # Championship roles, for example ["driver"].
     prior_season = models.ForeignKey(

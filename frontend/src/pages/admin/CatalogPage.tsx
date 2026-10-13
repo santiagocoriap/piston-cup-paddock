@@ -135,6 +135,7 @@ function GuidanceForm({ layout, onSaved }: { layout: Layout; onSaved: () => void
             body: {
               restart_guidance: String(form.get('restart_guidance') ?? ''),
               first_lap_cutoff: String(form.get('first_lap_cutoff') ?? ''),
+              pit_boxes: form.get('pit_boxes') ? Number(form.get('pit_boxes')) : null,
             },
           })
           if (!error) onSaved()
@@ -144,6 +145,10 @@ function GuidanceForm({ layout, onSaved }: { layout: Layout; onSaved: () => void
         <label>
           {t('catalog.cutoff')}
           <input name="first_lap_cutoff" defaultValue={layout.first_lap_cutoff} maxLength={200} />
+        </label>
+        <label>
+          {t('catalog.pitBoxes')}
+          <input name="pit_boxes" type="number" min={1} max={200} defaultValue={layout.pit_boxes ?? ''} />
         </label>
         <label>
           {t('catalog.restartGuidance')}

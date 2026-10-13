@@ -23,11 +23,13 @@ class LayoutOut(Schema):
     name: str
     restart_guidance: str
     first_lap_cutoff: str
+    pit_boxes: int | None
 
 
 class GuidanceIn(Schema):
     restart_guidance: str = Field("", max_length=2000)
     first_lap_cutoff: str = Field("", max_length=200)
+    pit_boxes: int | None = Field(None, ge=1, le=200)
 
 
 class TrackIn(Schema):
@@ -103,7 +105,8 @@ def set_guidance(request, layout_id: int, payload: GuidanceIn):
     layout = get_object_or_404(TrackLayout, pk=layout_id)
     layout.restart_guidance = payload.restart_guidance
     layout.first_lap_cutoff = payload.first_lap_cutoff
-    layout.save(update_fields=["restart_guidance", "first_lap_cutoff"])
+    layout.pit_boxes = payload.pit_boxes
+    layout.save(update_fields=["restart_guidance", "first_lap_cutoff", "pit_boxes"])
     record(
         request.user,
         "layout.guidance",

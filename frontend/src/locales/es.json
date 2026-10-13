@@ -133,7 +133,8 @@
     "guidance": "Guía de reinicios",
     "guidanceFor": "Guía de reinicios de {{name}}",
     "cutoff": "Límite de la primera vuelta (por ejemplo, curva 3)",
-    "restartGuidance": "Cuándo se reinicia"
+    "restartGuidance": "Cuándo se reinicia",
+    "pitBoxes": "Boxes (cupo de la grilla)"
   },
   "errors": {
     "generic": "Algo salió mal. Intentá de nuevo.",
@@ -238,7 +239,11 @@
     "round_already_cancelled": "La fecha ya está cancelada.",
     "round_not_cancelled": "La fecha no está cancelada.",
     "round_has_result": "La fecha ya tiene resultado: no se puede cambiar la pista.",
-    "same_track": "Es la misma pista."
+    "same_track": "Es la misma pista.",
+    "track_excluded": "Esa pista está excluida de esta votación.",
+    "grid_too_small": "La pista tiene menos boxes que pilotos inscriptos.",
+    "bad_participation": "La participación mínima no es válida.",
+    "opens_after_close": "La votación tiene que abrir antes de cerrar."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -364,7 +369,10 @@
       "round.cancelled": "{{actor}} canceló la fecha {{number}} ({{track}}).",
       "round.restored": "{{actor}} restauró la fecha {{number}} ({{track}}).",
       "round.track_replaced": "{{actor}} cambió la pista de la fecha {{number}}: {{old}} → {{track}}.",
-      "season.cloned": "{{actor}} creó la temporada {{season}} como copia de {{source}}."
+      "season.cloned": "{{actor}} creó la temporada {{season}} como copia de {{source}}.",
+      "ballot.voted": "{{actor}} votó en {{ballot}} ({{season}}).",
+      "ballot.vote_changed": "{{actor}} cambió su voto en {{ballot}} ({{season}}).",
+      "ballot.reminded": "{{actor}} envió el recordatorio de {{ballot}}."
     },
     "fields": {
       "role": "Rol",
@@ -738,7 +746,25 @@
     },
     "votes": "{{count}} votos",
     "multipleShort": "Varias opciones por piloto",
-    "noPrior": "Sin requisito"
+    "noPrior": "Sin requisito",
+    "opensLabel": "Abre automáticamente (opcional)",
+    "opensAt": "Abre el {{date}}",
+    "remindHours": "Recordatorio (horas antes del cierre, 0 = no)",
+    "reminder_one": "Recordatorio {{count}} hora antes del cierre a quien no votó",
+    "reminder_other": "Recordatorio {{count}} horas antes del cierre a quien no votó",
+    "minParticipation": "Participación mínima (%)",
+    "lowParticipation": "Si votan menos",
+    "lowActions": {
+      "admin": "Sin ganador: decide un admin",
+      "count": "Los votos cuentan igual"
+    },
+    "minParticipationRule": "Tiene que votar al menos el {{pct}} % de los votantes.",
+    "lowParticipationHappened": "Votaron muy pocos: la votación cerró sin ganador. Un admin decide.",
+    "excludedTracks": "Pistas que no se pueden votar",
+    "showVoterNames": "Mostrar quién votó (no qué votó)",
+    "votedNames": "Ya votaron: {{names}}",
+    "remindNow": "Recordar ahora a quien no votó",
+    "reminded": "Recordatorio enviado."
   },
   "calendar": {
     "fixed": "Reservar pista fija",
@@ -1330,7 +1356,8 @@
       "protest.decided": "Tu protesta de R{{number}} tiene decisión",
       "ballot.open": "Hay una votación abierta en {{season}}",
       "report.ready.race": "Reporte nuevo: R{{number}} · {{track}}",
-      "report.ready.season": "Reporte nuevo de la temporada {{season}}"
+      "report.ready.season": "Reporte nuevo de la temporada {{season}}",
+      "ballot.reminder": "Recordatorio: todavía no votaste en {{ballot}}"
     }
   },
   "roundTools": {

@@ -19,6 +19,7 @@ from .services import (
     create_ballot,
     decide_manually,
     open_ballot,
+    remind,
     remove_option,
     start_runoff,
     tie,
@@ -44,6 +45,12 @@ class BallotSettingsIn(Schema):
     min_prior_starts: int | None = Field(None, ge=0, le=100)
     max_runoffs: int | None = Field(None, ge=0, le=20)
     power_overrides: dict[str, int] | None = None
+    opens_at: AwareDatetime | None = None
+    remind_hours_before: int | None = Field(None, ge=0, le=168)
+    min_participation_pct: int | None = Field(None, ge=0, le=100)
+    low_participation_action: Literal["admin", "count"] | None = None
+    show_voter_names: bool | None = None
+    excluded_track_ids: list[int] | None = None
 
 
 class BallotIn(BallotSettingsIn):
@@ -129,6 +136,15 @@ class BallotDetail(Schema):
     power_overrides: dict[str, int]  # User ID to power, set before the opening.
     closed_early: bool
     close_reason: str
+    opens_at: datetime | None
+    remind_hours_before: int
+    reminded_at: datetime | None
+    min_participation_pct: int
+    low_participation_action: str
+    low_participation: bool
+    show_voter_names: bool
+    excluded_track_ids: list[int]
+    voted_names: list[str] | None  # Who voted, when the ballot shows names, and for admins.
     parent: BallotLink | None
     runoffs: list[BallotLink]
     can_manage: bool
@@ -225,6 +241,17 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
         ],
         closed_early=ballot.closed_early,
         close_reason=ballot.close_reason,
+        opens_at=ballot.opens_at,
+        remind_hours_before=ballot.remind_hours_before,
+        reminded_at=ballot.reminded_at,
+        min_participation_pct=ballot.min_participation_pct,
+        low_participation_action=ballot.low_participation_action,
+        low_participation=ballot.low_participation,
+        show_voter_names=ballot.show_voter_names,
+        excluded_track_ids=ballot.excluded_track_ids,
+        voted_names=sorted(v.user.username for v in all_voters if v.id in voters_with_votes)
+        if manager or ballot.show_voter_names
+        else None,
         parent=_link(ballot.parent) if ballot.parent else None,
         runoffs=[_link(r) for r in ballot.runoffs.all()],
         can_manage=manager,
@@ -342,6 +369,15 @@ def close(request, ballot_id: int, payload: CloseIn):
     ballot = _ballot(request.user, ballot_id)
     _manager(request.user, ballot)
     _run(lambda: close_ballot(ballot, request.user, reason=payload.reason))
+    ballot.refresh_from_db()
+    return _detail(request.user, ballot)
+
+
+@router.post("/ballots/{ballot_id}/remind", response=BallotDetail)
+def remind_now(request, ballot_id: int):
+    ballot = _ballot(request.user, ballot_id)
+    _manager(request.user, ballot)
+    _run(lambda: remind(ballot, request.user))
     ballot.refresh_from_db()
     return _detail(request.user, ballot)
 

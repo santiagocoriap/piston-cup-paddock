@@ -1165,6 +1165,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/ballots/{ballot_id}/remind": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Remind Now */
+        post: operations["apps_voting_api_remind_now"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/ballots/{ballot_id}/runoff": {
         parameters: {
             query?: never;
@@ -2060,6 +2077,8 @@ export interface components {
             restart_guidance: string;
             /** First Lap Cutoff */
             first_lap_cutoff: string;
+            /** Pit Boxes */
+            pit_boxes: number | null;
         };
         /** TrackOut */
         TrackOut: {
@@ -2127,6 +2146,8 @@ export interface components {
              * @default
              */
             first_lap_cutoff?: string;
+            /** Pit Boxes */
+            pit_boxes?: number | null;
         };
         /** DriverOut */
         DriverOut: {
@@ -3697,6 +3718,24 @@ export interface components {
             closed_early: boolean;
             /** Close Reason */
             close_reason: string;
+            /** Opens At */
+            opens_at: string | null;
+            /** Remind Hours Before */
+            remind_hours_before: number;
+            /** Reminded At */
+            reminded_at: string | null;
+            /** Min Participation Pct */
+            min_participation_pct: number;
+            /** Low Participation Action */
+            low_participation_action: string;
+            /** Low Participation */
+            low_participation: boolean;
+            /** Show Voter Names */
+            show_voter_names: boolean;
+            /** Excluded Track Ids */
+            excluded_track_ids: number[];
+            /** Voted Names */
+            voted_names: string[] | null;
             parent: components["schemas"]["BallotLink"] | null;
             /** Runoffs */
             runoffs: components["schemas"]["BallotLink"][];
@@ -3791,6 +3830,18 @@ export interface components {
             power_overrides?: {
                 [key: string]: number;
             } | null;
+            /** Opens At */
+            opens_at?: string | null;
+            /** Remind Hours Before */
+            remind_hours_before?: number | null;
+            /** Min Participation Pct */
+            min_participation_pct?: number | null;
+            /** Low Participation Action */
+            low_participation_action?: ("admin" | "count") | null;
+            /** Show Voter Names */
+            show_voter_names?: boolean | null;
+            /** Excluded Track Ids */
+            excluded_track_ids?: number[] | null;
             /**
              * Kind
              * @enum {string}
@@ -3839,6 +3890,18 @@ export interface components {
             power_overrides?: {
                 [key: string]: number;
             } | null;
+            /** Opens At */
+            opens_at?: string | null;
+            /** Remind Hours Before */
+            remind_hours_before?: number | null;
+            /** Min Participation Pct */
+            min_participation_pct?: number | null;
+            /** Low Participation Action */
+            low_participation_action?: ("admin" | "count") | null;
+            /** Show Voter Names */
+            show_voter_names?: boolean | null;
+            /** Excluded Track Ids */
+            excluded_track_ids?: number[] | null;
         };
         /** OptionIn */
         OptionIn: {
@@ -6899,6 +6962,28 @@ export interface operations {
                 "application/json": components["schemas"]["CloseIn"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
+                };
+            };
+        };
+    };
+    apps_voting_api_remind_now: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {

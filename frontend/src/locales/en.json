@@ -133,7 +133,8 @@
     "guidance": "Restart guidance",
     "guidanceFor": "Restart guidance for {{name}}",
     "cutoff": "First-lap cutoff (for example, turn 3)",
-    "restartGuidance": "When to restart"
+    "restartGuidance": "When to restart",
+    "pitBoxes": "Pit boxes (grid capacity)"
   },
   "errors": {
     "generic": "Something went wrong. Try again.",
@@ -238,7 +239,11 @@
     "round_already_cancelled": "The round is already cancelled.",
     "round_not_cancelled": "The round is not cancelled.",
     "round_has_result": "The round has a result: the track cannot change.",
-    "same_track": "It is the same track."
+    "same_track": "It is the same track.",
+    "track_excluded": "That track is excluded from this ballot.",
+    "grid_too_small": "The track has fewer pit boxes than drivers.",
+    "bad_participation": "The minimum participation is not valid.",
+    "opens_after_close": "The ballot must open before it closes."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -364,7 +369,10 @@
       "round.cancelled": "{{actor}} cancelled round {{number}} ({{track}}).",
       "round.restored": "{{actor}} restored round {{number}} ({{track}}).",
       "round.track_replaced": "{{actor}} replaced the track of round {{number}}: {{old}} → {{track}}.",
-      "season.cloned": "{{actor}} made season {{season}} as a copy of {{source}}."
+      "season.cloned": "{{actor}} made season {{season}} as a copy of {{source}}.",
+      "ballot.voted": "{{actor}} voted in {{ballot}} ({{season}}).",
+      "ballot.vote_changed": "{{actor}} changed the vote in {{ballot}} ({{season}}).",
+      "ballot.reminded": "{{actor}} sent the reminder for {{ballot}}."
     },
     "fields": {
       "role": "Role",
@@ -738,7 +746,25 @@
     },
     "votes": "{{count}} votes",
     "multipleShort": "Several options for each driver",
-    "noPrior": "No requirement"
+    "noPrior": "No requirement",
+    "opensLabel": "Opens on its own (optional)",
+    "opensAt": "Opens on {{date}}",
+    "remindHours": "Reminder (hours before the close, 0 = none)",
+    "reminder_one": "Reminder {{count}} hour before the close to drivers who did not vote",
+    "reminder_other": "Reminder {{count}} hours before the close to drivers who did not vote",
+    "minParticipation": "Minimum participation (%)",
+    "lowParticipation": "With fewer votes",
+    "lowActions": {
+      "admin": "No winner: an admin decides",
+      "count": "The votes count anyway"
+    },
+    "minParticipationRule": "At least {{pct}} % of the voters must vote.",
+    "lowParticipationHappened": "Too few voters voted: the ballot closed with no winner. An admin decides.",
+    "excludedTracks": "Tracks that cannot be chosen",
+    "showVoterNames": "Show who voted (not what they chose)",
+    "votedNames": "Voted: {{names}}",
+    "remindNow": "Remind the drivers who did not vote",
+    "reminded": "Reminder sent."
   },
   "calendar": {
     "fixed": "Reserve a fixed track",
@@ -1330,7 +1356,8 @@
       "protest.decided": "Your protest in R{{number}} has a decision",
       "ballot.open": "A ballot is open in {{season}}",
       "report.ready.race": "New report: R{{number}} · {{track}}",
-      "report.ready.season": "New season report: {{season}}"
+      "report.ready.season": "New season report: {{season}}",
+      "ballot.reminder": "Reminder: you did not vote in {{ballot}} yet"
     }
   },
   "roundTools": {

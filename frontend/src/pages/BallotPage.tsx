@@ -47,7 +47,23 @@ export function BallotPage() {
           {t(`voting.choices.${data.choice_visibility}`)} {t('voting.adminNote')}
         </li>
         <li>{data.allow_vote_changes ? t('voting.allowChanges') : t('voting.noChanges')}</li>
+        {data.opens_at && data.status === 'draft' && (
+          <li>{t('voting.opensAt', { date: formatDateTime(data.opens_at, i18n.language) })}</li>
+        )}
         {data.closes_at && <li>{t('voting.closesAt', { date: formatDateTime(data.closes_at, i18n.language) })}</li>}
+        {data.remind_hours_before > 0 && data.closes_at && (
+          <li>{t('voting.reminder', { count: data.remind_hours_before })}</li>
+        )}
+        {data.min_participation_pct > 0 && (
+          <li>
+            {t('voting.minParticipationRule', { pct: data.min_participation_pct })}{' '}
+            {t(`voting.lowActions.${data.low_participation_action}`)}
+          </li>
+        )}
+        {data.low_participation && <li className="warning">{t('voting.lowParticipationHappened')}</li>}
+        {data.voted_names && data.voted_names.length > 0 && (
+          <li>{t('voting.votedNames', { names: data.voted_names.join(', ') })}</li>
+        )}
         {data.power_exceptions.length > 0 && (
           <li>
             {t('voting.powerExceptions', {
@@ -196,6 +212,19 @@ function AdminPanel({ ballot, onChange }: { ballot: Ballot; onChange: () => void
       {error && (
         <p role="alert" className="error">
           {error}
+        </p>
+      )}
+
+      {ballot.status === 'open' && (
+        <p>
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => act(() => api.POST('/api/ballots/{ballot_id}/remind', { params: { path } }))}
+          >
+            {t('voting.remindNow')}
+          </button>
+          {ballot.reminded_at && <span className="muted"> {t('voting.reminded')}</span>}
         </p>
       )}
 

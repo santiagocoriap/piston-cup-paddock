@@ -76,3 +76,24 @@ describe('BallotPage', () => {
     expect(screen.queryByRole('button', { name: 'Votar' })).not.toBeInTheDocument()
   })
 })
+
+describe('BallotPage extras', () => {
+  it('shows the participation rule, the voters, and the reminder button', async () => {
+    const data = ballot({
+      can_manage: true, status: 'open', closes_at: '2026-10-20T22:00:00Z', remind_hours_before: 24,
+      min_participation_pct: 75, low_participation_action: 'admin', voted_names: ['v1', 'v2'],
+    })
+    const calls = mockApi({
+      'GET /api/ballots/7': () => json(200, data),
+      'POST /api/ballots/7/remind': () => json(200, { ...data, reminded_at: '2026-10-19T22:00:00Z' }),
+      'GET /api/catalog/tracks': () => json(200, []),
+      'GET /api/users': () => json(200, []),
+    })
+    show(ADMIN)
+    expect(await screen.findByText(/Tiene que votar al menos el 75 %/)).toBeInTheDocument()
+    expect(screen.getByText('Ya votaron: v1, v2')).toBeInTheDocument()
+    expect(screen.getByText(/Recordatorio 24 horas antes del cierre/)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Recordar ahora a quien no votó' }))
+    await vi.waitFor(() => expect(calls.some((c) => c.key === 'POST /api/ballots/7/remind')).toBe(true))
+  })
+})

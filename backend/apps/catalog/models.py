@@ -23,6 +23,8 @@ class TrackLayout(models.Model):
     # The league guidance for a first-lap restart on this layout, for the briefing.
     restart_guidance = models.TextField(blank=True)
     first_lap_cutoff = models.CharField(max_length=200, blank=True)
+    # The number of pit boxes. A track ballot refuses a layout with fewer boxes than drivers.
+    pit_boxes = models.PositiveSmallIntegerField(null=True, blank=True)
 
     class Meta:
         ordering = ["track__name", "name"]

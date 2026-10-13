@@ -1,5 +1,8 @@
 """Season ballots for tracks and car classes."""
 
+import logging
+from datetime import timedelta
+
 from django.db import transaction
 from django.db.models import Count
 from django.utils import timezone
@@ -15,6 +18,9 @@ from .models import Ballot, BallotOption, BallotVoter, Vote
 from .tally import decide
 
 DEFAULT_ROLES = [ChampionshipMember.Role.DRIVER, ChampionshipMember.Role.ADMIN]
+
+
+log = logging.getLogger(__name__)
 
 
 class BallotError(ValueError):
@@ -55,6 +61,12 @@ SETTINGS = (
     "min_prior_starts",
     "max_runoffs",
     "power_overrides",
+    "opens_at",
+    "remind_hours_before",
+    "min_participation_pct",
+    "low_participation_action",
+    "show_voter_names",
+    "excluded_track_ids",
 )
 
 
@@ -69,6 +81,10 @@ def _check_settings(ballot: Ballot) -> None:
     if ballot.method == Ballot.Method.SINGLE:
         ballot.selection_limit = 1
     _require(all(int(power) >= 0 for power in ballot.power_overrides.values()), "bad_power")
+    _require(ballot.min_participation_pct <= 100, "bad_participation")
+    _require(ballot.low_participation_action in ("admin", "count"), "bad_participation")
+    if ballot.opens_at and ballot.closes_at:
+        _require(ballot.opens_at < ballot.closes_at, "opens_after_close")
     if not ballot.eligible_roles:
         ballot.eligible_roles = list(DEFAULT_ROLES)
 
@@ -112,6 +128,9 @@ def add_option(ballot: Ballot, user, *, label: str = "", layout_id: int | None =
         _require(layout is not None, "layout_required")
         repeats = ballot.season.allow_repeat_layouts
         _require(repeats or layout.id not in fixed_layout_ids(ballot.season), "layout_is_fixed")
+        _require(layout.track_id not in set(ballot.excluded_track_ids), "track_excluded")
+        drivers = ballot.season.entries.count()
+        _require(layout.pit_boxes is None or layout.pit_boxes >= drivers, "grid_too_small")
         label = label or str(layout)
     _require(bool(label.strip()), "label_required")
     _require(not ballot.options.filter(label=label).exists(), "option_exists")
@@ -211,6 +230,15 @@ def cast_vote(ballot: Ballot, user, option_ids: list[int]) -> None:
     with transaction.atomic():
         voter.votes.all().delete()
         Vote.objects.bulk_create(Vote(voter=voter, option=option) for option in options)
+        visible = ballot.choice_visibility == Ballot.ChoiceVisibility.VISIBLE
+        _audit(
+            user,
+            "ballot.vote_changed" if already else "ballot.voted",
+            ballot,
+            changes=[change("choices", None, ", ".join(o.label for o in options))]
+            if visible
+            else [],
+        )
 
 
 def totals(ballot: Ballot) -> dict[int, int]:
@@ -228,28 +256,92 @@ def _select(options, source: str) -> None:
         option.save(update_fields=["selected", "selected_by"])
 
 
-def close_ballot(ballot: Ballot, user, *, reason: str = "") -> Ballot:
+def close_ballot(ballot: Ballot, user, *, reason: str = "", now=None) -> Ballot:
     """Close the vote and count it. A tie at the cut waits for a runoff or an admin choice."""
     _require(ballot.status == Ballot.State.OPEN, "ballot_not_open")
-    early = ballot.closes_at is not None and timezone.now() < ballot.closes_at
+    now = now or timezone.now()
+    early = ballot.closes_at is not None and now < ballot.closes_at
     _require(not early or bool(reason.strip()), "reason_required")
     outcome = decide(totals(ballot), ballot.slots)
+    low = _low_participation(ballot)
     with transaction.atomic():
         ballot.status = Ballot.State.CLOSED
-        ballot.closed_at = timezone.now()
+        ballot.closed_at = now
         ballot.closed_early = early
         ballot.close_reason = reason
-        ballot.save(update_fields=["status", "closed_at", "closed_early", "close_reason"])
-        _select(ballot.options.filter(id__in=outcome.winners), BallotOption.Source.VOTE)
+        ballot.low_participation = low
+        ballot.save(
+            update_fields=[
+                "status",
+                "closed_at",
+                "closed_early",
+                "close_reason",
+                "low_participation",
+            ]
+        )
         _audit(user, "ballot.closed", ballot, reason=reason)
+        if low:
+            return ballot  # Too few votes: no winner. An admin decides.
+        _select(ballot.options.filter(id__in=outcome.winners), BallotOption.Source.VOTE)
         if not outcome.tied:
             _finish(ballot, user)
     return ballot
 
 
+def _low_participation(ballot: Ballot) -> bool:
+    if not ballot.min_participation_pct or ballot.low_participation_action != "admin":
+        return False
+    voted, voters = voted_counts(ballot)
+    return voters > 0 and voted * 100 < ballot.min_participation_pct * voters
+
+
+def voters_without_vote(ballot: Ballot) -> list[int]:
+    voted = set(Vote.objects.filter(voter__ballot=ballot).values_list("voter_id", flat=True))
+    return [v.user_id for v in ballot.voters.filter(power__gt=0) if v.id not in voted]
+
+
+def remind(ballot: Ballot, user=None) -> int:
+    """Remind the voters with no vote. Gives the count."""
+    from apps.community.services import notify
+
+    _require(ballot.status == Ballot.State.OPEN, "ballot_not_open")
+    count = notify(
+        voters_without_vote(ballot),
+        "ballot.reminder",
+        {"season": ballot.season.name, "ballot": ballot.title},
+        f"/ballots/{ballot.id}",
+    )
+    ballot.reminded_at = timezone.now()
+    ballot.save(update_fields=["reminded_at"])
+    _audit(user, "ballot.reminded", ballot, changes=[change("reminded", None, count)])
+    return count
+
+
+def run_schedule(now=None) -> dict[str, int]:
+    """Open, remind, and close ballots on time. The worker runs this every minute."""
+    now = now or timezone.now()
+    done = {"opened": 0, "reminded": 0, "closed": 0}
+    for ballot in Ballot.objects.filter(status=Ballot.State.DRAFT, opens_at__lte=now):
+        try:
+            open_ballot(ballot, None)
+            done["opened"] += 1
+        except BallotError as error:
+            log.warning("Ballot %s did not open: %s", ballot.id, error.code)
+    for ballot in Ballot.objects.filter(
+        status=Ballot.State.OPEN, reminded_at__isnull=True, closes_at__isnull=False
+    ).exclude(remind_hours_before=0):
+        if now >= ballot.closes_at - timedelta(hours=ballot.remind_hours_before):
+            remind(ballot)
+            done["reminded"] += 1
+    for ballot in Ballot.objects.filter(status=Ballot.State.OPEN, closes_at__lte=now):
+        close_ballot(ballot, None, now=now)
+        done["closed"] += 1
+    return done
+
+
 def tie(ballot: Ballot) -> tuple[list[BallotOption], int]:
     """The tied options and the slots that they compete for, for a closed ballot."""
-    if ballot.status != Ballot.State.CLOSED:
+    if ballot.status != Ballot.State.CLOSED or ballot.low_participation:
         return [], 0
     outcome = decide(totals(ballot), ballot.slots)
     return list(ballot.options.filter(id__in=outcome.tied)), outcome.open_slots

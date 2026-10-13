@@ -3351,6 +3351,43 @@
         ]
       }
     },
+    "/api/ballots/{ballot_id}/remind": {
+      "post": {
+        "operationId": "apps_voting_api_remind_now",
+        "summary": "Remind Now",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "voting"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/ballots/{ballot_id}/runoff": {
       "post": {
         "operationId": "apps_voting_api_runoff",
@@ -5594,6 +5631,17 @@
           "first_lap_cutoff": {
             "title": "First Lap Cutoff",
             "type": "string"
+          },
+          "pit_boxes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pit Boxes"
           }
         },
         "required": [
@@ -5601,7 +5649,8 @@
           "key",
           "name",
           "restart_guidance",
-          "first_lap_cutoff"
+          "first_lap_cutoff",
+          "pit_boxes"
         ],
         "title": "LayoutOut",
         "type": "object"
@@ -5750,6 +5799,19 @@
             "maxLength": 200,
             "title": "First Lap Cutoff",
             "type": "string"
+          },
+          "pit_boxes": {
+            "anyOf": [
+              {
+                "maximum": 200,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pit Boxes"
           }
         },
         "title": "GuidanceIn",
@@ -10457,6 +10519,71 @@
             "title": "Close Reason",
             "type": "string"
           },
+          "opens_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Opens At"
+          },
+          "remind_hours_before": {
+            "title": "Remind Hours Before",
+            "type": "integer"
+          },
+          "reminded_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reminded At"
+          },
+          "min_participation_pct": {
+            "title": "Min Participation Pct",
+            "type": "integer"
+          },
+          "low_participation_action": {
+            "title": "Low Participation Action",
+            "type": "string"
+          },
+          "low_participation": {
+            "title": "Low Participation",
+            "type": "boolean"
+          },
+          "show_voter_names": {
+            "title": "Show Voter Names",
+            "type": "boolean"
+          },
+          "excluded_track_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Excluded Track Ids",
+            "type": "array"
+          },
+          "voted_names": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voted Names"
+          },
           "parent": {
             "anyOf": [
               {
@@ -10564,6 +10691,15 @@
           "power_overrides",
           "closed_early",
           "close_reason",
+          "opens_at",
+          "remind_hours_before",
+          "reminded_at",
+          "min_participation_pct",
+          "low_participation_action",
+          "low_participation",
+          "show_voter_names",
+          "excluded_track_ids",
+          "voted_names",
           "parent",
           "runoffs",
           "can_manage",
@@ -10867,6 +11003,84 @@
             ],
             "title": "Power Overrides"
           },
+          "opens_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Opens At"
+          },
+          "remind_hours_before": {
+            "anyOf": [
+              {
+                "maximum": 168,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remind Hours Before"
+          },
+          "min_participation_pct": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Participation Pct"
+          },
+          "low_participation_action": {
+            "anyOf": [
+              {
+                "enum": [
+                  "admin",
+                  "count"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Low Participation Action"
+          },
+          "show_voter_names": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Show Voter Names"
+          },
+          "excluded_track_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Excluded Track Ids"
+          },
           "kind": {
             "enum": [
               "track",
@@ -11066,6 +11280,84 @@
               }
             ],
             "title": "Power Overrides"
+          },
+          "opens_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Opens At"
+          },
+          "remind_hours_before": {
+            "anyOf": [
+              {
+                "maximum": 168,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remind Hours Before"
+          },
+          "min_participation_pct": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Participation Pct"
+          },
+          "low_participation_action": {
+            "anyOf": [
+              {
+                "enum": [
+                  "admin",
+                  "count"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Low Participation Action"
+          },
+          "show_voter_names": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Show Voter Names"
+          },
+          "excluded_track_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Excluded Track Ids"
           }
         },
         "title": "BallotSettingsIn",
