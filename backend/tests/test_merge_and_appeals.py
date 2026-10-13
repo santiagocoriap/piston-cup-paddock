@@ -8,7 +8,6 @@ from apps.competition.models import ChampionshipMember, Round, Season, SeasonEnt
 from apps.identity.models import CareerAdjustment, DriverProfile
 from apps.results.models import Protest
 
-
 MP4 = b"\x00\x00\x00\x18ftypmp42" + b"0" * 100
 SVG = b'<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'
 
