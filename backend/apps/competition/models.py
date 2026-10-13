@@ -129,6 +129,9 @@ class Round(models.Model):
     # What the admin announces before the race: time of day, weather, temperatures, grip, notes.
     # The observed conditions can differ and never replace these values.
     announced_conditions = models.JSONField(default=dict, blank=True)
+    # A cancelled round gives no points and does not change handicaps (docs/LEAGUE_RULES.md).
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+    cancel_reason = models.TextField(blank=True)
 
     class Meta:
         ordering = ["number"]
@@ -186,3 +189,22 @@ class Attempt(models.Model):
 
     def __str__(self):
         return f"{self.session} attempt {self.number}"
+
+
+class RoundTrackChange(models.Model):
+    """A replaced track of a calendar round. The old track and the reason stay here."""
+
+    round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name="track_changes")
+    old_layout = models.ForeignKey(TrackLayout, on_delete=models.PROTECT, related_name="+")
+    new_layout = models.ForeignKey(TrackLayout, on_delete=models.PROTECT, related_name="+")
+    reason = models.TextField()
+    changed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    changed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["changed_at", "id"]
+
+    def __str__(self):
+        return f"{self.round}: {self.old_layout} -> {self.new_layout}"

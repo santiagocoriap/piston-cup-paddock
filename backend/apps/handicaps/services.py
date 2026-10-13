@@ -63,7 +63,8 @@ def season_handicaps(season: Season, *, before_round: Round | None = None) -> Se
     the drivers carry into that round.
     """
     rules = RulesVersion.current_for(season).as_handicap_rules()
-    rounds = list(season.rounds.order_by("number"))
+    # A cancelled round does not change handicaps. The next round takes the same values.
+    rounds = list(season.rounds.filter(cancelled_at__isnull=True).order_by("number"))
     results = {
         r.round_id: r
         for r in RaceResult.objects.filter(round__season=season, current_version__isnull=False)

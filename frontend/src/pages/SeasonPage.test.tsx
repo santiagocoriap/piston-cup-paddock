@@ -25,7 +25,7 @@ function season(canManage: boolean) {
         track_name: 'Highlands',
         layout_name: 'Long',
         scheduled_at: '2026-10-19T00:30:00Z',
-        origin: 'manual',
+        origin: 'manual', cancelled: false, cancel_reason: '', track_changes: [],
       },
     ],
   }
@@ -59,6 +59,20 @@ describe('SeasonPage', () => {
     expect(link).toHaveAttribute('href', '/rounds/9')
     expect(link.closest('tr')).toHaveTextContent('Manual')
     expect(screen.getByText('MSR')).toBeInTheDocument()
+  })
+
+  it('shows a cancelled round and a replaced track', async () => {
+    const data = season(false)
+    Object.assign(data.rounds[0], {
+      cancelled: true, cancel_reason: 'Servidor caído',
+      track_changes: [{ old_layout: 'Spa · GP', new_layout: 'Highlands · Long', reason: 'Mod roto', changed_by: 'santi', changed_at: '2026-10-01T10:00:00Z' }],
+    })
+    mockApi({ 'GET /api/seasons/5': () => json(200, data), ...standings })
+    show(DRIVER)
+    const link = await screen.findByRole('link', { name: 'Highlands · Long' })
+    expect(link.closest('tr')).toHaveTextContent('Cancelada')
+    expect(link.closest('tr')).toHaveTextContent('Antes: Spa · GP (Mod roto)')
+    expect(screen.queryByRole('button', { name: 'Cancelar fecha' })).not.toBeInTheDocument()
   })
 
   it('shows the standings with the points of each driver', async () => {

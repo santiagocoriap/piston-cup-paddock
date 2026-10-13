@@ -3,6 +3,7 @@ from typing import Literal
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from ninja import Field, Router, Schema, Status
 from ninja.errors import HttpError
 from pydantic import AwareDatetime
@@ -21,6 +22,7 @@ from .models import (
     ChampionshipRole,
     League,
     Round,
+    RoundTrackChange,
     Season,
     SeasonEntry,
 )
@@ -157,6 +159,26 @@ class RoundIn(Schema):
     number: int | None = Field(None, ge=1, le=99)
 
 
+class TrackChangeOut(Schema):
+    old_layout: str
+    new_layout: str
+    reason: str
+    changed_by: str | None
+    changed_at: AwareDatetime
+
+
+class ReasonIn(Schema):
+    reason: str = Field(min_length=1, max_length=500)
+
+
+class ReplaceTrackIn(ReasonIn):
+    track_layout_id: int
+
+
+class CloneIn(Schema):
+    name: str = Field(min_length=1, max_length=100)
+
+
 class RoundOut(Schema):
     id: int
     number: int
@@ -165,6 +187,9 @@ class RoundOut(Schema):
     layout_name: str
     scheduled_at: AwareDatetime | None
     origin: str
+    cancelled: bool
+    cancel_reason: str
+    track_changes: list[TrackChangeOut]
 
 
 class SeasonDetail(SeasonSummary):
@@ -228,6 +253,20 @@ def _round_out(round_: Round) -> RoundOut:
         layout_name=round_.track_layout.name,
         scheduled_at=round_.scheduled_at,
         origin=round_.origin,
+        cancelled=round_.cancelled_at is not None,
+        cancel_reason=round_.cancel_reason,
+        track_changes=[
+            TrackChangeOut(
+                old_layout=str(c.old_layout),
+                new_layout=str(c.new_layout),
+                reason=c.reason,
+                changed_by=c.changed_by.username if c.changed_by else None,
+                changed_at=c.changed_at,
+            )
+            for c in round_.track_changes.select_related(
+                "old_layout__track", "new_layout__track", "changed_by"
+            )
+        ],
     )
 
 
@@ -645,3 +684,159 @@ def update_round(request, round_id: int, payload: RoundPatchIn):
         )
     round_.refresh_from_db()
     return _round_out(round_)
+
+
+def _managed_round(user, round_id: int) -> Round:
+    round_ = get_object_or_404(
+        Round.objects.select_related("season__championship", "track_layout__track"), pk=round_id
+    )
+    if not can_view(user, round_.season.championship):
+        raise Http404
+    require(can_manage(user, round_.season.championship))
+    return round_
+
+
+def _round_params(round_: Round) -> dict:
+    return {
+        "season": round_.season.name,
+        "number": round_.number,
+        "track": str(round_.track_layout),
+    }
+
+
+@router.post("/rounds/{round_id}/cancel", response=RoundOut)
+def cancel_round(request, round_id: int, payload: ReasonIn):
+    round_ = _managed_round(request.user, round_id)
+    if round_.cancelled_at is not None:
+        raise HttpError(422, "round_already_cancelled")
+    with transaction.atomic():
+        round_.cancelled_at = timezone.now()
+        round_.cancel_reason = payload.reason
+        round_.save(update_fields=["cancelled_at", "cancel_reason"])
+        record(
+            request.user,
+            "round.cancelled",
+            "round",
+            round_.id,
+            championship=round_.season.championship,
+            params=_round_params(round_),
+            reason=payload.reason,
+        )
+    return _round_out(round_)
+
+
+@router.post("/rounds/{round_id}/restore", response=RoundOut)
+def restore_round(request, round_id: int, payload: ReasonIn):
+    round_ = _managed_round(request.user, round_id)
+    if round_.cancelled_at is None:
+        raise HttpError(422, "round_not_cancelled")
+    with transaction.atomic():
+        round_.cancelled_at = None
+        round_.cancel_reason = ""
+        round_.save(update_fields=["cancelled_at", "cancel_reason"])
+        record(
+            request.user,
+            "round.restored",
+            "round",
+            round_.id,
+            championship=round_.season.championship,
+            params=_round_params(round_),
+            reason=payload.reason,
+        )
+    return _round_out(round_)
+
+
+@router.post("/rounds/{round_id}/replace-track", response=RoundOut)
+def replace_track(request, round_id: int, payload: ReplaceTrackIn):
+    """Put another track on a calendar round. A round with a result keeps its track."""
+    round_ = _managed_round(request.user, round_id)
+    if hasattr(round_, "result"):
+        raise HttpError(422, "round_has_result")
+    layout = get_object_or_404(
+        TrackLayout.objects.select_related("track"), pk=payload.track_layout_id
+    )
+    if layout.id == round_.track_layout_id:
+        raise HttpError(422, "same_track")
+    old = round_.track_layout
+    with transaction.atomic():
+        RoundTrackChange.objects.create(
+            round=round_,
+            old_layout=old,
+            new_layout=layout,
+            reason=payload.reason,
+            changed_by=request.user,
+        )
+        round_.track_layout = layout
+        round_.save(update_fields=["track_layout"])
+        record(
+            request.user,
+            "round.track_replaced",
+            "round",
+            round_.id,
+            championship=round_.season.championship,
+            params={**_round_params(round_), "old": str(old)},
+            changes=[change("track", str(old), str(layout))],
+            reason=payload.reason,
+        )
+    return _round_out(round_)
+
+
+@router.post("/seasons/{season_id}/clone", response={201: SeasonSummary})
+def clone_season(request, season_id: int, payload: CloneIn):
+    """A new season with the entries, the current rules, and the fixed tracks of this one.
+    The fixed rounds keep their number and track, with no date."""
+    source = _visible_season(request.user, season_id)
+    require(can_manage(request.user, source.championship))
+    rules = RulesVersion.current_for(source)
+    with conflict_on_duplicate("season_exists"), transaction.atomic():
+        season = Season.objects.create(
+            championship=source.championship,
+            name=payload.name,
+            planned_round_count=source.planned_round_count,
+            protest_window_minutes=source.protest_window_minutes,
+            allow_repeat_layouts=source.allow_repeat_layouts,
+        )
+        RulesVersion.objects.create(
+            season=season,
+            number=1,
+            reason=f"Copy of {source.name}",
+            created_by=request.user,
+            **{
+                name: getattr(rules, name)
+                for name in (
+                    "points_by_position",
+                    "pole_bonus",
+                    "fastest_lap_bonus",
+                    "ballast_steps",
+                    "restrictor_steps",
+                    "ballast_cap",
+                    "restrictor_cap",
+                    "ballast_reduction",
+                    "restrictor_reduction",
+                )
+            },
+        )
+        SeasonEntry.objects.bulk_create(
+            SeasonEntry(
+                season=season, driver_id=e.driver_id, car_id=e.car_id, number=e.number, team=e.team
+            )
+            for e in source.entries.all()
+        )
+        Round.objects.bulk_create(
+            Round(
+                season=season,
+                number=r.number,
+                track_layout_id=r.track_layout_id,
+                origin=Round.Origin.FIXED,
+            )
+            for r in source.rounds.filter(origin=Round.Origin.FIXED)
+        )
+        record(
+            request.user,
+            "season.cloned",
+            "season",
+            season.id,
+            championship=source.championship,
+            params={"season": season.name, "source": source.name},
+        )
+    return Status(201, _season_summary(season))

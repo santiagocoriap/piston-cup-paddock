@@ -1350,6 +1350,196 @@
         ]
       }
     },
+    "/api/rounds/{round_id}/cancel": {
+      "post": {
+        "operationId": "apps_competition_api_cancel_round",
+        "summary": "Cancel Round",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReasonIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/restore": {
+      "post": {
+        "operationId": "apps_competition_api_restore_round",
+        "summary": "Restore Round",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReasonIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/replace-track": {
+      "post": {
+        "operationId": "apps_competition_api_replace_track",
+        "summary": "Replace Track",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Put another track on a calendar round. A round with a result keeps its track.",
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplaceTrackIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seasons/{season_id}/clone": {
+      "post": {
+        "operationId": "apps_competition_api_clone_season",
+        "summary": "Clone Season",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonSummary"
+                }
+              }
+            }
+          }
+        },
+        "description": "A new season with the entries, the current rules, and the fixed tracks of this one.\nThe fixed rounds keep their number and track, with no date.",
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloneIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/rounds/{round_id}": {
       "get": {
         "operationId": "apps_results_api_get_round",
@@ -6136,6 +6326,21 @@
           "origin": {
             "title": "Origin",
             "type": "string"
+          },
+          "cancelled": {
+            "title": "Cancelled",
+            "type": "boolean"
+          },
+          "cancel_reason": {
+            "title": "Cancel Reason",
+            "type": "string"
+          },
+          "track_changes": {
+            "items": {
+              "$ref": "#/components/schemas/TrackChangeOut"
+            },
+            "title": "Track Changes",
+            "type": "array"
           }
         },
         "required": [
@@ -6145,7 +6350,10 @@
           "track_name",
           "layout_name",
           "scheduled_at",
-          "origin"
+          "origin",
+          "cancelled",
+          "cancel_reason",
+          "track_changes"
         ],
         "title": "RoundOut",
         "type": "object"
@@ -6222,6 +6430,47 @@
           "rounds"
         ],
         "title": "SeasonDetail",
+        "type": "object"
+      },
+      "TrackChangeOut": {
+        "properties": {
+          "old_layout": {
+            "title": "Old Layout",
+            "type": "string"
+          },
+          "new_layout": {
+            "title": "New Layout",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "changed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changed By"
+          },
+          "changed_at": {
+            "format": "date-time",
+            "title": "Changed At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "old_layout",
+          "new_layout",
+          "reason",
+          "changed_by",
+          "changed_at"
+        ],
+        "title": "TrackChangeOut",
         "type": "object"
       },
       "EntryIn": {
@@ -6450,6 +6699,56 @@
           }
         },
         "title": "RoundPatchIn",
+        "type": "object"
+      },
+      "ReasonIn": {
+        "properties": {
+          "reason": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "ReasonIn",
+        "type": "object"
+      },
+      "ReplaceTrackIn": {
+        "properties": {
+          "reason": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          },
+          "track_layout_id": {
+            "title": "Track Layout Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "reason",
+          "track_layout_id"
+        ],
+        "title": "ReplaceTrackIn",
+        "type": "object"
+      },
+      "CloneIn": {
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "CloneIn",
         "type": "object"
       },
       "BriefingOut": {

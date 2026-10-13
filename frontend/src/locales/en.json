@@ -234,7 +234,11 @@
     "incident_not_found": "That incident does not exist.",
     "rules_value_out_of_range": "A value is out of range (0 to 200).",
     "not_in_season": "You are not in this season.",
-    "round_started": "The round already started."
+    "round_started": "The round already started.",
+    "round_already_cancelled": "The round is already cancelled.",
+    "round_not_cancelled": "The round is not cancelled.",
+    "round_has_result": "The round has a result: the track cannot change.",
+    "same_track": "It is the same track."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -356,7 +360,11 @@
       "layout.guidance": "{{actor}} changed the restart guidance of {{name}}.",
       "record.manual_added": "{{actor}} added a historical record of {{driver}} at {{track}}.",
       "record.manual_verified": "{{actor}} verified the historical record of {{driver}} at {{track}}.",
-      "record.manual_removed": "{{actor}} removed the historical record of {{driver}} at {{track}}."
+      "record.manual_removed": "{{actor}} removed the historical record of {{driver}} at {{track}}.",
+      "round.cancelled": "{{actor}} cancelled round {{number}} ({{track}}).",
+      "round.restored": "{{actor}} restored round {{number}} ({{track}}).",
+      "round.track_replaced": "{{actor}} replaced the track of round {{number}}: {{old}} → {{track}}.",
+      "season.cloned": "{{actor}} made season {{season}} as a copy of {{source}}."
     },
     "fields": {
       "role": "Role",
@@ -1324,5 +1332,22 @@
       "report.ready.race": "New report: R{{number}} · {{track}}",
       "report.ready.season": "New season report: {{season}}"
     }
+  },
+  "roundTools": {
+    "actions": "Actions",
+    "cancel": "Cancel round",
+    "restore": "Restore round",
+    "cancelReason": "Why is the round cancelled?",
+    "restoreReason": "Why is the round restored?",
+    "cancelled": "Cancelled",
+    "replace": "Replace track",
+    "replaceTitle": "Replace the track of round {{number}}",
+    "newTrack": "New track",
+    "reason": "Reason",
+    "changed": "Before: {{old}} ({{reason}})",
+    "cloneTitle": "Copy to a new season",
+    "clone": "Create season",
+    "cloneName": "Name of the new season",
+    "cloneHelp": "It copies the entries, the current rules, and the fixed tracks (with no date). It does not copy results."
   }
 }

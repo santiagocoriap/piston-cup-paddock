@@ -492,6 +492,81 @@ export interface paths {
         patch: operations["apps_competition_api_update_round"];
         trace?: never;
     };
+    "/api/rounds/{round_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Round */
+        post: operations["apps_competition_api_cancel_round"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Round */
+        post: operations["apps_competition_api_restore_round"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/replace-track": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Replace Track
+         * @description Put another track on a calendar round. A round with a result keeps its track.
+         */
+        post: operations["apps_competition_api_replace_track"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seasons/{season_id}/clone": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Clone Season
+         * @description A new season with the entries, the current rules, and the fixed tracks of this one.
+         *     The fixed rounds keep their number and track, with no date.
+         */
+        post: operations["apps_competition_api_clone_season"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/rounds/{round_id}": {
         parameters: {
             query?: never;
@@ -2255,6 +2330,12 @@ export interface components {
             scheduled_at: string | null;
             /** Origin */
             origin: string;
+            /** Cancelled */
+            cancelled: boolean;
+            /** Cancel Reason */
+            cancel_reason: string;
+            /** Track Changes */
+            track_changes: components["schemas"]["TrackChangeOut"][];
         };
         /** SeasonDetail */
         SeasonDetail: {
@@ -2282,6 +2363,22 @@ export interface components {
             entries: components["schemas"]["EntryOut"][];
             /** Rounds */
             rounds: components["schemas"]["RoundOut"][];
+        };
+        /** TrackChangeOut */
+        TrackChangeOut: {
+            /** Old Layout */
+            old_layout: string;
+            /** New Layout */
+            new_layout: string;
+            /** Reason */
+            reason: string;
+            /** Changed By */
+            changed_by: string | null;
+            /**
+             * Changed At
+             * Format: date-time
+             */
+            changed_at: string;
         };
         /** EntryIn */
         EntryIn: {
@@ -2359,6 +2456,23 @@ export interface components {
             /** Scheduled At */
             scheduled_at?: string | null;
             announced_conditions?: components["schemas"]["ConditionsIn"] | null;
+        };
+        /** ReasonIn */
+        ReasonIn: {
+            /** Reason */
+            reason: string;
+        };
+        /** ReplaceTrackIn */
+        ReplaceTrackIn: {
+            /** Reason */
+            reason: string;
+            /** Track Layout Id */
+            track_layout_id: number;
+        };
+        /** CloneIn */
+        CloneIn: {
+            /** Name */
+            name: string;
         };
         /** BriefingOut */
         BriefingOut: {
@@ -5734,6 +5848,110 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoundOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_cancel_round: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_restore_round: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_replace_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplaceTrackIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_clone_season: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CloneIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonSummary"];
                 };
             };
         };

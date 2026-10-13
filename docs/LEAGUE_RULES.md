@@ -116,3 +116,13 @@ The league agreed to these rules on 2026-10-12 (rules version `safety-1`).
 - Career points are the official points of a driver in all seasons and championships. They do not reset at the end of a season.
 - Career level = 1 + (career points ÷ 100), rounded down. For example, 250 points give level 3.
 - An admin can add or take away career points, or reset the count to zero, with a reason. The race history does not change.
+
+## Cancelled rounds
+
+The league agreed to this rule on 2026-10-12.
+
+- An admin cancels a round with a reason. A cancelled round gives no points to anyone, and its result does not count in the standings.
+- A cancelled round does not change ballast or restrictor. The next round uses the same values.
+- A cancelled round counts as a played round for the title math, so it is not a remaining round.
+- An admin can restore a cancelled round with a reason. Its result then counts again.
+- A cancelled qualifying session gives no pole bonus: the admin enters the result with no pole.

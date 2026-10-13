@@ -953,3 +953,9 @@ td.faster {
   max-height: 70vh;
   overflow-y: auto;
 }
+
+tr.cancelled-round td:first-child,
+tr.cancelled-round td:nth-child(2) a {
+  text-decoration: line-through;
+  color: var(--muted);
+}

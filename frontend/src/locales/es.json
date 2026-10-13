@@ -234,7 +234,11 @@
     "incident_not_found": "Ese incidente no existe.",
     "rules_value_out_of_range": "Un valor está fuera de rango (0 a 200).",
     "not_in_season": "No estás inscripto en esta temporada.",
-    "round_started": "La fecha ya empezó."
+    "round_started": "La fecha ya empezó.",
+    "round_already_cancelled": "La fecha ya está cancelada.",
+    "round_not_cancelled": "La fecha no está cancelada.",
+    "round_has_result": "La fecha ya tiene resultado: no se puede cambiar la pista.",
+    "same_track": "Es la misma pista."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -356,7 +360,11 @@
       "layout.guidance": "{{actor}} cambió la guía de reinicios de {{name}}.",
       "record.manual_added": "{{actor}} agregó un récord histórico de {{driver}} en {{track}}.",
       "record.manual_verified": "{{actor}} verificó el récord histórico de {{driver}} en {{track}}.",
-      "record.manual_removed": "{{actor}} borró el récord histórico de {{driver}} en {{track}}."
+      "record.manual_removed": "{{actor}} borró el récord histórico de {{driver}} en {{track}}.",
+      "round.cancelled": "{{actor}} canceló la fecha {{number}} ({{track}}).",
+      "round.restored": "{{actor}} restauró la fecha {{number}} ({{track}}).",
+      "round.track_replaced": "{{actor}} cambió la pista de la fecha {{number}}: {{old}} → {{track}}.",
+      "season.cloned": "{{actor}} creó la temporada {{season}} como copia de {{source}}."
     },
     "fields": {
       "role": "Rol",
@@ -1324,5 +1332,22 @@
       "report.ready.race": "Reporte nuevo: R{{number}} · {{track}}",
       "report.ready.season": "Reporte nuevo de la temporada {{season}}"
     }
+  },
+  "roundTools": {
+    "actions": "Acciones",
+    "cancel": "Cancelar fecha",
+    "restore": "Restaurar fecha",
+    "cancelReason": "¿Por qué se cancela la fecha?",
+    "restoreReason": "¿Por qué se restaura la fecha?",
+    "cancelled": "Cancelada",
+    "replace": "Cambiar pista",
+    "replaceTitle": "Cambiar la pista de la fecha {{number}}",
+    "newTrack": "Pista nueva",
+    "reason": "Motivo",
+    "changed": "Antes: {{old}} ({{reason}})",
+    "cloneTitle": "Copiar a una temporada nueva",
+    "clone": "Crear temporada",
+    "cloneName": "Nombre de la temporada nueva",
+    "cloneHelp": "Copia los pilotos inscriptos, el reglamento actual y las pistas fijas (sin fecha). No copia resultados."
   }
 }

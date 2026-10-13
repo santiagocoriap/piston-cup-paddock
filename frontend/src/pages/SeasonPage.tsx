@@ -9,6 +9,7 @@ import { useAdminView } from '../session'
 import { BallotsSection } from './BallotsSection'
 import { CalendarAdmin } from './CalendarAdmin'
 import { ReportSection } from './ReportSection'
+import { CloneSeasonForm, RoundTools } from './RoundTools'
 import { RulesSection } from './RulesSection'
 import { SafetySection } from './SafetySection'
 import { TitleSection } from './TitleSection'
@@ -123,16 +124,27 @@ export function SeasonPage() {
                 <th scope="col">{t('season.track')}</th>
                 <th scope="col">{t('season.date')}</th>
                 <th scope="col">{t('season.origin')}</th>
+                {adminView && <th scope="col">{t('roundTools.actions')}</th>}
               </tr>
             </thead>
             <tbody>
               {data.rounds.map((round) => (
-                <tr key={round.id}>
+                <tr key={round.id} className={round.cancelled ? 'cancelled-round' : undefined}>
                   <td>{round.number}</td>
                   <td>
                     <Link to={`/rounds/${round.id}`}>
                       {round.track_name} · {round.layout_name}
                     </Link>
+                    {round.cancelled && (
+                      <span className="badge" title={round.cancel_reason}>
+                        {t('roundTools.cancelled')}
+                      </span>
+                    )}
+                    {round.track_changes.map((change, index) => (
+                      <div key={index} className="muted">
+                        {t('roundTools.changed', { old: change.old_layout, reason: change.reason })}
+                      </div>
+                    ))}
                   </td>
                   <td>
                     {round.scheduled_at
@@ -142,6 +154,11 @@ export function SeasonPage() {
                   <td>
                     <span className="badge">{t(`season.origins.${round.origin}`)}</span>
                   </td>
+                  {adminView && (
+                    <td>
+                      <RoundTools round={round} onChange={season.reload} />
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -150,6 +167,7 @@ export function SeasonPage() {
       )}
 
       {adminView && <CalendarAdmin season={data} onChange={season.reload} />}
+      {adminView && <CloneSeasonForm seasonId={seasonId} />}
 
       <BallotsSection seasonId={seasonId} championshipId={data.championship_id} adminView={adminView} />
 

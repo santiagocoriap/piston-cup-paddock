@@ -413,8 +413,10 @@ def season_standings(
 ) -> list[SeasonStanding]:
     """The standings from the current version of each round result. With up_to_round, only
     the rounds with that number or lower count. With official_only, only official results."""
-    rounds = season.rounds.order_by("number")
-    lines = current_lines(version__result__round__season=season)
+    rounds = season.rounds.filter(cancelled_at__isnull=True).order_by("number")
+    lines = current_lines(
+        version__result__round__season=season, version__result__round__cancelled_at__isnull=True
+    )
     if official_only:
         lines = lines.filter(version__result__status=State.OFFICIAL)
     if up_to_round is not None:
@@ -464,7 +466,8 @@ def title_scenarios(season: Season) -> SeasonTitle:
     """Who can still win the title, with the rules of the standings and the current rules."""
     table = season_standings(season)
     done = {score.round_number for row in table for score in row.rounds if score.status is not None}
-    remaining = max(season.planned_round_count - len(done), 0)
+    cancelled = season.rounds.filter(cancelled_at__isnull=False).count()
+    remaining = max(season.planned_round_count - len(done) - cancelled, 0)
     contenders = [
         Contender(
             row.entry_id,
