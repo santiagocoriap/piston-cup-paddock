@@ -16,6 +16,7 @@ from apps.rules.scoring import (
     Line,
     PenaltyKind,
     PenaltyRule,
+    PointsRules,
     ResultError,
     Status,
     has_times,
@@ -469,3 +470,93 @@ def career_points(driver_ids: list[int]) -> dict[int, int]:
     totals = {driver_id: 0 for driver_id in driver_ids}
     totals.update({row["entry__driver_id"]: row["total"] for row in rows})
     return totals
+
+
+# Rules changes
+
+
+@dataclass
+class PreviewRow:
+    entry_id: int
+    current_rank: int
+    current_points: int
+    new_rank: int
+    new_points: int
+
+
+def preview_rules(season: Season, rules: PointsRules) -> list[PreviewRow]:
+    """The standings with other points rules, next to the current standings. The same entered
+    lines and penalties give the new points, so the preview changes nothing."""
+    results = RaceResult.objects.filter(
+        round__season=season, current_version__isnull=False
+    ).select_related("current_version")
+    races = []
+    for result in results:
+        final, points = penalized_points(
+            entered_lines(result.current_version), penalty_rules(result), rules
+        )
+        races.append((final, points))
+    new = {
+        row.entry_id: row for row in standings(season.entries.values_list("id", flat=True), races)
+    }
+    return [
+        PreviewRow(
+            row.entry_id, row.rank, row.points, new[row.entry_id].rank, new[row.entry_id].points
+        )
+        for row in season_standings(season)
+    ]
+
+
+def change_rules(
+    season: Season, user, fields: dict, reason: str, recalculate: bool
+) -> RulesVersion:
+    """Save a new rules version. With recalculate, every result of the season gets a new
+    version with the new rules. Without it, only later results use them."""
+    current = RulesVersion.current_for(season)
+    with transaction.atomic():
+        version = RulesVersion.objects.create(
+            season=season,
+            number=current.number + 1,
+            reason=reason,
+            recalculated=recalculate,
+            created_by=user,
+            **fields,
+        )
+        changes = [
+            change(name, getattr(current, name), value)
+            for name, value in fields.items()
+            if getattr(current, name) != value
+        ]
+        record(
+            user,
+            "rules.changed",
+            "season",
+            season.id,
+            championship=season.championship,
+            params={"season": season.name, "version": version.number},
+            changes=changes,
+            reason=reason,
+        )
+        if recalculate:
+            for result in RaceResult.objects.filter(
+                round__season=season, current_version__isnull=False
+            ).select_related("round", "current_version"):
+                before = result.current_version
+                after = _write_version(
+                    result,
+                    entered_lines(before),
+                    ResultVersion.Kind.CORRECTION,
+                    user,
+                    f"Rules version {version.number}: {reason}",
+                )
+                record(
+                    user,
+                    "result.recalculated",
+                    "round",
+                    result.round_id,
+                    championship=season.championship,
+                    params={**_audit_params(result.round), "version": version.number},
+                    changes=_changes(result.round, before, after),
+                    reason=reason,
+                )
+    return version

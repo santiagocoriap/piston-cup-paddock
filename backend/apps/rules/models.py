@@ -21,6 +21,9 @@ class RulesVersion(models.Model):
     restrictor_cap = models.PositiveSmallIntegerField(default=5)
     ballast_reduction = models.PositiveSmallIntegerField(default=3)
     restrictor_reduction = models.PositiveSmallIntegerField(default=1)
+    reason = models.TextField(blank=True)
+    # True: the version also wrote new versions of the earlier results of the season.
+    recalculated = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL

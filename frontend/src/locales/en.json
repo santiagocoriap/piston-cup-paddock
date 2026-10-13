@@ -226,7 +226,8 @@
     "no_driver_profile": "Your account has no driver.",
     "lap_not_in_session": "That lap is not in this session.",
     "report_not_failed": "That report did not fail.",
-    "incident_not_found": "That incident does not exist."
+    "incident_not_found": "That incident does not exist.",
+    "rules_value_out_of_range": "A value is out of range (0 to 200)."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -333,7 +334,9 @@
       "collector.revoked": "{{actor}} revoked the collector {{name}}.",
       "collector.file_assigned": "{{actor}} assigned {{filename}} to round {{number}}.",
       "report.retried": "{{actor}} retried report {{report}} of {{season}}.",
-      "incident.reviewed": "{{actor}} reviewed incident {{incident}} of round {{number}}: {{outcome}}."
+      "incident.reviewed": "{{actor}} reviewed incident {{incident}} of round {{number}}: {{outcome}}.",
+      "rules.changed": "{{actor}} made rules version {{version}} of {{season}}.",
+      "result.recalculated": "{{actor}} recalculated round {{number}} ({{track}}) with rules version {{version}}."
     },
     "fields": {
       "role": "Role",
@@ -1170,5 +1173,34 @@
     "incident": "Incident: {{cars}}",
     "restart": "Race restart",
     "gap": "No data at this moment: {{names}}."
+  },
+  "rulesEditor": {
+    "title": "Rules",
+    "summary": "Version {{number}}: points {{points}}, pole {{pole}}, fastest lap {{fastest}}. Ballast {{ballast}} kg (max {{ballastCap}}), restrictor {{restrictor}} % (max {{restrictorCap}}).",
+    "history_one": "History ({{count}} earlier version)",
+    "history_other": "History ({{count}} earlier versions)",
+    "version": "Version {{number}}",
+    "recalculated": "recalculated the earlier results",
+    "futureOnly": "only for the next rounds",
+    "edit": "Change the rules",
+    "points": "Points by position (comma separated)",
+    "pole": "Pole bonus",
+    "fastestLap": "Fastest lap bonus",
+    "ballastSteps": "Ballast steps in kg (comma separated)",
+    "ballastCap": "Maximum ballast (kg)",
+    "ballastReduction": "Ballast reduction (kg)",
+    "restrictorSteps": "Restrictor steps in % (comma separated)",
+    "restrictorCap": "Maximum restrictor (%)",
+    "restrictorReduction": "Restrictor reduction (%)",
+    "reason": "Reason for the change",
+    "recalculateLabel": "Also recalculate the earlier results",
+    "recalculateHelp": "Not checked: the new rules apply from the next round. Checked: each result of the season gets a new version with these rules.",
+    "confirmRecalculate": "This changes the points of every round of the season. Continue?",
+    "preview": "Preview the standings",
+    "save": "Save new version",
+    "saved": "Rules saved.",
+    "previewTable": "Standings with the new rules",
+    "now": "Now",
+    "withNew": "With the new rules"
   }
 }

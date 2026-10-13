@@ -1627,6 +1627,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/seasons/{season_id}/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Rules */
+        get: operations["apps_rules_api_get_rules"];
+        put?: never;
+        /** Change */
+        post: operations["apps_rules_api_change"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seasons/{season_id}/rules/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Preview */
+        post: operations["apps_rules_api_preview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4126,6 +4161,129 @@ export interface components {
             cars: components["schemas"]["CarTrackOut"][];
             /** Markers */
             markers: components["schemas"]["MarkerOut"][];
+        };
+        /** RulesVersionOut */
+        RulesVersionOut: {
+            /** Points By Position */
+            points_by_position: number[];
+            /**
+             * Pole Bonus
+             * @default 0
+             */
+            pole_bonus?: number;
+            /**
+             * Fastest Lap Bonus
+             * @default 0
+             */
+            fastest_lap_bonus?: number;
+            /** Ballast Steps */
+            ballast_steps: number[];
+            /** Restrictor Steps */
+            restrictor_steps: number[];
+            /** Ballast Cap */
+            ballast_cap: number;
+            /** Restrictor Cap */
+            restrictor_cap: number;
+            /** Ballast Reduction */
+            ballast_reduction: number;
+            /** Restrictor Reduction */
+            restrictor_reduction: number;
+            /** Number */
+            number: number;
+            /** Reason */
+            reason: string;
+            /** Recalculated */
+            recalculated: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By */
+            created_by: string | null;
+        };
+        /** SeasonRulesOut */
+        SeasonRulesOut: {
+            /** Can Edit */
+            can_edit: boolean;
+            /** Versions */
+            versions: components["schemas"]["RulesVersionOut"][];
+        };
+        /** RulesChangeIn */
+        RulesChangeIn: {
+            /** Points By Position */
+            points_by_position: number[];
+            /**
+             * Pole Bonus
+             * @default 0
+             */
+            pole_bonus?: number;
+            /**
+             * Fastest Lap Bonus
+             * @default 0
+             */
+            fastest_lap_bonus?: number;
+            /** Ballast Steps */
+            ballast_steps: number[];
+            /** Restrictor Steps */
+            restrictor_steps: number[];
+            /** Ballast Cap */
+            ballast_cap: number;
+            /** Restrictor Cap */
+            restrictor_cap: number;
+            /** Ballast Reduction */
+            ballast_reduction: number;
+            /** Restrictor Reduction */
+            restrictor_reduction: number;
+            /** Reason */
+            reason: string;
+            /**
+             * Recalculate
+             * @default false
+             */
+            recalculate?: boolean;
+        };
+        /** PreviewRowOut */
+        PreviewRowOut: {
+            /** Entry Id */
+            entry_id: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Current Rank */
+            current_rank: number;
+            /** Current Points */
+            current_points: number;
+            /** New Rank */
+            new_rank: number;
+            /** New Points */
+            new_points: number;
+        };
+        /** RulesFields */
+        RulesFields: {
+            /** Points By Position */
+            points_by_position: number[];
+            /**
+             * Pole Bonus
+             * @default 0
+             */
+            pole_bonus?: number;
+            /**
+             * Fastest Lap Bonus
+             * @default 0
+             */
+            fastest_lap_bonus?: number;
+            /** Ballast Steps */
+            ballast_steps: number[];
+            /** Restrictor Steps */
+            restrictor_steps: number[];
+            /** Ballast Cap */
+            ballast_cap: number;
+            /** Restrictor Cap */
+            restrictor_cap: number;
+            /** Ballast Reduction */
+            ballast_reduction: number;
+            /** Restrictor Reduction */
+            restrictor_reduction: number;
         };
     };
     responses: never;
@@ -6759,6 +6917,80 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReplayOut"];
+                };
+            };
+        };
+    };
+    apps_rules_api_get_rules: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonRulesOut"];
+                };
+            };
+        };
+    };
+    apps_rules_api_change: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RulesChangeIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonRulesOut"];
+                };
+            };
+        };
+    };
+    apps_rules_api_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RulesFields"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviewRowOut"][];
                 };
             };
         };

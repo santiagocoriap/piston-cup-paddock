@@ -21,6 +21,7 @@ from apps.records.api import router as records_router
 from apps.reports.api import router as reports_router
 from apps.restarts.api import router as restarts_router
 from apps.results.api import router as results_router
+from apps.rules.api import router as rules_router
 from apps.telemetry.api import router as telemetry_router
 from apps.voting.api import router as voting_router
 
@@ -48,3 +49,4 @@ api.add_router("/", health_router)
 api.add_router("/", incidents_router)
 api.add_router("/", safety_router)
 api.add_router("/", replay_router)
+api.add_router("/", rules_router)

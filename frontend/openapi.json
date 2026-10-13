@@ -4467,6 +4467,139 @@
           }
         ]
       }
+    },
+    "/api/seasons/{season_id}/rules": {
+      "get": {
+        "operationId": "apps_rules_api_get_rules",
+        "summary": "Get Rules",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonRulesOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "rules"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_rules_api_change",
+        "summary": "Change",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonRulesOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "rules"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RulesChangeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seasons/{season_id}/rules/preview": {
+      "post": {
+        "operationId": "apps_rules_api_preview",
+        "summary": "Preview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PreviewRowOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "rules"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RulesFields"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -11986,6 +12119,344 @@
           "markers"
         ],
         "title": "ReplayOut",
+        "type": "object"
+      },
+      "RulesVersionOut": {
+        "properties": {
+          "points_by_position": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Points By Position",
+            "type": "array"
+          },
+          "pole_bonus": {
+            "default": 0,
+            "maximum": 50,
+            "minimum": 0,
+            "title": "Pole Bonus",
+            "type": "integer"
+          },
+          "fastest_lap_bonus": {
+            "default": 0,
+            "maximum": 50,
+            "minimum": 0,
+            "title": "Fastest Lap Bonus",
+            "type": "integer"
+          },
+          "ballast_steps": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 20,
+            "title": "Ballast Steps",
+            "type": "array"
+          },
+          "restrictor_steps": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 20,
+            "title": "Restrictor Steps",
+            "type": "array"
+          },
+          "ballast_cap": {
+            "maximum": 200,
+            "minimum": 0,
+            "title": "Ballast Cap",
+            "type": "integer"
+          },
+          "restrictor_cap": {
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Restrictor Cap",
+            "type": "integer"
+          },
+          "ballast_reduction": {
+            "maximum": 200,
+            "minimum": 0,
+            "title": "Ballast Reduction",
+            "type": "integer"
+          },
+          "restrictor_reduction": {
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Restrictor Reduction",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "recalculated": {
+            "title": "Recalculated",
+            "type": "boolean"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By"
+          }
+        },
+        "required": [
+          "points_by_position",
+          "ballast_steps",
+          "restrictor_steps",
+          "ballast_cap",
+          "restrictor_cap",
+          "ballast_reduction",
+          "restrictor_reduction",
+          "number",
+          "reason",
+          "recalculated",
+          "created_at",
+          "created_by"
+        ],
+        "title": "RulesVersionOut",
+        "type": "object"
+      },
+      "SeasonRulesOut": {
+        "properties": {
+          "can_edit": {
+            "title": "Can Edit",
+            "type": "boolean"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/RulesVersionOut"
+            },
+            "title": "Versions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "can_edit",
+          "versions"
+        ],
+        "title": "SeasonRulesOut",
+        "type": "object"
+      },
+      "RulesChangeIn": {
+        "properties": {
+          "points_by_position": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Points By Position",
+            "type": "array"
+          },
+          "pole_bonus": {
+            "default": 0,
+            "maximum": 50,
+            "minimum": 0,
+            "title": "Pole Bonus",
+            "type": "integer"
+          },
+          "fastest_lap_bonus": {
+            "default": 0,
+            "maximum": 50,
+            "minimum": 0,
+            "title": "Fastest Lap Bonus",
+            "type": "integer"
+          },
+          "ballast_steps": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 20,
+            "title": "Ballast Steps",
+            "type": "array"
+          },
+          "restrictor_steps": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 20,
+            "title": "Restrictor Steps",
+            "type": "array"
+          },
+          "ballast_cap": {
+            "maximum": 200,
+            "minimum": 0,
+            "title": "Ballast Cap",
+            "type": "integer"
+          },
+          "restrictor_cap": {
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Restrictor Cap",
+            "type": "integer"
+          },
+          "ballast_reduction": {
+            "maximum": 200,
+            "minimum": 0,
+            "title": "Ballast Reduction",
+            "type": "integer"
+          },
+          "restrictor_reduction": {
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Restrictor Reduction",
+            "type": "integer"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          },
+          "recalculate": {
+            "default": false,
+            "title": "Recalculate",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "points_by_position",
+          "ballast_steps",
+          "restrictor_steps",
+          "ballast_cap",
+          "restrictor_cap",
+          "ballast_reduction",
+          "restrictor_reduction",
+          "reason"
+        ],
+        "title": "RulesChangeIn",
+        "type": "object"
+      },
+      "PreviewRowOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "current_rank": {
+            "title": "Current Rank",
+            "type": "integer"
+          },
+          "current_points": {
+            "title": "Current Points",
+            "type": "integer"
+          },
+          "new_rank": {
+            "title": "New Rank",
+            "type": "integer"
+          },
+          "new_points": {
+            "title": "New Points",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "entry_id",
+          "driver_name",
+          "current_rank",
+          "current_points",
+          "new_rank",
+          "new_points"
+        ],
+        "title": "PreviewRowOut",
+        "type": "object"
+      },
+      "RulesFields": {
+        "properties": {
+          "points_by_position": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Points By Position",
+            "type": "array"
+          },
+          "pole_bonus": {
+            "default": 0,
+            "maximum": 50,
+            "minimum": 0,
+            "title": "Pole Bonus",
+            "type": "integer"
+          },
+          "fastest_lap_bonus": {
+            "default": 0,
+            "maximum": 50,
+            "minimum": 0,
+            "title": "Fastest Lap Bonus",
+            "type": "integer"
+          },
+          "ballast_steps": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 20,
+            "title": "Ballast Steps",
+            "type": "array"
+          },
+          "restrictor_steps": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 20,
+            "title": "Restrictor Steps",
+            "type": "array"
+          },
+          "ballast_cap": {
+            "maximum": 200,
+            "minimum": 0,
+            "title": "Ballast Cap",
+            "type": "integer"
+          },
+          "restrictor_cap": {
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Restrictor Cap",
+            "type": "integer"
+          },
+          "ballast_reduction": {
+            "maximum": 200,
+            "minimum": 0,
+            "title": "Ballast Reduction",
+            "type": "integer"
+          },
+          "restrictor_reduction": {
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Restrictor Reduction",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "points_by_position",
+          "ballast_steps",
+          "restrictor_steps",
+          "ballast_cap",
+          "restrictor_cap",
+          "ballast_reduction",
+          "restrictor_reduction"
+        ],
+        "title": "RulesFields",
         "type": "object"
       }
     },

@@ -226,7 +226,8 @@
     "no_driver_profile": "Tu cuenta no tiene piloto.",
     "lap_not_in_session": "Esa vuelta no es de esta sesión.",
     "report_not_failed": "Ese reporte no falló.",
-    "incident_not_found": "Ese incidente no existe."
+    "incident_not_found": "Ese incidente no existe.",
+    "rules_value_out_of_range": "Un valor está fuera de rango (0 a 200)."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -333,7 +334,9 @@
       "collector.revoked": "{{actor}} desactivó el colector {{name}}.",
       "collector.file_assigned": "{{actor}} asignó {{filename}} a la fecha {{number}}.",
       "report.retried": "{{actor}} reintentó el reporte {{report}} de {{season}}.",
-      "incident.reviewed": "{{actor}} revisó el incidente {{incident}} de la fecha {{number}}: {{outcome}}."
+      "incident.reviewed": "{{actor}} revisó el incidente {{incident}} de la fecha {{number}}: {{outcome}}.",
+      "rules.changed": "{{actor}} creó la versión {{version}} del reglamento de {{season}}.",
+      "result.recalculated": "{{actor}} recalculó la fecha {{number}} ({{track}}) con el reglamento {{version}}."
     },
     "fields": {
       "role": "Rol",
@@ -1170,5 +1173,34 @@
     "incident": "Incidente: {{cars}}",
     "restart": "Reinicio de la carrera",
     "gap": "Sin datos en este momento: {{names}}."
+  },
+  "rulesEditor": {
+    "title": "Reglamento",
+    "summary": "Versión {{number}}: puntos {{points}}, pole {{pole}}, vuelta rápida {{fastest}}. Lastre {{ballast}} kg (máx. {{ballastCap}}), restrictor {{restrictor}} % (máx. {{restrictorCap}}).",
+    "history_one": "Historial ({{count}} versión anterior)",
+    "history_other": "Historial ({{count}} versiones anteriores)",
+    "version": "Versión {{number}}",
+    "recalculated": "recalculó los resultados anteriores",
+    "futureOnly": "solo para las fechas siguientes",
+    "edit": "Cambiar el reglamento",
+    "points": "Puntos por posición (separados por coma)",
+    "pole": "Bonus por pole",
+    "fastestLap": "Bonus por vuelta rápida",
+    "ballastSteps": "Pasos de lastre en kg (separados por coma)",
+    "ballastCap": "Lastre máximo (kg)",
+    "ballastReduction": "Reducción de lastre (kg)",
+    "restrictorSteps": "Pasos de restrictor en % (separados por coma)",
+    "restrictorCap": "Restrictor máximo (%)",
+    "restrictorReduction": "Reducción de restrictor (%)",
+    "reason": "Motivo del cambio",
+    "recalculateLabel": "Recalcular también los resultados anteriores",
+    "recalculateHelp": "Sin marcar: las reglas nuevas valen desde la próxima fecha. Marcado: cada resultado de la temporada recibe una versión nueva con estas reglas.",
+    "confirmRecalculate": "Esto cambia los puntos de todas las fechas de la temporada. ¿Seguro?",
+    "preview": "Ver cómo queda la tabla",
+    "save": "Guardar versión nueva",
+    "saved": "Reglamento guardado.",
+    "previewTable": "Tabla con el reglamento nuevo",
+    "now": "Ahora",
+    "withNew": "Con el reglamento nuevo"
   }
 }
