@@ -9,6 +9,10 @@ from apps.identity.models import CareerAdjustment, DriverProfile
 from apps.results.models import Protest
 
 
+MP4 = b"\x00\x00\x00\x18ftypmp42" + b"0" * 100
+SVG = b'<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'
+
+
 @pytest.fixture(autouse=True)
 def media(tmp_path, settings):
     settings.MEDIA_ROOT = tmp_path
@@ -99,10 +103,21 @@ def test_author_adds_a_link_and_a_clip(api, protest_setup):
         f"/api/protests/{protest.id}/evidence", {"url": "https://youtu.be/abc"}
     ).json()
     assert data["protests"][0]["evidence"][0]["url"] == "https://youtu.be/abc"
-    clip = SimpleUploadedFile("t1.mp4", b"0" * 100, content_type="video/mp4")
+    clip = SimpleUploadedFile("t1.mp4", MP4, content_type="video/mp4")
     data = client.client.post(f"/api/protests/{protest.id}/evidence", {"file": clip}).json()
     evidence_id = data["protests"][0]["evidence"][1]["id"]
-    assert client.client.get(f"/api/protest-evidence/{evidence_id}").status_code == 200
+    served = client.client.get(f"/api/protest-evidence/{evidence_id}")
+    assert served.status_code == 200
+    assert served["Content-Type"] == "video/mp4"
+    assert served["X-Content-Type-Options"] == "nosniff"
+    assert "sandbox" in served["Content-Security-Policy"]
+    # A script file with an image type never passes: the bytes decide the type.
+    fake = SimpleUploadedFile("cat.svg", SVG, content_type="image/svg+xml")
+    response = client.client.post(f"/api/protests/{protest.id}/evidence", {"file": fake})
+    assert response.json()["detail"] == "evidence_type"
+    fake = SimpleUploadedFile("cat.png", SVG, content_type="image/png")
+    response = client.client.post(f"/api/protests/{protest.id}/evidence", {"file": fake})
+    assert response.json()["detail"] == "evidence_type"
     bad = SimpleUploadedFile("x.exe", b"MZ", content_type="application/octet-stream")
     response = client.client.post(f"/api/protests/{protest.id}/evidence", {"file": bad})
     assert response.json()["detail"] == "evidence_type"
@@ -110,7 +125,7 @@ def test_author_adds_a_link_and_a_clip(api, protest_setup):
 
 def test_stranger_cannot_see_a_clip(api, protest_setup, make_user):
     racer, _, protest = protest_setup
-    clip = SimpleUploadedFile("t1.mp4", b"0" * 10, content_type="video/mp4")
+    clip = SimpleUploadedFile("t1.mp4", MP4, content_type="video/mp4")
     data = api(racer).client.post(f"/api/protests/{protest.id}/evidence", {"file": clip}).json()
     evidence_id = data["protests"][0]["evidence"][0]["id"]
     stranger = api(make_user("stranger"))

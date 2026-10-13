@@ -679,9 +679,14 @@ def evidence_file(request, evidence_id: int):
     _visible_round(request.user, item.protest.result.round_id)
     if not item.file:
         raise Http404
-    return FileResponse(
+    response = FileResponse(
         item.file.open("rb"), filename=item.filename, content_type=item.content_type
     )
+    # The type comes from the file bytes. These headers stop the browser from guessing
+    # another type or running anything from the file.
+    response["X-Content-Type-Options"] = "nosniff"
+    response["Content-Security-Policy"] = "sandbox; default-src 'none'"
+    return response
 
 
 @router.post("/protests/{protest_id}/appeal", response=RoundDetail)

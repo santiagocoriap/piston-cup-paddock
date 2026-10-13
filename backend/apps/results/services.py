@@ -595,7 +595,24 @@ def change_rules(
 # Protest evidence and appeals
 
 MAX_EVIDENCE_BYTES = 10 * 1024 * 1024
-EVIDENCE_TYPES = ("image/", "video/")
+
+
+def evidence_type(head: bytes) -> str | None:
+    """The media type from the first bytes of the file, not from the browser. Only raster
+    images and common video. SVG and HTML can run scripts, so they never pass."""
+    if head.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "image/png"
+    if head.startswith(b"\xff\xd8\xff"):
+        return "image/jpeg"
+    if head.startswith((b"GIF87a", b"GIF89a")):
+        return "image/gif"
+    if head[:4] == b"RIFF" and head[8:12] == b"WEBP":
+        return "image/webp"
+    if head[4:8] == b"ftyp":
+        return "video/mp4"
+    if head.startswith(b"\x1a\x45\xdf\xa3"):
+        return "video/webm"
+    return None
 
 
 def add_evidence(protest: Protest, user, *, url: str = "", upload=None):
@@ -610,11 +627,13 @@ def add_evidence(protest: Protest, user, *, url: str = "", upload=None):
         raise ResultError("bad_link")
     item = ProtestEvidence(protest=protest, url=url, uploaded_by=user)
     if upload is not None:
-        content_type = upload.content_type or ""
-        if not content_type.startswith(EVIDENCE_TYPES):
-            raise ResultError("evidence_type")
         if upload.size > MAX_EVIDENCE_BYTES:
             raise ResultError("file_too_large")
+        head = upload.read(16)
+        upload.seek(0)
+        content_type = evidence_type(head)
+        if content_type is None:
+            raise ResultError("evidence_type")
         item.filename = upload.name[:255]
         item.content_type = content_type
         item.file.save(upload.name, upload, save=False)
