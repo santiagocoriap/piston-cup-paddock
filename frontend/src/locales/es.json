@@ -232,7 +232,9 @@
     "lap_not_in_session": "Esa vuelta no es de esta sesión.",
     "report_not_failed": "Ese reporte no falló.",
     "incident_not_found": "Ese incidente no existe.",
-    "rules_value_out_of_range": "Un valor está fuera de rango (0 a 200)."
+    "rules_value_out_of_range": "Un valor está fuera de rango (0 a 200).",
+    "not_in_season": "No estás inscripto en esta temporada.",
+    "round_started": "La fecha ya empezó."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -718,7 +720,14 @@
     "votedSlots": "{{count}} fechas libres para votar",
     "allowRepeats": "Una pista fija también puede ser candidata en la votación",
     "conditions": "Condiciones anunciadas (opcional)",
-    "timesNote": "Horarios en {{zone}}."
+    "timesNote": "Horarios en {{zone}}.",
+    "download": "Descargar calendario (.ics)",
+    "addRound": "Agregar esta fecha a mi calendario",
+    "feedTitle": "Calendario en el teléfono",
+    "feedHelp": "Suscribite a esta dirección desde Google Calendar o el calendario del teléfono. Se actualiza solo con las fechas de tus campeonatos. No la compartas.",
+    "feedAddress": "Dirección del calendario",
+    "newAddress": "Crear una dirección nueva",
+    "confirmNew": "La dirección anterior deja de funcionar. ¿Seguro?"
   },
   "dashboard": {
     "title": "Mi paddock",
@@ -737,7 +746,11 @@
     "handicap": "Tu lastre y restrictor",
     "briefing": "Ver briefing",
     "car": "#{{number}} · {{car}}",
-    "newReports": "Reportes nuevos"
+    "newReports": "Reportes nuevos",
+    "myAttendance": "Tu respuesta: {{answer}}",
+    "noAttendance": "Todavía no dijiste si venís",
+    "attending_one": "{{count}} piloto confirmado",
+    "attending_other": "{{count}} pilotos confirmados"
   },
   "briefing": {
     "title": "Briefing",
@@ -1260,5 +1273,33 @@
     "adjustPoints": "Puntos (negativo para restar)",
     "reason": "Motivo",
     "adjustments": "Ajustes"
+  },
+  "attendance": {
+    "title": "¿Venís?",
+    "question": "Tu respuesta",
+    "counts": "{{yes}} sí · {{maybe}} tal vez · {{no}} no",
+    "answers": {
+      "yes": "Sí",
+      "maybe": "Tal vez",
+      "no": "No"
+    },
+    "noAnswer": "sin respuesta",
+    "list": "Ver quién viene"
+  },
+  "notifications": {
+    "title_one": "Notificaciones ({{count}} sin leer)",
+    "title_other": "Notificaciones ({{count}} sin leer)",
+    "panel": "Notificaciones",
+    "none": "No hay notificaciones.",
+    "readAll": "Marcar todo como leído",
+    "kinds": {
+      "result.published": "Nuevo resultado: {{championship}} R{{number}} · {{track}}",
+      "result.official": "Resultado oficial: {{championship}} R{{number}} · {{track}}",
+      "protest.new": "Nueva protesta en R{{number}} · {{track}}",
+      "protest.decided": "Tu protesta de R{{number}} tiene decisión",
+      "ballot.open": "Hay una votación abierta en {{season}}",
+      "report.ready.race": "Reporte nuevo: R{{number}} · {{track}}",
+      "report.ready.season": "Reporte nuevo de la temporada {{season}}"
+    }
   }
 }

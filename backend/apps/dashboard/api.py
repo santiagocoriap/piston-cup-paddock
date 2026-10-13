@@ -35,6 +35,8 @@ class NextRoundOut(Schema):
     event_timezone: str
     ballast_kg: int
     restrictor_pct: int
+    my_attendance: str | None
+    attending: int
 
 
 class NewReportOut(Schema):

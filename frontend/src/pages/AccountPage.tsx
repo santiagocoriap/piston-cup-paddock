@@ -4,6 +4,7 @@ import { api } from '../api/client'
 import { errorMessage } from '../lib/errors'
 import { useMe, useUpdateMe } from '../session'
 import { TelemetryCard } from './TelemetryCard'
+import { CalendarFeedCard } from './CalendarFeedCard'
 
 const COMMON_ZONES = [
   'America/Argentina/Buenos_Aires',
@@ -84,6 +85,7 @@ export function AccountPage() {
         )}
         <button type="submit">{t('common.save')}</button>
       </form>
+      <CalendarFeedCard />
       <TelemetryCard />
       <PasswordForm />
     </section>

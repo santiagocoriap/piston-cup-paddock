@@ -33,7 +33,12 @@ export function SeasonPage() {
         <Link to={`/championships/${data.championship_id}`}>{data.championship_name}</Link>
       </p>
       <h1>{data.name}</h1>
-      <p className="muted">{t('season.plannedRounds', { count: data.planned_round_count })}</p>
+      <p className="muted">
+        {t('season.plannedRounds', { count: data.planned_round_count })} ·{' '}
+        <a href={`/api/seasons/${seasonId}/calendar.ics`} download>
+          {t('calendar.download')}
+        </a>
+      </p>
 
       <h2>{t('standings.title')}</h2>
       {standings.data && standings.data.length === 0 && <p>{t('standings.noEntries')}</p>}

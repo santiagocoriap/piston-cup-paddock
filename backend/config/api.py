@@ -8,6 +8,7 @@ from apps.collectors.health_api import router as health_router
 from apps.collectors.incident_api import router as incidents_router
 from apps.collectors.replay_api import router as replay_router
 from apps.collectors.safety_api import router as safety_router
+from apps.community.api import router as community_router
 from apps.competition.api import router as competition_router
 from apps.core.api import router as core_router
 from apps.core.exports import router as exports_router
@@ -50,3 +51,4 @@ api.add_router("/", incidents_router)
 api.add_router("/", safety_router)
 api.add_router("/", replay_router)
 api.add_router("/", rules_router)
+api.add_router("/", community_router)

@@ -931,3 +931,25 @@ td.faster {
 .marker-tick.restart {
   background: #facc15;
 }
+
+.bell {
+  position: relative;
+}
+
+.bell-count {
+  margin-left: 0.25rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.75rem;
+}
+
+.bell-panel {
+  position: absolute;
+  right: 0;
+  z-index: 10;
+  width: min(24rem, 90vw);
+  max-height: 70vh;
+  overflow-y: auto;
+}

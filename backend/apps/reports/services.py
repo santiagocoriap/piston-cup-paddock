@@ -206,7 +206,19 @@ def generate(report_id: int) -> RaceReport:
     report.status = RaceReport.State.READY
     report.generated_at = timezone.now()
     report.save(update_fields=["text", "status", "generated_at"])
+    _notify_ready(report)
     return report
+
+
+def _notify_ready(report: RaceReport) -> None:
+    from apps.community.services import notify, round_params, season_user_ids
+
+    if report.round:
+        params, link = round_params(report.round), f"/rounds/{report.round_id}"
+    else:
+        params = {"championship": report.season.championship.name, "season": report.season.name}
+        link = f"/seasons/{report.season_id}"
+    notify(season_user_ids(report.season), f"report.ready.{report.kind}", params, link)
 
 
 # Fixed codes for the admin list. The full provider text goes only to the worker log.

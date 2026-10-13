@@ -232,7 +232,9 @@
     "lap_not_in_session": "That lap is not in this session.",
     "report_not_failed": "That report did not fail.",
     "incident_not_found": "That incident does not exist.",
-    "rules_value_out_of_range": "A value is out of range (0 to 200)."
+    "rules_value_out_of_range": "A value is out of range (0 to 200).",
+    "not_in_season": "You are not in this season.",
+    "round_started": "The round already started."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -718,7 +720,14 @@
     "votedSlots": "{{count}} free rounds for voting",
     "allowRepeats": "A fixed track can also be a voting candidate",
     "conditions": "Announced conditions (optional)",
-    "timesNote": "Times in {{zone}}."
+    "timesNote": "Times in {{zone}}.",
+    "download": "Download calendar (.ics)",
+    "addRound": "Add this round to my calendar",
+    "feedTitle": "Calendar on your phone",
+    "feedHelp": "Subscribe to this address in Google Calendar or your phone calendar. It updates with the rounds of your championships. Do not share it.",
+    "feedAddress": "Calendar address",
+    "newAddress": "Make a new address",
+    "confirmNew": "The old address stops working. Continue?"
   },
   "dashboard": {
     "title": "My paddock",
@@ -737,7 +746,11 @@
     "handicap": "Your ballast and restrictor",
     "briefing": "See the briefing",
     "car": "#{{number}} · {{car}}",
-    "newReports": "New reports"
+    "newReports": "New reports",
+    "myAttendance": "Your answer: {{answer}}",
+    "noAttendance": "You did not answer yet",
+    "attending_one": "{{count}} driver confirmed",
+    "attending_other": "{{count}} drivers confirmed"
   },
   "briefing": {
     "title": "Briefing",
@@ -1260,5 +1273,33 @@
     "adjustPoints": "Points (negative to take away)",
     "reason": "Reason",
     "adjustments": "Adjustments"
+  },
+  "attendance": {
+    "title": "Are you coming?",
+    "question": "Your answer",
+    "counts": "{{yes}} yes · {{maybe}} maybe · {{no}} no",
+    "answers": {
+      "yes": "Yes",
+      "maybe": "Maybe",
+      "no": "No"
+    },
+    "noAnswer": "no answer",
+    "list": "See who is coming"
+  },
+  "notifications": {
+    "title_one": "Notifications ({{count}} unread)",
+    "title_other": "Notifications ({{count}} unread)",
+    "panel": "Notifications",
+    "none": "There are no notifications.",
+    "readAll": "Mark all as read",
+    "kinds": {
+      "result.published": "New result: {{championship}} R{{number}} · {{track}}",
+      "result.official": "Official result: {{championship}} R{{number}} · {{track}}",
+      "protest.new": "New protest in R{{number}} · {{track}}",
+      "protest.decided": "Your protest in R{{number}} has a decision",
+      "ballot.open": "A ballot is open in {{season}}",
+      "report.ready.race": "New report: R{{number}} · {{track}}",
+      "report.ready.season": "New season report: {{season}}"
+    }
   }
 }

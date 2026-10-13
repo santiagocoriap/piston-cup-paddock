@@ -174,7 +174,15 @@ def save_result(round_: Round, lines: list[Line], user, reason: str = "") -> Rac
             changes=_changes(round_, before, version),
             reason=reason,
         )
+        if before is None:
+            _notify_season(round_, "result.published")
     return result
+
+
+def _notify_season(round_: Round, kind: str) -> None:
+    from apps.community.services import notify, round_params, season_user_ids
+
+    notify(season_user_ids(round_.season), kind, round_params(round_), f"/rounds/{round_.id}")
 
 
 def add_penalty(
@@ -284,6 +292,15 @@ def submit_protest(result: RaceResult, user, *, description: str, entry_ids: lis
             changes=[change("status", old_status, result.status)],
             reason=description,
         )
+    from apps.community.services import notify, round_params, staff_user_ids
+
+    round_ = result.round
+    notify(
+        staff_user_ids(round_.season, "penalties"),
+        "protest.new",
+        round_params(round_),
+        f"/rounds/{round_.id}",
+    )
     return protest
 
 
@@ -334,6 +351,15 @@ def decide_protest(
         if result.status == State.UNDER_REVIEW and not still_open:
             result.status = State.PROVISIONAL
             result.save(update_fields=["status", "updated_at"])
+    from apps.community.services import notify, round_params
+
+    round_ = protest.result.round
+    notify(
+        [protest.submitted_by_id],
+        "protest.decided",
+        {**round_params(round_), "outcome": protest.status},
+        f"/rounds/{round_.id}",
+    )
     return protest
 
 
@@ -357,6 +383,7 @@ def approve_result(result: RaceResult, user) -> RaceResult:
             params={**_audit_params(result.round), "version": result.current_version.number},
             changes=[change("status", old_status, result.status)],
         )
+        _notify_season(result.round, "result.official")
     return result
 
 

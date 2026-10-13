@@ -110,6 +110,12 @@ function SeasonCard({ card }: { card: Card }) {
               {next.ballast_kg} kg · {next.restrictor_pct} %
             </strong>
           </p>
+          <p>
+            {next.my_attendance
+              ? t('dashboard.myAttendance', { answer: t(`attendance.answers.${next.my_attendance}`) })
+              : t('dashboard.noAttendance')}{' '}
+            · {t('dashboard.attending', { count: next.attending })}
+          </p>
           <Link className="button-link" to={`/rounds/${next.round_id}`}>
             {t('dashboard.briefing')}
           </Link>

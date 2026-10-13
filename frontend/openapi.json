@@ -4815,6 +4815,290 @@
           }
         ]
       }
+    },
+    "/api/rounds/{round_id}/attendance": {
+      "get": {
+        "operationId": "apps_community_api_get_attendance",
+        "summary": "Get Attendance",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "community"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "apps_community_api_answer",
+        "summary": "Answer",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "community"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seasons/{season_id}/calendar.ics": {
+      "get": {
+        "operationId": "apps_community_api_season_calendar",
+        "summary": "Season Calendar",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "community"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/calendar.ics": {
+      "get": {
+        "operationId": "apps_community_api_round_calendar",
+        "summary": "Round Calendar",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "community"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/me/calendar-feed": {
+      "get": {
+        "operationId": "apps_community_api_my_feed",
+        "summary": "My Feed",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "community"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_community_api_replace_feed",
+        "summary": "Replace Feed",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "community"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/calendar/{token}.ics": {
+      "get": {
+        "operationId": "apps_community_api_feed",
+        "summary": "Feed",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "schema": {
+              "title": "Token",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "All rounds of the championships that the owner of the token can see.",
+        "tags": [
+          "community"
+        ]
+      }
+    },
+    "/api/me/notifications": {
+      "get": {
+        "operationId": "apps_community_api_list_notifications",
+        "summary": "List Notifications",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "community"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/me/notifications/read": {
+      "post": {
+        "operationId": "apps_community_api_read_notifications",
+        "summary": "Read Notifications",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationsOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "community"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReadIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -10382,6 +10666,21 @@
           "restrictor_pct": {
             "title": "Restrictor Pct",
             "type": "integer"
+          },
+          "my_attendance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "My Attendance"
+          },
+          "attending": {
+            "title": "Attending",
+            "type": "integer"
           }
         },
         "required": [
@@ -10392,7 +10691,9 @@
           "scheduled_at",
           "event_timezone",
           "ballast_kg",
-          "restrictor_pct"
+          "restrictor_pct",
+          "my_attendance",
+          "attending"
         ],
         "title": "NextRoundOut",
         "type": "object"
@@ -13267,6 +13568,190 @@
           "restrictor_reduction"
         ],
         "title": "RulesFields",
+        "type": "object"
+      },
+      "AttendanceOut": {
+        "properties": {
+          "mine": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mine"
+          },
+          "can_answer": {
+            "title": "Can Answer",
+            "type": "boolean"
+          },
+          "yes": {
+            "title": "Yes",
+            "type": "integer"
+          },
+          "maybe": {
+            "title": "Maybe",
+            "type": "integer"
+          },
+          "no": {
+            "title": "No",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/AttendanceRowOut"
+            },
+            "title": "Rows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "mine",
+          "can_answer",
+          "yes",
+          "maybe",
+          "no",
+          "rows"
+        ],
+        "title": "AttendanceOut",
+        "type": "object"
+      },
+      "AttendanceRowOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer"
+          }
+        },
+        "required": [
+          "entry_id",
+          "driver_name",
+          "answer"
+        ],
+        "title": "AttendanceRowOut",
+        "type": "object"
+      },
+      "AnswerIn": {
+        "properties": {
+          "answer": {
+            "enum": [
+              "yes",
+              "maybe",
+              "no"
+            ],
+            "title": "Answer",
+            "type": "string"
+          }
+        },
+        "required": [
+          "answer"
+        ],
+        "title": "AnswerIn",
+        "type": "object"
+      },
+      "FeedOut": {
+        "properties": {
+          "path": {
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "FeedOut",
+        "type": "object"
+      },
+      "NotificationOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": true,
+            "title": "Params",
+            "type": "object"
+          },
+          "link": {
+            "title": "Link",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "read": {
+            "title": "Read",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "params",
+          "link",
+          "created_at",
+          "read"
+        ],
+        "title": "NotificationOut",
+        "type": "object"
+      },
+      "NotificationsOut": {
+        "properties": {
+          "unread": {
+            "title": "Unread",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/NotificationOut"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "unread",
+          "items"
+        ],
+        "title": "NotificationsOut",
+        "type": "object"
+      },
+      "ReadIn": {
+        "properties": {
+          "ids": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Ids",
+            "type": "array"
+          }
+        },
+        "title": "ReadIn",
         "type": "object"
       }
     },

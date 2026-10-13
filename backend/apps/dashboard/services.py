@@ -38,6 +38,8 @@ class NextRound:
     event_timezone: str
     ballast_kg: int
     restrictor_pct: int
+    my_attendance: str | None = None
+    attending: int = 0  # Drivers who answered yes.
 
 
 @dataclass
@@ -121,6 +123,10 @@ def driver_dashboard(user) -> list[SeasonCard]:
                 event_timezone=season.championship.league.timezone,
                 ballast_kg=mine.next_kg,
                 restrictor_pct=mine.next_pct,
+                my_attendance=next_round.attendance.filter(entry=entry)
+                .values_list("answer", flat=True)
+                .first(),
+                attending=next_round.attendance.filter(answer="yes").count(),
             )
         cards.append(card)
     return cards

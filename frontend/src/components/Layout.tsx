@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { useMe, useMode, type Mode } from '../session'
+import { NotificationBell } from './NotificationBell'
 
 export function Layout({ onSignOut }: { onSignOut: () => void }) {
   const { t } = useTranslation()
@@ -28,6 +29,7 @@ export function Layout({ onSignOut }: { onSignOut: () => void }) {
           {adminMode && me.can_manage && <NavLink to="/admin/audit">{t('nav.audit')}</NavLink>}
         </nav>
         {me.can_admin && <ModeSwitch />}
+        <NotificationBell />
         <span className="user">
           <NavLink to="/account" aria-label={t('nav.account')}>
             {me.username}

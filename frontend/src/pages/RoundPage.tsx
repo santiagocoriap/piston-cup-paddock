@@ -20,6 +20,7 @@ import { Briefing } from './Briefing'
 import { RestartsSection } from './RestartsSection'
 import { ApproveButton, Penalties, Protests, ResultStatus, Versions } from './ResultReview'
 import { TelemetrySection } from './TelemetrySection'
+import { AttendanceCard } from './AttendanceCard'
 
 type RoundDetail = components['schemas']['RoundDetail']
 type Status = components['schemas']['LineIn']['status']
@@ -66,6 +67,12 @@ export function RoundPage() {
       <p className="muted">{formatDateTime(data.scheduled_at, i18n.language)}</p>
 
       <Briefing round={data} />
+      <AttendanceCard roundId={data.id} />
+      <p>
+        <a href={`/api/rounds/${data.id}/calendar.ics`} download>
+          {t('calendar.addRound')}
+        </a>
+      </p>
 
       <h2>{t('round.result')}</h2>
       <ResultStatus round={data} />

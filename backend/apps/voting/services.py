@@ -177,7 +177,19 @@ def open_ballot(ballot: Ballot, user) -> Ballot:
             ballot,
             changes=[change("voters", None, len(voters)), change("slots", None, ballot.slots)],
         )
+        _notify_voters(ballot, voters)
     return ballot
+
+
+def _notify_voters(ballot: Ballot, user_ids) -> None:
+    from apps.community.services import notify
+
+    notify(
+        user_ids,
+        "ballot.open",
+        {"season": ballot.season.name, "kind": ballot.kind},
+        f"/ballots/{ballot.id}",
+    )
 
 
 def cast_vote(ballot: Ballot, user, option_ids: list[int]) -> None:
@@ -285,6 +297,7 @@ def start_runoff(ballot: Ballot, user) -> Ballot:
         _audit(
             user, "ballot.runoff_started", ballot, changes=[change("runoff", None, runoff.title)]
         )
+    _notify_voters(runoff, runoff.voters.values_list("user_id", flat=True))
     return runoff
 
 
