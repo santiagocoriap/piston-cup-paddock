@@ -150,6 +150,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/catalog/layouts/{layout_id}/guidance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Set Guidance */
+        patch: operations["apps_catalog_api_set_guidance"];
+        trace?: never;
+    };
     "/api/drivers": {
         parameters: {
             query?: never;
@@ -1789,6 +1806,10 @@ export interface components {
             key: string;
             /** Name */
             name: string;
+            /** Restart Guidance */
+            restart_guidance: string;
+            /** First Lap Cutoff */
+            first_lap_cutoff: string;
         };
         /** TrackOut */
         TrackOut: {
@@ -1817,6 +1838,16 @@ export interface components {
             key?: string;
             /** Name */
             name: string;
+            /**
+             * Restart Guidance
+             * @default
+             */
+            restart_guidance?: string;
+            /**
+             * First Lap Cutoff
+             * @default
+             */
+            first_lap_cutoff?: string;
         };
         /** CarOut */
         CarOut: {
@@ -1833,6 +1864,19 @@ export interface components {
             key: string;
             /** Name */
             name: string;
+        };
+        /** GuidanceIn */
+        GuidanceIn: {
+            /**
+             * Restart Guidance
+             * @default
+             */
+            restart_guidance?: string;
+            /**
+             * First Lap Cutoff
+             * @default
+             */
+            first_lap_cutoff?: string;
         };
         /** DriverOut */
         DriverOut: {
@@ -2149,6 +2193,10 @@ export interface components {
             };
             /** Protest Window Minutes */
             protest_window_minutes: number;
+            /** Restart Guidance */
+            restart_guidance: string;
+            /** First Lap Cutoff */
+            first_lap_cutoff: string;
             my_handicap: components["schemas"]["MyHandicapOut"] | null;
         };
         /** EntryOption */
@@ -2574,6 +2622,19 @@ export interface components {
             /** Driver Name */
             driver_name: string;
         };
+        /** RestartIncidentOut */
+        RestartIncidentOut: {
+            /** Key */
+            key: number;
+            /** Seconds */
+            seconds: number;
+            /** Lap */
+            lap: number | null;
+            /** Kind */
+            kind: string;
+            /** Cars */
+            cars: string[];
+        };
         /** RestartOut */
         RestartOut: {
             /** Id */
@@ -2604,6 +2665,16 @@ export interface components {
             responsible: components["schemas"]["ResponsibleOut"][];
             /** Review Status */
             review_status: string;
+            /**
+             * Incidents
+             * @default []
+             */
+            incidents?: components["schemas"]["RestartIncidentOut"][];
+            /**
+             * Suggested
+             * @default []
+             */
+            suggested?: components["schemas"]["ResponsibleOut"][];
         };
         /** RoundRestartsOut */
         RoundRestartsOut: {
@@ -2673,7 +2744,7 @@ export interface components {
          * Review
          * @enum {string}
          */
-        Review: "pending" | "confirmed" | "disputed";
+        Review: "pending" | "confirmed" | "corrected" | "disputed";
         /** ResponsibilityIn */
         ResponsibilityIn: {
             responsibility: components["schemas"]["Responsibility"];
@@ -4790,6 +4861,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CarOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_set_guidance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                layout_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuidanceIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutOut"];
                 };
             };
         };

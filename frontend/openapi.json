@@ -388,6 +388,53 @@
         ]
       }
     },
+    "/api/catalog/layouts/{layout_id}/guidance": {
+      "patch": {
+        "operationId": "apps_catalog_api_set_guidance",
+        "summary": "Set Guidance",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layout_id",
+            "schema": {
+              "title": "Layout Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LayoutOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuidanceIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/drivers": {
       "get": {
         "operationId": "apps_identity_drivers_api_list_drivers",
@@ -4913,12 +4960,22 @@
           "name": {
             "title": "Name",
             "type": "string"
+          },
+          "restart_guidance": {
+            "title": "Restart Guidance",
+            "type": "string"
+          },
+          "first_lap_cutoff": {
+            "title": "First Lap Cutoff",
+            "type": "string"
           }
         },
         "required": [
           "id",
           "key",
-          "name"
+          "name",
+          "restart_guidance",
+          "first_lap_cutoff"
         ],
         "title": "LayoutOut",
         "type": "object"
@@ -4989,6 +5046,18 @@
             "minLength": 1,
             "title": "Name",
             "type": "string"
+          },
+          "restart_guidance": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Restart Guidance",
+            "type": "string"
+          },
+          "first_lap_cutoff": {
+            "default": "",
+            "maxLength": 200,
+            "title": "First Lap Cutoff",
+            "type": "string"
           }
         },
         "required": [
@@ -5040,6 +5109,24 @@
           "name"
         ],
         "title": "CarIn",
+        "type": "object"
+      },
+      "GuidanceIn": {
+        "properties": {
+          "restart_guidance": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Restart Guidance",
+            "type": "string"
+          },
+          "first_lap_cutoff": {
+            "default": "",
+            "maxLength": 200,
+            "title": "First Lap Cutoff",
+            "type": "string"
+          }
+        },
+        "title": "GuidanceIn",
         "type": "object"
       },
       "DriverOut": {
@@ -5940,6 +6027,14 @@
             "title": "Protest Window Minutes",
             "type": "integer"
           },
+          "restart_guidance": {
+            "title": "Restart Guidance",
+            "type": "string"
+          },
+          "first_lap_cutoff": {
+            "title": "First Lap Cutoff",
+            "type": "string"
+          },
           "my_handicap": {
             "anyOf": [
               {
@@ -5954,6 +6049,8 @@
         "required": [
           "announced_conditions",
           "protest_window_minutes",
+          "restart_guidance",
+          "first_lap_cutoff",
           "my_handicap"
         ],
         "title": "BriefingOut",
@@ -7242,6 +7339,49 @@
         "title": "ResponsibleOut",
         "type": "object"
       },
+      "RestartIncidentOut": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "integer"
+          },
+          "seconds": {
+            "title": "Seconds",
+            "type": "integer"
+          },
+          "lap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "cars": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Cars",
+            "type": "array"
+          }
+        },
+        "required": [
+          "key",
+          "seconds",
+          "lap",
+          "kind",
+          "cars"
+        ],
+        "title": "RestartIncidentOut",
+        "type": "object"
+      },
       "RestartOut": {
         "properties": {
           "id": {
@@ -7344,6 +7484,22 @@
           "review_status": {
             "title": "Review Status",
             "type": "string"
+          },
+          "incidents": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/RestartIncidentOut"
+            },
+            "title": "Incidents",
+            "type": "array"
+          },
+          "suggested": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ResponsibleOut"
+            },
+            "title": "Suggested",
+            "type": "array"
           }
         },
         "required": [
@@ -7556,6 +7712,7 @@
         "enum": [
           "pending",
           "confirmed",
+          "corrected",
           "disputed"
         ],
         "title": "Review",

@@ -129,7 +129,11 @@
     "track": "Pista",
     "cars": "Autos",
     "noCars": "Todavía no hay autos.",
-    "newCar": "Nuevo auto"
+    "newCar": "Nuevo auto",
+    "guidance": "Guía de reinicios",
+    "guidanceFor": "Guía de reinicios de {{name}}",
+    "cutoff": "Límite de la primera vuelta (por ejemplo, curva 3)",
+    "restartGuidance": "Cuándo se reinicia"
   },
   "errors": {
     "generic": "Algo salió mal. Intentá de nuevo.",
@@ -344,7 +348,8 @@
       "rules.changed": "{{actor}} creó la versión {{version}} del reglamento de {{season}}.",
       "result.recalculated": "{{actor}} recalculó la fecha {{number}} ({{track}}) con el reglamento {{version}}.",
       "career.adjusted": "{{actor}} ajustó la carrera de {{driver}} ({{kind}} {{points}}).",
-      "championship.settings": "{{actor}} cambió la configuración de {{name}}."
+      "championship.settings": "{{actor}} cambió la configuración de {{name}}.",
+      "layout.guidance": "{{actor}} cambió la guía de reinicios de {{name}}."
     },
     "fields": {
       "role": "Rol",
@@ -425,14 +430,19 @@
     "reviews": {
       "pending": "Pendiente",
       "confirmed": "Confirmada",
-      "disputed": "En disputa"
+      "disputed": "En disputa",
+      "corrected": "Corregido"
     },
     "record": "Registrar reinicio",
     "edit": "Editar responsabilidad",
     "save": "Guardar",
     "changeReason": "Motivo del cambio",
     "sharedBadge": "Compartida",
-    "startsColumn": "Largada → siguiente"
+    "startsColumn": "Largada → siguiente",
+    "suggested": "Sugerencia (primer choque del colector): {{names}}. Un admin confirma.",
+    "incidents_one": "{{count}} incidente en esa largada",
+    "incidents_other": "{{count}} incidentes en esa largada",
+    "incidentLine": "{{seconds}} s después de largar · vuelta {{lap}} · {{cars}}"
   },
   "review": {
     "status": {
@@ -744,7 +754,9 @@
     "used": "Valores con los que corriste.",
     "assigned": "Valores asignados para esta fecha.",
     "notEntered": "No estás inscripto en esta temporada.",
-    "eventTime": "Hora del evento: {{time}} ({{zone}})"
+    "eventTime": "Hora del evento: {{time}} ({{zone}})",
+    "restartGuidance": "Reinicios en la primera vuelta",
+    "cutoff": "Límite"
   },
   "account": {
     "title": "Mi cuenta",

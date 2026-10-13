@@ -293,6 +293,27 @@ function RestartRow({
         <td>
           {restart.responsibility === 'drivers' ? names : t(`restarts.responsibilities.${restart.responsibility}`)}
           {restart.responsible.length > 1 && <span className="badge">{t('restarts.sharedBadge')}</span>}
+          {restart.suggested && restart.suggested.length > 0 && restart.review_status === 'pending' && (
+            <div className="muted">
+              {t('restarts.suggested', { names: restart.suggested.map((s) => s.driver_name).join(', ') })}
+            </div>
+          )}
+          {restart.incidents && restart.incidents.length > 0 && (
+            <details>
+              <summary>{t('restarts.incidents', { count: restart.incidents.length })}</summary>
+              <ul>
+                {restart.incidents.map((incident) => (
+                  <li key={incident.key}>
+                    {t('restarts.incidentLine', {
+                      seconds: incident.seconds,
+                      lap: incident.lap ?? '—',
+                      cars: incident.cars.join(' + '),
+                    })}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
         </td>
         <td>
           <span className={`badge review-${restart.review_status}`}>

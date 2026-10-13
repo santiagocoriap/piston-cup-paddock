@@ -121,6 +121,8 @@ class MyHandicapOut(Schema):
 class BriefingOut(Schema):
     announced_conditions: dict
     protest_window_minutes: int
+    restart_guidance: str
+    first_lap_cutoff: str
     my_handicap: MyHandicapOut | None
 
 
@@ -340,6 +342,8 @@ def _round_detail(user, round_: Round) -> RoundDetail:
         briefing=BriefingOut(
             announced_conditions=round_.announced_conditions,
             protest_window_minutes=season.protest_window_minutes,
+            restart_guidance=round_.track_layout.restart_guidance,
+            first_lap_cutoff=round_.track_layout.first_lap_cutoff,
             my_handicap=MyHandicapOut(**vars(mine))
             if (mine := my_handicap(user, round_))
             else None,

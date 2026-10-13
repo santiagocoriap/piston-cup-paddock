@@ -165,7 +165,7 @@ def restarts_caused(user, driver: DriverProfile) -> list[RestartRow]:
     items = (
         Restart.objects.filter(
             responsible_entries__driver=driver,
-            review_status=Restart.Review.CONFIRMED,
+            review_status__in=[Restart.Review.CONFIRMED, Restart.Review.CORRECTED],
             abandoned_attempt__session__round__season__championship__in=visible_championships(user),
         )
         .select_related("abandoned_attempt__session__round__season")

@@ -129,7 +129,11 @@
     "track": "Track",
     "cars": "Cars",
     "noCars": "There are no cars yet.",
-    "newCar": "New car"
+    "newCar": "New car",
+    "guidance": "Restart guidance",
+    "guidanceFor": "Restart guidance for {{name}}",
+    "cutoff": "First-lap cutoff (for example, turn 3)",
+    "restartGuidance": "When to restart"
   },
   "errors": {
     "generic": "Something went wrong. Try again.",
@@ -344,7 +348,8 @@
       "rules.changed": "{{actor}} made rules version {{version}} of {{season}}.",
       "result.recalculated": "{{actor}} recalculated round {{number}} ({{track}}) with rules version {{version}}.",
       "career.adjusted": "{{actor}} adjusted the career of {{driver}} ({{kind}} {{points}}).",
-      "championship.settings": "{{actor}} changed the settings of {{name}}."
+      "championship.settings": "{{actor}} changed the settings of {{name}}.",
+      "layout.guidance": "{{actor}} changed the restart guidance of {{name}}."
     },
     "fields": {
       "role": "Role",
@@ -425,14 +430,19 @@
     "reviews": {
       "pending": "Pending",
       "confirmed": "Confirmed",
-      "disputed": "Disputed"
+      "disputed": "Disputed",
+      "corrected": "Corrected"
     },
     "record": "Record a restart",
     "edit": "Edit responsibility",
     "save": "Save",
     "changeReason": "Reason for the change",
     "sharedBadge": "Shared",
-    "startsColumn": "Start → next"
+    "startsColumn": "Start → next",
+    "suggested": "Suggestion (first collision from the collector): {{names}}. An admin confirms.",
+    "incidents_one": "{{count}} incident in that start",
+    "incidents_other": "{{count}} incidents in that start",
+    "incidentLine": "{{seconds}} s after the start · lap {{lap}} · {{cars}}"
   },
   "review": {
     "status": {
@@ -744,7 +754,9 @@
     "used": "The values of your race.",
     "assigned": "The values for this round.",
     "notEntered": "You are not in this season.",
-    "eventTime": "Event time: {{time}} ({{zone}})"
+    "eventTime": "Event time: {{time}} ({{zone}})",
+    "restartGuidance": "First-lap restarts",
+    "cutoff": "Cutoff"
   },
   "account": {
     "title": "My account",

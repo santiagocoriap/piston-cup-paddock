@@ -26,6 +26,7 @@ class Restart(models.Model):
     class Review(models.TextChoices):
         PENDING = "pending", _("Pending")
         CONFIRMED = "confirmed", _("Confirmed")
+        CORRECTED = "corrected", _("Corrected after confirmation")
         DISPUTED = "disputed", _("Disputed")
 
     abandoned_attempt = models.OneToOneField(
@@ -62,3 +63,8 @@ class Restart(models.Model):
 
     def __str__(self):
         return f"Restart after {self.abandoned_attempt}"
+
+    @property
+    def decided(self) -> bool:
+        """A confirmed or corrected decision counts in the statistics."""
+        return self.review_status in (self.Review.CONFIRMED, self.Review.CORRECTED)

@@ -20,6 +20,9 @@ class TrackLayout(models.Model):
     track = models.ForeignKey(Track, on_delete=models.PROTECT, related_name="layouts")
     key = models.CharField(max_length=100, blank=True)
     name = models.CharField(max_length=200)
+    # The league guidance for a first-lap restart on this layout, for the briefing.
+    restart_guidance = models.TextField(blank=True)
+    first_lap_cutoff = models.CharField(max_length=200, blank=True)
 
     class Meta:
         ordering = ["track__name", "name"]

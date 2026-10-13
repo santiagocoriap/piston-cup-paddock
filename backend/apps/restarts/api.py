@@ -43,6 +43,14 @@ class ResponsibleOut(Schema):
     driver_name: str
 
 
+class RestartIncidentOut(Schema):
+    key: int
+    seconds: int  # After the start of the attempt.
+    lap: int | None
+    kind: str
+    cars: list[str]
+
+
 class RestartOut(Schema):
     id: int
     abandoned_attempt: int
@@ -58,6 +66,9 @@ class RestartOut(Schema):
     responsibility: str
     responsible: list[ResponsibleOut]
     review_status: str
+    incidents: list[RestartIncidentOut] = []
+    # The driver of the first collision of the abandoned start. A suggestion, not a decision.
+    suggested: list[ResponsibleOut] = []
 
 
 class CausedOut(Schema):
@@ -91,9 +102,12 @@ def _round(user, round_id: int) -> Round:
     return round_
 
 
-def _restart_out(restart: Restart) -> RestartOut:
+def _restart_out(restart: Restart, evidence: dict | None = None) -> RestartOut:
     replacement = restart.replacement_attempt
+    incidents, suggested = (evidence or {}).get(restart.abandoned_attempt.number, ([], []))
     return RestartOut(
+        incidents=incidents,
+        suggested=suggested,
         id=restart.id,
         abandoned_attempt=restart.abandoned_attempt.number,
         replacement_attempt=replacement.number if replacement else None,
@@ -114,6 +128,62 @@ def _restart_out(restart: Restart) -> RestartOut:
     )
 
 
+def _collector_evidence(round_: Round) -> dict[int, tuple[list, list]]:
+    """For each race start number of the collector: its incidents, and the entry of the car in
+    the first collision event. The league rule: the first driver to crash causes the restart."""
+    from apps.collectors.incident_api import collisions
+    from apps.collectors.incidents import group
+
+    found, names, _ = collisions(round_, "race")
+    if not found:
+        return {}
+    entries = {
+        e.driver.steam_guid: e
+        for e in round_.season.entries.select_related("driver")
+        if e.driver.steam_guid
+    }
+    starts = _start_times(round_)
+    evidence: dict[int, tuple[list, list]] = {}
+    for attempt in sorted({c.attempt for c in found}):
+        mine = [c for c in found if c.attempt == attempt]
+        first = min(mine, key=lambda c: (c.at, c.id))
+        started = starts.get(attempt, first.at)
+        incidents = [
+            RestartIncidentOut(
+                key=i.key,
+                seconds=int((i.events[0].at - started).total_seconds()),
+                lap=i.events[0].lap,
+                kind=i.kind,
+                cars=sorted(names.get(car, car) for car in i.cars),
+            )
+            for i in group(mine)
+        ]
+        entry = entries.get(first.car)
+        suggested = (
+            [ResponsibleOut(entry_id=entry.id, driver_name=entry.driver.display_name)]
+            if entry
+            else []
+        )
+        evidence[attempt] = (incidents, suggested)
+    return evidence
+
+
+def _start_times(round_: Round) -> dict[int, object]:
+    from apps.collectors.incident_api import WINDOW
+    from apps.collectors.models import CollectorEvent
+
+    if round_.scheduled_at is None:
+        return {}
+    starts = CollectorEvent.objects.filter(
+        token__championship_id=round_.season.championship_id,
+        kind="session_started",
+        data__type=3,
+        occurred_at__gte=round_.scheduled_at - WINDOW,
+        occurred_at__lte=round_.scheduled_at + WINDOW,
+    ).order_by("occurred_at")
+    return {n: e.occurred_at for n, e in enumerate(starts, start=1)}
+
+
 def _round_restarts(round_: Round) -> RoundRestartsOut:
     session = race_session(round_)
     restarts = list(
@@ -124,9 +194,10 @@ def _round_restarts(round_: Round) -> RoundRestartsOut:
         .prefetch_related("responsible_entries__driver")
     )
     summary = summarize(restarts)
+    evidence = _collector_evidence(round_)
     return RoundRestartsOut(
         attempts=[AttemptOut(number=a.number, status=a.status) for a in session.attempts.all()],
-        restarts=[_restart_out(r) for r in restarts],
+        restarts=[_restart_out(r, evidence) for r in restarts],
         summary=SummaryOut(
             total=summary.total,
             caused=[CausedOut(**vars(c)) for c in summary.caused],

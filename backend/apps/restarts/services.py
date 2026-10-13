@@ -89,6 +89,13 @@ def update_responsibility(
     round_ = restart.abandoned_attempt.session.round
     entries = _check_responsibility(round_, responsibility, entry_ids)
     old_entries = list(restart.responsible_entries.select_related("driver"))
+    changed = responsibility != restart.responsibility or {e.id for e in old_entries} != {
+        e.id for e in entries
+    }
+    if restart.decided and changed and review_status == Restart.Review.CONFIRMED:
+        # A decision that changes after its confirmation is a correction. The audit trail
+        # keeps the old decision.
+        review_status = Restart.Review.CORRECTED
     with transaction.atomic():
         changes = [
             change("responsibility", restart.responsibility, responsibility),
@@ -141,7 +148,7 @@ def summarize(restarts: list[Restart]) -> RestartSummary:
     caused: dict[int, CausedCount] = {}
     kinds = Counter()
     for restart in restarts:
-        if restart.review_status != Restart.Review.CONFIRMED:
+        if not restart.decided:
             summary.pending_or_disputed += 1
             continue
         if restart.responsibility != Restart.Responsibility.DRIVERS:

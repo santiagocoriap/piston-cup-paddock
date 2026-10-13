@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { api } from '../../api/client'
+import type { components } from '../../api/schema'
 import { ActionForm } from '../../components/ActionForm'
 import { Loading } from '../../components/Layout'
 import { useLoad } from '../../lib/useLoad'
@@ -24,6 +25,7 @@ export function CatalogPage() {
               {track.layouts.map((layout) => (
                 <li key={layout.id}>
                   {layout.name} <span className="mono muted">{layout.key}</span>
+                  <GuidanceForm layout={layout} onSaved={tracks.reload} />
                 </li>
               ))}
             </ul>
@@ -113,5 +115,41 @@ function KeyAndName({ keyRequired = true, keyHint }: { keyRequired?: boolean; ke
         <input name="name" required maxLength={200} />
       </label>
     </>
+  )
+}
+
+type Layout = components['schemas']['LayoutOut']
+
+/** The first-lap restart guidance of one layout. The round briefing shows it. */
+function GuidanceForm({ layout, onSaved }: { layout: Layout; onSaved: () => void }) {
+  const { t } = useTranslation()
+  return (
+    <details>
+      <summary>{t('catalog.guidance')}</summary>
+      <ActionForm
+        title={t('catalog.guidanceFor', { name: layout.name })}
+        submitLabel={t('common.save')}
+        onSubmit={async (form) => {
+          const { error } = await api.PATCH('/api/catalog/layouts/{layout_id}/guidance', {
+            params: { path: { layout_id: layout.id } },
+            body: {
+              restart_guidance: String(form.get('restart_guidance') ?? ''),
+              first_lap_cutoff: String(form.get('first_lap_cutoff') ?? ''),
+            },
+          })
+          if (!error) onSaved()
+          return error
+        }}
+      >
+        <label>
+          {t('catalog.cutoff')}
+          <input name="first_lap_cutoff" defaultValue={layout.first_lap_cutoff} maxLength={200} />
+        </label>
+        <label>
+          {t('catalog.restartGuidance')}
+          <textarea name="restart_guidance" defaultValue={layout.restart_guidance} maxLength={2000} />
+        </label>
+      </ActionForm>
+    </details>
   )
 }

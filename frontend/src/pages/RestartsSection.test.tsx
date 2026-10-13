@@ -89,3 +89,18 @@ describe('RestartsSection', () => {
     })
   })
 })
+
+describe('RestartsSection with collector data', () => {
+  it('shows the suggested driver and the incidents of a pending restart', async () => {
+    const pending = {
+      ...data.restarts[0], review_status: 'pending', responsibility: 'unknown', responsible: [],
+      suggested: [{ entry_id: 3, driver_name: 'Martín' }],
+      incidents: [{ key: 40, seconds: 20, lap: 1, kind: 'env', cars: ['Martín'] }],
+    }
+    mockApi({ 'GET /api/rounds/9/restarts': () => json(200, { ...data, restarts: [pending] }) })
+    show(false)
+    expect(await screen.findByText(/Sugerencia \(primer choque del colector\): Martín/)).toBeInTheDocument()
+    await userEvent.click(screen.getByText('1 incidente en esa largada'))
+    expect(screen.getByText('20 s después de largar · vuelta 1 · Martín')).toBeInTheDocument()
+  })
+})

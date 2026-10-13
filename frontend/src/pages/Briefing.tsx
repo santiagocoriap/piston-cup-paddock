@@ -57,6 +57,18 @@ export function Briefing({ round }: { round: RoundDetail }) {
           )}
         </div>
 
+        {(round.briefing.restart_guidance || round.briefing.first_lap_cutoff) && (
+          <div className="card">
+            <h3>{t('briefing.restartGuidance')}</h3>
+            {round.briefing.first_lap_cutoff && (
+              <p>
+                <strong>{t('briefing.cutoff')}:</strong> {round.briefing.first_lap_cutoff}
+              </p>
+            )}
+            {round.briefing.restart_guidance && <p>{round.briefing.restart_guidance}</p>}
+          </div>
+        )}
+
         <div className="card">
           <h3>{t('briefing.myHandicap')}</h3>
           {mine ? (

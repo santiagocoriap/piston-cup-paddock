@@ -97,7 +97,7 @@ def _restarts(round_: Round) -> dict:
     )
     items = []
     for restart in restarts:
-        confirmed = restart.review_status == Restart.Review.CONFIRMED
+        confirmed = restart.decided
         items.append(
             {
                 "ref": f"restart:{restart.id}",

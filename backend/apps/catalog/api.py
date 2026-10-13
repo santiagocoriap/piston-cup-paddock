@@ -13,12 +13,21 @@ router = Router(tags=["catalog"])
 class LayoutIn(Schema):
     key: str = Field("", max_length=100)
     name: str = Field(min_length=1, max_length=200)
+    restart_guidance: str = Field("", max_length=2000)
+    first_lap_cutoff: str = Field("", max_length=200)
 
 
 class LayoutOut(Schema):
     id: int
     key: str
     name: str
+    restart_guidance: str
+    first_lap_cutoff: str
+
+
+class GuidanceIn(Schema):
+    restart_guidance: str = Field("", max_length=2000)
+    first_lap_cutoff: str = Field("", max_length=200)
 
 
 class TrackIn(Schema):
@@ -86,3 +95,20 @@ def create_car(request, payload: CarIn):
         car = Car.objects.create(**payload.dict())
         record(request.user, "car.created", "car", car.id, params={"name": car.name})
     return Status(201, car)
+
+
+@router.patch("/layouts/{layout_id}/guidance", response=LayoutOut)
+def set_guidance(request, layout_id: int, payload: GuidanceIn):
+    require(manages_any_championship(request.user))
+    layout = get_object_or_404(TrackLayout, pk=layout_id)
+    layout.restart_guidance = payload.restart_guidance
+    layout.first_lap_cutoff = payload.first_lap_cutoff
+    layout.save(update_fields=["restart_guidance", "first_lap_cutoff"])
+    record(
+        request.user,
+        "layout.guidance",
+        "track",
+        layout.track_id,
+        params={"name": str(layout)},
+    )
+    return layout
