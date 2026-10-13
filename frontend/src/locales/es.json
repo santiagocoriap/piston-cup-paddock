@@ -264,7 +264,12 @@
       "dnf": "DNF",
       "dns": "DNS",
       "dsq": "DSQ"
-    }
+    },
+    "laps": "Vueltas",
+    "timeGap": "Tiempo / diferencia",
+    "incidents": "Incidentes",
+    "lapsDown_one": "+{{count}} vuelta",
+    "lapsDown_other": "+{{count}} vueltas"
   },
   "mode": {
     "label": "Modo",
@@ -880,13 +885,14 @@
     "theoreticalLabel": "Teórica",
     "lapNumber": "vuelta {{number}}",
     "averageHelp": "El número entre paréntesis es la cantidad de vueltas del promedio. El promedio deja afuera las vueltas inválidas.",
-    "cleanHelp": "El promedio limpio también deja afuera: {{rules}}. No hay datos de incidentes, así que puede incluir vueltas con contacto.",
+    "cleanHelp": "El promedio limpio también deja afuera: {{rules}}. Sin datos del colector no puede ver los contactos.",
     "theoreticalHelp": "La vuelta teórica suma los mejores sectores válidos del piloto. Es teórica: puede no ser posible en una sola vuelta.",
     "rules": {
       "invalid": "vueltas inválidas",
       "pit_in": "vueltas de entrada a boxes",
       "pit_out": "vueltas de salida de boxes",
-      "first_lap": "la vuelta 1 (largada)"
+      "first_lap": "la vuelta 1 (largada)",
+      "contact": "vueltas con un incidente"
     },
     "chart": "Tiempo de vuelta por vuelta",
     "chartHelp": "Las vueltas de más de {{limit}} quedan arriba del gráfico. Un círculo vacío es una vuelta inválida.",
@@ -905,7 +911,9 @@
       "in": "Entrada",
       "out": "Salida"
     },
-    "tyre": "Neumático"
+    "tyre": "Neumático",
+    "incident": "Incidente",
+    "contact": "contacto"
   },
   "title": {
     "title": "Pelea por el título",
@@ -1103,7 +1111,8 @@
     "detail": "Eventos del incidente",
     "review": "Revisar incidente",
     "note": "Nota",
-    "saveReview": "Guardar revisión"
+    "saveReview": "Guardar revisión",
+    "lap": "Vuelta"
   },
   "engineer": {
     "title": "Ingeniero de carrera",

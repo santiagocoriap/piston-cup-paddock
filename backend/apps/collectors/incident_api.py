@@ -80,6 +80,14 @@ def collisions(round_: Round, session: str) -> tuple[list[Collision], dict[str, 
     return found, names, any_event
 
 
+def accepted_race_incidents(round_: Round) -> tuple[list[Incident], dict[str, str], bool]:
+    """The incidents of the last race start (the accepted race), the car names, and if the
+    round has any collector event."""
+    found, names, has_events = collisions(round_, "race")
+    accepted = max((c.attempt for c in found), default=0)
+    return [i for i in group(found) if i.events[0].attempt == accepted], names, has_events
+
+
 class EventOut(Schema):
     id: int
     at: datetime

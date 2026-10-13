@@ -77,6 +77,28 @@ describe('RoundPage', () => {
     expect(screen.queryByRole('button', { name: 'Guardar resultado' })).not.toBeInTheDocument()
   })
 
+  it('shows laps, the gap, laps down, and incidents', async () => {
+    const line = (entry_id: number, name: string, position: number, extra = {}) => ({
+      entry_id, status: 'finished', position, entered_status: 'finished', entered_position: position, pole: false,
+      fastest_lap: false, number: entry_id, driver_id: entry_id, driver_name: name, points: 10, ...extra,
+    })
+    mockApi({
+      ...noRestarts,
+      'GET /api/rounds/9': () =>
+        json(200, round(false, [
+          line(1, 'Ana', 1, { laps: 10, total_ms: 1964444, incidents: 0 }),
+          line(2, 'Beto', 2, { laps: 10, total_ms: 2090908, gap_ms: 126464, incidents: 1 }),
+          line(3, 'Ceci', 3, { laps: 9, total_ms: 1900000, laps_down: 1, incidents: 2 }),
+        ])),
+    })
+    show(DRIVER)
+    const table = await screen.findByRole('table')
+    expect(within(table).getByRole('row', { name: /Ana/ })).toHaveTextContent('32:44.444')
+    expect(within(table).getByRole('row', { name: /Beto/ })).toHaveTextContent('+126.464')
+    expect(within(table).getByRole('row', { name: /Ceci/ })).toHaveTextContent('+1 vuelta')
+    expect(within(table).getByRole('columnheader', { name: 'Incidentes' })).toBeInTheDocument()
+  })
+
   it('sends only the drivers who took part, with their positions', async () => {
     const calls = mockApi({
       ...noRestarts,

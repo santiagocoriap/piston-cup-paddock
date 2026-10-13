@@ -5929,6 +5929,61 @@
             "title": "Driver Name",
             "type": "string"
           },
+          "laps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Laps"
+          },
+          "total_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Ms"
+          },
+          "gap_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gap Ms"
+          },
+          "laps_down": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Laps Down"
+          },
+          "incidents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Incidents"
+          },
           "points": {
             "title": "Points",
             "type": "integer"
@@ -8150,6 +8205,10 @@
             ],
             "title": "Pit"
           },
+          "contact": {
+            "title": "Contact",
+            "type": "boolean"
+          },
           "time_mark": {
             "anyOf": [
               {
@@ -8185,6 +8244,7 @@
           "invalid_reason",
           "tyre",
           "pit",
+          "contact",
           "time_mark",
           "sector_marks"
         ],

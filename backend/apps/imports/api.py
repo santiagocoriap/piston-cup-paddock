@@ -269,6 +269,7 @@ class MarkedLapOut(Schema):
     invalid_reason: str
     tyre: str
     pit: str | None
+    contact: bool
     time_mark: str | None
     sector_marks: list[str | None]
 

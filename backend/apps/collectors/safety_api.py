@@ -20,8 +20,7 @@ from apps.rules.safety import (
     rate,
 )
 
-from .incident_api import collisions
-from .incidents import group
+from .incident_api import accepted_race_incidents
 
 router = Router(tags=["safety"])
 
@@ -42,9 +41,7 @@ def _round_inputs(round_: Round) -> dict[str, RoundInput]:
             "guid", flat=True
         ):
             laps[guid] += 1
-    found, names, has_events = collisions(round_, "race")
-    accepted = max((c.attempt for c in found), default=0)
-    incidents = [i for i in group(found) if i.events[0].attempt == accepted]
+    incidents, names, has_events = accepted_race_incidents(round_)
     inputs = {guid: RoundInput(round_.id, label, count, has_events) for guid, count in laps.items()}
     for incident in incidents:
         others = sorted(names.get(car, car) for car in incident.cars)

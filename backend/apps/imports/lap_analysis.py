@@ -9,6 +9,12 @@ from dataclasses import dataclass, field
 
 # The laps that the clean average leaves out, in the order the app shows them.
 CLEAN_RULES = ["invalid", "pit_in", "pit_out", "first_lap"]
+CONTACT_RULE = "contact"  # Added only when the round has collector incident data.
+
+
+def clean_rules_for(race: bool, contacts: bool) -> list[str]:
+    rules = CLEAN_RULES if race else CLEAN_RULES[:3]
+    return [*rules, CONTACT_RULE] if contacts else list(rules)
 
 
 @dataclass
@@ -20,6 +26,7 @@ class LapRow:
     invalid_reason: str = ""
     tyre: str = ""
     pit: str | None = None  # "in", "out", or None
+    contact: bool = False  # The driver had an incident on this lap.
 
     @property
     def valid(self) -> bool:
@@ -87,11 +94,14 @@ def _exclusion(row: LapRow, rules: list[str]) -> str | None:
         "pit_in": row.pit == "in",
         "pit_out": row.pit == "out",
         "first_lap": row.lap_number == 1,
+        CONTACT_RULE: row.contact,
     }
     return next((rule for rule in rules if checks[rule]), None)
 
 
-def analyze(drivers: dict[object, list[LapRow]], *, race: bool) -> list[DriverLaps]:
+def analyze(
+    drivers: dict[object, list[LapRow]], *, race: bool, contacts: bool = False
+) -> list[DriverLaps]:
     """Mark best values and compute averages for each driver. The first lap of a race is a
     standing start, so the clean average of a race leaves it out."""
     all_rows = [row for rows in drivers.values() for row in rows]
@@ -99,7 +109,7 @@ def analyze(drivers: dict[object, list[LapRow]], *, race: bool) -> list[DriverLa
     valid = [row for row in all_rows if row.valid]
     session_lap = min((r.time_ms for r in valid), default=None)
     session_sectors = _best_sectors(all_rows, count)
-    clean_rules = CLEAN_RULES if race else CLEAN_RULES[:3]
+    clean_rules = clean_rules_for(race, contacts)
 
     result = []
     for key, rows in drivers.items():

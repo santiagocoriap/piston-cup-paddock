@@ -5,7 +5,7 @@ import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { Loading } from '../components/Layout'
 import { errorMessage } from '../lib/errors'
-import { formatDateTime } from '../lib/format'
+import { formatDateTime, formatLapTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { penaltyChanged } from '../lib/results'
@@ -45,6 +45,12 @@ export function RoundPage() {
   if (!data) return <Loading failed={round.failed} />
   const may = (capability: string) => staffView && data.capabilities.includes(capability)
   const rules = data.rules
+  const hasIncidents = data.result?.some((line) => line.incidents !== null && line.incidents !== undefined) ?? false
+  const timeOrGap = (line: NonNullable<typeof data.result>[number]) => {
+    if (line.laps_down) return t('round.lapsDown', { count: line.laps_down })
+    if (line.gap_ms !== null && line.gap_ms !== undefined) return `+${(line.gap_ms / 1000).toFixed(3)}`
+    return formatLapTime(line.total_ms)
+  }
   const changed = () => {
     round.reload()
     setSaves((n) => n + 1)
@@ -74,6 +80,9 @@ export function RoundPage() {
                 <th scope="col">{t('round.position')}</th>
                 <th scope="col">#</th>
                 <th scope="col">{t('season.driver')}</th>
+                <th scope="col">{t('round.laps')}</th>
+                <th scope="col">{t('round.timeGap')}</th>
+                {hasIncidents && <th scope="col">{t('round.incidents')}</th>}
                 <th scope="col">{t('round.points')}</th>
               </tr>
             </thead>
@@ -100,6 +109,9 @@ export function RoundPage() {
                       <span className="badge">{t('round.fastestLap')}</span>
                     )}
                   </td>
+                  <td>{line.laps ?? '—'}</td>
+                  <td>{timeOrGap(line)}</td>
+                  {hasIncidents && <td>{line.incidents ?? '—'}</td>}
                   <td>{line.points}</td>
                 </tr>
               ))}

@@ -264,7 +264,12 @@
       "dnf": "DNF",
       "dns": "DNS",
       "dsq": "DSQ"
-    }
+    },
+    "laps": "Laps",
+    "timeGap": "Time / gap",
+    "incidents": "Incidents",
+    "lapsDown_one": "+{{count}} lap",
+    "lapsDown_other": "+{{count}} laps"
   },
   "mode": {
     "label": "Mode",
@@ -880,13 +885,14 @@
     "theoreticalLabel": "Theoretical",
     "lapNumber": "lap {{number}}",
     "averageHelp": "The number in brackets is the number of laps in the average. The average leaves out invalid laps.",
-    "cleanHelp": "The clean average also leaves out: {{rules}}. There is no incident data, so it can include laps with contact.",
+    "cleanHelp": "The clean average also leaves out: {{rules}}. Without collector data it cannot see contacts.",
     "theoreticalHelp": "The theoretical lap adds the best valid sectors of the driver. It is theoretical: one real lap may not reach it.",
     "rules": {
       "invalid": "invalid laps",
       "pit_in": "pit entry laps",
       "pit_out": "pit exit laps",
-      "first_lap": "lap 1 (the start)"
+      "first_lap": "lap 1 (the start)",
+      "contact": "laps with an incident"
     },
     "chart": "Lap time by lap",
     "chartHelp": "Laps slower than {{limit}} stay at the top of the chart. An empty circle is an invalid lap.",
@@ -905,7 +911,9 @@
       "in": "In",
       "out": "Out"
     },
-    "tyre": "Tyre"
+    "tyre": "Tyre",
+    "incident": "Incident",
+    "contact": "contact"
   },
   "title": {
     "title": "Title fight",
@@ -1103,7 +1111,8 @@
     "detail": "Incident events",
     "review": "Review incident",
     "note": "Note",
-    "saveReview": "Save review"
+    "saveReview": "Save review",
+    "lap": "Lap"
   },
   "engineer": {
     "title": "Race engineer",

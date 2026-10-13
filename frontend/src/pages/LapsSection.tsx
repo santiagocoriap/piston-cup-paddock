@@ -229,6 +229,7 @@ function DriverTable({ driver, hasSectors }: { driver: DriverLaps; hasSectors: b
               <th scope="col">{t('laps.validity')}</th>
               <th scope="col">{t('laps.pit')}</th>
               <th scope="col">{t('laps.tyre')}</th>
+              <th scope="col">{t('laps.incident')}</th>
             </tr>
           </thead>
           <tbody>
@@ -251,6 +252,7 @@ function DriverTable({ driver, hasSectors }: { driver: DriverLaps; hasSectors: b
                 </td>
                 <td>{lap.pit ? t(`laps.pitStatus.${lap.pit}`) : ''}</td>
                 <td>{lap.tyre}</td>
+                <td>{lap.contact ? `⚠ ${t('laps.contact')}` : ''}</td>
               </tr>
             ))}
           </tbody>

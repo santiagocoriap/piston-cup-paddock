@@ -7,6 +7,7 @@ from ninja import Field, Router, Schema
 from ninja.errors import HttpError
 from pydantic import AwareDatetime
 
+from apps.collectors.incident_api import accepted_race_incidents
 from apps.competition.models import ChampionshipMember, Round, Season, SeasonEntry
 from apps.competition.permissions import can, can_manage, can_view, capabilities
 from apps.dashboard.services import my_handicap
@@ -59,6 +60,11 @@ class LineOut(LineIn):
     number: int
     driver_id: int
     driver_name: str
+    laps: int | None = None
+    total_ms: int | None = None
+    gap_ms: int | None = None  # To the winner, on the same lap.
+    laps_down: int | None = None  # Laps behind the winner.
+    incidents: int | None = None  # None when the round has no collector events.
     points: int
     entered_status: Status
     entered_position: int | None
@@ -240,12 +246,35 @@ def _can_protest(user, round_: Round, result: RaceResult | None) -> bool:
     return is_member or can_manage(user, round_.season.championship)
 
 
+def _incident_counts(round_: Round) -> dict[str, int] | None:
+    incidents, _, has_events = accepted_race_incidents(round_)
+    if not has_events:
+        return None
+    counts: dict[str, int] = {}
+    for incident in incidents:
+        for car in incident.cars:
+            counts[car] = counts.get(car, 0) + 1
+    return counts
+
+
 def _lines(version: ResultVersion) -> list[LineOut]:
     rows = sorted(
         version.lines.select_related("entry__driver"),
         key=lambda r: (STATUS_ORDER[Status(r.status)], r.position or 0, r.entry.number),
     )
-    return [
+    winner = next((r for r in rows if r.position == 1), None)
+    counts = _incident_counts(version.result.round)
+
+    def gap(row) -> tuple[int | None, int | None]:
+        if winner is None or row.laps is None or winner.laps is None or row is winner:
+            return None, None
+        if row.laps < winner.laps:
+            return None, winner.laps - row.laps
+        if row.total_ms is None or winner.total_ms is None:
+            return None, None
+        return row.total_ms - winner.total_ms, None
+
+    lines = [
         LineOut(
             entry_id=r.entry_id,
             status=r.status,
@@ -258,9 +287,19 @@ def _lines(version: ResultVersion) -> list[LineOut]:
             points=r.points,
             entered_status=r.entered_status,
             entered_position=r.entered_position,
+            laps=r.laps,
+            total_ms=r.total_ms,
+            gap_ms=gap(r)[0],
+            laps_down=gap(r)[1],
+            incidents=(
+                counts.get(r.entry.driver.steam_guid, 0)
+                if counts is not None and r.entry.driver.steam_guid
+                else None
+            ),
         )
         for r in rows
     ]
+    return lines
 
 
 def _round_detail(user, round_: Round) -> RoundDetail:

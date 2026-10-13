@@ -2144,6 +2144,16 @@ export interface components {
             driver_id: number;
             /** Driver Name */
             driver_name: string;
+            /** Laps */
+            laps?: number | null;
+            /** Total Ms */
+            total_ms?: number | null;
+            /** Gap Ms */
+            gap_ms?: number | null;
+            /** Laps Down */
+            laps_down?: number | null;
+            /** Incidents */
+            incidents?: number | null;
             /** Points */
             points: number;
             entered_status: components["schemas"]["Status"];
@@ -2882,6 +2892,8 @@ export interface components {
             tyre: string;
             /** Pit */
             pit: string | null;
+            /** Contact */
+            contact: boolean;
             /** Time Mark */
             time_mark: string | null;
             /** Sector Marks */

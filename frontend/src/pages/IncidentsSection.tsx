@@ -10,8 +10,8 @@ type Incidents = components['schemas']['IncidentsOut']
 type Incident = components['schemas']['IncidentOut']
 type Outcome = 'open' | 'no_action' | 'racing_incident' | 'penalty'
 
-type Filters = { driver: string; attempt: string; kind: string; minSpeed: number; outcome: string }
-const NO_FILTERS: Filters = { driver: '', attempt: '', kind: '', minSpeed: 0, outcome: '' }
+type Filters = { driver: string; attempt: string; lap: string; kind: string; minSpeed: number; outcome: string }
+const NO_FILTERS: Filters = { driver: '', attempt: '', lap: '', kind: '', minSpeed: 0, outcome: '' }
 
 /** Incidents from the collector events. Without events, the section stays hidden and the
  *  results and tables work as before. */
@@ -29,10 +29,12 @@ export function IncidentsSection({ roundId }: { roundId: number }) {
 
   const drivers = [...new Set(data.incidents.flatMap((i) => i.cars))].sort()
   const attempts = [...new Set(data.incidents.map((i) => i.attempt))].sort((a, b) => a - b)
+  const laps = [...new Set(data.incidents.map((i) => i.lap).filter((l) => l !== null && l !== undefined))].sort((a, b) => (a as number) - (b as number))
   const shown = data.incidents.filter(
     (i) =>
       (!filters.driver || i.cars.includes(filters.driver)) &&
       (!filters.attempt || String(i.attempt) === filters.attempt) &&
+      (!filters.lap || String(i.lap) === filters.lap) &&
       (!filters.kind || i.kind === filters.kind) &&
       i.max_speed >= filters.minSpeed &&
       (!filters.outcome || (i.review?.outcome ?? 'open') === filters.outcome),
@@ -61,6 +63,17 @@ export function IncidentsSection({ roundId }: { roundId: number }) {
             <option value="">{t('incidents.all')}</option>
             {attempts.map((n) => (
               <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          {t('incidents.lap')}
+          <select value={filters.lap} onChange={(e) => set('lap', e.target.value)}>
+            <option value="">{t('incidents.all')}</option>
+            {laps.map((n) => (
+              <option key={String(n)} value={String(n)}>
                 {n}
               </option>
             ))}

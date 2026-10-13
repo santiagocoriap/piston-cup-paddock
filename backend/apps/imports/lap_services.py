@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from apps.competition.models import Round, Session
 
-from .lap_analysis import CLEAN_RULES, DriverLaps, LapRow, analyze
+from .lap_analysis import DriverLaps, LapRow, analyze, clean_rules_for
 from .models import ImportedLap, PenaltyLogFile, ResultImport
 from .penalty_services import read_log
 
@@ -61,6 +61,23 @@ def _pit_laps(round_: Round, kind: str) -> dict[str, dict[int, str]] | None:
     return pits
 
 
+def _contact_laps(round_: Round) -> set[tuple[str, int]] | None:
+    """The (GUID, lap) pairs with an incident in the accepted race start. None when the round
+    has no collector events, so no lap can count as clean or not clean by contact."""
+    from apps.collectors.incident_api import accepted_race_incidents
+
+    incidents, _, has_events = accepted_race_incidents(round_)
+    if not has_events:
+        return None
+    pairs = set()
+    for incident in incidents:
+        lap = incident.events[0].lap
+        for car in incident.cars:
+            if lap is not None:
+                pairs.add((car, lap))
+    return pairs
+
+
 def round_laps(round_: Round, kind: str) -> RoundLaps:
     sessions = [
         k
@@ -69,7 +86,8 @@ def round_laps(round_: Round, kind: str) -> RoundLaps:
     ]
     result_import = _applied_import(round_, kind)
     race = kind == Session.Kind.RACE
-    rules = CLEAN_RULES if race else CLEAN_RULES[:3]
+    contacts = _contact_laps(round_) if race else None
+    rules = clean_rules_for(race, contacts is not None)
     if result_import is None:
         return RoundLaps(kind, sessions, False, False, rules, [])
     pits = _pit_laps(round_, kind)
@@ -90,9 +108,10 @@ def round_laps(round_: Round, kind: str) -> RoundLaps:
                 invalid_reason=lap.invalid_reason,
                 tyre=lap.tyre,
                 pit=(pits or {}).get(lap.guid, {}).get(lap.lap_number),
+                contact=(lap.guid, lap.lap_number) in (contacts or set()),
             )
         )
-    analyzed = analyze(rows, race=race)
+    analyzed = analyze(rows, race=race, contacts=contacts is not None)
     analyzed.sort(key=lambda d: (d.best_lap_ms is None, d.best_lap_ms or 0))
     return RoundLaps(
         session=kind,
