@@ -581,6 +581,7 @@ def test_install_gives_the_paths_to_powershell_in_variables(tmp_path, monkeypatc
 
     monkeypatch.setattr(pc.subprocess, "run", fake_run)
     monkeypatch.setattr(pc, "say", lambda text: None)
+    monkeypatch.setattr(pc, "setup_window", lambda path: True)
     assert pc.install(config) == 0
     assert str(config.resolve()) not in " ".join(seen["command"])  # Not in the script.
     assert seen["env"]["PADDOCK_NAME"] == "Iniciar Paddock.lnk"
@@ -648,3 +649,90 @@ def test_a_broken_config_gives_a_message(tmp_path, monkeypatch):
     assert (
         all(m.startswith("collector.ini tiene un error") for m in messages) and len(messages) == 2
     )
+
+
+# The setup window
+
+
+def ac_tree(root):
+    ac = root / "steamapps" / "common" / "assettocorsa"
+    for folder in (
+        "server/results",
+        "server/realpenalty/logs",
+        "server/presets/OLD",
+        "server/presets/SERVER_01",
+    ):
+        (ac / folder).mkdir(parents=True)
+    (ac / "server/realpenalty/ac_penalty.exe").write_bytes(b"MZ")
+    (ac / "server/presets/OLD/server_cfg.ini").write_text("[SERVER]\n")
+    os.utime(ac / "server/presets/OLD/server_cfg.ini", (1, 1))
+    (ac / "server/presets/SERVER_01/server_cfg.ini").write_text("[SERVER]\n")
+    return ac
+
+
+def test_the_steam_libraries_come_from_libraryfolders(tmp_path):
+    steam = tmp_path / "Steam"
+    (steam / "steamapps").mkdir(parents=True)
+    library = tmp_path / "Lib"
+    vdf = '"libraryfolders"\n{\n "0" { "path" "' + str(steam).replace("\\", "\\\\") + '" }\n'
+    vdf += ' "1" { "path" "' + str(library).replace("\\", "\\\\") + '" }\n}\n'
+    (steam / "steamapps" / "libraryfolders.vdf").write_text(vdf)
+    assert pc.steam_libraries(steam) == [steam, library]
+    ac = ac_tree(library)
+    assert pc.find_ac(pc.steam_libraries(steam)) == ac
+
+
+def test_detect_finds_the_folders_and_the_newest_preset(tmp_path):
+    ac = ac_tree(tmp_path)
+    found = pc.detect(ac)
+    assert found["results_dir"] == str(ac / "server" / "results")
+    assert found["realpenalty_exe"].endswith("ac_penalty.exe")
+    assert found["realpenalty_logs_dir"].endswith("logs")
+    assert found["preset_dir"] == str(ac / "server" / "presets" / "SERVER_01")
+    assert pc.setup_problems(found) == []
+    assert pc.setup_problems({**found, "results_dir": ""}) == [
+        "Falta la carpeta de resultados del servidor."
+    ]
+
+
+def test_save_setup_keeps_the_rest_of_the_file(tmp_path):
+    ac = ac_tree(tmp_path)
+    config = tmp_path / "collector.ini"
+    example = (Path(pc.__file__).parent / "collector.example.ini").read_text("utf-8")
+    config.write_text(example.replace("key = pcc_CHANGE_ME", "key = pcc_kept"), "utf-8")
+    assert pc.needs_setup(config)
+    pc.save_setup(config, pc.detect(ac), write_server=True)
+    settings = pc.Settings.load(config)
+    assert settings.key == "pcc_kept"
+    assert settings.results_dir == ac / "server" / "results"
+    assert settings.realpenalty_exe == ac / "server" / "realpenalty" / "ac_penalty.exe"
+    assert settings.preset_dir == ac / "server" / "presets" / "SERVER_01"
+    assert settings.server_cfg == settings.preset_dir / "server_cfg.ini"
+    assert settings.write_server_config is True
+    assert not pc.needs_setup(config)
+
+
+def test_install_stops_when_the_setup_is_cancelled(tmp_path, monkeypatch):
+    messages = []
+    monkeypatch.setattr(pc, "setup_window", lambda path: False)
+    monkeypatch.setattr(pc, "say", messages.append)
+    assert pc.install(tmp_path / "collector.ini") == 1
+    assert "instalar.bat" in messages[0]
+
+
+def test_example_paths_take_the_found_paths(tmp_path):
+    ac = ac_tree(tmp_path)
+    found = pc.detect(ac)
+    kept = str(tmp_path)  # A saved path that exists.
+    missing = str(tmp_path / "no-such-folder" / "results")  # The example path of collector.ini.
+    current = {"results_dir": missing, "realpenalty_exe": "", "preset_dir": kept}
+    values = pc.initial_values(current, found)
+    assert values["results_dir"] == found["results_dir"]
+    assert values["realpenalty_exe"] == found["realpenalty_exe"]
+    assert values["preset_dir"] == kept
+
+
+def test_a_preset_with_csp_options_comes_first(tmp_path):
+    ac = ac_tree(tmp_path)
+    (ac / "server/presets/OLD/csp_extra_options.ini").write_text("[EXTRA_RULES]")
+    assert pc.presets(ac)[0].name == "OLD"

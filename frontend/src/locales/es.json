@@ -1530,7 +1530,9 @@
     "chooseRound": "Fecha para {{name}}",
     "assign": "Asignar",
     "download": "Descargar colector",
-    "downloadHelp": "Un zip con el programa para Windows y un collector.ini con esta clave. Copialo a la PC del servidor y seguí LEEME.txt."
+    "downloadHelp": "Un zip con el programa para Windows y un collector.ini con esta clave. Copialo a la PC del servidor y seguí LEEME.txt.",
+    "copy": "Copiar clave",
+    "copied": "Copiada"
   },
   "telemetry": {
     "title": "Telemetría",

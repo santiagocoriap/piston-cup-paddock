@@ -29,6 +29,11 @@ describe('CollectorsSection', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Crear clave' }))
     expect(await screen.findByDisplayValue('pcc_secret')).toBeInTheDocument()
     expect(screen.getByText(/La app no la muestra otra vez/)).toBeInTheDocument()
+    const writeText = vi.fn(async () => {})
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+    await userEvent.click(screen.getByRole('button', { name: 'Copiar clave' }))
+    expect(writeText).toHaveBeenCalledWith('pcc_secret')
+    expect(await screen.findByRole('button', { name: 'Copiada' })).toBeInTheDocument()
 
     await userEvent.selectOptions(screen.getByLabelText('Fecha para 2026_10_11_20_7_RACE.json'), '3')
     await userEvent.click(screen.getByRole('button', { name: 'Asignar' }))

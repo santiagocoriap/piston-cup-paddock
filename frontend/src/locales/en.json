@@ -1530,7 +1530,9 @@
     "chooseRound": "Round for {{name}}",
     "assign": "Assign",
     "download": "Download collector",
-    "downloadHelp": "A zip with the Windows program and a collector.ini with this key. Copy it to the server PC and follow LEEME.txt."
+    "downloadHelp": "A zip with the Windows program and a collector.ini with this key. Copy it to the server PC and follow LEEME.txt.",
+    "copy": "Copy key",
+    "copied": "Copied"
   },
   "telemetry": {
     "title": "Telemetry",

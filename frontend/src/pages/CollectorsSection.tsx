@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { ActionForm } from '../components/ActionForm'
+import { Icon } from '../components/Icon'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
@@ -97,6 +98,13 @@ function KeyBox({ newKey }: { newKey: NewKey }) {
   const { t } = useTranslation()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  async function copy() {
+    await navigator.clipboard?.writeText(newKey.key)
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 2000)
+  }
 
   async function download() {
     setError(null)
@@ -124,7 +132,13 @@ function KeyBox({ newKey }: { newKey: NewKey }) {
       <p>
         <strong>{t('collectors.keyFor', { name: newKey.name })}</strong> {t('collectors.keyOnce')}
       </p>
-      <input readOnly value={newKey.key} onFocus={(e) => e.target.select()} aria-label={t('collectors.key')} />
+      <span className="copy-field">
+        <input readOnly value={newKey.key} onFocus={(e) => e.target.select()} aria-label={t('collectors.key')} />
+        <button type="button" className="secondary" onClick={copy}>
+          <Icon name={copied ? 'check' : 'copy'} small />
+          {copied ? t('collectors.copied') : t('collectors.copy')}
+        </button>
+      </span>
       <div className="key-download">
         <button type="button" onClick={download} disabled={busy}>
           {busy && <span className="spinner" aria-hidden="true" />}

@@ -141,10 +141,10 @@ paddock-collector.exe --uninstall
 README = """Piston Cup Paddock - colector del servidor
 
 1. Copiá esta carpeta a la PC del servidor de AC, por ejemplo C:\\PaddockCollector.
-2. Abrí collector.ini con el Bloc de notas. Escribí las carpetas del servidor y la ruta de
-   ac_penalty.exe (realpenalty_exe) en [server].
-3. Hacé doble clic en instalar.bat. Aparece "Iniciar Paddock" en el escritorio.
-4. Windows puede mostrar "Windows protegió su PC". Hacé clic en "Más información" y después en
+2. Hacé doble clic en instalar.bat. Se abre una ventana: elegí la carpeta de Assetto Corsa.
+   El colector busca solo los resultados, Real Penalty y el preset. Revisá y hacé clic en
+   "Guardar". Aparece "Iniciar Paddock" en el escritorio.
+3. Windows puede mostrar "Windows protegió su PC". Hacé clic en "Más información" y después en
    "Ejecutar de todas formas". El programa no tiene firma de código.
 
 Antes de cada carrera, abrí "Iniciar Paddock" en lugar de Real Penalty. Abre Real Penalty y el

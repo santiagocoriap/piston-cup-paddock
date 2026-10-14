@@ -9,8 +9,10 @@ The collector only reads, with two exceptions that are off by default: "Enviar a
 1. In the app, open the championship page. In "Colectores", make a key.
 2. Click "Descargar colector". You get `paddock-collector.zip`. The key is in it, so keep it secret.
 3. Unzip it on the server computer, for example to `C:\PaddockCollector`.
-4. Open `collector.ini` in Notepad. In `[server]`, write the server folders and the path of `ac_penalty.exe` (`realpenalty_exe`).
-5. Double-click `instalar.bat`. The shortcut "Iniciar Paddock" comes on the desktop.
+4. Double-click `instalar.bat`. A setup window opens. It finds Assetto Corsa in the Steam folders, and from it the results folder, Real Penalty, the Real Penalty logs, and the newest Content Manager preset. Each field has a "Buscar…" button.
+5. Click "Guardar". The shortcut "Iniciar Paddock" comes on the desktop.
+
+To change the folders later, run `paddock-collector.exe --setup`. The program also shows the window when the results folder is missing.
 
 Windows SmartScreen can show "Windows protected your PC", because the program has no code signature. Click "More info", then "Run anyway".
 

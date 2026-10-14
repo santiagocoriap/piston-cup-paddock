@@ -19,7 +19,8 @@ Only the Python standard library. Python 3.11 or newer. Run:
     python paddock_collector.py --config collector.ini
 
 The Windows program (paddock-collector.exe, built by GitHub Actions) also has:
-    --install     put the shortcut "Iniciar Paddock" on the desktop
+    --install     show the setup window, then put the shortcut "Iniciar Paddock" on the desktop
+    --setup       show the setup window only (the folders of the AC server)
     --uninstall   remove the shortcut
 The admin uses the shortcut before a race, in place of Real Penalty: the collector starts Real
 Penalty (realpenalty_exe in collector.ini) and itself. The collector stops by itself after the AC
@@ -54,7 +55,7 @@ from pathlib import Path
 
 log = logging.getLogger("paddock_collector")
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 UPDATE_SECONDS = 24 * 3600
 SHORTCUT_NAME = "Iniciar Paddock.lnk"
 # Only one collector runs on a PC: the second one cannot take this local port, and it stops.
@@ -570,7 +571,237 @@ def load_settings(config: Path) -> Settings | None:
         return None
 
 
+# Setup window: the admin picks the folders. Nobody edits collector.ini by hand.
+
+SETUP_FIELDS = ("results_dir", "realpenalty_exe", "realpenalty_logs_dir", "preset_dir")
+
+
+def steam_libraries(steam_root: Path | None = None) -> list[Path]:
+    """The Steam library folders of this PC, from the registry and libraryfolders.vdf."""
+    roots: list[Path] = []
+    if steam_root is not None:
+        roots.append(steam_root)
+    elif os.name == "nt":
+        try:
+            import winreg
+
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Valve\Steam") as key:
+                roots.append(Path(winreg.QueryValueEx(key, "SteamPath")[0]))
+        except OSError:
+            pass
+        roots.append(Path(r"C:\Program Files (x86)\Steam"))
+    found: list[Path] = []
+    for root in roots:
+        found.append(root)
+        text, _ = read_text(root / "steamapps" / "libraryfolders.vdf")
+        found += [Path(p.replace("\\\\", "\\")) for p in re.findall(r'"path"\s+"([^"]+)"', text)]
+    unique: list[Path] = []
+    for path in found:
+        if str(path).lower() not in {str(u).lower() for u in unique}:
+            unique.append(path)
+    return unique
+
+
+def find_ac(libraries: list[Path]) -> Path | None:
+    for library in libraries:
+        ac = library / "steamapps" / "common" / "assettocorsa"
+        if (ac / "server").is_dir():
+            return ac
+    return None
+
+
+def presets(ac: Path) -> list[Path]:
+    """The Content Manager presets of the server. A preset with CSP options (a league preset)
+    comes first, then the last changed one."""
+    folder = ac / "server" / "presets"
+    if not folder.is_dir():
+        return []
+    found = [p for p in folder.iterdir() if (p / "server_cfg.ini").is_file()]
+
+    def rank(preset: Path) -> tuple[bool, float]:
+        csp = (preset / "csp_extra_options.ini").is_file()
+        return csp, (preset / "server_cfg.ini").stat().st_mtime
+
+    return sorted(found, key=rank, reverse=True)
+
+
+def detect(ac: Path) -> dict[str, str]:
+    """The folders and files of the collector in an Assetto Corsa folder. "" when not found."""
+    server = ac / "server"
+    realpenalty = server / "realpenalty"
+    found_presets = presets(ac)
+    return {
+        "results_dir": str(server / "results") if (server / "results").is_dir() else "",
+        "realpenalty_exe": (
+            str(realpenalty / "ac_penalty.exe")
+            if (realpenalty / "ac_penalty.exe").is_file()
+            else ""
+        ),
+        "realpenalty_logs_dir": (
+            str(realpenalty / "logs") if (realpenalty / "logs").is_dir() else ""
+        ),
+        "preset_dir": str(found_presets[0]) if found_presets else "",
+    }
+
+
+def initial_values(current: dict[str, str], found: dict[str, str]) -> dict[str, str]:
+    """A saved path that exists stays. An empty path, or an example path that does not exist on
+    this PC, takes the path that the collector found."""
+    return {
+        key: value if value and Path(value).exists() else found.get(key, "")
+        for key, value in {k: current.get(k, "") for k in SETUP_FIELDS}.items()
+    }
+
+
+def setup_problems(values: dict[str, str]) -> list[str]:
+    """What is wrong with the chosen folders. The results folder is necessary."""
+    problems = []
+    if not values.get("results_dir") or not Path(values["results_dir"]).is_dir():
+        problems.append("Falta la carpeta de resultados del servidor.")
+    exe = values.get("realpenalty_exe", "")
+    if exe and not Path(exe).is_file():
+        problems.append("El archivo de Real Penalty no existe.")
+    logs = values.get("realpenalty_logs_dir", "")
+    if logs and not Path(logs).is_dir():
+        problems.append("La carpeta de logs de Real Penalty no existe.")
+    preset = values.get("preset_dir", "")
+    if preset and not (Path(preset) / "server_cfg.ini").is_file():
+        problems.append("La carpeta del preset no tiene server_cfg.ini.")
+    return problems
+
+
+def save_setup(config: Path, values: dict[str, str], write_server: bool) -> None:
+    """Write the chosen folders into collector.ini and keep every other line."""
+    text, newline = read_text(config)
+    for key in SETUP_FIELDS:
+        text = ini_set(text, "server", key, values.get(key, ""))
+    if values.get("preset_dir"):
+        text = ini_set(text, "server", "server_cfg", "")  # The preset has its server_cfg.ini.
+    text = ini_set(text, "collector", "write_server_config", "true" if write_server else "false")
+    write_text(config, text, newline)
+
+
+def needs_setup(config: Path) -> bool:
+    try:
+        settings = Settings.load(config)
+    except (SystemExit, configparser.Error, KeyError, ValueError):
+        return True
+    return settings.results_dir is None or not settings.results_dir.is_dir()
+
+
+def setup_window(config: Path) -> bool:
+    """The setup window. True when the admin saved."""
+    import tkinter as tk
+    from tkinter import filedialog, messagebox, ttk
+
+    text, _ = read_text(config)
+    current = {key: ini_get(text, "server", key) or "" for key in SETUP_FIELDS}
+    ac = find_ac(steam_libraries())
+    if ac:
+        current = initial_values(current, detect(ac))
+    write_now = (ini_get(text, "collector", "write_server_config") or "").lower() == "true"
+
+    root = tk.Tk()
+    root.title("Paddock: configurar el colector")
+    root.resizable(True, False)
+    frame = ttk.Frame(root, padding=16)
+    frame.grid(sticky="nsew")
+    root.columnconfigure(0, weight=1)
+    frame.columnconfigure(1, weight=1)
+
+    ttk.Label(
+        frame,
+        text=(
+            "Elegí las carpetas del servidor de Assetto Corsa. "
+            "Con la carpeta de Assetto Corsa, el colector busca el resto."
+        ),
+        wraplength=760,
+    ).grid(row=0, column=0, columnspan=3, sticky="w", pady=(0, 12))
+
+    ac_var = tk.StringVar(value=str(ac) if ac else "")
+    variables = {key: tk.StringVar(value=current.get(key, "")) for key in SETUP_FIELDS}
+    labels = {
+        "results_dir": "Resultados del servidor",
+        "realpenalty_exe": "Real Penalty (ac_penalty.exe)",
+        "realpenalty_logs_dir": "Logs de Real Penalty",
+        "preset_dir": "Preset de Content Manager",
+    }
+
+    def fill_from_ac() -> None:
+        folder = Path(ac_var.get())
+        if (folder / "server").is_dir():
+            for key, value in detect(folder).items():
+                variables[key].set(value)
+            preset_box["values"] = [str(p) for p in presets(folder)]
+
+    def pick_ac() -> None:
+        chosen = filedialog.askdirectory(title="Carpeta de Assetto Corsa", parent=root)
+        if chosen:
+            ac_var.set(str(Path(chosen)))
+            fill_from_ac()
+
+    def picker(key: str):
+        def pick() -> None:
+            if key == "realpenalty_exe":
+                chosen = filedialog.askopenfilename(
+                    title=labels[key], parent=root, filetypes=[("ac_penalty.exe", "*.exe")]
+                )
+            else:
+                chosen = filedialog.askdirectory(title=labels[key], parent=root)
+            if chosen:
+                variables[key].set(str(Path(chosen)))
+
+        return pick
+
+    ttk.Label(frame, text="Carpeta de Assetto Corsa").grid(row=1, column=0, sticky="w", pady=4)
+    ttk.Entry(frame, textvariable=ac_var, width=84).grid(row=1, column=1, sticky="ew", padx=8)
+    ttk.Button(frame, text="Buscar…", command=pick_ac).grid(row=1, column=2)
+    ttk.Separator(frame).grid(row=2, column=0, columnspan=3, sticky="ew", pady=10)
+
+    preset_box = ttk.Combobox(frame, textvariable=variables["preset_dir"], width=82)
+    if ac:
+        preset_box["values"] = [str(p) for p in presets(ac)]
+    for row, key in enumerate(SETUP_FIELDS, start=3):
+        ttk.Label(frame, text=labels[key]).grid(row=row, column=0, sticky="w", pady=4)
+        if key == "preset_dir":
+            preset_box.grid(row=row, column=1, sticky="ew", padx=8)
+        else:
+            ttk.Entry(frame, textvariable=variables[key], width=84).grid(
+                row=row, column=1, sticky="ew", padx=8
+            )
+        ttk.Button(frame, text="Buscar…", command=picker(key)).grid(row=row, column=2)
+
+    write_var = tk.BooleanVar(value=write_now)
+    ttk.Checkbutton(
+        frame,
+        text='Permitir "Enviar al servidor": escribe el preset, solo con el servidor apagado',
+        variable=write_var,
+    ).grid(row=7, column=0, columnspan=3, sticky="w", pady=(12, 0))
+
+    saved = {"done": False}
+
+    def save() -> None:
+        values = {key: variables[key].get().strip() for key in SETUP_FIELDS}
+        problems = setup_problems(values)
+        if problems:
+            messagebox.showerror("Paddock", "\n".join(problems), parent=root)
+            return
+        save_setup(config, values, write_var.get())
+        saved["done"] = True
+        root.destroy()
+
+    buttons = ttk.Frame(frame)
+    buttons.grid(row=8, column=0, columnspan=3, sticky="e", pady=(16, 0))
+    ttk.Button(buttons, text="Cancelar", command=root.destroy).grid(row=0, column=0, padx=8)
+    ttk.Button(buttons, text="Guardar", command=save).grid(row=0, column=1)
+    root.mainloop()
+    return saved["done"]
+
+
 def install(config: Path) -> int:
+    if not setup_window(config):
+        say("No se guardó nada. Abrí instalar.bat otra vez para configurar el colector.")
+        return 1
     settings = load_settings(config)
     if settings is None:
         return 1
@@ -1255,6 +1486,7 @@ def main() -> None:
     parser.add_argument("--check", action="store_true", help="Check the key and stop.")
     parser.add_argument("--install", action="store_true", help="Make the desktop shortcut.")
     parser.add_argument("--uninstall", action="store_true", help="Remove the desktop shortcut.")
+    parser.add_argument("--setup", action="store_true", help="Show the setup window.")
     args = parser.parse_args()
     config = args.config.resolve()
     # A shortcut can start in another folder. Relative folders, such as the spool folder, are next
@@ -1265,6 +1497,10 @@ def main() -> None:
         raise SystemExit(uninstall())
     if args.install:
         raise SystemExit(install(config))
+    if args.setup or (getattr(sys, "frozen", False) and needs_setup(config)):
+        # The Windows program shows the setup window when the folders are missing.
+        if not setup_window(config):
+            raise SystemExit(1)
     settings = load_settings(config)
     if settings is None:
         raise SystemExit(1)
