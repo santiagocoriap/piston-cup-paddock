@@ -16,6 +16,7 @@ import { panelId, tabId } from '../lib/tabs'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { CollectorsSection } from './CollectorsSection'
+import { DriverScriptCard } from './DriverScriptCard'
 import { HealthSection } from './HealthSection'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { Avatar } from '../components/Avatar'
@@ -128,7 +129,12 @@ export function ChampionshipPage() {
               {tab === 'members' && <Members championshipId={championshipId} />}
               {tab === 'roles' && <Roles championshipId={championshipId} />}
               {tab === 'health' && <HealthSection championshipId={championshipId} />}
-              {tab === 'collectors' && <CollectorsSection championshipId={championshipId} />}
+              {tab === 'collectors' && (
+                <>
+                  <CollectorsSection championshipId={championshipId} />
+                  <DriverScriptCard championshipId={championshipId} />
+                </>
+              )}
             </div>
           </div>
         </section>

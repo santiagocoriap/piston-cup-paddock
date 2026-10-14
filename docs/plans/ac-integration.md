@@ -35,6 +35,7 @@ How the app trusts a lap without a driver key:
 
 - When the admin clicks "Enviar al servidor", the app makes a new race code. The server collector writes it in the `$CSP0:` block of the welcome message, in the script section. Only drivers on the server get it.
 - The app takes a lap only when the race code is the current one, and the server collector shows that this Steam ID was connected at that time.
+- Every driver on the server gets the race code, so a driver could send a lap with the Steam ID of another driver. So the server is also the witness of each lap: the app takes a lap only when the server recorded a lap for this Steam ID with the same lap time (50 ms or less of difference). Only the first upload of a server lap counts.
 
 Practice outside the league (optional, later): CSP also has Lua apps that load with AC every time, after the driver turns them on one time. A "Paddock práctica" app can send private practice laps. It is not needed for league races.
 
@@ -176,6 +177,8 @@ A lap links to a session when all of these are true:
 2. The corrected lap time is between the start and the end of a session of that server.
 3. The Steam ID has a `SessionPresence` in the session at that time.
 4. The track and the car are the same.
+5. The server recorded a lap for this Steam ID with the same lap time, at the same time. This stops a driver who sends a lap in the name of another driver.
+6. No other upload of the same server lap counts already.
 
 A lap that fails one rule goes nowhere. A lap from the optional practice app is private practice. It stays on the driver page as "Práctica" and never shows in a round. Only its driver sees it.
 

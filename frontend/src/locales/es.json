@@ -2103,5 +2103,17 @@
     "show": "Mostrar",
     "hide": "Ocultar",
     "capsLock": "Bloq Mayús está activado."
+  },
+  "driverScript": {
+    "title": "Script para los pilotos",
+    "help": "Con este texto en el servidor, AC manda las vueltas de cada piloto a la app. Los pilotos no instalan nada y no abren nada: el script corre dentro del juego mientras están en el servidor.",
+    "step1": "En Content Manager, abrí el preset del servidor de la liga.",
+    "step2": "Pegá este texto en las opciones extra de CSP, abajo de lo que ya hay.",
+    "step3": "Guardá y reiniciá el servidor. Desde la fase 4, el colector del servidor lo hace solo.",
+    "section": "Texto para las opciones de CSP",
+    "copy": "Copiar texto",
+    "newCode": "Hacer un código nuevo",
+    "confirmNew": "El código viejo sigue andando 6 horas. Después hay que pegar el texto nuevo en el servidor. ¿Seguir?",
+    "codeDate": "Código creado el {{date}}."
   }
 }

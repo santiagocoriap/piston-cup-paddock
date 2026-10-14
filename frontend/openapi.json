@@ -6800,6 +6800,144 @@
           }
         ]
       }
+    },
+    "/api/script/laps": {
+      "post": {
+        "operationId": "apps_telemetry_script_api_script_lap",
+        "summary": "Script Lap",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScriptLapOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "paddock script"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScriptLapIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "ScriptAuth": []
+          }
+        ]
+      }
+    },
+    "/api/script/now": {
+      "get": {
+        "operationId": "apps_telemetry_script_api_script_now",
+        "summary": "Script Now",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NowOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "paddock script"
+        ],
+        "security": [
+          {
+            "ScriptAuth": []
+          }
+        ]
+      }
+    },
+    "/api/championships/{championship_id}/script": {
+      "get": {
+        "operationId": "apps_telemetry_script_api_script_setup",
+        "summary": "Script Setup",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "championship_id",
+            "schema": {
+              "title": "Championship Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScriptSetupOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "paddock script"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/championships/{championship_id}/script/code": {
+      "post": {
+        "operationId": "apps_telemetry_script_api_script_new_code",
+        "summary": "Script New Code",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "championship_id",
+            "schema": {
+              "title": "Championship Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScriptSetupOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "paddock script"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -18467,6 +18605,171 @@
         },
         "title": "ReadIn",
         "type": "object"
+      },
+      "ScriptLapOut": {
+        "properties": {
+          "state": {
+            "title": "State",
+            "type": "string"
+          },
+          "lap_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap Number"
+          },
+          "cuts": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cuts"
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "title": "ScriptLapOut",
+        "type": "object"
+      },
+      "ScriptLapIn": {
+        "properties": {
+          "steam_id": {
+            "title": "Steam Id",
+            "type": "string"
+          },
+          "track": {
+            "title": "Track",
+            "type": "string"
+          },
+          "layout": {
+            "default": "",
+            "title": "Layout",
+            "type": "string"
+          },
+          "car": {
+            "title": "Car",
+            "type": "string"
+          },
+          "lap_number": {
+            "title": "Lap Number",
+            "type": "integer"
+          },
+          "lap_time_ms": {
+            "title": "Lap Time Ms",
+            "type": "integer"
+          },
+          "valid": {
+            "default": true,
+            "title": "Valid",
+            "type": "boolean"
+          },
+          "cuts": {
+            "default": 0,
+            "title": "Cuts",
+            "type": "integer"
+          },
+          "ended_at": {
+            "title": "Ended At",
+            "type": "integer"
+          },
+          "sent_at": {
+            "title": "Sent At",
+            "type": "integer"
+          },
+          "samples": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Samples",
+            "type": "array"
+          }
+        },
+        "required": [
+          "steam_id",
+          "track",
+          "car",
+          "lap_number",
+          "lap_time_ms",
+          "ended_at",
+          "sent_at",
+          "samples"
+        ],
+        "title": "ScriptLapIn",
+        "type": "object"
+      },
+      "NowOut": {
+        "properties": {
+          "session_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Type"
+          },
+          "round_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Round Number"
+          },
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "title": "NowOut",
+        "type": "object"
+      },
+      "ScriptSetupOut": {
+        "properties": {
+          "script_url": {
+            "title": "Script Url",
+            "type": "string"
+          },
+          "race_code": {
+            "title": "Race Code",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "csp_section": {
+            "title": "Csp Section",
+            "type": "string"
+          }
+        },
+        "required": [
+          "script_url",
+          "race_code",
+          "created_at",
+          "csp_section"
+        ],
+        "title": "ScriptSetupOut",
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -18482,6 +18785,11 @@
       "DriverAuth": {
         "type": "http",
         "scheme": "bearer"
+      },
+      "ScriptAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Paddock-Code"
       }
     }
   },

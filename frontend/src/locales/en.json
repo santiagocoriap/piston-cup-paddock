@@ -2103,5 +2103,17 @@
     "show": "Show",
     "hide": "Hide",
     "capsLock": "Caps Lock is on."
+  },
+  "driverScript": {
+    "title": "Script for the drivers",
+    "help": "With this text on the server, AC sends the laps of each driver to the app. Drivers install nothing and open nothing: the script runs inside the game while they are on the server.",
+    "step1": "In Content Manager, open the preset of the league server.",
+    "step2": "Paste this text in the CSP extra options, below the text that is there.",
+    "step3": "Save and restart the server. From phase 4, the server collector does this by itself.",
+    "section": "Text for the CSP options",
+    "copy": "Copy text",
+    "newCode": "Make a new code",
+    "confirmNew": "The old code keeps working for 6 hours. After that, paste the new text on the server. Continue?",
+    "codeDate": "Code made on {{date}}."
   }
 }

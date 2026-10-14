@@ -232,4 +232,17 @@ def receive_events(token: CollectorToken, run_id: str, events: list[dict]) -> in
         )
     before = CollectorEvent.objects.filter(token=token, run_id=run_id).count()
     CollectorEvent.objects.bulk_create(rows, ignore_conflicts=True)
-    return CollectorEvent.objects.filter(token=token, run_id=run_id).count() - before
+    added = CollectorEvent.objects.filter(token=token, run_id=run_id).count() - before
+    if added:
+        _match_script_laps(token)
+    return added
+
+
+def _match_script_laps(token: CollectorToken) -> None:
+    """New server events can be the missing part for laps of the Paddock script that wait."""
+    from apps.telemetry import script
+
+    try:
+        script.rematch(token.championship)
+    except Exception:
+        log.exception("Matching the script laps failed for collector %s", token.id)

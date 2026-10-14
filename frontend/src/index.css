@@ -8866,3 +8866,35 @@ form.card > label.wide {
 p.auto-notes {
   padding-left: 0;
 }
+
+/* ---------- The Paddock script card ---------- */
+.driver-script-steps {
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+.csp-section {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+.driver-script-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.driver-script-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+}

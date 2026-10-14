@@ -26,7 +26,7 @@ The development plan puts "control of the race server" out of scope, and the col
    - The collector keeps a copy of each file before it writes.
    - The setting `write_server_config` is off by default. The server owner turns it on.
    - The collector never starts, stops, or restarts the AC server. It never sends a command to the server, other than the existing request for car positions.
-3. **Drivers install nothing for league races.** The league server sends a CSP Lua script to each driver who joins, through the CSP options in the welcome message. Phase 0 confirmed that this works. The script sends the telemetry of each lap from inside AC. A race code from the app and the Steam ID of the driver replace the driver key for these laps.
+3. **Drivers install nothing for league races.** The league server sends a CSP Lua script to each driver who joins, through the CSP options in the welcome message. Phase 0 confirmed that this works. The script sends the telemetry of each lap from inside AC. A race code from the app and the Steam ID of the driver replace the driver key for these laps. Every driver on the server gets the race code, so the server is the witness: a lap counts only when the server recorded a lap for that Steam ID with the same lap time.
 4. **The keys stay as they are.** A server key works for one championship. It can read the server data of that championship and send files and events. It cannot choose users, seasons, or admin actions.
 
 ## Consequences

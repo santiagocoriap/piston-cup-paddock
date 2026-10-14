@@ -2456,6 +2456,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/script/laps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Script Lap */
+        post: operations["apps_telemetry_script_api_script_lap"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/script/now": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Script Now */
+        get: operations["apps_telemetry_script_api_script_now"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/championships/{championship_id}/script": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Script Setup */
+        get: operations["apps_telemetry_script_api_script_setup"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/championships/{championship_id}/script/code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Script New Code */
+        post: operations["apps_telemetry_script_api_script_new_code"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -6215,6 +6283,72 @@ export interface components {
              * @default []
              */
             ids?: number[];
+        };
+        /** ScriptLapOut */
+        ScriptLapOut: {
+            /** State */
+            state: string;
+            /** Lap Number */
+            lap_number?: number | null;
+            /** Cuts */
+            cuts?: number | null;
+        };
+        /** ScriptLapIn */
+        ScriptLapIn: {
+            /** Steam Id */
+            steam_id: string;
+            /** Track */
+            track: string;
+            /**
+             * Layout
+             * @default
+             */
+            layout?: string;
+            /** Car */
+            car: string;
+            /** Lap Number */
+            lap_number: number;
+            /** Lap Time Ms */
+            lap_time_ms: number;
+            /**
+             * Valid
+             * @default true
+             */
+            valid?: boolean;
+            /**
+             * Cuts
+             * @default 0
+             */
+            cuts?: number;
+            /** Ended At */
+            ended_at: number;
+            /** Sent At */
+            sent_at: number;
+            /** Samples */
+            samples: number[][];
+        };
+        /** NowOut */
+        NowOut: {
+            /** Session Type */
+            session_type?: string | null;
+            /** Round Number */
+            round_number?: number | null;
+            /**
+             * Label
+             * @default
+             */
+            label?: string;
+        };
+        /** ScriptSetupOut */
+        ScriptSetupOut: {
+            /** Script Url */
+            script_url: string;
+            /** Race Code */
+            race_code: string;
+            /** Created At */
+            created_at: string;
+            /** Csp Section */
+            csp_section: string;
         };
     };
     responses: never;
@@ -10186,6 +10320,94 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NotificationsOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_script_api_script_lap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScriptLapIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScriptLapOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_script_api_script_now: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NowOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_script_api_script_setup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScriptSetupOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_script_api_script_new_code: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScriptSetupOut"];
                 };
             };
         };

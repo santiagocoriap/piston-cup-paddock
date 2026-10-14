@@ -25,6 +25,7 @@ from apps.restarts.api import router as restarts_router
 from apps.results.api import router as results_router
 from apps.rules.api import router as rules_router
 from apps.telemetry.api import router as telemetry_router
+from apps.telemetry.script_api import router as script_router
 from apps.voting.api import router as voting_router
 
 # Every endpoint needs a signed-in user, unless it sets auth=None.
@@ -54,3 +55,4 @@ api.add_router("/", safety_router)
 api.add_router("/", replay_router)
 api.add_router("/", rules_router)
 api.add_router("/", community_router)
+api.add_router("/", script_router)
