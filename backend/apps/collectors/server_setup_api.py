@@ -38,12 +38,20 @@ class PushOut(Schema):
     collector: str | None
 
 
+class PresetOut(Schema):
+    folder: str
+    name: str
+
+
 class SetupOut(Schema):
     track: dict
     entries: list[PushEntryOut]
     conditions: dict
     warnings: list[str]
     open_slots: int
+    # The Content Manager presets of the server. preset: the one that the collector uses now.
+    presets: list[PresetOut]
+    preset: str
     latest: PushOut | None
     has_collector: bool
 
@@ -84,7 +92,10 @@ def _setup_out(request: HttpRequest, round_: Round) -> SetupOut:
     except server_setup.SetupError as error:
         raise HttpError(422, error.code) from error
     championship = round_.season.championship
+    presets, preset = server_setup.server_presets(championship)
     return SetupOut(
+        presets=presets,
+        preset=preset,
         track=content["track"],
         entries=content["entries"],
         conditions=content["conditions"],
@@ -104,14 +115,17 @@ def server_setup_preview(request: HttpRequest, round_id: int):
 class PushIn(Schema):
     # The free slots for this push only. None: the setting of the championship.
     open_slots: int | None = Field(None, ge=0, le=40)
+    # The folder of the Content Manager preset. None: the preset that the collector uses.
+    preset: str | None = Field(None, max_length=100)
 
 
 @router.post("/rounds/{round_id}/server-push", response=SetupOut)
 def server_push(request: HttpRequest, round_id: int, payload: PushIn | None = None):
     round_ = _managed_round(request, round_id)
     slots = payload.open_slots if payload else None
+    preset = payload.preset if payload else None
     try:
-        server_setup.push(round_, request.user, _base_url(request), slots)
+        server_setup.push(round_, request.user, _base_url(request), slots, preset)
     except server_setup.SetupError as error:
         raise HttpError(422, error.code) from error
     return _setup_out(request, round_)
@@ -128,6 +142,18 @@ class CommandOut(Schema):
 class CommandReportIn(Schema):
     status: str  # "waiting", "done", or "failed"
     error: str = ""
+
+
+class PresetsIn(Schema):
+    presets: list[dict] = Field(default_factory=list, max_length=50)
+    current: str = Field("", max_length=100)
+
+
+@router.post("/collector/presets", auth=CollectorAuth())
+def collector_presets(request: HttpRequest, payload: PresetsIn):
+    """The Content Manager presets of the server, for the list in "Enviar al servidor"."""
+    server_setup.save_presets(request.auth, payload.presets, payload.current)
+    return {"presets": len(request.auth.presets)}
 
 
 @router.get("/collector/commands", response=CommandOut, auth=CollectorAuth())

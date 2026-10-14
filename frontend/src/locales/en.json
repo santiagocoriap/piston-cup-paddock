@@ -419,7 +419,8 @@
     "image_too_large": "The picture is bigger than 5 MB.",
     "image_not_supported": "The picture must be a PNG or a JPEG.",
     "no_release": "The app does not have the collector program yet. Try again later.",
-    "wrong_key": "The key is not for this collector."
+    "wrong_key": "The key is not for this collector.",
+    "unknown_preset": "The collector does not have that Content Manager preset."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -2178,9 +2179,13 @@
     },
     "errors": {
       "server_running": "the server is running",
-      "writing_disabled": "the collector does not write: write_server_config = false"
+      "writing_disabled": "the collector does not write: write_server_config = false",
+      "unknown_preset": "the collector does not have that preset"
     },
     "openSlots": "Open slots",
-    "openSlotsHelp": "Empty: {{count}}, the number of the championship. Another number counts only for this push."
+    "openSlotsHelp": "Empty: {{count}}, the number of the championship. Another number counts only for this push.",
+    "preset": "Content Manager preset",
+    "presetDefault": "The collector preset",
+    "presetHelp": "The collector writes to this preset and uses it from now on. Then start this preset in Content Manager."
   }
 }

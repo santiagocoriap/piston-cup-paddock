@@ -158,3 +158,27 @@ def test_the_admin_sets_the_open_slots(api, champ_admin, championship, key, roun
         content_type="application/json",
     )
     assert too_many.status_code == 422
+
+
+def test_the_admin_picks_another_preset(api, champ_admin, key, round_, entries):
+    sent = {
+        "presets": [
+            {"folder": "SERVER_01", "name": "EIST Server - Piston Cup (SERVER_01)"},
+            {"folder": "Rain Piston", "name": "EIST Server - Piston Cup (Rain Piston)"},
+            {"folder": "../evil", "name": "x"},
+        ],
+        "current": "SERVER_01",
+    }
+    assert collector(key, "post", "/collector/presets", sent).json() == {"presets": 2}
+    setup = api(champ_admin).get(f"/rounds/{round_.id}/server-setup").json()
+    assert [p["folder"] for p in setup["presets"]] == ["SERVER_01", "Rain Piston"]
+    assert setup["preset"] == "SERVER_01"
+
+    api(champ_admin).post(f"/rounds/{round_.id}/server-push", {"preset": "Rain Piston"})
+    assert collector(key, "get", "/collector/commands").json()["content"]["preset"] == "Rain Piston"
+    wrong = api(champ_admin).client.post(
+        f"/api/rounds/{round_.id}/server-push",
+        {"preset": "../evil"},
+        content_type="application/json",
+    )
+    assert wrong.status_code == 422

@@ -55,7 +55,7 @@ from pathlib import Path
 
 log = logging.getLogger("paddock_collector")
 
-VERSION = "1.2.1"
+VERSION = "1.3.0"
 UPDATE_SECONDS = 24 * 3600
 SHORTCUT_NAME = "Iniciar Paddock.lnk"
 # Only one collector runs on a PC: the second one cannot take this local port, and it stops.
@@ -112,6 +112,8 @@ class Settings:
     realpenalty_exe: Path | None = None
     # The collector stops this many minutes after the AC server stops. 0: it never stops.
     stop_after_minutes: int = 15
+    # collector.ini. A push to another preset saves the new preset there.
+    config_path: Path | None = None
 
     @classmethod
     def load(cls, path: Path) -> Settings:
@@ -138,6 +140,7 @@ class Settings:
             open_slots=max(0, collector.getint("open_slots", 10)),
             realpenalty_exe=folder(server.get("realpenalty_exe", "")),
             stop_after_minutes=max(0, collector.getint("stop_after_minutes", 15)),
+            config_path=path,
             penalty_dir=folder(server.get("realpenalty_logs_dir", "")),
             spool_dir=Path(collector.get("spool_dir", "spool")),
             udp_port=collector.getint("udp_port", 0),
@@ -342,6 +345,10 @@ class App:
     def send_events(self, run_id: str, events: list[dict]) -> dict:
         body = json.dumps({"run_id": run_id, "events": events}).encode()
         return self._request("/api/collector/events", body, "application/json")
+
+    def send_presets(self, presets: list[dict], current: str) -> dict:
+        body = json.dumps({"presets": presets, "current": current}).encode()
+        return self._request("/api/collector/presets", body, "application/json")
 
     def get_command(self) -> dict:
         request = urllib.request.Request(
@@ -620,7 +627,10 @@ def find_ac(libraries: list[Path]) -> Path | None:
 def presets(ac: Path) -> list[Path]:
     """The Content Manager presets of the server. A preset with CSP options (a league preset)
     comes first, then the last changed one."""
-    folder = ac / "server" / "presets"
+    return presets_in(ac / "server" / "presets")
+
+
+def presets_in(folder: Path) -> list[Path]:
     if not folder.is_dir():
         return []
     found = [p for p in folder.iterdir() if (p / "server_cfg.ini").is_file()]
@@ -630,6 +640,31 @@ def presets(ac: Path) -> list[Path]:
         return csp, (preset / "server_cfg.ini").stat().st_mtime
 
     return sorted(found, key=rank, reverse=True)
+
+
+def preset_name(preset: Path) -> str:
+    """The name that Content Manager shows: NAME of server_cfg.ini, without the " x:..." id that
+    Content Manager adds. The folder name when there is no NAME."""
+    text, _ = read_text(preset / "server_cfg.ini")
+    name = re.sub(r"\s+x:\S+$", "", (ini_get(text, "SERVER", "NAME") or "").strip())
+    return name or preset.name
+
+
+def preset_labels(found: list[Path]) -> dict[str, Path]:
+    """The names for a list. Two presets with the same name also show their folder."""
+    names = [preset_name(p) for p in found]
+    return {
+        (name if names.count(name) == 1 else f"{name} ({preset.name})"): preset
+        for name, preset in zip(names, found, strict=True)
+    }
+
+
+def preset_label(preset: Path) -> str:
+    """The name of one preset in the list of its folder."""
+    for label, path in preset_labels(presets(preset.parent.parent.parent)).items():
+        if path == preset:
+            return label
+    return preset_name(preset)
 
 
 def detect(ac: Path) -> dict[str, str]:
@@ -739,7 +774,7 @@ def setup_window(config: Path) -> bool:
         if (folder / "server").is_dir():
             for key, value in detect(folder).items():
                 variables[key].set(value)
-            preset_box["values"] = [str(p) for p in presets(folder)]
+            show_presets(folder)
 
     def pick_ac() -> None:
         chosen = filedialog.askdirectory(title="Carpeta de Assetto Corsa", parent=root)
@@ -757,6 +792,8 @@ def setup_window(config: Path) -> bool:
                 chosen = filedialog.askdirectory(title=labels[key], parent=root)
             if chosen:
                 variables[key].set(str(Path(chosen)))
+                if key == "preset_dir":
+                    preset_text.set(preset_label(Path(chosen)))
 
         return pick
 
@@ -765,9 +802,24 @@ def setup_window(config: Path) -> bool:
     ttk.Button(frame, text="Buscar…", command=pick_ac).grid(row=1, column=2)
     ttk.Separator(frame).grid(row=2, column=0, columnspan=3, sticky="ew", pady=10)
 
-    preset_box = ttk.Combobox(frame, textvariable=variables["preset_dir"], width=82)
+    # The list shows the names of Content Manager. The saved value is the folder.
+    by_label: dict[str, Path] = {}
+    preset_text = tk.StringVar()
+    preset_box = ttk.Combobox(frame, textvariable=preset_text, width=82, state="readonly")
+
+    def show_presets(folder: Path) -> None:
+        by_label.clear()
+        by_label.update(preset_labels(presets(folder)))
+        preset_box["values"] = list(by_label)
+        chosen = variables["preset_dir"].get()
+        preset_text.set(preset_label(Path(chosen)) if chosen else "")
+
+    def preset_chosen(_event=None) -> None:
+        variables["preset_dir"].set(str(by_label[preset_text.get()]))
+
+    preset_box.bind("<<ComboboxSelected>>", preset_chosen)
     if ac:
-        preset_box["values"] = [str(p) for p in presets(ac)]
+        show_presets(ac)
     for row, key in enumerate(SETUP_FIELDS, start=3):
         ttk.Label(frame, text=labels[key]).grid(row=row, column=0, sticky="w", pady=4)
         if key == "preset_dir":
@@ -1128,23 +1180,61 @@ def handle_command(app: App, settings: Settings, reported: dict[int, str]) -> No
     if not settings.write_server_config or settings.preset_dir is None:
         tell("failed", "writing_disabled")
         return
-    if server_running(settings.preset_dir):
+    target = chosen_preset(settings.preset_dir, content.get("preset"))
+    if target is None:
+        tell("failed", "unknown_preset")
+        return
+    if server_running(target):
         tell("waiting", "server_running")
         return
     try:
         # The admin sets the free slots in the app. An old app sends no number.
         slots = content.get("open_slots", settings.open_slots)
-        backup = write_setup(settings.preset_dir, content, open_slots=int(slots))
+        backup = write_setup(target, content, open_slots=int(slots))
     except (OSError, ValueError, KeyError, configparser.Error) as error:
         log.exception("Writing the race setup failed")
         tell("failed", type(error).__name__)
         return
     log.info(
-        "Wrote the race setup of round %s. Copy of the old files: %s",
+        "Wrote the race setup of round %s into %s. Copy of the old files: %s",
         content["round"]["number"],
+        target.name,
         backup,
     )
+    if target != settings.preset_dir:
+        use_preset(settings, target)
     tell("done")
+
+
+def preset_list(settings: Settings) -> list[dict]:
+    """The presets next to the preset of collector.ini, for the list in the app."""
+    if settings.preset_dir is None:
+        return []
+    found = presets_in(settings.preset_dir.parent)
+    return [{"folder": p.name, "name": label} for label, p in preset_labels(found).items()]
+
+
+def chosen_preset(current: Path, folder: str | None) -> Path | None:
+    """The preset of a push. Only a preset folder next to the preset of collector.ini: a name
+    from the app cannot point to another folder."""
+    if not folder:
+        return current
+    for preset in presets_in(current.parent):
+        if preset.name == folder:
+            return preset
+    return None
+
+
+def use_preset(settings: Settings, preset: Path) -> None:
+    """The admin chose another preset in the app. It stays the preset for the next starts."""
+    old_cfg = settings.preset_dir / "server_cfg.ini" if settings.preset_dir else None
+    settings.preset_dir = preset
+    if settings.server_cfg is None or settings.server_cfg == old_cfg:
+        settings.server_cfg = preset / "server_cfg.ini"
+    if settings.config_path and settings.config_path.exists():
+        text, newline = read_text(settings.config_path)
+        write_text(settings.config_path, ini_set(text, "server", "preset_dir", preset), newline)
+    log.info("The preset is now %s", preset)
 
 
 def upload_pending(app: App, state: State) -> bool:
@@ -1452,6 +1542,8 @@ def run(settings: Settings) -> None:
             handle_command(app, settings, reported)
             if time.time() >= next_ping:
                 app.ping()
+                if settings.preset_dir is not None:
+                    app.send_presets(preset_list(settings), settings.preset_dir.name)
                 next_ping = time.time() + PING_SECONDS
         except Exception:  # The loop must keep running. The log has the details.
             log.exception("Collector loop error")
@@ -1504,10 +1596,10 @@ def main() -> None:
         raise SystemExit(uninstall())
     if args.install:
         raise SystemExit(install(config))
-    if args.setup or (getattr(sys, "frozen", False) and needs_setup(config)):
-        # The Windows program shows the setup window when the folders are missing.
-        if not setup_window(config):
-            raise SystemExit(1)
+    # The Windows program shows the setup window when the folders are missing.
+    wants_setup = args.setup or (getattr(sys, "frozen", False) and needs_setup(config))
+    if wants_setup and not setup_window(config):
+        raise SystemExit(1)
     settings = load_settings(config)
     if settings is None:
         raise SystemExit(1)

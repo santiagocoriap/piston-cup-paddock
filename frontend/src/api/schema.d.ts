@@ -2639,6 +2639,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/collector/presets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Collector Presets
+         * @description The Content Manager presets of the server, for the list in "Enviar al servidor".
+         */
+        post: operations["apps_collectors_server_setup_api_collector_presets"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/collector/commands": {
         parameters: {
             query?: never;
@@ -6546,6 +6566,13 @@ export interface components {
             /** Csp Section */
             csp_section: string;
         };
+        /** PresetOut */
+        PresetOut: {
+            /** Folder */
+            folder: string;
+            /** Name */
+            name: string;
+        };
         /** PushEntryOut */
         PushEntryOut: {
             /** Number */
@@ -6599,6 +6626,10 @@ export interface components {
             warnings: string[];
             /** Open Slots */
             open_slots: number;
+            /** Presets */
+            presets: components["schemas"]["PresetOut"][];
+            /** Preset */
+            preset: string;
             latest: components["schemas"]["PushOut"] | null;
             /** Has Collector */
             has_collector: boolean;
@@ -6607,6 +6638,20 @@ export interface components {
         PushIn: {
             /** Open Slots */
             open_slots?: number | null;
+            /** Preset */
+            preset?: string | null;
+        };
+        /** PresetsIn */
+        PresetsIn: {
+            /** Presets */
+            presets?: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Current
+             * @default
+             */
+            current?: string;
         };
         /** CommandOut */
         CommandOut: {
@@ -10819,6 +10864,28 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["SetupOut"];
                 };
+            };
+        };
+    };
+    apps_collectors_server_setup_api_collector_presets: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PresetsIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -26,6 +26,8 @@ WEATHER_ID = re.compile(r"^(sol_)?\d+_[a-z0-9_]+$")
 # A car, track, or layout key: a folder name of AC. Other text cannot go into the server files.
 SAFE_KEY = re.compile(r"^[A-Za-z0-9_.\-]*$")
 STEAM_ID = re.compile(r"^\d{17}$")
+# A Content Manager preset folder, for example "SERVER_01" or "Rain Piston".
+PRESET_FOLDER = re.compile(r"^[A-Za-z0-9_\-][A-Za-z0-9 _.\-()]{0,99}$")
 # The steps of the collector that the app accepts.
 REPORTS = {ServerPush.State.WAITING, ServerPush.State.DONE, ServerPush.State.FAILED}
 
@@ -126,10 +128,45 @@ def build(round_: Round, base_url: str, open_slots: int | None = None) -> dict:
     }
 
 
-def push(round_: Round, user, base_url: str, open_slots: int | None = None) -> ServerPush:
-    """Make a push for the collector. A newer push replaces a push that waits."""
+def server_presets(championship) -> tuple[list[dict], str]:
+    """The presets of the server and the preset in use, from the collector seen last."""
+    token = (
+        championship.collectors.filter(revoked_at__isnull=True)
+        .exclude(presets=[])
+        .order_by("-last_seen_at")
+        .first()
+    )
+    return (token.presets, token.preset) if token else ([], "")
+
+
+def save_presets(token: CollectorToken, presets: list[dict], current: str) -> None:
+    clean = []
+    for item in presets[:50]:
+        folder = str(item.get("folder") or "")
+        if PRESET_FOLDER.match(folder):
+            clean.append({"folder": folder, "name": _clean(item.get("name")) or folder})
+    folders = {item["folder"] for item in clean}
+    token.presets = clean
+    token.preset = current if current in folders else ""
+    token.save(update_fields=["presets", "preset"])
+
+
+def push(
+    round_: Round,
+    user,
+    base_url: str,
+    open_slots: int | None = None,
+    preset: str | None = None,
+) -> ServerPush:
+    """Make a push for the collector. A newer push replaces a push that waits. preset: the
+    folder of another Content Manager preset. None: the preset that the collector uses."""
     content = build(round_, base_url, open_slots)
     championship = round_.season.championship
+    if preset:
+        known, _current = server_presets(championship)
+        if preset not in {item["folder"] for item in known}:
+            raise SetupError("unknown_preset")
+        content["preset"] = preset
     with transaction.atomic():
         code = script.new_code(championship, user)
         content["script"]["race_code"] = code.code

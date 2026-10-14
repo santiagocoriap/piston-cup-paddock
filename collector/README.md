@@ -83,6 +83,8 @@ With this, an admin sends the race setup from the round page of the app: the dri
 
 After the league drivers, the entry list gets open slots with the league cars, so a driver can change to an extra car. The admins set the number on the championship page (10 by default), and they can change it for one push in the dialog. The spectator slots of the preset, such as Race Control, stay.
 
+The dialog has a list of the Content Manager presets of the server, with the names that Content Manager shows. The collector sends the list with each ping. A push to another preset writes into that preset, and the collector uses that preset from then on (it saves it in `collector.ini`). The app accepts only a preset folder next to the preset of `collector.ini`.
+
 The collector writes only while the server is stopped. Before it writes, it copies the old files to `paddock-backups` in the preset folder. To go back, copy them from there. Close the preset editor of Content Manager before the push, so it does not write over the new files.
 
 ## UDP plugin events (optional)

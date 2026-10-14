@@ -7167,6 +7167,37 @@
         ]
       }
     },
+    "/api/collector/presets": {
+      "post": {
+        "operationId": "apps_collectors_server_setup_api_collector_presets",
+        "summary": "Collector Presets",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "The Content Manager presets of the server, for the list in \"Enviar al servidor\".",
+        "tags": [
+          "server setup"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresetsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "CollectorAuth": []
+          }
+        ]
+      }
+    },
     "/api/collector/commands": {
       "get": {
         "operationId": "apps_collectors_server_setup_api_collector_command",
@@ -19241,6 +19272,24 @@
         "title": "ScriptSetupOut",
         "type": "object"
       },
+      "PresetOut": {
+        "properties": {
+          "folder": {
+            "title": "Folder",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "folder",
+          "name"
+        ],
+        "title": "PresetOut",
+        "type": "object"
+      },
       "PushEntryOut": {
         "properties": {
           "number": {
@@ -19380,6 +19429,17 @@
             "title": "Open Slots",
             "type": "integer"
           },
+          "presets": {
+            "items": {
+              "$ref": "#/components/schemas/PresetOut"
+            },
+            "title": "Presets",
+            "type": "array"
+          },
+          "preset": {
+            "title": "Preset",
+            "type": "string"
+          },
           "latest": {
             "anyOf": [
               {
@@ -19401,6 +19461,8 @@
           "conditions",
           "warnings",
           "open_slots",
+          "presets",
+          "preset",
           "latest",
           "has_collector"
         ],
@@ -19421,9 +19483,42 @@
               }
             ],
             "title": "Open Slots"
+          },
+          "preset": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preset"
           }
         },
         "title": "PushIn",
+        "type": "object"
+      },
+      "PresetsIn": {
+        "properties": {
+          "presets": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "maxItems": 50,
+            "title": "Presets",
+            "type": "array"
+          },
+          "current": {
+            "default": "",
+            "maxLength": 100,
+            "title": "Current",
+            "type": "string"
+          }
+        },
+        "title": "PresetsIn",
         "type": "object"
       },
       "CommandOut": {

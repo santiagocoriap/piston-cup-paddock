@@ -15,6 +15,11 @@ const setup = (latest: unknown) => ({
   conditions: { sun_angle: 40, air_temp_c: 24, road_offset_c: 7, grip_pct: 89 },
   warnings: ['no_guid:Bob', 'weather_kept'],
   open_slots: 10,
+  presets: [
+    { folder: 'SERVER_01', name: 'EIST Server - Piston Cup (SERVER_01)' },
+    { folder: 'Rain Piston', name: 'EIST Server - Piston Cup (Rain Piston)' },
+  ],
+  preset: 'SERVER_01',
   latest,
   has_collector: true,
 })
@@ -49,5 +54,19 @@ describe('ServerPushPanel', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Enviar al servidor' }))
     await screen.findByText('Ana')
     expect(calls.find((c) => c.key === 'POST /api/rounds/9/server-push')?.body).toEqual({ open_slots: 4 })
+  })
+
+  it('sends the push to another Content Manager preset', async () => {
+    const calls = mockApi({
+      'GET /api/rounds/9/server-setup': () => json(200, setup(null)),
+      'POST /api/rounds/9/server-push': () => json(200, setup(null)),
+    })
+    renderPage(<ServerPushPanel roundId={9} />, { path: '/', url: '/' })
+    const select = await screen.findByLabelText(/Plantilla de Content Manager/)
+    expect(select).toHaveValue('SERVER_01')
+    await userEvent.selectOptions(select, 'Rain Piston')
+    await userEvent.click(screen.getByRole('button', { name: 'Enviar al servidor' }))
+    await screen.findByText('Ana')
+    expect(calls.find((c) => c.key === 'POST /api/rounds/9/server-push')?.body).toEqual({ preset: 'Rain Piston' })
   })
 })

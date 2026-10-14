@@ -27,6 +27,8 @@ export function ServerPushPanel({ roundId }: { roundId: number }) {
   const [busy, setBusy] = useState(false)
   // The free slots for this push. Empty: the setting of the championship.
   const [slots, setSlots] = useState('')
+  // The Content Manager preset of this push. Empty: the preset that the collector uses.
+  const [preset, setPreset] = useState('')
 
   useEffect(() => {
     let stop = false
@@ -52,7 +54,10 @@ export function ServerPushPanel({ roundId }: { roundId: number }) {
   async function send() {
     setError(null)
     setBusy(true)
-    const body = slots === '' ? {} : { open_slots: Number(slots) }
+    const body = {
+      ...(slots === '' ? {} : { open_slots: Number(slots) }),
+      ...(preset ? { preset } : {}),
+    }
     const { data, error } = await api.POST('/api/rounds/{round_id}/server-push', { params: { path }, body })
     setBusy(false)
     if (data) setSetup(data)
@@ -130,6 +135,20 @@ export function ServerPushPanel({ roundId }: { roundId: number }) {
             return <li key={warning}>{t(`serverPush.warnings.${code}`, { name })}</li>
           })}
         </ul>
+      )}
+      {setup.presets.length > 0 && (
+        <label className="setting-number">
+          {t('serverPush.preset')}
+          <select value={preset || setup.preset} onChange={(e) => setPreset(e.target.value)}>
+            {!setup.preset && <option value="">{t('serverPush.presetDefault')}</option>}
+            {setup.presets.map((item) => (
+              <option key={item.folder} value={item.folder}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+          <small className="muted">{t('serverPush.presetHelp')}</small>
+        </label>
       )}
       <label className="setting-number">
         {t('serverPush.openSlots')}

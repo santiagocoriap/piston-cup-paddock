@@ -748,3 +748,61 @@ def test_tasklist_runs_with_no_window(monkeypatch):
     monkeypatch.setattr(pc.subprocess, "run", fake_run)
     assert pc.process_running("acServer.exe")
     assert seen["creationflags"] == pc.NO_WINDOW
+
+
+def test_the_preset_list_shows_the_content_manager_name(tmp_path):
+    folder = tmp_path / "server" / "presets"
+    for name, title in (
+        ("SERVER_01", "EIST x:aJnn5d"),
+        ("Rain", "EIST x:pNoWAm"),
+        ("S3", "Gooners"),
+    ):
+        (folder / name).mkdir(parents=True)
+        (folder / name / "server_cfg.ini").write_text(
+            "[SERVER]" + chr(10) + f"NAME={title}" + chr(10)
+        )
+    (folder / "S4").mkdir()
+    (folder / "S4" / "server_cfg.ini").write_text("[SERVER]" + chr(10))
+    labels = pc.preset_labels(pc.presets(tmp_path))
+    assert set(labels) == {"EIST (SERVER_01)", "EIST (Rain)", "Gooners", "S4"}
+    assert pc.preset_label(folder / "S3") == "Gooners"
+    assert pc.preset_name(folder / "SERVER_01") == "EIST"
+
+
+def test_a_push_to_another_preset_writes_it_and_keeps_it(tmp_path, monkeypatch):
+    ac = ac_tree(tmp_path)
+    folder = ac / "server" / "presets"
+    config = tmp_path / "collector.ini"
+    example = (Path(pc.__file__).parent / "collector.example.ini").read_text("utf-8")
+    config.write_text(example, "utf-8")
+    pc.save_setup(config, pc.detect(ac), write_server=True)
+    settings = pc.Settings.load(config)
+    assert settings.preset_dir == folder / "SERVER_01"
+    assert {p["folder"] for p in pc.preset_list(settings)} == {"SERVER_01", "OLD"}
+    assert pc.chosen_preset(settings.preset_dir, "OLD") == folder / "OLD"
+    assert pc.chosen_preset(settings.preset_dir, "..") is None
+    assert pc.chosen_preset(settings.preset_dir, "NOPE") is None
+
+    written = []
+    monkeypatch.setattr(pc, "server_running", lambda preset: False)
+    monkeypatch.setattr(
+        pc, "write_setup", lambda preset, content, open_slots: written.append(preset) or preset
+    )
+    app = SimpleNamespace(
+        get_command=lambda: {"id": 9, "content": {"round": {"number": 1}, "preset": "OLD"}},
+        report=lambda push_id, status, error="": reports.append((push_id, status, error)),
+    )
+    reports = []
+    pc.handle_command(app, settings, {})
+    assert written == [folder / "OLD"]
+    assert reports == [(9, "done", "")]
+    assert settings.preset_dir == folder / "OLD"
+    assert settings.server_cfg == folder / "OLD" / "server_cfg.ini"
+    assert pc.Settings.load(config).preset_dir == folder / "OLD"  # Saved for the next start.
+
+    bad = SimpleNamespace(
+        get_command=lambda: {"id": 10, "content": {"round": {"number": 1}, "preset": "../x"}},
+        report=lambda push_id, status, error="": reports.append((push_id, status, error)),
+    )
+    pc.handle_command(bad, settings, {})
+    assert reports[-1] == (10, "failed", "unknown_preset")

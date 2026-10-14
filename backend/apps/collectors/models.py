@@ -20,6 +20,10 @@ class CollectorToken(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_seen_at = models.DateTimeField(null=True, blank=True)
     revoked_at = models.DateTimeField(null=True, blank=True)
+    # The Content Manager presets of the server ({"folder", "name"}), and the preset that the
+    # collector uses now. The collector sends them with each ping. "Enviar al servidor" lists them.
+    presets = models.JSONField(default=list, blank=True)
+    preset = models.CharField(max_length=100, blank=True)
 
     class Meta:
         ordering = ["name"]

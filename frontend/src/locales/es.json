@@ -419,7 +419,8 @@
     "image_too_large": "La imagen pesa más de 5 MB.",
     "image_not_supported": "La imagen tiene que ser PNG o JPEG.",
     "no_release": "La app todavía no tiene el programa del colector. Probá más tarde.",
-    "wrong_key": "La clave no es de este colector."
+    "wrong_key": "La clave no es de este colector.",
+    "unknown_preset": "El colector no tiene esa plantilla de Content Manager."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -2178,9 +2179,13 @@
     },
     "errors": {
       "server_running": "el servidor está encendido",
-      "writing_disabled": "el colector tiene la escritura apagada: write_server_config = false"
+      "writing_disabled": "el colector tiene la escritura apagada: write_server_config = false",
+      "unknown_preset": "el colector no tiene esa plantilla"
     },
     "openSlots": "Lugares libres",
-    "openSlotsHelp": "Vacío: {{count}}, el número del campeonato. Otro número cuenta solo para este envío."
+    "openSlotsHelp": "Vacío: {{count}}, el número del campeonato. Otro número cuenta solo para este envío.",
+    "preset": "Plantilla de Content Manager",
+    "presetDefault": "La del colector",
+    "presetHelp": "El colector escribe en esta plantilla y la usa desde ahora. Después, iniciá esta plantilla en Content Manager."
   }
 }
