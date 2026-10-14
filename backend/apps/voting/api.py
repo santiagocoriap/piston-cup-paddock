@@ -87,12 +87,22 @@ class OptionOut(Schema):
     selected_by: str
     votes: int | None  # None when the totals are hidden from this user.
     voters: list[str] | None  # None when the choices are hidden from this user.
+    # The picture of the track layout or the car class. None without a picture.
+    image_url: str | None = None
+    # The voters with their pictures. None when the choices are hidden from this user.
+    voter_pictures: list["PersonOut"] | None = None
+
+
+class PersonOut(Schema):
+    username: str
+    avatar_url: str | None
 
 
 class VoterOut(Schema):
     username: str
     power: int
     voted: bool
+    avatar_url: str | None = None
 
 
 class TieOut(Schema):
@@ -212,8 +222,12 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
     counts = totals(ballot)
     me = ballot.voters.filter(user=user).first()
     names: dict[int, list[str]] = {}
+    pictures: dict[int, list[PersonOut]] = {}
     for vote in Vote.objects.filter(option__ballot=ballot).select_related("voter__user"):
         names.setdefault(vote.option_id, []).append(vote.voter.user.username)
+        pictures.setdefault(vote.option_id, []).append(
+            PersonOut(username=vote.voter.user.username, avatar_url=vote.voter.user.avatar_url())
+        )
     voted, voter_count = voted_counts(ballot)
     tied, open_slots = tie(ballot)
     voters_with_votes = set(
@@ -279,17 +293,31 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
                 selected_by=o.selected_by,
                 votes=counts[o.id] if totals_visible else None,
                 voters=sorted(names.get(o.id, [])) if choices_visible else None,
+                image_url=_option_image(o),
+                voter_pictures=sorted(pictures.get(o.id, []), key=lambda p: p.username)
+                if choices_visible
+                else None,
             )
-            for o in ballot.options.all()
+            for o in ballot.options.select_related("track_layout")
         ],
         tie=TieOut(option_ids=[o.id for o in tied], open_slots=open_slots) if tied else None,
         voters=[
-            VoterOut(username=v.user.username, power=v.power, voted=v.id in voters_with_votes)
+            VoterOut(
+                username=v.user.username,
+                power=v.power,
+                voted=v.id in voters_with_votes,
+                avatar_url=v.user.avatar_url(),
+            )
             for v in all_voters
         ]
         if manager
         else None,
     )
+
+
+def _option_image(option) -> str | None:
+    """The picture of a track option. A car class has no picture."""
+    return option.track_layout.image_url("preview") if option.track_layout_id else None
 
 
 def _settings(payload: BallotSettingsIn) -> dict:

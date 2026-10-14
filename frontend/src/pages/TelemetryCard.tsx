@@ -4,6 +4,7 @@ import { api } from '../api/client'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { SettingsRow } from '../components/SettingsRow'
 
 type Level = 'none' | 'laps' | 'full'
 
@@ -47,27 +48,30 @@ export function TelemetryCard() {
   )
 
   return (
-    <section className="card" aria-label={t('telemetry.title')}>
-      <h2>{t('telemetry.title')}</h2>
-      <p className="muted">{t('telemetry.help')}</p>
-      <p>
-        {data.has_key
-          ? data.last_seen_at
-            ? t('telemetry.lastSeen', { date: formatDateTime(data.last_seen_at, i18n.language) })
-            : t('telemetry.neverSeen')
-          : t('telemetry.noKey')}{' '}
-        · {t('telemetry.laps', { count: data.laps })}
-      </p>
-      <button type="button" onClick={makeKey}>
-        {data.has_key ? t('telemetry.newKey') : t('telemetry.makeKey')}
-      </button>
+    <SettingsRow id="telemetry" title={t('telemetry.title')} help={t('telemetry.help')}>
+      <div className="key-status">
+        <span className={data.last_seen_at ? 'key-dot on' : data.has_key ? 'key-dot waiting' : 'key-dot'} aria-hidden="true" />
+        <p>
+          <b>
+            {data.has_key
+              ? data.last_seen_at
+                ? t('telemetry.lastSeen', { date: formatDateTime(data.last_seen_at, i18n.language) })
+                : t('telemetry.neverSeen')
+              : t('telemetry.noKey')}
+          </b>
+          <span className="muted">{t('telemetry.laps', { count: data.laps })}</span>
+        </p>
+        <button type="button" className={data.has_key ? 'secondary' : undefined} onClick={makeKey}>
+          {data.has_key ? t('telemetry.newKey') : t('telemetry.makeKey')}
+        </button>
+      </div>
       {key && (
         <div className="link-box" role="status">
           <p>{t('telemetry.keyOnce')}</p>
           <input readOnly value={key} onFocus={(e) => e.target.select()} aria-label={t('telemetry.key')} />
         </div>
       )}
-      <form onSubmit={save} aria-label={t('telemetry.sharing')}>
+      <form className="sharing-form" onSubmit={save} aria-label={t('telemetry.sharing')}>
         <h3>{t('telemetry.sharing')}</h3>
         <label>
           {t('telemetry.teammates')}
@@ -88,13 +92,15 @@ export function TelemetryCard() {
           </select>
         </label>
         <p className="muted">{t('telemetry.protected')}</p>
-        <button type="submit">{t('common.save')}</button>
+        {message && (
+          <p role={message.kind === 'error' ? 'alert' : 'status'} className={message.kind === 'error' ? 'error' : 'success'}>
+            {message.text}
+          </p>
+        )}
+        <div className="settings-actions">
+          <button type="submit">{t('common.save')}</button>
+        </div>
       </form>
-      {message && (
-        <p role={message.kind === 'error' ? 'alert' : 'status'} className={message.kind === 'error' ? 'error' : 'success'}>
-          {message.text}
-        </p>
-      )}
-    </section>
+    </SettingsRow>
   )
 }

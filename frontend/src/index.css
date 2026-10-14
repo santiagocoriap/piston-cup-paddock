@@ -144,21 +144,7 @@ button.link:focus-visible {
   font-weight: 800;
 }
 
-/* ---------- Login and invitation ---------- */
-.shell.narrow {
-  min-height: 100vh;
-  max-width: 28rem;
-  margin: 0 auto;
-  padding: var(--space-7) var(--space-4);
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: var(--space-5);
-}
-
+/* ---------- The wordmark of the logo ---------- */
 .wordmark {
   display: flex;
   flex-direction: column;
@@ -179,10 +165,6 @@ button.link:focus-visible {
   font-weight: 600;
   letter-spacing: 0.22em;
   color: var(--ink-2);
-}
-
-.brand .wordmark b {
-  font-size: 28px;
 }
 
 /* ---------- Panels ---------- */
@@ -7621,5 +7603,1244 @@ form.card > label.wide {
 
   .news-body .news-lede {
     font-size: 19px;
+  }
+}
+
+/* ---------- Pictures of people ---------- */
+.avatar {
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- The account page ---------- */
+/* A header with the picture, then one row for each part: the title and help on the left,
+   the controls in a card on the right. On a phone the two sides stack. */
+.account-page {
+  display: grid;
+  gap: var(--space-6);
+  max-width: 1040px;
+}
+
+.account-hero {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: center;
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: linear-gradient(120deg, var(--surface-2), var(--surface-1) 70%);
+}
+
+.account-hero h1 {
+  margin: 2px 0;
+}
+
+.account-hero p {
+  margin: 0;
+}
+
+.account-who {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.avatar-button {
+  position: relative;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  cursor: pointer;
+}
+
+.avatar-button:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.account-avatar {
+  width: 104px;
+  height: 104px;
+  font-size: 34px;
+  box-shadow: 0 0 0 3px var(--surface-1), 0 0 0 5px var(--line-strong);
+}
+
+.avatar-edit {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--surface-1);
+  border-radius: var(--radius-pill);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.avatar-button:hover .account-avatar {
+  filter: brightness(0.85);
+}
+
+.avatar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.avatar-actions button {
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  font-size: 13px;
+}
+
+.account-who .avatar-help {
+  font-size: 12px;
+}
+
+.settings-card select,
+.settings-card input {
+  width: 100%;
+  min-width: 0;
+}
+
+.settings-card .copy-field input {
+  width: auto;
+}
+
+.settings-row {
+  display: grid;
+  grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+  gap: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--line);
+}
+
+.settings-intro h2 {
+  margin: 0 0 var(--space-2);
+  font-size: 18px;
+}
+
+.settings-intro p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.settings-card {
+  gap: var(--space-4);
+}
+
+.settings-card form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.settings-card p,
+.settings-card h3 {
+  margin: 0;
+}
+
+.settings-card label {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.settings-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.settings-actions button {
+  margin: 0;
+}
+
+.copy-field {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.copy-field input {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+}
+
+.copy-field button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.key-status {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+}
+
+.key-status p {
+  display: grid;
+}
+
+.key-status button {
+  margin: 0;
+}
+
+.key-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--ink-3);
+}
+
+.key-dot.on {
+  background: var(--success, #2fbf71);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--success, #2fbf71) 25%, transparent);
+}
+
+.key-dot.waiting {
+  background: var(--warning, #f5a524);
+}
+
+.sharing-form {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 800px) {
+  .settings-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .settings-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .account-hero {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    text-align: center;
+  }
+
+  .avatar-actions {
+    justify-content: center;
+  }
+
+  .account-hero .eyebrow {
+    justify-content: center;
+  }
+
+  .key-status {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .key-status button {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---------- The voting page ---------- */
+.ballot-page {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.ballot-page > * {
+  margin: 0;
+}
+
+.ballot-page h2 {
+  margin: 0 0 var(--space-3);
+}
+
+/* The header: the title and the participation on the left, the countdown and the admin
+   menu on the right. */
+.ballot-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: linear-gradient(120deg, var(--surface-2), var(--surface-1) 70%);
+}
+
+.ballot-hero h1 {
+  margin: var(--space-1) 0 var(--space-2);
+}
+
+.ballot-hero-main > p {
+  margin: 0;
+}
+
+.ballot-hero .eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.participation {
+  max-width: 420px;
+  margin-top: var(--space-4);
+}
+
+.participation p {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-2);
+}
+
+.participation-bar {
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+}
+
+.participation-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--brand);
+  transition: width 0.6s ease;
+}
+
+.ballot-hero-side {
+  display: grid;
+  align-content: space-between;
+  justify-items: end;
+  gap: var(--space-4);
+}
+
+.ballot-countdown {
+  display: grid;
+  justify-items: end;
+  gap: var(--space-1);
+}
+
+.ballot-countdown p {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.ballot-countdown p > span {
+  display: grid;
+  justify-items: center;
+  min-width: 52px;
+  padding: var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+}
+
+.ballot-countdown b {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 30px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ballot-countdown small {
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+/* A banner for an open runoff, and a card for a tie that an admin must solve. */
+.runoff-banner,
+.tie-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid color-mix(in srgb, var(--brand) 55%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--brand) 12%, var(--surface-1));
+}
+
+.tie-card {
+  border-color: color-mix(in srgb, var(--warning) 55%, transparent);
+  background: color-mix(in srgb, var(--warning) 10%, var(--surface-1));
+}
+
+.runoff-banner p,
+.tie-card p {
+  display: grid;
+  margin: 0;
+}
+
+.runoff-banner .button-link,
+.tie-card button {
+  margin: 0;
+}
+
+.tie-card .error {
+  grid-column: 1 / -1;
+}
+
+/* The rules as small tiles with an icon. */
+.rule-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rule-tiles li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.rule-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-3);
+  color: var(--ink-2);
+}
+
+.rule-tiles li.warn {
+  border-color: color-mix(in srgb, var(--warning) 55%, transparent);
+}
+
+.rule-tiles li.warn .rule-icon {
+  color: var(--warning);
+}
+
+/* The vote: option cards with a picture, and a bar with the button at the bottom. */
+.power-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.vote-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.vote-grid legend {
+  margin-bottom: var(--space-3);
+  padding: 0;
+}
+
+.vote-card {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  margin: 0;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.vote-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+
+.vote-card input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.vote-card:has(input:focus-visible) {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.vote-card.checked {
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 8%, var(--surface-1));
+}
+
+.vote-card.full {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+}
+
+.vote-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  background: var(--surface-3);
+  color: var(--ink-3);
+}
+
+.vote-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vote-check {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.35);
+  color: transparent;
+}
+
+.vote-card.checked .vote-check {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.vote-text {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+}
+
+.vote-bar {
+  position: sticky;
+  bottom: var(--space-3);
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface-2) 92%, transparent);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.vote-bar p {
+  margin: 0;
+}
+
+.vote-bar .vote-count {
+  font-weight: 700;
+}
+
+.vote-bar button {
+  margin: 0 0 0 auto;
+}
+
+/* The results: one bar for each option, filled to its share of the votes. */
+.result-bars {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.result-bar {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: var(--space-3);
+  align-items: center;
+  overflow: hidden;
+  min-height: 60px;
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.result-bar > * {
+  position: relative;
+}
+
+.result-bar > .result-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  animation: grow-bar 0.8s ease-out both;
+  transform-origin: left;
+}
+
+.result-bar.leader > .result-fill,
+.result-bar.won > .result-fill {
+  background: color-mix(in srgb, var(--gold) 20%, transparent);
+}
+
+.result-bar.won {
+  border-color: color-mix(in srgb, var(--gold) 60%, transparent);
+}
+
+@keyframes grow-bar {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result-bar > .result-fill {
+    animation: none;
+  }
+}
+
+.result-thumb {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 44px;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--surface-3);
+  color: var(--ink-3);
+}
+
+.result-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.result-label {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.result-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.result-tags:empty {
+  display: none;
+}
+
+.winner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--gold);
+}
+
+.result-numbers {
+  display: grid;
+  justify-items: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.result-numbers b {
+  font-family: var(--font-display);
+  font-size: 22px;
+}
+
+.avatar-stack {
+  display: flex;
+}
+
+.avatar-stack .avatar {
+  width: 28px;
+  height: 28px;
+  margin-left: -8px;
+  border: 2px solid var(--surface-1);
+  font-size: 11px;
+}
+
+.avatar-stack .avatar:first-child {
+  margin-left: 0;
+}
+
+.avatar-stack .avatar.more {
+  background: var(--surface-3);
+  color: var(--ink-2);
+}
+
+.runoff-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.runoff-cards li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+/* The voters for an admin: a picture, the vote power, and a check for each vote. */
+.person {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.person .avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 11px;
+}
+
+.voted-yes,
+.voted-no {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-weight: 600;
+}
+
+.voted-yes {
+  color: var(--success-ink);
+}
+
+.voted-no {
+  color: var(--ink-3);
+}
+
+.option-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+@media (max-width: 700px) {
+  .ballot-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ballot-hero-side,
+  .ballot-countdown {
+    justify-items: start;
+  }
+
+  .result-bar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .avatar-stack {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .runoff-banner,
+  .tie-card {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .runoff-banner .button-link,
+  .tie-card button {
+    grid-column: 1 / -1;
+  }
+
+  .vote-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .vote-text {
+    padding: var(--space-2) var(--space-3);
+    font-size: 14px;
+  }
+}
+
+/* ---------- Sign-in and invitation ---------- */
+/* Two halves: the brand with a circuit that draws itself, and the form. On a phone the
+   brand is a short band on top of the form. */
+.auth {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.auth-aside {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--space-5);
+  overflow: hidden;
+  padding: var(--space-7);
+  background:
+    radial-gradient(circle at 20% 15%, color-mix(in srgb, var(--brand) 28%, transparent), transparent 55%),
+    radial-gradient(circle at 85% 90%, color-mix(in srgb, var(--brand) 16%, transparent), transparent 50%),
+    #0b0b0d;
+  color: #f6f4f1;
+}
+
+/* A thin checkered band on the edge of the brand side. */
+.auth-aside::after {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 12px;
+  background: repeating-conic-gradient(#f6f4f1 0 25%, #0b0b0d 0 50%) 0 0 / 12px 12px;
+  opacity: 0.85;
+  content: '';
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth-brand .wordmark span {
+  color: rgba(246, 244, 241, 0.7);
+}
+
+.auth-track {
+  align-self: center;
+  width: 100%;
+  max-width: 560px;
+  max-height: 46vh;
+  margin: 0 auto;
+}
+
+.auth-track-base {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 18;
+  stroke-linejoin: round;
+}
+
+.auth-track-line {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-track 2.4s ease-out 0.2s forwards;
+}
+
+@keyframes draw-track {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.auth-car {
+  fill: #f6f4f1;
+  filter: drop-shadow(0 0 6px var(--brand));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-track-line {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+
+  .auth-car {
+    display: none;
+  }
+}
+
+.auth-copy h2 {
+  max-width: 18ch;
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: clamp(30px, 3.2vw, 44px);
+  font-stretch: 75%;
+  line-height: 1.05;
+  font-weight: 800;
+}
+
+.auth-copy ul {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: rgba(246, 244, 241, 0.8);
+}
+
+.auth-copy li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.auth-feature-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f6f4f1;
+}
+
+.auth-main {
+  display: grid;
+  place-items: center;
+  padding: var(--space-7) var(--space-5);
+}
+
+.auth-panel {
+  width: min(100%, 400px);
+}
+
+.auth-form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.auth-form header {
+  margin-bottom: var(--space-2);
+}
+
+.auth-form h1 {
+  margin: 0 0 var(--space-2);
+  font-size: 32px;
+}
+
+.auth-form header p {
+  margin: 0;
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.field > label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* An input with an icon on the left, and an optional button on the right. */
+.input-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon > .icon {
+  position: absolute;
+  left: 12px;
+  color: var(--ink-3);
+  pointer-events: none;
+}
+
+.input-icon input {
+  width: 100%;
+  min-height: 46px;
+  padding-left: 38px;
+}
+
+.input-icon input:has(+ .reveal) {
+  padding-right: 46px;
+}
+
+.reveal {
+  position: absolute;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-3);
+}
+
+.reveal:hover,
+.reveal[aria-pressed='true'] {
+  background: var(--surface-3);
+  color: var(--ink);
+}
+
+.caps-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--warning-ink, var(--warning));
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.auth-error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--brand) 50%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--brand) 12%, transparent);
+  color: var(--ink);
+  animation: shake 0.35s ease;
+}
+
+.auth-error .icon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--brand);
+}
+
+@keyframes shake {
+  25% {
+    transform: translateX(-6px);
+  }
+
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-error {
+    animation: none;
+  }
+}
+
+.auth-submit {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 48px;
+  margin: var(--space-1) 0 0;
+  font-size: 16px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--radius-pill);
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.auth-foot {
+  margin: 0;
+  font-size: 13px;
+  text-align: center;
+}
+
+.password-checks {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  font-size: 14px;
+}
+
+.password-checks ul {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Three segments that fill as the password meets each rule: red, amber, then green. */
+.strength {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.strength span {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+  transition: background 0.25s ease;
+}
+
+.strength-1 span.on {
+  background: var(--brand);
+}
+
+.strength-2 span.on {
+  background: var(--warning);
+}
+
+.strength-3 span.on {
+  background: var(--success);
+}
+
+.invite-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.invite-head h1 {
+  margin: var(--space-1) 0 0;
+}
+
+.invite-avatar {
+  width: 64px;
+  height: 64px;
+  font-size: 24px;
+  box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--brand);
+}
+
+.invite-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.invite-welcome {
+  margin: 0;
+}
+
+.auth-checking {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--ink-2);
+}
+
+.invite-invalid {
+  justify-items: center;
+  text-align: center;
+}
+
+.invite-invalid h1,
+.invite-invalid p {
+  margin: 0;
+}
+
+.invite-invalid-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--brand) 14%, transparent);
+  color: var(--brand);
+}
+
+.invite-invalid .button-link {
+  margin: 0;
+}
+
+.password-checks li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-3);
+  transition: color 0.2s ease;
+}
+
+.password-checks li.ok {
+  color: var(--success-ink);
+}
+
+@media (max-width: 860px) {
+  .auth {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .auth-aside {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto;
+    align-items: center;
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .auth-aside::after {
+    inset: auto 0 0 0;
+    width: auto;
+    height: 8px;
+    background-size: 8px 8px;
+  }
+
+  .auth-track {
+    justify-self: end;
+    max-width: 120px;
+    max-height: 80px;
+    margin: 0;
+  }
+
+  .auth-copy {
+    display: none;
+  }
+
+  .auth-main {
+    place-items: start center;
+    padding: var(--space-6) var(--space-4);
   }
 }

@@ -131,6 +131,47 @@ export interface paths {
         patch: operations["apps_identity_api_update_me"];
         trace?: never;
     };
+    "/api/auth/me/avatar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Avatar
+         * @description Set the picture of the signed-in user. Only a PNG or a JPEG of at most 2 MB.
+         */
+        post: operations["apps_identity_api_upload_avatar"];
+        /** Remove Avatar */
+        delete: operations["apps_identity_api_remove_avatar"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/avatars/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Avatar
+         * @description The picture of a user. Every signed-in user can see it, like the names.
+         */
+        get: operations["apps_identity_api_avatar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/catalog/tracks": {
         parameters: {
             query?: never;
@@ -2472,6 +2513,8 @@ export interface components {
             can_admin: boolean;
             /** Can Manage */
             can_manage: boolean;
+            /** Avatar Url */
+            avatar_url?: string | null;
         };
         /** Error */
         Error: {
@@ -2969,6 +3012,8 @@ export interface components {
             user_id: number;
             /** Username */
             username: string;
+            /** Avatar Url */
+            avatar_url?: string | null;
             /** Role */
             role: string;
             /** Custom Role Id */
@@ -3032,6 +3077,8 @@ export interface components {
             driver_id: number;
             /** Driver Name */
             driver_name: string;
+            /** Avatar Url */
+            avatar_url?: string | null;
             /** Car Id */
             car_id: number;
             /** Car Name */
@@ -3337,6 +3384,8 @@ export interface components {
             driver_id: number;
             /** Driver Name */
             driver_name: string;
+            /** Avatar Url */
+            avatar_url?: string | null;
             /** Laps */
             laps?: number | null;
             /** Total Ms */
@@ -4644,6 +4693,17 @@ export interface components {
             votes: number | null;
             /** Voters */
             voters: string[] | null;
+            /** Image Url */
+            image_url?: string | null;
+            /** Voter Pictures */
+            voter_pictures?: components["schemas"]["PersonOut"][] | null;
+        };
+        /** PersonOut */
+        PersonOut: {
+            /** Username */
+            username: string;
+            /** Avatar Url */
+            avatar_url: string | null;
         };
         /** TieOut */
         TieOut: {
@@ -4660,6 +4720,8 @@ export interface components {
             power: number;
             /** Voted */
             voted: boolean;
+            /** Avatar Url */
+            avatar_url?: string | null;
         };
         /** BallotIn */
         BallotIn: {
@@ -5039,6 +5101,8 @@ export interface components {
             id: number;
             /** Display Name */
             display_name: string;
+            /** Avatar Url */
+            avatar_url?: string | null;
             /** Can Adjust */
             can_adjust: boolean;
             career: components["schemas"]["CareerOut"];
@@ -6336,6 +6400,76 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Error"];
                 };
+            };
+        };
+    };
+    apps_identity_api_upload_avatar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    apps_identity_api_remove_avatar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    apps_identity_api_avatar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

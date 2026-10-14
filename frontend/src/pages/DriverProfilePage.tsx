@@ -10,11 +10,11 @@ import { Loading } from '../components/Layout'
 import { ResultChips, Trend } from '../components/ResultHistory'
 import { ProfileStats } from './ProfileStats'
 import { formatDateTime, formatLapTime } from '../lib/format'
-import { initials } from '../lib/initials'
 import { medal } from '../lib/medal'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView, useMe, useMode } from '../session'
 import { Breadcrumbs } from '../components/Breadcrumbs'
+import { Avatar } from '../components/Avatar'
 
 type Profile = components['schemas']['ProfileOut']
 type Career = Profile['career']
@@ -55,9 +55,7 @@ export function DriverProfilePage() {
       />
 
       <header className="profile-hero">
-        <span className="profile-avatar" aria-hidden="true">
-          {initials(data.display_name)}
-        </span>
+        <Avatar name={data.display_name} url={data.avatar_url} className="profile-avatar" />
         <div className="profile-who">
           <h1>{data.display_name}</h1>
           {current && (

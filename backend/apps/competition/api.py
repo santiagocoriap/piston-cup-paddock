@@ -155,6 +155,7 @@ class MemberIn(Schema):
 class MemberOut(Schema):
     user_id: int
     username: str
+    avatar_url: str | None = None
     role: str
     custom_role_id: int | None = None
     custom_role_name: str | None = None
@@ -186,6 +187,7 @@ class EntryOut(Schema):
     id: int
     driver_id: int
     driver_name: str
+    avatar_url: str | None = None
     car_id: int
     car_name: str
     number: int
@@ -276,6 +278,7 @@ def _entry_out(entry: SeasonEntry) -> EntryOut:
         id=entry.id,
         driver_id=entry.driver_id,
         driver_name=entry.driver.display_name,
+        avatar_url=entry.driver.avatar_url(),
         car_id=entry.car_id,
         car_name=entry.car.name,
         number=entry.number,
@@ -321,7 +324,7 @@ def _season_summary(season: Season) -> SeasonSummary:
 
 
 def _season_detail(user, season: Season) -> SeasonDetail:
-    entries = season.entries.select_related("driver", "car")
+    entries = season.entries.select_related("driver__user", "car")
     rounds = season.rounds.select_related("track_layout__track")
     return SeasonDetail(
         id=season.id,
@@ -447,6 +450,7 @@ def _member_out(member: ChampionshipMember) -> MemberOut:
     return MemberOut(
         user_id=member.user_id,
         username=member.user.username,
+        avatar_url=member.user.avatar_url(),
         role=member.role,
         custom_role_id=member.custom_role_id,
         custom_role_name=member.custom_role.name if member.custom_role else None,

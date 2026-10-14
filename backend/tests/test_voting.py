@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 import pytest
+from django.core.files.base import ContentFile
 from django.utils import timezone
 
 from apps.catalog.models import Track, TrackLayout
@@ -377,3 +378,29 @@ def test_ballot_list_shows_the_deadline_and_whether_i_voted(api, admin, season, 
     assert summary(voters[0])["voted"] is True
     assert summary(voters[1])["voted"] is False
     assert summary(voters[0])["closes_at"].startswith(closes.strftime("%Y-%m-%dT%H:%M"))
+
+
+def test_options_and_voters_carry_their_pictures(
+    api, admin, season, layouts, voters, settings, tmp_path
+):
+    settings.MEDIA_ROOT = tmp_path / "media"
+    png = b"\x89PNG\r\n\x1a\n"
+    layouts[0].preview.save("preview.png", ContentFile(png), save=True)
+    voters[0].avatar.save("me.png", ContentFile(png), save=True)
+    detail = ballot(admin, season, method="single", selection_limit=1)
+    for layout in layouts[:2]:
+        detail = add(admin, detail["id"], layout)
+    detail = admin.post(f"/ballots/{detail['id']}/open").json()
+    by_layout = {o["track_layout_id"]: o["id"] for o in detail["options"]}
+    spa, monza = by_layout[layouts[0].id], by_layout[layouts[1].id]
+    api(voters[0]).put(f"/ballots/{detail['id']}/vote", {"option_ids": [spa]})
+
+    detail = admin.get(f"/ballots/{detail['id']}").json()
+    options = {o["id"]: o for o in detail["options"]}
+    assert options[spa]["image_url"] == f"/api/catalog/layouts/{layouts[0].id}/images/preview"
+    assert options[monza]["image_url"] is None
+    assert options[spa]["voter_pictures"] == [
+        {"username": "v1", "avatar_url": voters[0].avatar_url()}
+    ]
+    v1 = next(v for v in detail["voters"] if v["username"] == "v1")
+    assert (v1["voted"], v1["avatar_url"]) == (True, voters[0].avatar_url())

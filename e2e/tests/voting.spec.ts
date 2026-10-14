@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { openAdminForm, signIn, submitForm } from './helpers'
+import { openAdminForm, openRoundAdmin, signIn, submitForm } from './helpers'
 
 async function api(page: Page, method: 'POST' | 'PUT', path: string, data: unknown) {
   const cookies = await page.context().cookies()
@@ -46,19 +46,25 @@ test('an admin fixes a track, runs a track vote, and the winners fill the calend
   await openAdminForm(page, 'ballots', 'Nueva votación')
   await submitForm(page, 'Nueva votación', { Título: `Pistas ${run}`, 'Opciones por piloto': '2' })
   await page.getByRole('link', { name: `Pistas ${run}` }).click()
+  // The ballot tools open in dialogs from the "Administrar" menu.
   for (const name of ['Monza', 'Imola', 'Suzuka']) {
+    await openRoundAdmin(page, 'Agregar opción')
     await submitForm(page, 'Agregar opción', {}, { Pista: `${name} ${run} · GP` })
     await expect(page.getByText(`${name} ${run} - GP`).first()).toBeVisible()
   }
-  await page.getByRole('button', { name: 'Abrir la votación' }).click()
+  await openRoundAdmin(page, 'Abrir la votación')
+  await page.getByRole('dialog').getByRole('button', { name: 'Abrir la votación' }).click()
   await expect(page.getByText('Abierta', { exact: true })).toBeVisible()
 
   // The admin votes as a driver, then closes the ballot.
-  const voteForm = page.locator('fieldset.vote')
-  await voteForm.getByLabel(new RegExp(`Monza ${run}`)).check()
-  await voteForm.getByLabel(new RegExp(`Imola ${run}`)).check()
+  // Each option is a card. A click on the card checks its hidden box.
+  const voteForm = page.locator('fieldset.vote-grid')
+  await voteForm.locator('label').filter({ hasText: `Monza ${run}` }).click()
+  await voteForm.locator('label').filter({ hasText: `Imola ${run}` }).click()
+  await expect(voteForm.getByLabel(new RegExp(`Imola ${run}`))).toBeChecked()
   await page.getByRole('button', { name: 'Votar' }).click()
   await expect(page.getByRole('status')).toHaveText('Tu voto quedó guardado.')
+  await openRoundAdmin(page, 'Cerrar la votación')
   await submitForm(page, 'Cerrar la votación', {})
   await expect(page.getByText('Decidida', { exact: true })).toBeVisible()
 

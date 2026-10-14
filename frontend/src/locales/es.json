@@ -11,7 +11,9 @@
     "submit": "Entrar",
     "invalid": "Usuario o contraseña incorrectos.",
     "error": "No se pudo iniciar sesión. Intentá de nuevo.",
-    "tooMany": "Demasiados intentos con contraseña incorrecta. Esperá 15 minutos y probá de nuevo."
+    "tooMany": "Demasiados intentos con contraseña incorrecta. Esperá 15 minutos y probá de nuevo.",
+    "help": "Entrá con el usuario que te dio un admin de la liga.",
+    "noAccount": "¿No tenés cuenta? Pedile un link de invitación a un admin."
   },
   "nav": {
     "championships": "Campeonatos",
@@ -1010,7 +1012,6 @@
       "runoff": "por desempate",
       "admin": "elegida por un admin"
     },
-    "votes": "{{count}} votos",
     "multipleShort": "Varias opciones por piloto",
     "noPrior": "Sin requisito",
     "opensLabel": "Abre automáticamente (opcional)",
@@ -1037,7 +1038,26 @@
       "what": "Qué se vota",
       "who": "Quién ve qué y cuándo",
       "advanced": "Opciones avanzadas"
-    }
+    },
+    "runoffOpen": "Hay un desempate abierto",
+    "goRunoff": "Votar el desempate",
+    "kindTitle": "Votación de {{kind}}",
+    "participationLabel": "Participación",
+    "closesInLabel": "Cierra en",
+    "closesIn": "Cierra en {{days}} días, {{hours}} horas y {{minutes}} minutos",
+    "rules": "Reglas",
+    "yourVote": "Tu voto",
+    "oneChosen": "Elegiste 1 opción",
+    "chooseOne": "Elegí 1 opción",
+    "chosenOf": "{{count}} de {{limit}} elegidas",
+    "results": "Resultados",
+    "options": "Opciones",
+    "state": "Estado",
+    "tieHelp": "Abrí un desempate o elegí a mano desde Administrar.",
+    "remindHelp": "Se avisa a quien todavía no votó.",
+    "sendReminder": "Enviar recordatorio",
+    "votes_one": "{{count}} voto",
+    "votes_other": "{{count}} votos"
   },
   "calendar": {
     "fixed": "Reservar pista fija",
@@ -1063,7 +1083,9 @@
       "next": "Próxima",
       "later": "Por correr",
       "cancelled": "Cancelada"
-    }
+    },
+    "copy": "Copiar",
+    "copied": "Copiada"
   },
   "dashboard": {
     "title": "Mi paddock",
@@ -1189,7 +1211,14 @@
     "timezone": "Zona horaria",
     "browserZone": "La del navegador ({{zone}})",
     "timezoneHelp": "Los horarios de las carreras se muestran en esta zona. Si la zona del evento es distinta, también ves la hora del evento.",
-    "saved": "Cambios guardados."
+    "saved": "Cambios guardados.",
+    "preferences": "Idioma y horario",
+    "addPhoto": "Subir foto",
+    "changePhoto": "Cambiar foto",
+    "removePhoto": "Quitar foto",
+    "photoSaved": "Foto guardada.",
+    "photoRemoved": "Foto quitada.",
+    "photoHelp": "PNG, JPEG o WebP. Se recorta en un cuadrado."
   },
   "exports": {
     "title": "Exportar (CSV)",
@@ -1245,14 +1274,26 @@
     "submit": "Guardar y entrar",
     "checking": "Revisando el link…",
     "invalid": "Este link no sirve: ya se usó o venció. Pedile uno nuevo a un admin.",
-    "rules": "Al menos 8 caracteres, y no solo números."
+    "rules": "Al menos 8 caracteres, y no solo números.",
+    "rulesTitle": "La contraseña",
+    "checks": {
+      "length": "8 caracteres o más",
+      "notDigits": "No solo números",
+      "match": "Las dos contraseñas coinciden"
+    },
+    "invalidTitle": "Link no válido",
+    "toLogin": "Ir a iniciar sesión",
+    "badgeInvite": "Invitación",
+    "badgeReset": "Contraseña nueva"
   },
   "password": {
     "title": "Cambiar contraseña",
     "current": "Contraseña actual",
     "new": "Contraseña nueva",
     "again": "Repetí la contraseña nueva",
-    "saved": "Contraseña cambiada."
+    "saved": "Contraseña cambiada.",
+    "help": "Usá al menos 8 caracteres. Tu sesión sigue abierta después del cambio.",
+    "save": "Cambiar contraseña"
   },
   "penaltyLogs": {
     "title": "Importar logs de Real Penalty",
@@ -2037,5 +2078,16 @@
     "incidentPoints": "Puntos de incidente",
     "restartsCaused": "Reinicios causados",
     "note": "Cuentan los resultados oficiales y provisionales de las temporadas que podés ver. Los puntos de incidente vienen del colector."
+  },
+  "auth": {
+    "tagline": "La liga, de la largada a la bandera a cuadros.",
+    "features": {
+      "results": "Resultados, tiempos y récords de cada fecha",
+      "penalties": "Sanciones, protestas y seguridad",
+      "votes": "Votaciones de pistas y autos"
+    },
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "capsLock": "Bloq Mayús está activado."
   }
 }

@@ -10,7 +10,6 @@ import { formatDateTime, formatLapTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { penaltyChanged } from '../lib/results'
-import { initials } from '../lib/initials'
 import { medal } from '../lib/medal'
 import { ImportSection } from './ImportSection'
 import { EngineerSection } from './EngineerSection'
@@ -27,6 +26,7 @@ import { TelemetrySection } from './TelemetrySection'
 import { AttendanceCard } from './AttendanceCard'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { AdminActions } from '../components/AdminActions'
+import { Avatar } from '../components/Avatar'
 
 type RoundDetail = components['schemas']['RoundDetail']
 type Status = components['schemas']['LineIn']['status']
@@ -426,9 +426,7 @@ function Podium({ round }: { round: RoundDetail }) {
       {top.map((line) => (
         <li key={line.entry_id} className={`podium-step ${medal(line.position)}`}>
           <span className="podium-name">
-            <span className="avatar podium-avatar" aria-hidden="true">
-              {initials(line.driver_name)}
-            </span>
+            <Avatar name={line.driver_name} url={line.avatar_url} className="podium-avatar" />
             <Link to={`/drivers/${line.driver_id}`}>{line.driver_name}</Link>
             <span className="car-number">#{line.number}</span>
           </span>

@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import { initials } from '../lib/initials'
 import { applyTheme, readTheme, type Theme } from '../lib/theme'
 import { useMe } from '../session'
 import { Icon } from './Icon'
+import { Avatar } from './Avatar'
 
 type Props = { onSignOut: () => void; placement: 'up' | 'down'; className?: string }
 
@@ -63,9 +63,7 @@ export function UserMenu({ onSignOut, placement, className = '' }: Props) {
         aria-label={t('nav.userMenu', { name: me.username })}
         onClick={() => setOpen((value) => !value)}
       >
-        <span className="avatar" aria-hidden="true">
-          {initials(me.username)}
-        </span>
+        <Avatar name={me.username} url={me.avatar_url} />
         <span className="me-text">
           <b>{me.username}</b>
           <small>{role}</small>

@@ -1,8 +1,17 @@
+import hashlib
+import uuid
+
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+
+def avatar_path(user, filename: str) -> str:
+    """A new name for each upload, so a browser does not show the old picture."""
+    extension = filename.rsplit(".", 1)[-1]
+    return f"avatars/{user.id}/{uuid.uuid4().hex}.{extension}"
 
 
 class User(AbstractUser):
@@ -13,6 +22,16 @@ class User(AbstractUser):
     language = models.CharField(max_length=2, choices=Language.choices, default=Language.SPANISH)
     # An IANA timezone, for example "Europe/Madrid". Empty means the timezone of the browser.
     timezone = models.CharField(max_length=64, blank=True)
+    # A square picture that the user uploads. Empty means the initials show.
+    avatar = models.FileField(upload_to=avatar_path, blank=True)
+
+    def avatar_url(self) -> str | None:
+        """The API path of the picture, or None without a picture. The version changes with
+        each upload."""
+        if not self.avatar:
+            return None
+        version = hashlib.sha256(self.avatar.name.encode()).hexdigest()[:8]
+        return f"/api/auth/avatars/{self.id}?v={version}"
 
 
 steam_guid_validator = RegexValidator(r"^\d{17}$", _("A Steam GUID has 17 digits."))
@@ -35,6 +54,10 @@ class DriverProfile(models.Model):
 
     def __str__(self):
         return self.display_name
+
+    def avatar_url(self) -> str | None:
+        """The picture of the account that owns the profile. Load the profile with its user."""
+        return self.user.avatar_url() if self.user_id else None
 
 
 class LoginFailure(models.Model):

@@ -66,6 +66,7 @@ class LineOut(LineIn):
     number: int
     driver_id: int
     driver_name: str
+    avatar_url: str | None = None
     laps: int | None = None
     total_ms: int | None = None
     gap_ms: int | None = None  # To the winner, on the same lap.
@@ -303,7 +304,7 @@ def _incident_counts(round_: Round) -> dict[str, int] | None:
 
 def _lines(version: ResultVersion) -> list[LineOut]:
     rows = sorted(
-        version.lines.select_related("entry__driver"),
+        version.lines.select_related("entry__driver__user"),
         key=lambda r: (STATUS_ORDER[Status(r.status)], r.position or 0, r.entry.number),
     )
     winner = next((r for r in rows if r.position == 1), None)
@@ -328,6 +329,7 @@ def _lines(version: ResultVersion) -> list[LineOut]:
             number=r.entry.number,
             driver_id=r.entry.driver_id,
             driver_name=r.entry.driver.display_name,
+            avatar_url=r.entry.driver.avatar_url(),
             points=r.points,
             entered_status=r.entered_status,
             entered_position=r.entered_position,

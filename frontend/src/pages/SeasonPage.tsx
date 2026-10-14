@@ -10,7 +10,6 @@ import { RowMenu } from '../components/RowMenu'
 import { Loading } from '../components/Layout'
 import { currentTimeZone, formatDateTime, localInputToIso } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
-import { initials } from '../lib/initials'
 import { medal } from '../lib/medal'
 import { useAdminView } from '../session'
 import { BallotsSection } from './BallotsSection'
@@ -23,6 +22,7 @@ import { TitleSection } from './TitleSection'
 import { HandicapsSection } from './HandicapsSection'
 import { ConditionsPoolForm } from './ConditionsDraw'
 import { Breadcrumbs } from '../components/Breadcrumbs'
+import { Avatar } from '../components/Avatar'
 
 export function SeasonPage() {
   const { t, i18n } = useTranslation()
@@ -418,9 +418,7 @@ export function SeasonPage() {
               <ul className="entry-grid">
                 {data.entries.map((entry) => (
                   <li key={entry.id}>
-                    <span className="avatar entry-avatar" aria-hidden="true">
-                      {initials(entry.driver_name)}
-                    </span>
+                    <Avatar name={entry.driver_name} url={entry.avatar_url} className="entry-avatar" />
                     <span>
                       <b title={entry.driver_name}>{entry.driver_name}</b>
                       <span className="muted" title={entry.car_name}>

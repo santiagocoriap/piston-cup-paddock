@@ -11,7 +11,9 @@
     "submit": "Sign in",
     "invalid": "Incorrect username or password.",
     "error": "Sign in failed. Try again.",
-    "tooMany": "Too many wrong passwords. Wait 15 minutes and try again."
+    "tooMany": "Too many wrong passwords. Wait 15 minutes and try again.",
+    "help": "Sign in with the username that a league admin gave you.",
+    "noAccount": "No account? Ask an admin for an invitation link."
   },
   "nav": {
     "championships": "Championships",
@@ -1010,7 +1012,6 @@
       "runoff": "by runoff",
       "admin": "chosen by an admin"
     },
-    "votes": "{{count}} votes",
     "multipleShort": "Several options for each driver",
     "noPrior": "No requirement",
     "opensLabel": "Opens on its own (optional)",
@@ -1037,7 +1038,26 @@
       "what": "What is voted",
       "who": "Who sees what, and when",
       "advanced": "Advanced options"
-    }
+    },
+    "runoffOpen": "A runoff is open",
+    "goRunoff": "Vote in the runoff",
+    "kindTitle": "{{kind}} ballot",
+    "participationLabel": "Participation",
+    "closesInLabel": "Closes in",
+    "closesIn": "Closes in {{days}} days, {{hours}} hours, and {{minutes}} minutes",
+    "rules": "Rules",
+    "yourVote": "Your vote",
+    "oneChosen": "You chose 1 option",
+    "chooseOne": "Choose 1 option",
+    "chosenOf": "{{count}} of {{limit}} chosen",
+    "results": "Results",
+    "options": "Options",
+    "state": "State",
+    "tieHelp": "Open a runoff, or choose by hand from Manage.",
+    "remindHelp": "The users who did not vote get a reminder.",
+    "sendReminder": "Send reminder",
+    "votes_one": "{{count}} vote",
+    "votes_other": "{{count}} votes"
   },
   "calendar": {
     "fixed": "Reserve a fixed track",
@@ -1063,7 +1083,9 @@
       "next": "Next",
       "later": "Upcoming",
       "cancelled": "Cancelled"
-    }
+    },
+    "copy": "Copy",
+    "copied": "Copied"
   },
   "dashboard": {
     "title": "My paddock",
@@ -1189,7 +1211,14 @@
     "timezone": "Timezone",
     "browserZone": "The browser zone ({{zone}})",
     "timezoneHelp": "Race times show in this zone. When the event zone is different, you also see the event time.",
-    "saved": "The changes are saved."
+    "saved": "The changes are saved.",
+    "preferences": "Language and time",
+    "addPhoto": "Upload photo",
+    "changePhoto": "Change photo",
+    "removePhoto": "Remove photo",
+    "photoSaved": "Photo saved.",
+    "photoRemoved": "Photo removed.",
+    "photoHelp": "PNG, JPEG, or WebP. It is cut to a square."
   },
   "exports": {
     "title": "Export (CSV)",
@@ -1245,14 +1274,26 @@
     "submit": "Save and enter",
     "checking": "Checking the link…",
     "invalid": "This link does not work: it was used or it ended. Ask an admin for a new one.",
-    "rules": "At least 8 characters, and not only numbers."
+    "rules": "At least 8 characters, and not only numbers.",
+    "rulesTitle": "The password",
+    "checks": {
+      "length": "8 characters or more",
+      "notDigits": "Not only numbers",
+      "match": "The two passwords are the same"
+    },
+    "invalidTitle": "Link not valid",
+    "toLogin": "Go to sign in",
+    "badgeInvite": "Invitation",
+    "badgeReset": "New password"
   },
   "password": {
     "title": "Change the password",
     "current": "Current password",
     "new": "New password",
     "again": "Type the new password again",
-    "saved": "The password is changed."
+    "saved": "The password is changed.",
+    "help": "Use at least 8 characters. Your session stays open after the change.",
+    "save": "Change password"
   },
   "penaltyLogs": {
     "title": "Import Real Penalty logs",
@@ -2037,5 +2078,16 @@
     "incidentPoints": "Incident points",
     "restartsCaused": "Restarts caused",
     "note": "Official and provisional results of the seasons you can see count. The incident points come from the collector."
+  },
+  "auth": {
+    "tagline": "The league, from the start to the checkered flag.",
+    "features": {
+      "results": "Results, lap times, and records of each round",
+      "penalties": "Penalties, protests, and safety",
+      "votes": "Track and car votes"
+    },
+    "show": "Show",
+    "hide": "Hide",
+    "capsLock": "Caps Lock is on."
   }
 }

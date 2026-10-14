@@ -26,7 +26,7 @@ describe('AccountPage', () => {
     )
     await userEvent.selectOptions(screen.getByLabelText('Idioma'), 'en')
     await userEvent.selectOptions(screen.getByLabelText('Zona horaria'), 'Europe/Madrid')
-    const settings = screen.getByRole('form', { name: 'Mi cuenta' })
+    const settings = screen.getByRole('form', { name: 'Idioma y horario' })
     await userEvent.click(within(settings).getByRole('button', { name: 'Guardar' }))
 
     expect(await screen.findByRole('status')).toHaveTextContent('The changes are saved.')
@@ -35,5 +35,23 @@ describe('AccountPage', () => {
       timezone: 'Europe/Madrid',
     })
     expect(onMeChange).toHaveBeenCalledWith(updated)
+  })
+
+  it('shows the photo and removes it', async () => {
+    const withPhoto = { ...DRIVER, avatar_url: '/api/auth/avatars/2?v=abc' }
+    const calls = mockApi({ 'DELETE /api/auth/me/avatar': () => json(200, { ...DRIVER, avatar_url: null }) })
+    const onMeChange = vi.fn()
+    const { container } = render(
+      <SessionProvider me={withPhoto} onMeChange={onMeChange}>
+        <MemoryRouter>
+          <AccountPage />
+        </MemoryRouter>
+      </SessionProvider>,
+    )
+    expect(container.querySelector('.account-avatar img')).toHaveAttribute('src', '/api/auth/avatars/2?v=abc')
+    await userEvent.click(screen.getByRole('button', { name: 'Quitar foto' }))
+    expect(await screen.findByRole('status')).toHaveTextContent('Foto quitada.')
+    expect(calls.some((c) => c.key === 'DELETE /api/auth/me/avatar')).toBe(true)
+    expect(onMeChange).toHaveBeenCalledWith({ ...DRIVER, avatar_url: null })
   })
 })

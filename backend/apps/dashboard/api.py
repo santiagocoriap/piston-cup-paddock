@@ -258,6 +258,7 @@ class ProfileRestartOut(Schema):
 class ProfileOut(Schema):
     id: int
     display_name: str
+    avatar_url: str | None = None
     can_adjust: bool
     career: CareerOut
     seasons: list[ProfileSeasonOut]
@@ -290,6 +291,7 @@ def _profile(user, driver: DriverProfile) -> ProfileOut:
     return ProfileOut(
         id=driver.id,
         display_name=driver.display_name,
+        avatar_url=driver.avatar_url(),
         can_adjust=_can_adjust(user, driver),
         career=CareerOut(
             raw_points=data.raw_points,

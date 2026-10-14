@@ -12,13 +12,13 @@ import { RowMenu } from '../components/RowMenu'
 import { Tabs } from '../components/Tabs'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
-import { initials } from '../lib/initials'
 import { panelId, tabId } from '../lib/tabs'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { CollectorsSection } from './CollectorsSection'
 import { HealthSection } from './HealthSection'
 import { Breadcrumbs } from '../components/Breadcrumbs'
+import { Avatar } from '../components/Avatar'
 
 type Detail = components['schemas']['ChampionshipDetail']
 type Progress = components['schemas']['LatestSeasonOut']
@@ -384,9 +384,7 @@ function Members({ championshipId }: { championshipId: number }) {
                 <tr key={member.user_id}>
                   <td>
                     <span className="member-name">
-                      <span className="avatar" aria-hidden="true">
-                        {initials(member.username)}
-                      </span>
+                      <Avatar name={member.username} url={member.avatar_url} />
                       {member.username}
                     </span>
                   </td>

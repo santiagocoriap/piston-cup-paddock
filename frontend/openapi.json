@@ -263,6 +263,111 @@
         ]
       }
     },
+    "/api/auth/me/avatar": {
+      "post": {
+        "operationId": "apps_identity_api_upload_avatar",
+        "summary": "Upload Avatar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          }
+        },
+        "description": "Set the picture of the signed-in user. Only a PNG or a JPEG of at most 2 MB.",
+        "tags": [
+          "auth"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "format": "binary",
+                    "title": "File",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "file"
+                ],
+                "title": "FileParams",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "apps_identity_api_remove_avatar",
+        "summary": "Remove Avatar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/auth/avatars/{user_id}": {
+      "get": {
+        "operationId": "apps_identity_api_avatar",
+        "summary": "Avatar",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "title": "User Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "The picture of a user. Every signed-in user can see it, like the names.",
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/catalog/tracks": {
       "get": {
         "operationId": "apps_catalog_api_list_tracks",
@@ -6868,6 +6973,17 @@
           "can_manage": {
             "title": "Can Manage",
             "type": "boolean"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
           }
         },
         "required": [
@@ -8543,6 +8659,17 @@
             "title": "Username",
             "type": "string"
           },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          },
           "role": {
             "title": "Role",
             "type": "string"
@@ -8732,6 +8859,17 @@
           "driver_name": {
             "title": "Driver Name",
             "type": "string"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
           },
           "car_id": {
             "title": "Car Id",
@@ -9631,6 +9769,17 @@
           "driver_name": {
             "title": "Driver Name",
             "type": "string"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
           },
           "laps": {
             "anyOf": [
@@ -13689,6 +13838,31 @@
               }
             ],
             "title": "Voters"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          },
+          "voter_pictures": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PersonOut"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voter Pictures"
           }
         },
         "required": [
@@ -13701,6 +13875,31 @@
           "voters"
         ],
         "title": "OptionOut",
+        "type": "object"
+      },
+      "PersonOut": {
+        "properties": {
+          "username": {
+            "title": "Username",
+            "type": "string"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          }
+        },
+        "required": [
+          "username",
+          "avatar_url"
+        ],
+        "title": "PersonOut",
         "type": "object"
       },
       "TieOut": {
@@ -13737,6 +13936,17 @@
           "voted": {
             "title": "Voted",
             "type": "boolean"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
           }
         },
         "required": [
@@ -15155,6 +15365,17 @@
           "display_name": {
             "title": "Display Name",
             "type": "string"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
           },
           "can_adjust": {
             "title": "Can Adjust",
