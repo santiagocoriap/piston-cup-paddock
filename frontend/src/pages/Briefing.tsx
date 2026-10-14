@@ -52,11 +52,11 @@ export function Briefing({ round }: { round: RoundDetail }) {
                     {String((conditions as Record<string, unknown>)[key])}
                     {unit}
                   </dd>
-                  <DrawHistory roundId={round.id} />
-        </div>
+                </div>
               ))}
             </dl>
           )}
+          <DrawHistory roundId={round.id} />
         </div>
 
         {(round.briefing.restart_guidance || round.briefing.first_lap_cutoff) && (

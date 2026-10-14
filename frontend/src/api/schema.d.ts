@@ -4846,6 +4846,35 @@ export interface components {
             /** Seasons */
             seasons: components["schemas"]["SeasonCardOut"][];
         };
+        /** LastRoundOut */
+        LastRoundOut: {
+            /** Round Id */
+            round_id: number;
+            /** Round Number */
+            round_number: number;
+            /** Track Name */
+            track_name: string;
+            /** Layout Name */
+            layout_name: string;
+            /** Scheduled At */
+            scheduled_at: string | null;
+            /** Event Timezone */
+            event_timezone: string;
+            /** Status */
+            status: string;
+            /** Position */
+            position: number | null;
+            /** Points */
+            points: number;
+            /** Has Report */
+            has_report: boolean;
+            /** Track Preview Url */
+            track_preview_url: string | null;
+            /** Track Country */
+            track_country: string;
+            /** Track Length M */
+            track_length_m: number | null;
+        };
         /** NearbyOut */
         NearbyOut: {
             /** Rank */
@@ -4903,6 +4932,18 @@ export interface components {
             ballast_cap: number;
             /** Restrictor Cap */
             restrictor_cap: number;
+            /** Track Country */
+            track_country: string;
+            /** Track Length M */
+            track_length_m: number | null;
+            /** Track Direction */
+            track_direction: string;
+            /** Pit Boxes */
+            pit_boxes: number | null;
+            /** First Lap Cutoff */
+            first_lap_cutoff: string;
+            /** Restart Guidance */
+            restart_guidance: string;
         };
         /** RecentOut */
         RecentOut: {
@@ -4950,6 +4991,7 @@ export interface components {
             history: components["schemas"]["RecentOut"][];
             /** Nearby */
             nearby: components["schemas"]["NearbyOut"][];
+            last_round: components["schemas"]["LastRoundOut"] | null;
         };
         /** AchievementOut */
         AchievementOut: {

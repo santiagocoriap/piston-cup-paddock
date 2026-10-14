@@ -10,12 +10,14 @@ import { Explainer, StatusBadge } from '../components/Feedback'
 import { Icon, type IconName } from '../components/Icon'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
+import { medal } from '../lib/medal'
 import { useLoad } from '../lib/useLoad'
 import { ResultChips, Trend } from '../components/ResultHistory'
 import { useMe } from '../session'
 
 type Card = components['schemas']['SeasonCardOut']
 type NextRound = components['schemas']['NextRoundOut']
+type LastRound = components['schemas']['LastRoundOut']
 type Ballot = components['schemas']['BallotSummary']
 type Conditions = components['schemas']['ConditionsOut']
 type Answer = 'yes' | 'maybe' | 'no'
@@ -162,6 +164,8 @@ function SeasonHome({ card }: { card: Card }) {
           attending={attending}
           onAnswered={(answer, count) => setAttendance({ mine: answer, attending: count })}
         />
+      ) : card.last_round ? (
+        <LastRace card={card} last={card.last_round} />
       ) : (
         <p className="muted">{t('dashboard.noNext')}</p>
       )}
@@ -192,7 +196,7 @@ function NextRace({
   attending: number
   onAnswered: (answer: Answer, attending: number) => void
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [error, setError] = useState<string | null>(null)
   const [changing, setChanging] = useState(false)
 
@@ -209,8 +213,17 @@ function NextRace({
   }
 
   const answered = mine && !changing
+  const preview = next.track_preview_url
+  const trackFacts = [
+    next.track_country,
+    next.track_length_m ? `${(next.track_length_m / 1000).toLocaleString(i18n.language, { maximumFractionDigits: 3 })} km` : null,
+    next.track_direction ? t(`facts.directions.${next.track_direction}`) : null,
+    next.pit_boxes ? t('dashboard.pitBoxes', { count: next.pit_boxes }) : null,
+  ].filter(Boolean)
   return (
-    <section className="hero" aria-labelledby="next-race">
+    <section className={preview ? 'hero race-hero has-image' : 'hero race-hero'} aria-labelledby="next-race">
+      {/* The picture of the layout from the game files, behind the text. */}
+      {preview && <img className="hero-backdrop" src={preview} alt="" />}
       <div className="hero-main">
         <p className="eyebrow">
           <span className="badge status-badge new">
@@ -230,6 +243,13 @@ function NextRace({
             <EventTime iso={next.scheduled_at} eventTimeZone={next.event_timezone} />
           </span>
         </p>
+        {trackFacts.length > 0 && (
+          <ul className="race-facts" aria-label={t('dashboard.trackFacts')}>
+            {trackFacts.map((fact) => (
+              <li key={fact}>{fact}</li>
+            ))}
+          </ul>
+        )}
         {next.scheduled_at && <Countdown iso={next.scheduled_at} roundId={next.round_id} />}
         {answered ? (
           <div className="hero-answer" role="status">
@@ -268,7 +288,7 @@ function NextRace({
         </Link>
       </div>
       <dl className="hero-facts">
-        {next.track_outline_url && (
+        {next.track_outline_url && !preview && (
           <img
             className="hero-outline"
             src={next.track_outline_url}
@@ -287,7 +307,85 @@ function NextRace({
           </dd>
         </div>
         <ConditionFacts conditions={next.conditions} />
+        {next.first_lap_cutoff && (
+          <div>
+            <dt>{t('dashboard.firstLapCutoff')}</dt>
+            <dd>{next.first_lap_cutoff}</dd>
+          </div>
+        )}
       </dl>
+    </section>
+  )
+}
+
+/** The banner when no race is next: the picture of the last track, with the result of the
+ * driver in a card on top. */
+function LastRace({ card, last }: { card: Card; last: LastRound }) {
+  const { t, i18n } = useTranslation()
+  const preview = last.track_preview_url
+  const placed = last.status === 'finished' && last.position !== null
+  const result = placed ? `P${last.position}` : t(`round.short.${last.status}`, { defaultValue: last.status.toUpperCase() })
+  const trackFacts = [
+    last.track_country,
+    last.track_length_m
+      ? `${(last.track_length_m / 1000).toLocaleString(i18n.language, { maximumFractionDigits: 3 })} km`
+      : null,
+  ].filter(Boolean)
+  return (
+    <section className={preview ? 'hero race-hero has-image' : 'hero race-hero'} aria-labelledby="last-race">
+      {preview && <img className="hero-backdrop" src={preview} alt="" />}
+      <div className="hero-main">
+        <p className="eyebrow">
+          <span className="badge status-badge last-badge">
+            <Icon name="history" small />
+            {t('dashboard.lastRace')}
+          </span>
+          <span>
+            {t('round.title', { number: last.round_number })} · {card.championship_name} · {card.season_name}
+          </span>
+        </p>
+        <h2 id="last-race" className="hero-title">
+          {last.track_name}
+        </h2>
+        <p className="hero-when">
+          <span className="hero-layout">{last.layout_name}</span>
+          {last.scheduled_at && (
+            <span>
+              <EventTime iso={last.scheduled_at} eventTimeZone={last.event_timezone} />
+            </span>
+          )}
+        </p>
+        {trackFacts.length > 0 && (
+          <ul className="race-facts" aria-label={t('dashboard.trackFacts')}>
+            {trackFacts.map((fact) => (
+              <li key={fact}>{fact}</li>
+            ))}
+          </ul>
+        )}
+        <p className="last-waiting">
+          <Icon name="clock" small />
+          {t('dashboard.waitingNext')}
+        </p>
+      </div>
+      <div className={`hero-facts last-result ${placed ? medal(last.position ?? 0) : ''}`.trim()}>
+        <p className="last-result-label">{t('dashboard.yourResult')}</p>
+        <p className="last-result-value">
+          {placed && (last.position ?? 99) <= 3 && <Icon name="medal" />}
+          <b>{result}</b>
+          <span>{t('dashboard.points', { count: last.points })}</span>
+        </p>
+        <p className="muted">{t('dashboard.standingNow', { rank: card.rank, entries: card.entries })}</p>
+        <div className="last-actions">
+          {last.has_report && (
+            <Link className="button-link" to={`/rounds/${last.round_id}?tab=report`}>
+              {t('dashboard.readReport')}
+            </Link>
+          )}
+          <Link className="button-link secondary-link" to={`/rounds/${last.round_id}`}>
+            {t('dashboard.seeResults')}
+          </Link>
+        </div>
+      </div>
     </section>
   )
 }

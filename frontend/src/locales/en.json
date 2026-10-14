@@ -1148,7 +1148,17 @@
     "you": "You",
     "points_one": "{{count}} pt",
     "points_other": "{{count}} pts",
-    "trendScale": "P{{position}}"
+    "trendScale": "P{{position}}",
+    "pitBoxes_one": "{{count}} pit box",
+    "pitBoxes_other": "{{count}} pit boxes",
+    "trackFacts": "Track facts",
+    "firstLapCutoff": "First lap cutoff",
+    "lastRace": "Last race",
+    "waitingNext": "Waiting for the next race",
+    "yourResult": "Your result",
+    "standingNow": "You are P{{rank}} of {{entries}} in the championship",
+    "readReport": "Read report",
+    "seeResults": "See results"
   },
   "briefing": {
     "title": "Briefing",
@@ -1307,7 +1317,10 @@
     },
     "facts": "Facts used",
     "outdated": "This report is outdated: the result changed after it.",
-    "regenerate": "Update report"
+    "regenerate": "Update report",
+    "byline": "By the Paddock desk",
+    "readAll": "Read the full story",
+    "kicker": "Race story · Round {{number}}"
   },
   "laps": {
     "title": "Laps",
@@ -1395,7 +1408,8 @@
       "finished": "finished",
       "in_progress": "in progress"
     },
-    "meta": "Season {{status}}, official rounds only · {{date}} · {{language}}"
+    "meta": "Season {{status}}, official rounds only · {{date}} · {{language}}",
+    "kicker": "Season story"
   },
   "collectors": {
     "title": "Collectors",

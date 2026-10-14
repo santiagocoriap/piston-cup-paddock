@@ -62,6 +62,46 @@ describe('DashboardSection', () => {
     expect(within(article).getByRole('link', { name: 'Ver briefing' })).toHaveAttribute('href', '/rounds/3')
   })
 
+  it('shows the picture of the layout and the track facts on the next-race banner', async () => {
+    const next = {
+      ...card.next_round,
+      track_preview_url: '/media/preview.png', track_outline_url: '/media/outline.png',
+      track_country: 'Italia', track_length_m: 4909, track_direction: 'clockwise', pit_boxes: 30,
+      first_lap_cutoff: 'Tamburello',
+    }
+    mockApi({
+      'GET /api/dashboard': () => json(200, { has_driver_profile: true, seasons: [{ ...card, next_round: next }] }),
+      'GET /api/seasons/5/ballots': () => json(200, []),
+    })
+    const { container } = renderPage(<DashboardSection />, { path: '/', url: '/', me: DRIVER })
+    const facts = await screen.findByRole('list', { name: 'Datos de la pista' })
+    expect(within(facts).getByText('Italia')).toBeInTheDocument()
+    expect(within(facts).getByText('4,909 km')).toBeInTheDocument()
+    expect(within(facts).getByText('30 boxes')).toBeInTheDocument()
+    expect(screen.getByText('Tamburello')).toBeInTheDocument()
+    expect(container.querySelector('.hero-backdrop')).toHaveAttribute('src', '/media/preview.png')
+    expect(container.querySelector('.hero-outline')).toBeNull()
+  })
+
+  it('shows the last race and the result when no race is next', async () => {
+    const last = {
+      round_id: 2, round_number: 2, track_name: 'Monza', layout_name: 'GP', scheduled_at: null,
+      event_timezone: 'America/Argentina/Buenos_Aires', status: 'finished', position: 2, points: 18,
+      has_report: true, track_preview_url: '/media/monza.png', track_country: 'Italia', track_length_m: 5793,
+    }
+    mockApi({
+      'GET /api/dashboard': () =>
+        json(200, { has_driver_profile: true, seasons: [{ ...card, next_round: null, last_round: last }] }),
+      'GET /api/seasons/5/ballots': () => json(200, []),
+    })
+    renderPage(<DashboardSection />, { path: '/', url: '/', me: DRIVER })
+    const banner = await screen.findByRole('region', { name: 'Monza' })
+    expect(within(banner).getByText('Última fecha')).toBeInTheDocument()
+    expect(within(banner).getByText('P2')).toBeInTheDocument()
+    expect(within(banner).getByText('Esperando la próxima fecha')).toBeInTheDocument()
+    expect(within(banner).getByRole('link', { name: 'Leer reporte' })).toHaveAttribute('href', '/rounds/2?tab=report')
+  })
+
   it('lists what to do: open ballots with the runoff and new reports, but not the attendance', async () => {
     mockHome()
     renderPage(<DashboardSection />, { path: '/', url: '/', me: DRIVER })

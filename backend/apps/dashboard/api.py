@@ -65,6 +65,12 @@ class NextRoundOut(Schema):
     car_image_url: str | None
     ballast_cap: int
     restrictor_cap: int
+    track_country: str
+    track_length_m: int | None
+    track_direction: str
+    pit_boxes: int | None
+    first_lap_cutoff: str
+    restart_guidance: str
 
 
 class NearbyOut(Schema):
@@ -78,6 +84,22 @@ class NewReportOut(Schema):
     round_id: int
     round_number: int
     track_name: str
+
+
+class LastRoundOut(Schema):
+    round_id: int
+    round_number: int
+    track_name: str
+    layout_name: str
+    scheduled_at: datetime | None
+    event_timezone: str
+    status: str
+    position: int | None
+    points: int
+    has_report: bool
+    track_preview_url: str | None
+    track_country: str
+    track_length_m: int | None
 
 
 class SeasonCardOut(Schema):
@@ -96,6 +118,7 @@ class SeasonCardOut(Schema):
     new_reports: list[NewReportOut]
     history: list[RecentOut]
     nearby: list[NearbyOut]
+    last_round: LastRoundOut | None
 
 
 class DashboardOut(Schema):

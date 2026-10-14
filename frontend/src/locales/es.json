@@ -1148,7 +1148,17 @@
     "you": "Vos",
     "points_one": "{{count}} pt",
     "points_other": "{{count}} pts",
-    "trendScale": "P{{position}}"
+    "trendScale": "P{{position}}",
+    "pitBoxes_one": "{{count}} box",
+    "pitBoxes_other": "{{count}} boxes",
+    "trackFacts": "Datos de la pista",
+    "firstLapCutoff": "Corte de la primera vuelta",
+    "lastRace": "Última fecha",
+    "waitingNext": "Esperando la próxima fecha",
+    "yourResult": "Tu resultado",
+    "standingNow": "Vas P{{rank}} de {{entries}} en el campeonato",
+    "readReport": "Leer reporte",
+    "seeResults": "Ver resultados"
   },
   "briefing": {
     "title": "Briefing",
@@ -1307,7 +1317,10 @@
     },
     "facts": "Datos usados",
     "outdated": "Este reporte está desactualizado: el resultado cambió después.",
-    "regenerate": "Actualizar reporte"
+    "regenerate": "Actualizar reporte",
+    "byline": "Por la redacción del Paddock",
+    "readAll": "Leer la crónica completa",
+    "kicker": "Crónica · Fecha {{number}}"
   },
   "laps": {
     "title": "Vueltas",
@@ -1395,7 +1408,8 @@
       "finished": "terminada",
       "in_progress": "en curso"
     },
-    "meta": "Temporada {{status}}, solo fechas oficiales · {{date}} · {{language}}"
+    "meta": "Temporada {{status}}, solo fechas oficiales · {{date}} · {{language}}",
+    "kicker": "Resumen de la temporada"
   },
   "collectors": {
     "title": "Colectores",

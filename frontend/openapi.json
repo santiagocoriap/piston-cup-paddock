@@ -14533,6 +14533,108 @@
         "title": "DashboardOut",
         "type": "object"
       },
+      "LastRoundOut": {
+        "properties": {
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "round_number": {
+            "title": "Round Number",
+            "type": "integer"
+          },
+          "track_name": {
+            "title": "Track Name",
+            "type": "string"
+          },
+          "layout_name": {
+            "title": "Layout Name",
+            "type": "string"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
+          },
+          "event_timezone": {
+            "title": "Event Timezone",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "has_report": {
+            "title": "Has Report",
+            "type": "boolean"
+          },
+          "track_preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Preview Url"
+          },
+          "track_country": {
+            "title": "Track Country",
+            "type": "string"
+          },
+          "track_length_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Length M"
+          }
+        },
+        "required": [
+          "round_id",
+          "round_number",
+          "track_name",
+          "layout_name",
+          "scheduled_at",
+          "event_timezone",
+          "status",
+          "position",
+          "points",
+          "has_report",
+          "track_preview_url",
+          "track_country",
+          "track_length_m"
+        ],
+        "title": "LastRoundOut",
+        "type": "object"
+      },
       "NearbyOut": {
         "properties": {
           "rank": {
@@ -14713,6 +14815,44 @@
           "restrictor_cap": {
             "title": "Restrictor Cap",
             "type": "integer"
+          },
+          "track_country": {
+            "title": "Track Country",
+            "type": "string"
+          },
+          "track_length_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Length M"
+          },
+          "track_direction": {
+            "title": "Track Direction",
+            "type": "string"
+          },
+          "pit_boxes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pit Boxes"
+          },
+          "first_lap_cutoff": {
+            "title": "First Lap Cutoff",
+            "type": "string"
+          },
+          "restart_guidance": {
+            "title": "Restart Guidance",
+            "type": "string"
           }
         },
         "required": [
@@ -14733,7 +14873,13 @@
           "track_preview_url",
           "car_image_url",
           "ballast_cap",
-          "restrictor_cap"
+          "restrictor_cap",
+          "track_country",
+          "track_length_m",
+          "track_direction",
+          "pit_boxes",
+          "first_lap_cutoff",
+          "restart_guidance"
         ],
         "title": "NextRoundOut",
         "type": "object"
@@ -14862,6 +15008,16 @@
             },
             "title": "Nearby",
             "type": "array"
+          },
+          "last_round": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LastRoundOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -14879,7 +15035,8 @@
           "next_round",
           "new_reports",
           "history",
-          "nearby"
+          "nearby",
+          "last_round"
         ],
         "title": "SeasonCardOut",
         "type": "object"

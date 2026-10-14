@@ -26,7 +26,9 @@ describe('ReportSection', () => {
     expect(await screen.findByText('Nuevo')).toBeInTheDocument()
     expect(screen.getByText('Versiones anteriores (1)')).toBeInTheDocument()
 
-    await userEvent.click(screen.getByText('Reporte 2'))
+    expect(screen.getByText('Driver 1 ganó.')).toBeVisible()
+    expect(screen.queryByText('El reinicio sigue pendiente.')).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Leer la crónica completa' }))
     expect(await screen.findByText('El reinicio sigue pendiente.')).toBeVisible()
     await vi.waitFor(() => expect(screen.queryByText('Nuevo')).not.toBeInTheDocument())
     expect(calls.some((c) => c.key === 'POST /api/reports/5/read')).toBe(true)

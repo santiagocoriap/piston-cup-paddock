@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent, type SyntheticEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { api } from '../api/client'
 import { AdminActions } from '../components/AdminActions'
 import type { components } from '../api/schema'
@@ -11,6 +12,8 @@ type Report = components['schemas']['ReportOut']
 type Tone = 'sarcastic' | 'friendly' | 'roast'
 /** A race report belongs to a round. A season report belongs to a season. */
 type Target = { kind: 'round' | 'season'; id: number }
+/** The top of the article: a picture, a small line above the title, and the title. */
+type Masthead = { cover?: string | null; kicker?: string; headline?: string }
 
 function loadReports(target: Target) {
   return target.kind === 'round'
@@ -25,7 +28,15 @@ function createReport(target: Target, body: { language: 'es' | 'en'; tone: Tone 
 }
 
 /** The AI race report or season report. The AI writes only the text. The facts come from the app. */
-export function ReportSection({ target, adminView }: { target: Target; adminView: boolean }) {
+export function ReportSection({
+  target,
+  adminView,
+  masthead = {},
+}: {
+  target: Target
+  adminView: boolean
+  masthead?: Masthead
+}) {
   const { t } = useTranslation()
   const prefix = target.kind === 'round' ? 'report' : 'seasonReport'
   const reports = useLoad(() => loadReports(target), [target.kind, target.id])
@@ -76,7 +87,11 @@ export function ReportSection({ target, adminView }: { target: Target; adminView
           )}
         </p>
       )}
-      {latest ? <ReportText report={latest} open target={target.kind} /> : <p className="muted">{t('report.none')}</p>}
+      {latest ? (
+        <ReportArticle key={latest.id} report={latest} target={target.kind} masthead={masthead} />
+      ) : (
+        <p className="muted">{t('report.none')}</p>
+      )}
       {older.length > 0 && (
         <details>
           <summary>{t('report.older', { count: older.length })}</summary>
@@ -86,6 +101,90 @@ export function ReportSection({ target, adminView }: { target: Target; adminView
         </details>
       )}
     </section>
+  )
+}
+
+function paragraphs(text: string) {
+  return text.split(/\n+/).filter((line) => line.trim())
+}
+
+function metaLine(t: TFunction, language: string, report: Report, target: Target['kind']) {
+  return target === 'season'
+    ? t('seasonReport.meta', {
+        status: t(`seasonReport.status.${report.result_status}`),
+        date: formatDateTime(report.generated_at, language),
+        language: t(`report.languages.${report.language}`),
+      })
+    : t('report.meta', {
+        status: report.result_status ? t(`review.status.${report.result_status}`) : '—',
+        version: report.source_version ?? '—',
+        date: formatDateTime(report.generated_at, language),
+        language: t(`report.languages.${report.language}`),
+      })
+}
+
+/** The newest report as a news article: a picture, a title, a byline, and the text in a
+ * column for reading. An unread report shows only the first paragraph. The button
+ * opens the rest and marks the report as read. */
+function ReportArticle({ report, target, masthead }: { report: Report; target: Target['kind']; masthead: Masthead }) {
+  const { t, i18n } = useTranslation()
+  const [unread, setUnread] = useState(report.unread)
+  const [expanded, setExpanded] = useState(!report.unread)
+  const [lede, ...rest] = paragraphs(report.text)
+  const prefix = target === 'round' ? 'report' : 'seasonReport'
+
+  async function readAll() {
+    setExpanded(true)
+    if (!unread) return
+    const { error } = await api.POST('/api/reports/{report_id}/read', { params: { path: { report_id: report.id } } })
+    if (!error) setUnread(false)
+  }
+
+  return (
+    <article
+      className={masthead.cover ? 'news has-cover' : 'news'}
+      aria-label={masthead.headline ?? t(`${prefix}.title`)}
+    >
+      {masthead.cover && (
+        <div className="news-cover">
+          <img src={masthead.cover} alt="" />
+        </div>
+      )}
+      <header className="news-head">
+        <p className="news-kicker">
+          {masthead.kicker ?? t(`${prefix}.title`)}
+          {unread && <span className="badge">{t('report.new')}</span>}
+        </p>
+        {masthead.headline && (
+          <h3 id={`news-${report.id}`} className="news-title">
+            {masthead.headline}
+          </h3>
+        )}
+        <p className="news-byline">
+          <span>{t('report.byline')}</span>
+          <span>
+            {t('report.version', { number: report.number })} · {metaLine(t, i18n.language, report, target)}
+          </span>
+        </p>
+      </header>
+      <div className="news-body">
+        {lede && <p className="news-lede">{lede}</p>}
+        {expanded ? (
+          <>
+            {rest.map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
+            <p className="news-note">{t('report.aiNote')}</p>
+          </>
+        ) : (
+          rest.length > 0 && (
+            <button type="button" className="news-more" onClick={readAll}>
+              {t('report.readAll')}
+            </button>
+          )
+        )}
+      </div>
+    </article>
   )
 }
 
@@ -109,24 +208,8 @@ function ReportText({ report, open = false, target = 'round' }: { report: Report
         {t('report.version', { number: report.number })}
         {unread && <span className="badge">{t('report.new')}</span>}
       </summary>
-      <p className="muted">
-        {target === 'season'
-          ? t('seasonReport.meta', {
-              status: t(`seasonReport.status.${report.result_status}`),
-              date: formatDateTime(report.generated_at, i18n.language),
-              language: t(`report.languages.${report.language}`),
-            })
-          : t('report.meta', {
-              status: report.result_status ? t(`review.status.${report.result_status}`) : '—',
-              version: report.source_version ?? '—',
-              date: formatDateTime(report.generated_at, i18n.language),
-              language: t(`report.languages.${report.language}`),
-            })}
-      </p>
-      {report.text
-        .split(/\n+/)
-        .filter((line) => line.trim())
-        .map((paragraph, index) => (
+      <p className="muted">{metaLine(t, i18n.language, report, target)}</p>
+      {paragraphs(report.text).map((paragraph, index) => (
         <p key={index}>{paragraph}</p>
       ))}
       <p className="muted">{t('report.aiNote')}</p>

@@ -136,7 +136,7 @@ export function RoundPage() {
   ]
 
   const briefing = (
-    <>
+    <div className="briefing-body">
       <Briefing round={data} />
       <AttendanceCard roundId={data.id} />
       <p>
@@ -144,7 +144,7 @@ export function RoundPage() {
           {t('calendar.addRound')}
         </a>
       </p>
-    </>
+    </div>
   )
 
   return (
@@ -280,7 +280,17 @@ export function RoundPage() {
       )}
       {tab === 'telemetry' && <TelemetrySection roundId={data.id} />}
       {tab === 'engineer' && <EngineerSection roundId={data.id} />}
-      {tab === 'report' && <ReportSection target={{ kind: 'round', id: data.id }} adminView={may('reports')} />}
+      {tab === 'report' && (
+        <ReportSection
+          target={{ kind: 'round', id: data.id }}
+          adminView={may('reports')}
+          masthead={{
+            cover: data.track_preview_url,
+            kicker: t('report.kicker', { number: data.number }),
+            headline: `${data.track_name} · ${data.layout_name}`,
+          }}
+        />
+      )}
     </section>
   )
 }

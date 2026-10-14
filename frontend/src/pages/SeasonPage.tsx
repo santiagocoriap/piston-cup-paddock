@@ -10,6 +10,7 @@ import { RowMenu } from '../components/RowMenu'
 import { Loading } from '../components/Layout'
 import { currentTimeZone, formatDateTime, localInputToIso } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { initials } from '../lib/initials'
 import { medal } from '../lib/medal'
 import { useAdminView } from '../session'
 import { BallotsSection } from './BallotsSection'
@@ -389,7 +390,11 @@ export function SeasonPage() {
           </section>
 
           <section id="report" className="season-block">
-            <ReportSection target={{ kind: 'season', id: seasonId }} adminView={adminView} />
+            <ReportSection
+              target={{ kind: 'season', id: seasonId }}
+              adminView={adminView}
+              masthead={{ kicker: t('seasonReport.kicker'), headline: `${data.championship_name} · ${data.name}` }}
+            />
           </section>
 
           <section id="entries" className="season-block">
@@ -413,7 +418,9 @@ export function SeasonPage() {
               <ul className="entry-grid">
                 {data.entries.map((entry) => (
                   <li key={entry.id}>
-                    <span className="entry-number">{entry.number}</span>
+                    <span className="avatar entry-avatar" aria-hidden="true">
+                      {initials(entry.driver_name)}
+                    </span>
                     <span>
                       <b title={entry.driver_name}>{entry.driver_name}</b>
                       <span className="muted" title={entry.car_name}>
@@ -421,6 +428,7 @@ export function SeasonPage() {
                       </span>
                       {entry.team && <span className="entry-team">{entry.team}</span>}
                     </span>
+                    <span className="entry-number">{entry.number}</span>
                   </li>
                 ))}
               </ul>

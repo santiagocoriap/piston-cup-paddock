@@ -165,12 +165,23 @@ def test_dashboard_gives_the_caps_the_history_and_the_drivers_near_me(
     rules = RulesVersion.current_for(season)
     rules.ballast_cap, rules.restrictor_cap = 60, 4
     rules.save()
+    layout = rounds[2].track_layout
+    layout.length_m, layout.direction, layout.pit_boxes = 5793, "clockwise", 30
+    layout.first_lap_cutoff = "T1"
+    layout.save()
+    layout.track.country = "Italia"
+    layout.track.save()
     race(admin, rounds[0], [juan, ana, pedro])
     race(admin, rounds[1], [juan, ana, pedro])
 
     card = api(me).get("/dashboard").json()["seasons"][0]
 
     assert (card["next_round"]["ballast_cap"], card["next_round"]["restrictor_cap"]) == (60, 4)
+    # The facts of the next layout, for the race card.
+    next_round = card["next_round"]
+    assert (next_round["track_country"], next_round["track_length_m"]) == ("Italia", 5793)
+    assert (next_round["track_direction"], next_round["pit_boxes"]) == ("clockwise", 30)
+    assert next_round["first_lap_cutoff"] == "T1"
     # Every result in round order, for the trend line.
     assert [(r["round_number"], r["position"]) for r in card["history"]] == [(1, 2), (2, 2)]
     # Ana is second: Juan is above her and Pedro is below her.
@@ -179,3 +190,18 @@ def test_dashboard_gives_the_caps_the_history_and_the_drivers_near_me(
         (2, "Ana", True),
         (3, "Pedro", False),
     ]
+
+
+def test_dashboard_gives_the_last_race_of_the_driver(api, champ_admin, me, grid, rounds):
+    ana, juan = grid
+    assert api(me).get("/dashboard").json()["seasons"][0]["last_round"] is None
+    race(api(champ_admin), rounds[0], [juan, ana])
+
+    last = api(me).get("/dashboard").json()["seasons"][0]["last_round"]
+    assert (last["round_number"], last["track_name"], last["position"], last["points"]) == (
+        1,
+        "Highlands",
+        2,
+        18,
+    )
+    assert (last["status"], last["has_report"]) == ("finished", False)
