@@ -5,7 +5,10 @@ Runs next to the Assetto Corsa server. It sends new result files, Real Penalty l
 (optionally) UDP plugin events to the app.
 
 Safety rules:
-- It only reads the server folders. It never writes or deletes there.
+- It only reads the server folders, with one exception: with write_server_config on, it writes
+  the race setup that an admin sends from the app ("Enviar al servidor") into the Content
+  Manager preset. It writes only while the AC server is stopped, it keeps a copy of the old
+  files first, and it changes only its own keys. It never starts or stops the server.
 - It sends one packet to the AC server only when request_positions is on: the request for
   car positions (REALTIMEPOS_INTERVAL). It never sends any other command.
 - It keeps a copy of each file and each event in its own spool folder first. An app outage
@@ -24,9 +27,12 @@ import hashlib
 import io
 import json
 import logging
+import re
+import shutil
 import socket
 import sqlite3
 import struct
+import subprocess
 import threading
 import time
 import urllib.error
@@ -79,6 +85,12 @@ class Settings:
     # The server_cfg.ini that the AC server uses. The collector reads the time of day and the
     # start grip from it at each new session. Empty: the app gets no time of day and no grip.
     server_cfg: Path | None = None
+    # The Content Manager preset folder of the league server, for "Enviar al servidor".
+    preset_dir: Path | None = None
+    # Off by default: the collector only reads. The server owner turns it on.
+    write_server_config: bool = False
+    # Free slots after the league drivers, so a driver can change to an extra car.
+    open_slots: int = 10
 
     @classmethod
     def load(cls, path: Path) -> Settings:
@@ -94,7 +106,15 @@ class Settings:
             app_url=app["url"].rstrip("/"),
             key=app["key"].strip(),
             results_dir=folder(server.get("results_dir", "")),
-            server_cfg=folder(server.get("server_cfg", "")),
+            server_cfg=folder(server.get("server_cfg", ""))
+            or (
+                Path(server["preset_dir"]) / "server_cfg.ini"
+                if server.get("preset_dir", "").strip()
+                else None
+            ),
+            preset_dir=folder(server.get("preset_dir", "")),
+            write_server_config=collector.getboolean("write_server_config", False),
+            open_slots=max(0, collector.getint("open_slots", 10)),
             penalty_dir=folder(server.get("realpenalty_logs_dir", "")),
             spool_dir=Path(collector.get("spool_dir", "spool")),
             udp_port=collector.getint("udp_port", 0),
@@ -299,6 +319,339 @@ class App:
     def send_events(self, run_id: str, events: list[dict]) -> dict:
         body = json.dumps({"run_id": run_id, "events": events}).encode()
         return self._request("/api/collector/events", body, "application/json")
+
+    def get_command(self) -> dict:
+        request = urllib.request.Request(
+            self.settings.app_url + "/api/collector/commands",
+            headers={
+                "Authorization": f"Bearer {self.settings.key}",
+                "User-Agent": f"paddock-collector/{VERSION}",
+            },
+        )
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return json.loads(response.read() or b"{}")
+
+    def report(self, push_id: int, status: str, error: str = "") -> dict:
+        body = json.dumps({"status": status, "error": error}).encode()
+        return self._request(f"/api/collector/commands/{push_id}", body, "application/json")
+
+
+# Race setup ("Enviar al servidor")
+
+PADDOCK_SCRIPT = "/api/script/paddock.lua"
+# A car, track, layout, or weather name: a folder name of AC.
+SAFE_NAME = re.compile(r"^[A-Za-z0-9_.\-]*$")
+STEAM_ID = re.compile(r"^\d{17}$")
+
+
+def ini_value(value) -> str:
+    """A value for one ini line. A line break or a control character could add a new line,
+    for example a new admin password, so they become spaces."""
+    return re.sub(r"[\x00-\x1f\x7f]", " ", str(value)).strip()
+
+
+def safe_name(value) -> str:
+    text = str(value or "")
+    if not SAFE_NAME.match(text):
+        raise ValueError(f"unsafe_name:{text[:40]!r}")
+    return text
+
+
+def read_text(path: Path) -> tuple[str, str]:
+    """The text of an ini file and its line end. Content Manager can write CRLF."""
+    if not path.exists():
+        return "", "\r\n"
+    raw = path.read_bytes()
+    try:
+        text = raw.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        text = raw.decode("latin-1")
+    newline = "\r\n" if "\r\n" in text else "\n"
+    return text.replace("\r\n", "\n"), newline
+
+
+def write_text(path: Path, text: str, newline: str) -> None:
+    path.write_bytes(text.replace("\n", newline).encode("utf-8"))
+
+
+def ini_split(text: str) -> list[tuple[str | None, list[str]]]:
+    """The sections of an ini text, in order, with their lines. The first part has no name."""
+    parts: list[tuple[str | None, list[str]]] = [(None, [])]
+    for line in text.split("\n"):
+        stripped = line.strip()
+        if stripped.startswith("[") and "]" in stripped:
+            parts.append((stripped[1 : stripped.index("]")], [line]))
+        else:
+            parts[-1][1].append(line)
+    return parts
+
+
+def ini_join(parts: list[tuple[str | None, list[str]]]) -> str:
+    return "\n".join(line for _, lines in parts for line in lines)
+
+
+def ini_get(text: str, section: str, key: str) -> str | None:
+    for name, lines in ini_split(text):
+        if name is not None and name.upper() == section.upper():
+            for line in lines[1:]:
+                left, _, right = line.partition("=")
+                if right and left.strip().upper() == key.upper():
+                    # A comment starts with a space and ";". CARS uses ";" with no space.
+                    return re.split(r"\s+;", right)[0].strip()
+    return None
+
+
+def ini_set(text: str, section: str, key: str, value) -> str:
+    """Set one key and keep every other line. Adds the key or the section when it is missing."""
+    parts = ini_split(text)
+    for name, lines in parts:
+        if name is not None and name.upper() == section.upper():
+            for index, line in enumerate(lines[1:], start=1):
+                left, sep, _ = line.partition("=")
+                if sep and left.strip().upper() == key.upper():
+                    lines[index] = f"{left.rstrip()}={ini_value(value)}"
+                    return ini_join(parts)
+            # Before the empty lines at the end of the section.
+            end = len(lines)
+            while end > 1 and not lines[end - 1].strip():
+                end -= 1
+            lines.insert(end, f"{key}={ini_value(value)}")
+            return ini_join(parts)
+    body = ini_join(parts).rstrip("\n")
+    return f"{body}\n\n[{section}]\n{key}={ini_value(value)}\n"
+
+
+def car_blocks(text: str) -> list[dict[str, str]]:
+    parser = configparser.ConfigParser(strict=False, interpolation=None)
+    parser.optionxform = str  # Keep the case of the keys.
+    parser.read_string(text or "")
+    return [
+        dict(parser[name])
+        for name in sorted(
+            (n for n in parser.sections() if n.upper().startswith("CAR_")),
+            key=lambda n: int(n.split("_")[1]) if n.split("_")[1].isdigit() else 999,
+        )
+    ]
+
+
+def car_skins(content_dir: Path, model: str) -> list[str]:
+    skins = content_dir / "cars" / model / "skins"
+    if not skins.is_dir():
+        return []
+    return sorted(child.name for child in skins.iterdir() if child.is_dir())
+
+
+def first_skin(content_dir: Path, model: str) -> str:
+    names = car_skins(content_dir, model)
+    return names[0] if names else ""
+
+
+def entry_list(
+    old_text: str, entries: list[dict], content_dir: Path, open_slots: int = 10
+) -> tuple[str, list[str]]:
+    """The new entry list: one car for each league driver, then the open slots (the league
+    cars in turn, so a driver can change car), then the spectator slots of the preset (for
+    example Race Control). Gives the text and the car models."""
+    old = car_blocks(old_text)
+    skins: dict[str, str] = {}
+    for block in old:
+        model = block.get("MODEL", "").lower()
+        if model and block.get("SKIN") and model not in skins:
+            skins[model] = block["SKIN"]
+    cars = []
+    for entry in entries:
+        model = safe_name(entry["model"])
+        guid = str(entry.get("guid") or "")
+        cars.append(
+            {
+                "DRIVERNAME": ini_value(entry["name"]),
+                "TEAM": ini_value(entry.get("team", "")),
+                "GUID": guid if STEAM_ID.match(guid) else "",
+                "MODEL": model,
+                "SKIN": skins.get(model.lower()) or first_skin(content_dir, model),
+                "BALLAST": str(int(entry.get("ballast_kg", 0))),
+                "SPECTATOR_MODE": "0",
+                "RESTRICTOR": str(int(entry.get("restrictor_pct", 0))),
+            }
+        )
+    league_models = list(dict.fromkeys(car["MODEL"] for car in cars))
+    used = {(car["MODEL"].lower(), car["SKIN"]) for car in cars}
+    for index in range(open_slots if league_models else 0):
+        model = league_models[index % len(league_models)]
+        # A skin that no other car uses yet, when the server has one.
+        choices = car_skins(content_dir, model) or [skins.get(model.lower(), "")]
+        free = [skin for skin in choices if (model.lower(), skin) not in used]
+        skin = (free or choices)[0]
+        used.add((model.lower(), skin))
+        cars.append(
+            {
+                "DRIVERNAME": "",
+                "TEAM": "",
+                "GUID": "",
+                "MODEL": model,
+                "SKIN": skin,
+                "BALLAST": "0",
+                "SPECTATOR_MODE": "0",
+                "RESTRICTOR": "0",
+            }
+        )
+    cars += [block for block in old if block.get("SPECTATOR_MODE", "0").strip() == "1"]
+    lines = []
+    for index, car in enumerate(cars):
+        lines.append(f"[CAR_{index}]")
+        lines += [f"{key}={ini_value(value)}" for key, value in car.items()]
+        lines.append("")
+    models = list(dict.fromkeys(car["MODEL"] for car in cars if car.get("MODEL")))
+    return "\n".join(lines), models
+
+
+def server_settings(text: str, content: dict, models: list[str], cars: int) -> str:
+    """The new server_cfg.ini: the track, the cars, and the conditions. Other lines stay."""
+    track = content["track"]
+    old_track = ini_get(text, "SERVER", "TRACK") or ""
+    # Keep a prefix such as "csp/3460/../": it tells AC that the server needs CSP.
+    prefix = old_track[: old_track.rfind("/") + 1] if old_track.startswith("csp/") else ""
+    text = ini_set(text, "SERVER", "TRACK", prefix + safe_name(track["key"]))
+    text = ini_set(text, "SERVER", "CONFIG_TRACK", safe_name(track.get("layout", "")))
+    text = ini_set(text, "SERVER", "CARS", ";".join(models))
+    try:
+        clients = int(ini_get(text, "SERVER", "MAX_CLIENTS") or 0)
+    except ValueError:
+        clients = 0
+    text = ini_set(text, "SERVER", "MAX_CLIENTS", max(clients, cars))
+    wanted = content.get("conditions") or {}
+    if "sun_angle" in wanted:
+        text = ini_set(text, "SERVER", "SUN_ANGLE", int(wanted["sun_angle"]))
+    if "grip_pct" in wanted:
+        text = ini_set(text, "DYNAMIC_TRACK", "SESSION_START", int(wanted["grip_pct"]))
+    parts = ini_split(text)
+    if "weather" in wanted:
+        # One weather only: the announced one.
+        parts = [
+            part
+            for part in parts
+            if part[0] is None
+            or not part[0].upper().startswith("WEATHER_")
+            or part[0].upper() == "WEATHER_0"
+        ]
+        text = ini_set(ini_join(parts), "WEATHER_0", "GRAPHICS", safe_name(wanted["weather"]))
+        parts = ini_split(text)
+    weathers = [name for name, _ in parts if name and name.upper().startswith("WEATHER_")] or [
+        "WEATHER_0"
+    ]
+    for name in weathers:
+        if "air_temp_c" in wanted:
+            text = ini_set(text, name, "BASE_TEMPERATURE_AMBIENT", int(wanted["air_temp_c"]))
+        if "road_offset_c" in wanted:
+            text = ini_set(text, name, "BASE_TEMPERATURE_ROAD", int(wanted["road_offset_c"]))
+    return text
+
+
+def _quoted(value) -> str:
+    """A CSP option value in quotes. A quote in the value cannot close it early."""
+    return "'" + ini_value(value).replace("'", "") + "'"
+
+
+def csp_options(text: str, script: dict) -> str:
+    """The CSP options with the Paddock script section. The other sections stay."""
+    parts = ini_split(text)
+    used = []
+    for name, lines in parts:
+        if name and name.upper().startswith("SCRIPT_"):
+            used.append(name)
+            if any(PADDOCK_SCRIPT in line for line in lines):
+                text = ini_set(text, name, "SCRIPT", _quoted(script["url"]))
+                return ini_set(text, name, "raceCode", _quoted(script["race_code"]))
+    numbers = {int(n.split("_")[1]) for n in used if n.split("_")[1].isdigit()}
+    section = f"SCRIPT_{max(numbers, default=0) + 1}"
+    text = ini_set(text, section, "SCRIPT", _quoted(script["url"]))
+    return ini_set(text, section, "raceCode", _quoted(script["race_code"]))
+
+
+def server_running(preset_dir: Path) -> bool:
+    """True when an AC server runs on this PC, or the TCP port of the preset is in use."""
+    try:
+        listed = subprocess.run(
+            ["tasklist", "/FI", "IMAGENAME eq acServer.exe", "/NH"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+        )
+        if "acserver.exe" in listed.stdout.lower():
+            return True
+    except (OSError, subprocess.SubprocessError):
+        pass  # Not Windows: the port check below still works.
+    text, _ = read_text(preset_dir / "server_cfg.ini")
+    try:
+        port = int(ini_get(text, "SERVER", "TCP_PORT") or 0)
+    except ValueError:
+        port = 0
+    if port:
+        probe = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            probe.bind(("0.0.0.0", port))
+        except OSError:
+            return True
+        finally:
+            probe.close()
+    return False
+
+
+def write_setup(
+    preset_dir: Path, content: dict, now: datetime | None = None, open_slots: int = 10
+) -> Path:
+    """Write the race setup into the preset. Gives the folder with the copy of the old files."""
+    now = now or datetime.now()
+    backup = preset_dir / "paddock-backups" / now.strftime("%Y%m%d-%H%M%S")
+    backup.mkdir(parents=True, exist_ok=True)
+    names = ("server_cfg.ini", "entry_list.ini", "csp_extra_options.ini")
+    for name in names:
+        if (preset_dir / name).exists():
+            shutil.copy2(preset_dir / name, backup / name)
+    content_dir = preset_dir.parent.parent / "content"
+    entries_old, entries_newline = read_text(preset_dir / "entry_list.ini")
+    entries_text, models = entry_list(entries_old, content["entries"], content_dir, open_slots)
+    cfg_old, cfg_newline = read_text(preset_dir / "server_cfg.ini")
+    cfg_text = server_settings(cfg_old, content, models, len(car_blocks(entries_text)))
+    csp_old, csp_newline = read_text(preset_dir / "csp_extra_options.ini")
+    csp_text = csp_options(csp_old, content["script"])
+    write_text(preset_dir / "entry_list.ini", entries_text, entries_newline)
+    write_text(preset_dir / "server_cfg.ini", cfg_text, cfg_newline)
+    write_text(preset_dir / "csp_extra_options.ini", csp_text, csp_newline)
+    return backup
+
+
+def handle_command(app: App, settings: Settings, reported: dict[int, str]) -> None:
+    """Do the push that waits, if any. A step goes to the app one time only."""
+    command = app.get_command()
+    push_id, content = command.get("id"), command.get("content")
+    if not push_id or not content:
+        return
+
+    def tell(status: str, error: str = "") -> None:
+        if reported.get(push_id) != status:
+            app.report(push_id, status, error)
+            reported[push_id] = status
+
+    if not settings.write_server_config or settings.preset_dir is None:
+        tell("failed", "writing_disabled")
+        return
+    if server_running(settings.preset_dir):
+        tell("waiting", "server_running")
+        return
+    try:
+        backup = write_setup(settings.preset_dir, content, open_slots=settings.open_slots)
+    except (OSError, ValueError, KeyError, configparser.Error) as error:
+        log.exception("Writing the race setup failed")
+        tell("failed", type(error).__name__)
+        return
+    log.info(
+        "Wrote the race setup of round %s. Copy of the old files: %s",
+        content["round"]["number"],
+        backup,
+    )
+    tell("done")
 
 
 def upload_pending(app: App, state: State) -> bool:
@@ -595,10 +948,12 @@ def run(settings: Settings) -> None:
         EventListener(settings, state, uuid.uuid4().hex).start()
     wait = settings.poll_seconds
     next_ping = 0.0
+    reported: dict[int, str] = {}
     while True:
         try:
             spool_files(settings, state, time.time())
             ok = upload_pending(app, state)
+            handle_command(app, settings, reported)
             if time.time() >= next_ping:
                 app.ping()
                 next_ping = time.time() + PING_SECONDS

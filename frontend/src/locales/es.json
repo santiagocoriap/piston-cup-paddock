@@ -2144,5 +2144,33 @@
     "newCode": "Hacer un código nuevo",
     "confirmNew": "El código viejo sigue andando 6 horas. Después hay que pegar el texto nuevo en el servidor. ¿Seguir?",
     "codeDate": "Código creado el {{date}}."
+  },
+  "serverPush": {
+    "title": "Enviar al servidor",
+    "help": "El colector del servidor escribe esto en el preset de Content Manager: los pilotos con su lastre y restrictor, la pista, las condiciones anunciadas y el script de Paddock con un código nuevo. Lo escribe solo con el servidor apagado y guarda una copia de los archivos viejos. Después, iniciá el servidor en Content Manager.",
+    "noCollector": "El campeonato no tiene colector. Hacé una clave en Colectores.",
+    "track": "Pista: {{track}} · {{layout}}",
+    "driver": "Piloto",
+    "car": "Auto",
+    "ballast": "Lastre",
+    "restrictor": "Restrictor",
+    "guid": "Steam ID",
+    "noGuid": "Sin Steam ID",
+    "send": "Enviar al servidor",
+    "warnings": {
+      "no_guid": "{{name}} no tiene Steam ID: su lugar no queda reservado.",
+      "weather_kept": "El clima anunciado no es un nombre de clima de AC: el servidor mantiene su clima."
+    },
+    "status": {
+      "pending": "Enviado el {{date}}. Espera al colector.",
+      "waiting": "El colector espera que el servidor esté apagado.",
+      "done": "Escrito en el servidor el {{date}}. Iniciá el servidor en Content Manager.",
+      "failed": "No se pudo escribir el {{date}}.",
+      "cancelled": "Reemplazado por un envío más nuevo."
+    },
+    "errors": {
+      "server_running": "el servidor está encendido",
+      "writing_disabled": "el colector tiene la escritura apagada: write_server_config = false"
+    }
   }
 }

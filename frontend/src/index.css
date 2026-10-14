@@ -8908,3 +8908,22 @@ p.auto-notes {
 .dnf-notes li + li {
   margin-top: var(--space-1);
 }
+
+/* ---------- Enviar al servidor ---------- */
+.server-push {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.server-push h4,
+.server-push p {
+  margin: 0;
+}
+
+.server-push > button {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: var(--space-2);
+  margin: 0;
+}

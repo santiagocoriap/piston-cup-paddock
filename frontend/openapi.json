@@ -6985,6 +6985,156 @@
           }
         ]
       }
+    },
+    "/api/rounds/{round_id}/server-setup": {
+      "get": {
+        "operationId": "apps_collectors_server_setup_api_server_setup_preview",
+        "summary": "Server Setup Preview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetupOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "What \"Enviar al servidor\" would write, and the state of the last push.",
+        "tags": [
+          "server setup"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/server-push": {
+      "post": {
+        "operationId": "apps_collectors_server_setup_api_server_push",
+        "summary": "Server Push",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetupOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "server setup"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/collector/commands": {
+      "get": {
+        "operationId": "apps_collectors_server_setup_api_collector_command",
+        "summary": "Collector Command",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommandOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "The push that waits for the collector, or nothing.",
+        "tags": [
+          "server setup"
+        ],
+        "security": [
+          {
+            "CollectorAuth": []
+          }
+        ]
+      }
+    },
+    "/api/collector/commands/{push_id}": {
+      "post": {
+        "operationId": "apps_collectors_server_setup_api_collector_report",
+        "summary": "Collector Report",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "push_id",
+            "schema": {
+              "title": "Push Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "server setup"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommandReportIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "CollectorAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -18913,6 +19063,214 @@
           "csp_section"
         ],
         "title": "ScriptSetupOut",
+        "type": "object"
+      },
+      "PushEntryOut": {
+        "properties": {
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "team": {
+            "title": "Team",
+            "type": "string"
+          },
+          "guid": {
+            "title": "Guid",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "ballast_kg": {
+            "title": "Ballast Kg",
+            "type": "integer"
+          },
+          "restrictor_pct": {
+            "title": "Restrictor Pct",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "number",
+          "name",
+          "team",
+          "guid",
+          "model",
+          "ballast_kg",
+          "restrictor_pct"
+        ],
+        "title": "PushEntryOut",
+        "type": "object"
+      },
+      "PushOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "error": {
+            "title": "Error",
+            "type": "string"
+          },
+          "requested_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested By"
+          },
+          "requested_at": {
+            "format": "date-time",
+            "title": "Requested At",
+            "type": "string"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "collector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collector"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "error",
+          "requested_by",
+          "requested_at",
+          "finished_at",
+          "collector"
+        ],
+        "title": "PushOut",
+        "type": "object"
+      },
+      "SetupOut": {
+        "properties": {
+          "track": {
+            "additionalProperties": true,
+            "title": "Track",
+            "type": "object"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/PushEntryOut"
+            },
+            "title": "Entries",
+            "type": "array"
+          },
+          "conditions": {
+            "additionalProperties": true,
+            "title": "Conditions",
+            "type": "object"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          },
+          "latest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PushOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "has_collector": {
+            "title": "Has Collector",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "track",
+          "entries",
+          "conditions",
+          "warnings",
+          "latest",
+          "has_collector"
+        ],
+        "title": "SetupOut",
+        "type": "object"
+      },
+      "CommandOut": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          }
+        },
+        "title": "CommandOut",
+        "type": "object"
+      },
+      "CommandReportIn": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "error": {
+            "default": "",
+            "title": "Error",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "CommandReportIn",
         "type": "object"
       }
     },

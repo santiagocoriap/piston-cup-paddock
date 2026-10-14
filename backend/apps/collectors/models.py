@@ -117,3 +117,38 @@ class IncidentReview(models.Model):
 
     def __str__(self):
         return f"Review of incident {self.incident_key}"
+
+
+class ServerPush(models.Model):
+    """One "Enviar al servidor" of a round: the entry list, the handicaps, the conditions, and
+    the Paddock script, for the server collector to write into the server preset (phase 4 of
+    docs/plans/ac-integration.md)."""
+
+    class State(models.TextChoices):
+        PENDING = "pending", _("Waits for the collector")
+        WAITING = "waiting", _("Waits for the server to stop")
+        DONE = "done", _("Written")
+        FAILED = "failed", _("Failed")
+        CANCELLED = "cancelled", _("Replaced by a newer one")
+
+    championship = models.ForeignKey(
+        Championship, on_delete=models.CASCADE, related_name="server_pushes"
+    )
+    round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name="server_pushes")
+    content = models.JSONField()
+    status = models.CharField(max_length=10, choices=State.choices, default=State.PENDING)
+    error = models.CharField(max_length=100, blank=True)
+    requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    requested_at = models.DateTimeField(auto_now_add=True)
+    collector = models.ForeignKey(
+        CollectorToken, null=True, blank=True, on_delete=models.SET_NULL, related_name="pushes"
+    )
+    finished_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-requested_at"]
+
+    def __str__(self):
+        return f"Push of {self.round} ({self.status})"

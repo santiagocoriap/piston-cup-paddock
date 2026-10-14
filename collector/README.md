@@ -36,6 +36,19 @@ To start it with Windows, make a task in Task Scheduler that runs the command of
 - If the app finds no round, the file waits in "Colectores" on the championship page. An admin chooses the round there.
 - The same file sent again adds nothing.
 
+## Enviar al servidor (optional)
+
+With this, an admin sends the race setup from the round page of the app: the drivers with their ballast and restrictor, the track, the announced conditions, and the Paddock script for the drivers. The collector writes it into the Content Manager preset of the league server.
+
+1. In `collector.ini`, set `preset_dir` to the preset folder, for example `C:\assettocorsa\server\presets\SERVER_01`.
+2. Set `write_server_config = true`.
+3. Before a race, stop the server. On the round page, open "Administrar" and click "Enviar al servidor".
+4. Wait for "Escrito en el servidor" in the dialog (about 30 seconds). Then start the preset in Content Manager.
+
+After the league drivers, the entry list gets 10 open slots with the league cars, so a driver can change to an extra car. `open_slots` in `collector.ini` changes the number. The spectator slots of the preset, such as Race Control, stay.
+
+The collector writes only while the server is stopped. Before it writes, it copies the old files to `paddock-backups` in the preset folder. To go back, copy them from there. Close the preset editor of Content Manager before the push, so it does not write over the new files.
+
 ## UDP plugin events (optional)
 
 Real Penalty already uses the UDP plugin connection. Content Manager can send the same events to more plugins:

@@ -2544,6 +2544,80 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/server-setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Server Setup Preview
+         * @description What "Enviar al servidor" would write, and the state of the last push.
+         */
+        get: operations["apps_collectors_server_setup_api_server_setup_preview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/server-push": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Server Push */
+        post: operations["apps_collectors_server_setup_api_server_push"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/collector/commands": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Collector Command
+         * @description The push that waits for the collector, or nothing.
+         */
+        get: operations["apps_collectors_server_setup_api_collector_command"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/collector/commands/{push_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Collector Report */
+        post: operations["apps_collectors_server_setup_api_collector_report"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -6395,6 +6469,80 @@ export interface components {
             created_at: string;
             /** Csp Section */
             csp_section: string;
+        };
+        /** PushEntryOut */
+        PushEntryOut: {
+            /** Number */
+            number: number;
+            /** Name */
+            name: string;
+            /** Team */
+            team: string;
+            /** Guid */
+            guid: string;
+            /** Model */
+            model: string;
+            /** Ballast Kg */
+            ballast_kg: number;
+            /** Restrictor Pct */
+            restrictor_pct: number;
+        };
+        /** PushOut */
+        PushOut: {
+            /** Id */
+            id: number;
+            /** Status */
+            status: string;
+            /** Error */
+            error: string;
+            /** Requested By */
+            requested_by: string | null;
+            /**
+             * Requested At
+             * Format: date-time
+             */
+            requested_at: string;
+            /** Finished At */
+            finished_at: string | null;
+            /** Collector */
+            collector: string | null;
+        };
+        /** SetupOut */
+        SetupOut: {
+            /** Track */
+            track: {
+                [key: string]: unknown;
+            };
+            /** Entries */
+            entries: components["schemas"]["PushEntryOut"][];
+            /** Conditions */
+            conditions: {
+                [key: string]: unknown;
+            };
+            /** Warnings */
+            warnings: string[];
+            latest: components["schemas"]["PushOut"] | null;
+            /** Has Collector */
+            has_collector: boolean;
+        };
+        /** CommandOut */
+        CommandOut: {
+            /** Id */
+            id?: number | null;
+            /** Content */
+            content?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** CommandReportIn */
+        CommandReportIn: {
+            /** Status */
+            status: string;
+            /**
+             * Error
+             * @default
+             */
+            error?: string;
         };
     };
     responses: never;
@@ -10477,6 +10625,96 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ScriptSetupOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_server_setup_api_server_setup_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SetupOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_server_setup_api_server_push: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SetupOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_server_setup_api_collector_command: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommandOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_server_setup_api_collector_report: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                push_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommandReportIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PushOut"];
                 };
             };
         };

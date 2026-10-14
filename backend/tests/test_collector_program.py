@@ -4,12 +4,14 @@ small fake app server."""
 import importlib.util
 import json
 import os
+import socket
 import struct
 import sys
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -262,3 +264,245 @@ def test_session_start_reads_the_time_and_the_grip_of_the_server(tmp_path):
     assert pc.server_conditions(cfg) == {"time_of_day": "16:00", "grip_pct": 89}
     assert pc.server_conditions(tmp_path / "missing.ini") == {}
     assert pc.server_conditions(None) == {}
+
+
+# "Enviar al servidor": the collector writes the race setup into the Content Manager preset.
+
+PRESET_CFG = """[SERVER]
+NAME=EIST Server - Piston Cup
+CARS=tatuusfa1
+TRACK=csp/3460/../spa
+CONFIG_TRACK=
+SUN_ANGLE=-16
+MAX_CLIENTS=2
+TCP_PORT={port}
+WELCOME_MESSAGE=cfg/welcome_SERVER_01.txt
+
+[DYNAMIC_TRACK]
+SESSION_START=95
+
+[WEATHER_0]
+GRAPHICS=sol_33_heavy_drizzle
+BASE_TEMPERATURE_AMBIENT=20
+BASE_TEMPERATURE_ROAD=0
+
+[__CM_SERVER]
+NAME=EIST Server - Piston Cup
+
+[WEATHER_1]
+GRAPHICS=sol_06_overcast
+BASE_TEMPERATURE_AMBIENT=26
+BASE_TEMPERATURE_ROAD=11
+"""
+
+PRESET_ENTRIES = """[CAR_0]
+DRIVERNAME=
+GUID=
+MODEL=trr_lmdh_acura_arx-06
+SKIN=meyer_shank_93
+BALLAST=0
+SPECTATOR_MODE=0
+RESTRICTOR=0
+
+[CAR_1]
+DRIVERNAME=Race Control
+GUID=76561190000000099
+MODEL=trr_lmdh_acura_arx-06
+SKIN=meyer_shank_93
+BALLAST=0
+SPECTATOR_MODE=1
+RESTRICTOR=0
+"""
+
+PRESET_CSP = """[CHAT]
+MESSAGES_FILTER = '^RP>'
+
+[RAIN_PREVIEW]
+REQUIRED = 1
+"""
+
+CONTENT = {
+    "round": {"id": 9, "number": 3},
+    "track": {"key": "ks_highlands", "layout": "layout_long"},
+    "entries": [
+        {
+            "number": 7,
+            "name": "Ana",
+            "team": "Rojo",
+            "guid": "76561190000000001",
+            "model": "trr_lmdh_acura_arx-06",
+            "ballast_kg": 15,
+            "restrictor_pct": 2,
+        },
+        {
+            "number": 8,
+            "name": "Juan",
+            "team": "",
+            "guid": "76561190000000002",
+            "model": "trr_lmh_vanwall",
+            "ballast_kg": 0,
+            "restrictor_pct": 0,
+        },
+    ],
+    "conditions": {
+        "sun_angle": 40,
+        "air_temp_c": 24,
+        "road_offset_c": 7,
+        "grip_pct": 89,
+        "weather": "sol_05_broken_clouds",
+    },
+    "script": {"url": "https://paddock.test/api/script/paddock.lua", "race_code": "code-1"},
+    "warnings": [],
+}
+
+
+def free_port() -> int:
+    probe = socket.socket()
+    probe.bind(("127.0.0.1", 0))
+    port = probe.getsockname()[1]
+    probe.close()
+    return port
+
+
+@pytest.fixture
+def preset(tmp_path):
+    folder = tmp_path / "server" / "presets" / "SERVER_01"
+    folder.mkdir(parents=True)
+    (folder / "server_cfg.ini").write_bytes(
+        PRESET_CFG.format(port=free_port()).replace("\n", "\r\n").encode()
+    )
+    (folder / "entry_list.ini").write_text(PRESET_ENTRIES, encoding="utf-8")
+    (folder / "csp_extra_options.ini").write_text(PRESET_CSP, encoding="utf-8")
+    skins = tmp_path / "server" / "content" / "cars" / "trr_lmh_vanwall" / "skins"
+    (skins / "b_skin").mkdir(parents=True)
+    (skins / "a_skin").mkdir(parents=True)
+    return folder
+
+
+def test_the_setup_goes_into_the_preset_and_keeps_the_rest(preset):
+    backup = pc.write_setup(preset, CONTENT)
+
+    assert (backup / "server_cfg.ini").read_bytes().count(b"sol_33_heavy_drizzle") == 1
+    cars = pc.car_blocks((preset / "entry_list.ini").read_text(encoding="utf-8"))
+    assert [(c["DRIVERNAME"], c["GUID"], c["BALLAST"], c["RESTRICTOR"]) for c in cars[:2]] == [
+        ("Ana", "76561190000000001", "15", "2"),
+        ("Juan", "76561190000000002", "0", "0"),
+    ]
+    assert cars[0]["SKIN"] == "meyer_shank_93"  # The skin of the preset for the same car.
+    assert cars[1]["SKIN"] == "a_skin"  # The first skin of a new car.
+    # 10 open slots with the league cars in turn, then the spectator slot of the preset.
+    open_cars = cars[2:12]
+    assert all(c["GUID"] == "" and c["DRIVERNAME"] == "" for c in open_cars)
+    assert [c["MODEL"] for c in open_cars[:2]] == ["trr_lmdh_acura_arx-06", "trr_lmh_vanwall"]
+    assert open_cars[1]["SKIN"] == "b_skin"  # The free skin, not the one Juan uses.
+    assert (cars[12]["DRIVERNAME"], cars[12]["SPECTATOR_MODE"]) == ("Race Control", "1")
+    assert len(cars) == 13
+
+    raw = (preset / "server_cfg.ini").read_bytes()
+    assert b"\r\n" in raw  # The line end of Content Manager stays.
+    cfg = raw.decode().replace("\r\n", "\n")
+    assert pc.ini_get(cfg, "SERVER", "TRACK") == "csp/3460/../ks_highlands"
+    assert pc.ini_get(cfg, "SERVER", "CONFIG_TRACK") == "layout_long"
+    assert pc.ini_get(cfg, "SERVER", "CARS") == "trr_lmdh_acura_arx-06;trr_lmh_vanwall"
+    assert pc.ini_get(cfg, "SERVER", "MAX_CLIENTS") == "13"
+    assert pc.ini_get(cfg, "SERVER", "SUN_ANGLE") == "40"
+    assert pc.ini_get(cfg, "DYNAMIC_TRACK", "SESSION_START") == "89"
+    assert pc.ini_get(cfg, "WEATHER_0", "GRAPHICS") == "sol_05_broken_clouds"
+    assert pc.ini_get(cfg, "WEATHER_0", "BASE_TEMPERATURE_AMBIENT") == "24"
+    assert pc.ini_get(cfg, "WEATHER_0", "BASE_TEMPERATURE_ROAD") == "7"
+    assert "[WEATHER_1]" not in cfg  # One weather only: the announced one.
+    assert pc.ini_get(cfg, "__CM_SERVER", "NAME") == "EIST Server - Piston Cup"
+    assert pc.ini_get(cfg, "SERVER", "WELCOME_MESSAGE") == "cfg/welcome_SERVER_01.txt"
+
+    csp = (preset / "csp_extra_options.ini").read_text(encoding="utf-8")
+    assert pc.ini_get(csp, "CHAT", "MESSAGES_FILTER") == "'^RP>'"
+    assert pc.ini_get(csp, "SCRIPT_1", "SCRIPT") == "'https://paddock.test/api/script/paddock.lua'"
+    assert pc.ini_get(csp, "SCRIPT_1", "raceCode") == "'code-1'"
+
+    # A second push changes the same script section.
+    pc.write_setup(preset, {**CONTENT, "script": {**CONTENT["script"], "race_code": "code-2"}})
+    csp = (preset / "csp_extra_options.ini").read_text(encoding="utf-8")
+    assert pc.ini_get(csp, "SCRIPT_1", "raceCode") == "'code-2'"
+    assert "[SCRIPT_2]" not in csp
+
+
+def test_a_setup_without_weather_keeps_the_weathers_of_the_preset(preset):
+    content = {**CONTENT, "conditions": {"air_temp_c": 24}}
+    pc.write_setup(preset, content)
+    cfg = (preset / "server_cfg.ini").read_text(encoding="utf-8")
+    assert pc.ini_get(cfg, "WEATHER_1", "GRAPHICS") == "sol_06_overcast"
+    assert pc.ini_get(cfg, "WEATHER_1", "BASE_TEMPERATURE_AMBIENT") == "24"
+    assert pc.ini_get(cfg, "SERVER", "SUN_ANGLE") == "-16"
+
+
+def test_a_running_server_blocks_the_write(preset, monkeypatch):
+    monkeypatch.setattr(pc.subprocess, "run", lambda *a, **k: SimpleNamespace(stdout=""))
+    assert pc.server_running(preset) is False
+    port = int(
+        pc.ini_get((preset / "server_cfg.ini").read_text(encoding="utf-8"), "SERVER", "TCP_PORT")
+    )
+    busy = socket.socket()
+    busy.bind(("0.0.0.0", port))
+    busy.listen()
+    try:
+        assert pc.server_running(preset) is True
+    finally:
+        busy.close()
+
+
+class FakeCommands:
+    def __init__(self, command):
+        self.command = command
+        self.reports = []
+
+    def get_command(self):
+        return self.command
+
+    def report(self, push_id, status, error=""):
+        self.reports.append((push_id, status, error))
+
+
+def test_the_collector_tells_each_step_one_time(preset, tmp_path, monkeypatch):
+    app = FakeCommands({"id": 5, "content": CONTENT})
+    (tmp_path / "off").mkdir()
+    off = settings(tmp_path / "off")
+    reported: dict[int, str] = {}
+    pc.handle_command(app, off, reported)
+    assert app.reports == [(5, "failed", "writing_disabled")]
+
+    (tmp_path / "on").mkdir()
+    on = settings(tmp_path / "on")
+    on.preset_dir = preset
+    on.write_server_config = True
+    reported = {}
+    app.reports = []
+    monkeypatch.setattr(pc, "server_running", lambda folder: True)
+    pc.handle_command(app, on, reported)
+    pc.handle_command(app, on, reported)
+    assert app.reports == [(5, "waiting", "server_running")]  # One time, not each loop.
+
+    monkeypatch.setattr(pc, "server_running", lambda folder: False)
+    pc.handle_command(app, on, reported)
+    assert app.reports[-1] == (5, "done", "")
+    assert "code-1" in (preset / "csp_extra_options.ini").read_text(encoding="utf-8")
+
+
+def test_a_name_cannot_add_a_line_to_the_server_files(preset):
+    """A line break in a name could add a key such as ADMIN_PASSWORD."""
+    bad = {**CONTENT["entries"][0], "name": "Ana\r\nADMIN_PASSWORD=x", "team": "R\nojo"}
+    pc.write_setup(preset, {**CONTENT, "entries": [bad]})
+    text = (preset / "entry_list.ini").read_text(encoding="utf-8")
+    assert "\nADMIN_PASSWORD" not in text
+    assert pc.car_blocks(text)[0]["DRIVERNAME"] == "Ana  ADMIN_PASSWORD=x"
+    script = {"url": "https://x/api/script/paddock.lua'\n[SERVER]", "race_code": "c'ode"}
+    csp = pc.csp_options("", script)
+    assert "\n[SERVER]" not in csp
+    assert pc.ini_get(csp, "SCRIPT_1", "raceCode") == "'code'"
+
+
+def test_an_unsafe_car_or_track_name_stops_the_write(preset):
+    bad = {**CONTENT["entries"][0], "model": "car\nADMIN_PASSWORD=x"}
+    with pytest.raises(ValueError):
+        pc.write_setup(preset, {**CONTENT, "entries": [bad]})
+    with pytest.raises(ValueError):
+        pc.write_setup(preset, {**CONTENT, "track": {"key": "../x\n", "layout": ""}})

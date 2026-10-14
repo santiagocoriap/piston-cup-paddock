@@ -2144,5 +2144,33 @@
     "newCode": "Make a new code",
     "confirmNew": "The old code keeps working for 6 hours. After that, paste the new text on the server. Continue?",
     "codeDate": "Code made on {{date}}."
+  },
+  "serverPush": {
+    "title": "Send to the server",
+    "help": "The server collector writes this into the Content Manager preset: the drivers with their ballast and restrictor, the track, the announced conditions, and the Paddock script with a new code. It writes only while the server is stopped, and it keeps a copy of the old files. Then start the server in Content Manager.",
+    "noCollector": "The championship has no collector. Make a key in Collectors.",
+    "track": "Track: {{track}} · {{layout}}",
+    "driver": "Driver",
+    "car": "Car",
+    "ballast": "Ballast",
+    "restrictor": "Restrictor",
+    "guid": "Steam ID",
+    "noGuid": "No Steam ID",
+    "send": "Send to the server",
+    "warnings": {
+      "no_guid": "{{name}} has no Steam ID: the slot is not booked.",
+      "weather_kept": "The announced weather is not an AC weather name: the server keeps its weather."
+    },
+    "status": {
+      "pending": "Sent on {{date}}. Waits for the collector.",
+      "waiting": "The collector waits for the server to stop.",
+      "done": "Written on the server on {{date}}. Start the server in Content Manager.",
+      "failed": "Could not write on {{date}}.",
+      "cancelled": "Replaced by a newer push."
+    },
+    "errors": {
+      "server_running": "the server is running",
+      "writing_disabled": "the collector does not write: write_server_config = false"
+    }
   }
 }

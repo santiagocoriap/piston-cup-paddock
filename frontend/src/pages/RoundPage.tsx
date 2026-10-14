@@ -26,6 +26,7 @@ import { TelemetrySection } from './TelemetrySection'
 import { AttendanceCard } from './AttendanceCard'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { AdminActions } from '../components/AdminActions'
+import { ServerPushPanel } from './ServerPushPanel'
 import { Avatar } from '../components/Avatar'
 
 type RoundDetail = components['schemas']['RoundDetail']
@@ -121,6 +122,15 @@ export function RoundPage() {
                 }}
               />
             ),
+          },
+        ]
+      : []),
+    ...(data.can_manage
+      ? [
+          {
+            id: 'server',
+            label: t('serverPush.title'),
+            content: () => <ServerPushPanel roundId={data.id} />,
           },
         ]
       : []),

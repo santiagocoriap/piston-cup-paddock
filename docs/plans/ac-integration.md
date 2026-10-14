@@ -249,7 +249,20 @@ What changed from the first idea:
 
 ## Phase 4: Send the race setup to the server
 
+Status: done on October 14, 2026. The app part is in `backend/apps/collectors/server_setup.py`, and the collector part is `write_setup` in `collector/paddock_collector.py`.
+
 Estimate: 2 days.
+
+Answers and changes from the first idea:
+
+- The league uses a Content Manager preset, in `server/presets/<name>/`. The collector writes `entry_list.ini`, `server_cfg.ini`, and `csp_extra_options.ini` there. Content Manager makes the `$CSP0:` welcome block from `csp_extra_options.ini` when an admin starts the preset.
+- An admin stops the server before the push and starts it after. The collector checks for an `acServer.exe` process and for a busy TCP port. While the server runs, it tells the app "waiting".
+- The collector keeps the `csp/<build>/../` prefix of `TRACK`, the Content Manager sections, and the spectator slots of the entry list (for example Race Control).
+- After the league drivers, the entry list gets at least 10 open slots with the league cars in turn, so a driver can change to an extra car (`open_slots` in `collector.ini`).
+- `BASE_TEMPERATURE_ROAD` is the difference from the air, so the app sends the track temperature minus the air temperature.
+- The app sends the weather only when the announced weather is an AC weather name, such as `sol_05_broken_clouds`. Then the preset keeps one weather only. A free text such as "Despejado" keeps the weathers of the preset, and the dialog says so.
+- Each push makes a new race code. A newer push replaces a push that waits.
+- Risk: if the preset editor of Content Manager is open with old values, a save there can write over the files. Close the preset editor before the push, or open it again after.
 
 ### App
 
