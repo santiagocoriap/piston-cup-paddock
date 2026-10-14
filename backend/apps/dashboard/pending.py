@@ -1,4 +1,5 @@
-"""What waits for an admin: results to approve, protests, ballots, accounts, and images.
+"""What waits for an admin: results to approve, collector files with a problem, protests,
+ballots, accounts, and images.
 
 Each kind counts only what the user manages. A kind with nothing in it is not in the list.
 """
@@ -10,6 +11,7 @@ from apps.competition.models import Championship, ChampionshipMember
 from apps.competition.permissions import is_league_admin
 from apps.identity.accounts import can_make_accounts, can_manage_user
 from apps.identity.models import User
+from apps.imports.models import ResultImport
 from apps.results.models import Protest, RaceResult
 from apps.voting.models import Ballot
 
@@ -69,6 +71,18 @@ def pending(user) -> list[Pending]:
         .order_by("round__scheduled_at", "round__number")
     )
     _add(found, "results", results, lambda r: _round_item(r.round))
+
+    # Collector files that the app did not publish by itself, because of a problem.
+    blocked = list(
+        ResultImport.objects.filter(
+            status=ResultImport.State.PREVIEW,
+            auto_status=ResultImport.AutoState.BLOCKED,
+            **in_managed,
+        )
+        .select_related(*related)
+        .order_by("uploaded_at")
+    )
+    _add(found, "imports", blocked, lambda i: _round_item(i.round))
 
     protests = list(
         Protest.objects.filter(

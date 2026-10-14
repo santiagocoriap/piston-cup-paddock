@@ -272,6 +272,20 @@ function SeasonsTab({ data, onChange }: { data: Detail; onChange: () => void }) 
         />
         {t('championship.provisionalReports')}
       </label>
+      <label className="check">
+        <input
+          type="checkbox"
+          checked={data.auto_publish_results}
+          onChange={async (e) => {
+            await api.PATCH('/api/championships/{championship_id}/settings', {
+              params: { path },
+              body: { auto_publish_results: e.target.checked },
+            })
+            onChange()
+          }}
+        />
+        {t('championship.autoPublish')}
+      </label>
     </div>
   )
 }

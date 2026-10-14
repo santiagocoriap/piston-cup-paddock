@@ -28,7 +28,11 @@ To start it with Windows, make a task in Task Scheduler that runs the command of
 
 - A result file goes to the app about 10 seconds after the AC server writes it.
 - A Real Penalty log goes to the app when a newer log starts, or after 10 minutes with no change.
-- The app finds the round from the track and the time of the file. It makes an import preview. An admin still checks the preview and applies it.
+- The app finds the round from the track and the time of the file. It makes an import preview.
+- When the preview has no problem, the app applies it by itself. The race result is provisional until an admin approves it. A driver with fewer laps than the winner gets a "check DNF" note for the admin.
+- When the preview has a problem (a GUID or a car that does not match, other handicaps, or a round that already has a result), the file waits for an admin. The admin sees it in the pending list.
+- The restarts and the served penalties of the Real Penalty logs go in by themselves when the race result and the final race log are both in the app. Time penalties and disqualifications wait for an admin.
+- A championship admin can turn off the automatic publication on the championship page.
 - If the app finds no round, the file waits in "Colectores" on the championship page. An admin chooses the round there.
 - The same file sent again adds nothing.
 

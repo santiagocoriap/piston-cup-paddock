@@ -90,3 +90,22 @@ describe('ImportSection', () => {
     expect(await screen.findByText(/ya estaba subido/)).toBeInTheDocument()
   })
 })
+
+describe('ImportSection and the collector', () => {
+  it('shows what the collector did with each file', async () => {
+    const blocked = {
+      ...imported(), id: 5, filename: 'RACE_2.json', uploaded_by: null, preview: null,
+      auto_status: 'blocked', auto_reasons: ['handicap_differs', 'result_exists'], review_flags: [],
+    }
+    const published = {
+      ...imported('applied'), id: 6, uploaded_by: null, preview: null,
+      auto_status: 'applied', auto_reasons: [], review_flags: [{ entry_id: 2, code: 'fewer_laps' }],
+    }
+    show({ 'GET /api/rounds/9/imports': () => json(200, [blocked, published]) })
+    expect(await screen.findByText('Espera a un admin')).toBeInTheDocument()
+    expect(screen.getByText('El lastre o el restrictor del archivo no es el asignado.')).toBeInTheDocument()
+    expect(screen.getByText('La fecha ya tiene resultado: un admin decide si lo cambia.')).toBeInTheDocument()
+    expect(screen.getByText('Publicado por el colector')).toBeInTheDocument()
+    expect(screen.getByText('Revisá si abandonaron: Vice.')).toBeInTheDocument()
+  })
+})

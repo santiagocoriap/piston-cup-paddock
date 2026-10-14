@@ -54,6 +54,11 @@ class PreviewOut(Schema):
     warnings: list[str]
 
 
+class ReviewFlagOut(Schema):
+    entry_id: int
+    code: str
+
+
 class ImportOut(Schema):
     id: int
     filename: str
@@ -65,6 +70,9 @@ class ImportOut(Schema):
     applied_at: datetime | None
     is_new: bool = False
     preview: PreviewOut | None = None
+    auto_status: str = ""
+    auto_reasons: list[str] = []
+    review_flags: list[ReviewFlagOut] = []
 
 
 class GuidLinkIn(Schema):
@@ -106,6 +114,9 @@ def _out(result_import: ResultImport, *, with_preview: bool, is_new: bool = Fals
         applied_at=result_import.applied_at,
         is_new=is_new,
         preview=PreviewOut(**vars(preview(result_import))) if with_preview else None,
+        auto_status=result_import.auto_status,
+        auto_reasons=result_import.auto_reasons,
+        review_flags=[ReviewFlagOut(**flag) for flag in result_import.review_flags],
     )
 
 

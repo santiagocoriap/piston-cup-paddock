@@ -116,10 +116,14 @@ class ChampionshipOut(Schema):
     league_name: str
     can_manage: bool
     provisional_reports: bool
+    auto_publish_results: bool
 
 
 class ChampionshipSettingsIn(Schema):
-    provisional_reports: bool
+    """A missing setting keeps its value."""
+
+    provisional_reports: bool | None = None
+    auto_publish_results: bool | None = None
 
 
 class NextRoundBrief(Schema):
@@ -253,6 +257,7 @@ def _championship_out(user, championship: Championship) -> dict:
         "league_name": championship.league.name,
         "can_manage": can_manage(user, championship),
         "provisional_reports": championship.provisional_reports,
+        "auto_publish_results": championship.auto_publish_results,
     }
 
 
@@ -461,19 +466,26 @@ def _member_out(member: ChampionshipMember) -> MemberOut:
 def championship_settings(request, championship_id: int, payload: ChampionshipSettingsIn):
     championship = _visible_championship(request.user, championship_id)
     require(can_manage(request.user, championship))
-    old = championship.provisional_reports
+    changes = []
+    fields = []
+    for name in ("provisional_reports", "auto_publish_results"):
+        value = getattr(payload, name)
+        if value is not None and value != getattr(championship, name):
+            changes.append(change(name, getattr(championship, name), value))
+            setattr(championship, name, value)
+            fields.append(name)
     with transaction.atomic():
-        championship.provisional_reports = payload.provisional_reports
-        championship.save(update_fields=["provisional_reports"])
-        record(
-            request.user,
-            "championship.settings",
-            "championship",
-            championship.id,
-            championship=championship,
-            params={"name": championship.name},
-            changes=[change("provisional_reports", old, payload.provisional_reports)],
-        )
+        if fields:
+            championship.save(update_fields=fields)
+            record(
+                request.user,
+                "championship.settings",
+                "championship",
+                championship.id,
+                championship=championship,
+                params={"name": championship.name},
+                changes=changes,
+            )
     return _championship_out(request.user, championship)
 
 

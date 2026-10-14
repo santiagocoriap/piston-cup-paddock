@@ -122,6 +122,7 @@ function relativeTime(iso: string, now: number, language: string): string {
 
 const PENDING_ICONS: Record<string, IconName> = {
   results: 'flag',
+  imports: 'upload',
   protests: 'alert',
   ballots_closed: 'layers',
   ballots_open: 'layers',

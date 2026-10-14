@@ -8844,3 +8844,25 @@ form.card > label.wide {
     padding: var(--space-6) var(--space-4);
   }
 }
+
+/* ---------- Automatic publication of collector files ---------- */
+.badge.auto-applied {
+  border-color: color-mix(in srgb, var(--success) 50%, transparent);
+  color: var(--success-ink);
+}
+
+.badge.auto-blocked {
+  border-color: color-mix(in srgb, var(--warning) 60%, transparent);
+  color: var(--warning-ink, var(--warning));
+}
+
+.auto-notes {
+  margin: var(--space-1) 0 0;
+  padding-left: var(--space-4);
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+p.auto-notes {
+  padding-left: 0;
+}

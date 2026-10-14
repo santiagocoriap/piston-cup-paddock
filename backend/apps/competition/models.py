@@ -20,6 +20,9 @@ class Championship(models.Model):
     name = models.CharField(max_length=100)
     # Write a provisional AI report when a race file is applied, before the approval.
     provisional_reports = models.BooleanField(default=False)
+    # Apply a clean result file from the server collector with no admin click. The result
+    # stays provisional until an admin approves it. See docs/adr/0002-collector-automation.md.
+    auto_publish_results = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["name"]

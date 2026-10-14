@@ -16,6 +16,10 @@ class ResultImport(models.Model):
         PREVIEW = "preview", _("Preview")
         APPLIED = "applied", _("Applied")
 
+    class AutoState(models.TextChoices):
+        APPLIED = "applied", _("Applied automatically")
+        BLOCKED = "blocked", _("Waits for an admin")
+
     round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name="imports")
     session = models.ForeignKey(
         Session, null=True, blank=True, on_delete=models.SET_NULL, related_name="imports"
@@ -34,6 +38,12 @@ class ResultImport(models.Model):
     )
     uploaded_at = models.DateTimeField(auto_now_add=True)
     applied_at = models.DateTimeField(null=True, blank=True)
+    # What the automatic publication did with a file from the server collector.
+    auto_status = models.CharField(max_length=10, choices=AutoState.choices, blank=True)
+    # Why the app did not apply the file, as error codes. Empty when it applied the file.
+    auto_reasons = models.JSONField(default=list, blank=True)
+    # Rows that an admin must check after an automatic apply: {"entry_id": 3, "code": "fewer_laps"}.
+    review_flags = models.JSONField(default=list, blank=True)
 
     class Meta:
         ordering = ["-uploaded_at"]

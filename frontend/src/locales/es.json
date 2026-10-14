@@ -136,7 +136,8 @@
     },
     "roleCapability": "{{capability}} para {{role}}",
     "roleMenu": "Acciones del rol {{name}}",
-    "rename": "Cambiar el nombre"
+    "rename": "Cambiar el nombre",
+    "autoPublish": "Publicar solos los resultados del colector cuando no tienen problemas (quedan provisionales)"
   },
   "season": {
     "plannedRounds": "{{count}} carreras previstas",
@@ -828,7 +829,17 @@
     "apply": "Aplicar el archivo",
     "applied": "Archivo aplicado.",
     "qualifyingNote": "Un archivo de clasificación o práctica guarda las vueltas, pero no cambia el resultado de carrera.",
-    "handicapDiffers": "Asignado {{assignedKg}} kg y {{assignedPct}} %, el archivo dice {{fileKg}} kg y {{filePct}} %."
+    "handicapDiffers": "Asignado {{assignedKg}} kg y {{assignedPct}} %, el archivo dice {{fileKg}} kg y {{filePct}} %.",
+    "auto": {
+      "applied": "Publicado por el colector",
+      "blocked": "Espera a un admin"
+    },
+    "byCollector": "colector",
+    "autoReasons": {
+      "unmatched_drivers": "Hay pilotos del archivo sin inscripción.",
+      "result_exists": "La fecha ya tiene resultado: un admin decide si lo cambia."
+    },
+    "checkDnf": "Revisá si abandonaron: {{names}}."
   },
   "handicaps": {
     "title": "Lastre y restrictor",
@@ -1807,7 +1818,8 @@
       "report.ready.season": "Reporte nuevo de la temporada {{season}}",
       "ballot.reminder": "Recordatorio: todavía no votaste en {{ballot}}",
       "protest.appealed": "Nueva apelación en R{{number}} · {{track}}",
-      "protest.appeal_decided": "Tu apelación de R{{number}} tiene decisión"
+      "protest.appeal_decided": "Tu apelación de R{{number}} tiene decisión",
+      "import.blocked": "Archivo para revisar: {{championship}} R{{number}} · {{track}}"
     },
     "all": "Todas",
     "unread": "Sin leer",
@@ -1908,7 +1920,9 @@
       "accounts_one": "{{count}} cuenta esperando contraseña",
       "accounts_other": "{{count}} cuentas esperando contraseña",
       "images_one": "{{count}} pista o auto sin imagen",
-      "images_other": "{{count}} pistas o autos sin imagen"
+      "images_other": "{{count}} pistas o autos sin imagen",
+      "imports_one": "{{count}} archivo del colector para revisar",
+      "imports_other": "{{count}} archivos del colector para revisar"
     }
   },
   "seasonNav": {

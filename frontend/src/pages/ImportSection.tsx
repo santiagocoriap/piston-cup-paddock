@@ -101,10 +101,33 @@ export function ImportSection({
                 </button>{' '}
                 <span className="badge">{t(`imports.session.${item.session_type}`)}</span>
                 <span className="badge">{t(`imports.status.${item.status}`)}</span>
+                {item.auto_status && (
+                  <span className={`badge auto-${item.auto_status}`}>{t(`imports.auto.${item.auto_status}`)}</span>
+                )}
                 <span className="muted">
                   {' '}
-                  {item.uploaded_by} · {formatDateTime(item.uploaded_at, i18n.language)}
+                  {item.uploaded_by ?? t('imports.byCollector')} · {formatDateTime(item.uploaded_at, i18n.language)}
                 </span>
+                {item.status === 'preview' && (item.auto_reasons ?? []).length > 0 && (
+                  <ul className="auto-notes">
+                    {(item.auto_reasons ?? []).map((reason) => (
+                      <li key={reason}>
+                        {t(`imports.autoReasons.${reason}`, {
+                          defaultValue: t(`imports.warnings.${reason}`, { defaultValue: reason }),
+                        })}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {(item.review_flags ?? []).length > 0 && (
+                  <p className="auto-notes">
+                    {t('imports.checkDnf', {
+                      names: (item.review_flags ?? [])
+                        .map((flag) => entries.find((e) => e.entry_id === flag.entry_id)?.driver_name ?? `#${flag.entry_id}`)
+                        .join(', '),
+                    })}
+                  </p>
+                )}
               </li>
             ))}
           </ul>

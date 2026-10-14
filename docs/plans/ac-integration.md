@@ -103,6 +103,8 @@ Other findings:
 
 ## Phase 1: Publish clean imports automatically
 
+Status: done on October 14, 2026. The code is in `backend/apps/imports/auto_publish.py`, and the tests are in `backend/tests/test_auto_publish.py`.
+
 Estimate: 1 day.
 
 ### Result files

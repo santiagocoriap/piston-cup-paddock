@@ -8426,6 +8426,10 @@
           "provisional_reports": {
             "title": "Provisional Reports",
             "type": "boolean"
+          },
+          "auto_publish_results": {
+            "title": "Auto Publish Results",
+            "type": "boolean"
           }
         },
         "required": [
@@ -8434,7 +8438,8 @@
           "league_id",
           "league_name",
           "can_manage",
-          "provisional_reports"
+          "provisional_reports",
+          "auto_publish_results"
         ],
         "title": "ChampionshipOut",
         "type": "object"
@@ -8480,6 +8485,10 @@
             "title": "Provisional Reports",
             "type": "boolean"
           },
+          "auto_publish_results": {
+            "title": "Auto Publish Results",
+            "type": "boolean"
+          },
           "seasons": {
             "items": {
               "$ref": "#/components/schemas/SeasonSummary"
@@ -8512,6 +8521,7 @@
           "league_name",
           "can_manage",
           "provisional_reports",
+          "auto_publish_results",
           "seasons",
           "latest",
           "progress"
@@ -8744,15 +8754,31 @@
         "type": "string"
       },
       "ChampionshipSettingsIn": {
+        "description": "A missing setting keeps its value.",
         "properties": {
           "provisional_reports": {
-            "title": "Provisional Reports",
-            "type": "boolean"
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provisional Reports"
+          },
+          "auto_publish_results": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auto Publish Results"
           }
         },
-        "required": [
-          "provisional_reports"
-        ],
         "title": "ChampionshipSettingsIn",
         "type": "object"
       },
@@ -11573,6 +11599,27 @@
                 "type": "null"
               }
             ]
+          },
+          "auto_status": {
+            "default": "",
+            "title": "Auto Status",
+            "type": "string"
+          },
+          "auto_reasons": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Auto Reasons",
+            "type": "array"
+          },
+          "review_flags": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ReviewFlagOut"
+            },
+            "title": "Review Flags",
+            "type": "array"
           }
         },
         "required": [
@@ -11767,6 +11814,24 @@
           "warnings"
         ],
         "title": "PreviewOut",
+        "type": "object"
+      },
+      "ReviewFlagOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entry_id",
+          "code"
+        ],
+        "title": "ReviewFlagOut",
         "type": "object"
       },
       "GuidLinkIn": {

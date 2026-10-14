@@ -136,7 +136,8 @@
     },
     "roleCapability": "{{capability}} for {{role}}",
     "roleMenu": "Actions for the role {{name}}",
-    "rename": "Change the name"
+    "rename": "Change the name",
+    "autoPublish": "Publish clean collector results automatically (they stay provisional)"
   },
   "season": {
     "plannedRounds": "{{count}} planned rounds",
@@ -828,7 +829,17 @@
     "apply": "Apply the file",
     "applied": "The file is applied.",
     "qualifyingNote": "A qualifying or practice file stores the laps, but it does not change the race result.",
-    "handicapDiffers": "Assigned {{assignedKg}} kg and {{assignedPct}} %, the file says {{fileKg}} kg and {{filePct}} %."
+    "handicapDiffers": "Assigned {{assignedKg}} kg and {{assignedPct}} %, the file says {{fileKg}} kg and {{filePct}} %.",
+    "auto": {
+      "applied": "Published by the collector",
+      "blocked": "Waits for an admin"
+    },
+    "byCollector": "collector",
+    "autoReasons": {
+      "unmatched_drivers": "Some drivers in the file have no entry.",
+      "result_exists": "The round already has a result: an admin decides on a change."
+    },
+    "checkDnf": "Check for a DNF: {{names}}."
   },
   "handicaps": {
     "title": "Ballast and restrictor",
@@ -1807,7 +1818,8 @@
       "report.ready.season": "New season report: {{season}}",
       "ballot.reminder": "Reminder: you did not vote in {{ballot}} yet",
       "protest.appealed": "New appeal in R{{number}} · {{track}}",
-      "protest.appeal_decided": "Your appeal in R{{number}} has a decision"
+      "protest.appeal_decided": "Your appeal in R{{number}} has a decision",
+      "import.blocked": "File to check: {{championship}} R{{number}} · {{track}}"
     },
     "all": "All",
     "unread": "Unread",
@@ -1908,7 +1920,9 @@
       "accounts_one": "{{count}} account waiting for a password",
       "accounts_other": "{{count}} accounts waiting for a password",
       "images_one": "{{count}} track or car without an image",
-      "images_other": "{{count}} tracks or cars without an image"
+      "images_other": "{{count}} tracks or cars without an image",
+      "imports_one": "{{count}} collector file to check",
+      "imports_other": "{{count}} collector files to check"
     }
   },
   "seasonNav": {

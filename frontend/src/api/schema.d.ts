@@ -2938,6 +2938,8 @@ export interface components {
             can_manage: boolean;
             /** Provisional Reports */
             provisional_reports: boolean;
+            /** Auto Publish Results */
+            auto_publish_results: boolean;
         };
         /** NameIn */
         NameIn: {
@@ -2958,6 +2960,8 @@ export interface components {
             can_manage: boolean;
             /** Provisional Reports */
             provisional_reports: boolean;
+            /** Auto Publish Results */
+            auto_publish_results: boolean;
             /** Seasons */
             seasons: components["schemas"]["SeasonSummary"][];
             latest: components["schemas"]["LatestSeasonOut"] | null;
@@ -3034,10 +3038,15 @@ export interface components {
          * @enum {string}
          */
         Role: "admin" | "driver" | "steward" | "custom";
-        /** ChampionshipSettingsIn */
+        /**
+         * ChampionshipSettingsIn
+         * @description A missing setting keeps its value.
+         */
         ChampionshipSettingsIn: {
             /** Provisional Reports */
-            provisional_reports: boolean;
+            provisional_reports?: boolean | null;
+            /** Auto Publish Results */
+            auto_publish_results?: boolean | null;
         };
         /** RoleOut */
         RoleOut: {
@@ -3988,6 +3997,21 @@ export interface components {
              */
             is_new?: boolean;
             preview?: components["schemas"]["PreviewOut"] | null;
+            /**
+             * Auto Status
+             * @default
+             */
+            auto_status?: string;
+            /**
+             * Auto Reasons
+             * @default []
+             */
+            auto_reasons?: string[];
+            /**
+             * Review Flags
+             * @default []
+             */
+            review_flags?: components["schemas"]["ReviewFlagOut"][];
         };
         /** MatchedOut */
         MatchedOut: {
@@ -4038,6 +4062,13 @@ export interface components {
             missing: string[];
             /** Warnings */
             warnings: string[];
+        };
+        /** ReviewFlagOut */
+        ReviewFlagOut: {
+            /** Entry Id */
+            entry_id: number;
+            /** Code */
+            code: string;
         };
         /** GuidLinkIn */
         GuidLinkIn: {
