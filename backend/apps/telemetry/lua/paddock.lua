@@ -22,6 +22,7 @@ local headers = { ['Content-Type'] = 'application/json', ['X-Paddock-Code'] = se
 
 local samples = {}
 local sinceSample = 0
+local lastLapTime = 0
 local queue = {}
 local sending = false
 local retryAt = 0
@@ -100,9 +101,17 @@ ac.onLapCompleted(0, function(carIndex, lapTime, valid, cuts, lapCount)
     })
   end
   samples = {}
+  lastLapTime = 0
 end)
 
 function script.update(dt)
+  -- The lap timer runs until the car crosses the line, also through a crash and a pit stop:
+  -- that is one long lap. When the timer goes back with no finished lap (for example a
+  -- return to the pits in practice), AC starts a new lap, so the old samples go away.
+  if car.lapTimeMs + 1000 < lastLapTime then
+    samples = {}
+  end
+  lastLapTime = car.lapTimeMs
   sinceSample = sinceSample + dt
   if sinceSample >= SAMPLE_EVERY then
     sinceSample = 0

@@ -31,7 +31,7 @@ from apps.identity.models import DriverProfile
 from apps.imports.ac_results import track_key
 
 from .models import ScriptCode, TelemetryLap
-from .services import MAX_SAMPLES, TelemetryError
+from .services import TelemetryError
 
 # An old race code still works for this long after a new one, for a race in progress.
 CODE_GRACE = timedelta(hours=6)
@@ -43,6 +43,9 @@ TOLERANCE = timedelta(minutes=2)
 WINDOW = timedelta(hours=12)
 ROUND_WINDOW = timedelta(hours=12)
 SAMPLE_HZ = 20
+# A long lap is normal: the lap timer runs through a crash and a pit stop until the car
+# crosses the line. 36,000 samples at 20 each second is a lap of 30 minutes.
+MAX_SCRIPT_SAMPLES = 36_000
 TIMELINE_KINDS = ("session_started", "session_ended", "connected", "disconnected", "lap_completed")
 # The lap time of the script and of the server for the same lap.
 LAP_TIME_TOLERANCE_MS = 50
@@ -331,7 +334,7 @@ def _channels(samples: list) -> dict[str, list]:
     """The script sends one row for each sample: time, position, speed, gas, brake, steer,
     gear, rpm. The app stores one list for each channel, as for the driver collector."""
     names = ["t_ms", "pos", "speed_kmh", "gas", "brake", "steer", "gear", "rpm"]
-    if not 0 < len(samples) <= MAX_SAMPLES:
+    if not 0 < len(samples) <= MAX_SCRIPT_SAMPLES:
         raise TelemetryError("bad_samples")
     channels: dict[str, list] = {name: [] for name in names}
     for row in samples:

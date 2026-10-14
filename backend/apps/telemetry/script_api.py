@@ -19,7 +19,7 @@ from .services import TelemetryError
 router = Router(tags=["paddock script"])
 
 SCRIPT_FILE = Path(__file__).resolve().parent / "lua" / "paddock.lua"
-MAX_BODY = 2 * 1024 * 1024
+MAX_BODY = 4 * 1024 * 1024  # About 36,000 samples, a lap of 30 minutes.
 SESSION_LABELS = {"practice": "Práctica", "qualifying": "Clasificación", "race": "Carrera"}
 
 

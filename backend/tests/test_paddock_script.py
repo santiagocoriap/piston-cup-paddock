@@ -292,3 +292,30 @@ def test_the_server_gives_the_lap_number_and_the_cuts(key, code, round_, driver)
         TelemetryLap.objects.order_by("lap_number").values_list("lap_number", "valid", "cuts")
     )
     assert saved == [(1, False, 2), (2, False, 2), (3, True, 0)]
+
+
+def test_a_long_lap_with_a_crash_and_a_pit_stop_counts(key, code, round_, driver):
+    """The lap timer runs until the car crosses the line: 2 minutes, a crash, the pits, and a
+    full lap of 3 minutes are one lap of 5 minutes, with 6,000 samples."""
+    events(key, connected(-10), race_started(-9), server_lap(0, lap_ms=300_000, cuts=0))
+    payload_samples = [[t * 50, (t % 3600) / 3600, 80.0, 1, 0, 0, 3, 6000] for t in range(6000)]
+    response = Client().post(
+        "/api/script/laps",
+        {
+            "steam_id": GUID,
+            "track": "ks_highlands",
+            "layout": "layout_long",
+            "car": CAR,
+            "lap_number": 1,
+            "lap_time_ms": 300_000,
+            "valid": True,
+            "cuts": 0,
+            "ended_at": 1_000,
+            "sent_at": 1_002,
+            "samples": payload_samples,
+        },
+        content_type="application/json",
+        HTTP_X_PADDOCK_CODE=code,
+    )
+    assert response.json()["state"] == "league"
+    assert TelemetryLap.objects.get().lap_time_ms == 300_000
