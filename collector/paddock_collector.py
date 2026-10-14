@@ -55,7 +55,7 @@ from pathlib import Path
 
 log = logging.getLogger("paddock_collector")
 
-VERSION = "1.2.0"
+VERSION = "1.2.1"
 UPDATE_SECONDS = 24 * 3600
 SHORTCUT_NAME = "Iniciar Paddock.lnk"
 # Only one collector runs on a PC: the second one cannot take this local port, and it stops.
@@ -442,6 +442,11 @@ def restart(exe: Path) -> None:
 # Start and stop with the race (Real Penalty, the desktop shortcut, and the stop)
 
 
+# The Windows program has no console. Without this flag, each tasklist or PowerShell call opens
+# a console window for a moment.
+NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+
+
 def process_running(image: str) -> bool:
     """True when a program with this file name runs on this PC (Windows only)."""
     try:
@@ -451,6 +456,7 @@ def process_running(image: str) -> bool:
             text=True,
             timeout=15,
             check=False,
+            creationflags=NO_WINDOW,
         )
     except (OSError, subprocess.SubprocessError):
         return False
@@ -558,6 +564,7 @@ def _powershell(script: str, values: dict[str, str]) -> subprocess.CompletedProc
         capture_output=True,
         text=True,
         check=False,
+        creationflags=NO_WINDOW,
     )
 
 

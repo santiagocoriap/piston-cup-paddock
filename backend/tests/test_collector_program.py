@@ -736,3 +736,15 @@ def test_a_preset_with_csp_options_comes_first(tmp_path):
     ac = ac_tree(tmp_path)
     (ac / "server/presets/OLD/csp_extra_options.ini").write_text("[EXTRA_RULES]")
     assert pc.presets(ac)[0].name == "OLD"
+
+
+def test_tasklist_runs_with_no_window(monkeypatch):
+    seen = {}
+
+    def fake_run(command, **kwargs):
+        seen.update(kwargs)
+        return SimpleNamespace(stdout="acServer.exe  12 Console", returncode=0)
+
+    monkeypatch.setattr(pc.subprocess, "run", fake_run)
+    assert pc.process_running("acServer.exe")
+    assert seen["creationflags"] == pc.NO_WINDOW
