@@ -4951,6 +4951,17 @@ export interface components {
             /** Nearby */
             nearby: components["schemas"]["NearbyOut"][];
         };
+        /** AchievementOut */
+        AchievementOut: {
+            /** Key */
+            key: string;
+            /** Count */
+            count: number;
+            /** Goal */
+            goal: number;
+            /** Achieved */
+            achieved: boolean;
+        };
         /** AdjustmentOut */
         AdjustmentOut: {
             /** Kind */
@@ -4997,6 +5008,9 @@ export interface components {
             records: components["schemas"]["ProfileRecordOut"][];
             /** Restarts Caused */
             restarts_caused: components["schemas"]["ProfileRestartOut"][];
+            /** Achievements */
+            achievements: components["schemas"]["AchievementOut"][];
+            stats: components["schemas"]["StatsOut"];
         };
         /** ProfileRecordOut */
         ProfileRecordOut: {
@@ -5057,6 +5071,51 @@ export interface components {
             podiums: number;
             /** Starts */
             starts: number;
+            /** Number */
+            number: number;
+            /** Car Name */
+            car_name: string;
+            /** Team */
+            team: string;
+            /** History */
+            history: components["schemas"]["RecentOut"][];
+        };
+        /** StatsOut */
+        StatsOut: {
+            /** Starts */
+            starts: number;
+            /** Wins */
+            wins: number;
+            /** Podiums */
+            podiums: number;
+            /** Top5 */
+            top5: number;
+            /** Poles */
+            poles: number;
+            /** Fastest Laps */
+            fastest_laps: number;
+            /** Best Finish */
+            best_finish: number | null;
+            /** Average Finish */
+            average_finish: number | null;
+            /** Points */
+            points: number;
+            /** Laps */
+            laps: number;
+            /** Records */
+            records: number;
+            /** Win Rate */
+            win_rate: number | null;
+            /** Dnfs */
+            dnfs: number;
+            /** Dsqs */
+            dsqs: number;
+            /** Penalties */
+            penalties: number;
+            /** Incident Points */
+            incident_points: number;
+            /** Restarts Caused */
+            restarts_caused: number;
         };
         /** AdjustIn */
         AdjustIn: {

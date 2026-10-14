@@ -12,7 +12,16 @@ from apps.competition.permissions import can_manage, can_view, is_league_admin
 from apps.identity.models import DriverProfile
 
 from .pending import pending
-from .profile import adjust_career, can_see_driver, career, records, restarts_caused, seasons
+from .profile import (
+    achievements,
+    adjust_career,
+    can_see_driver,
+    career,
+    records,
+    restarts_caused,
+    seasons,
+    stats,
+)
 from .round_tabs import tab_counts
 from .search import search
 from .services import driver_dashboard
@@ -166,6 +175,37 @@ class ProfileSeasonOut(Schema):
     wins: int
     podiums: int
     starts: int
+    number: int
+    car_name: str
+    team: str
+    history: list[RecentOut]
+
+
+class StatsOut(Schema):
+    starts: int
+    wins: int
+    podiums: int
+    top5: int
+    poles: int
+    fastest_laps: int
+    best_finish: int | None
+    average_finish: float | None
+    points: int
+    laps: int
+    records: int
+    win_rate: float | None
+    dnfs: int
+    dsqs: int
+    penalties: int
+    incident_points: int
+    restarts_caused: int
+
+
+class AchievementOut(Schema):
+    key: str
+    count: int
+    goal: int
+    achieved: bool
 
 
 class ProfileSafetyOut(Schema):
@@ -201,6 +241,8 @@ class ProfileOut(Schema):
     safety: list[ProfileSafetyOut]
     records: list[ProfileRecordOut]
     restarts_caused: list[ProfileRestartOut]
+    achievements: list[AchievementOut]
+    stats: StatsOut
 
 
 class AdjustIn(Schema):
@@ -218,6 +260,10 @@ def _can_adjust(user, driver: DriverProfile) -> bool:
 
 def _profile(user, driver: DriverProfile) -> ProfileOut:
     data = career(driver)
+    season_rows = seasons(user, driver)
+    record_rows = records(user, driver)
+    restart_rows = restarts_caused(user, driver)
+    ratings = driver_ratings(user, driver)
     return ProfileOut(
         id=driver.id,
         display_name=driver.display_name,
@@ -238,7 +284,12 @@ def _profile(user, driver: DriverProfile) -> ProfileOut:
                 for a in data.adjustments
             ],
         ),
-        seasons=[ProfileSeasonOut(**vars(row)) for row in seasons(user, driver)],
+        seasons=[
+            ProfileSeasonOut(
+                **{**vars(row), "history": [RecentOut(**vars(r)) for r in row.history]}
+            )
+            for row in season_rows
+        ],
         safety=[
             ProfileSafetyOut(
                 championship_name=name,
@@ -247,10 +298,25 @@ def _profile(user, driver: DriverProfile) -> ProfileOut:
                 laps=rating.laps,
                 points=rating.points,
             )
-            for name, rating in driver_ratings(user, driver)
+            for name, rating in ratings
         ],
-        records=[ProfileRecordOut(**vars(row)) for row in records(user, driver)],
-        restarts_caused=[ProfileRestartOut(**vars(row)) for row in restarts_caused(user, driver)],
+        records=[ProfileRecordOut(**vars(row)) for row in record_rows],
+        restarts_caused=[ProfileRestartOut(**vars(row)) for row in restart_rows],
+        stats=StatsOut(
+            **vars(
+                stats(
+                    driver,
+                    season_rows,
+                    len(record_rows),
+                    len(restart_rows),
+                    sum(rating.points for _, rating in ratings),
+                )
+            )
+        ),
+        achievements=[
+            AchievementOut(key=a.key, count=a.count, goal=a.goal, achieved=a.achieved)
+            for a in achievements(driver, season_rows, len(record_rows))
+        ],
     )
 
 

@@ -1697,7 +1697,32 @@
     },
     "adjustPoints": "Points (negative to take away)",
     "reason": "Reason",
-    "adjustments": "Adjustments"
+    "adjustments": "Adjustments",
+    "badges": "Achievements",
+    "badge": {
+      "win": "First win",
+      "podium": "First podium",
+      "pole": "First pole",
+      "fastest_lap": "Fastest lap",
+      "starts": "10 starts",
+      "record": "Track record"
+    },
+    "badgeCount_one": "{{count}} time",
+    "badgeCount_other": "{{count}} times",
+    "badgeGoal": "{{count}} of {{goal}}",
+    "recent": "Recent results · {{season}}",
+    "place": "P{{rank}} of {{entries}} · {{points}} pts",
+    "winsCount_one": "{{count}} win",
+    "winsCount_other": "{{count}} wins",
+    "podiumsCount_one": "{{count}} podium",
+    "podiumsCount_other": "{{count}} podiums",
+    "startsCount_one": "{{count}} start",
+    "startsCount_other": "{{count}} starts",
+    "perStartValue": "{{value}} pts per start",
+    "levelLabel": "Level {{level}}: {{points}} of {{next}} career points",
+    "levelWord": "LEVEL",
+    "pointsOf": "{{points}} / {{next}} career points",
+    "officialOnly": "Only official results count."
   },
   "attendance": {
     "title": "Are you coming?",
@@ -1974,5 +1999,29 @@
     "lapsColumn": "Laps",
     "bestColumn": "Best lap",
     "averageColumn": "Average"
+  },
+  "stats": {
+    "title": "Statistics",
+    "results": "Results",
+    "totals": "Totals",
+    "mistakes": "Mistakes and incidents",
+    "starts": "Starts",
+    "wins": "Wins",
+    "podiums": "Podiums",
+    "top5": "Top 5",
+    "poles": "Poles",
+    "fastestLaps": "Fastest laps",
+    "bestFinish": "Best finish",
+    "averageFinish": "Average finish",
+    "points": "Points",
+    "laps": "Laps",
+    "records": "Records",
+    "winRate": "Wins per start",
+    "dnfs": "Retirements",
+    "dsqs": "Disqualified",
+    "penalties": "Penalties",
+    "incidentPoints": "Incident points",
+    "restartsCaused": "Restarts caused",
+    "note": "Official and provisional results of the seasons you can see count. The incident points come from the collector."
   }
 }

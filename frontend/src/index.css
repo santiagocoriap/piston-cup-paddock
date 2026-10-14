@@ -6943,3 +6943,337 @@ form.card > label.wide {
     grid-row: 2;
   }
 }
+
+/* ---------- Driver profile ---------- */
+.profile-page > section + section {
+  margin-top: var(--space-6);
+}
+
+/* The hero card: the picture, the name and entry, the level ring, and the admin button. */
+.profile-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: var(--space-5);
+  align-items: center;
+  margin-bottom: var(--space-6);
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
+}
+
+.profile-avatar {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-stretch: 75%;
+  font-size: 34px;
+  font-weight: 800;
+  box-shadow: 0 0 0 3px var(--brand);
+}
+
+.profile-who {
+  min-width: 0;
+}
+
+.profile-who h1 {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-who p {
+  margin: var(--space-1) 0 0;
+}
+
+.profile-entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+
+.profile-entry .car-number {
+  margin: 0;
+}
+
+.profile-admin {
+  align-self: start;
+}
+
+.level-ring {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.level-ring svg {
+  width: 96px;
+  height: 96px;
+  flex: none;
+}
+
+.level-ring circle {
+  fill: none;
+  stroke-width: 9;
+}
+
+.level-track {
+  stroke: var(--surface-3);
+}
+
+.level-fill {
+  stroke: var(--brand);
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dashoffset var(--dur-slow) ease-out;
+}
+
+.level-number {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.level-word {
+  fill: var(--ink-3);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.level-ring p {
+  display: grid;
+  gap: 2px;
+  max-width: 200px;
+  margin: 0;
+  font-size: 14px;
+}
+
+@media (max-width: 760px) {
+  .profile-hero {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .profile-avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 24px;
+  }
+
+  .level-ring,
+  .profile-admin {
+    grid-column: 1 / -1;
+  }
+}
+
+/* The badges: bright when the driver has one, dim with the progress when not. */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.badge-grid > li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.badge-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  color: var(--ink-3);
+}
+
+.badge-grid > li.achieved .badge-icon {
+  background: color-mix(in srgb, var(--gold) 20%, var(--surface-2));
+  color: var(--gold);
+  box-shadow: 0 0 0 2px var(--gold);
+}
+
+.badge-grid > li.locked {
+  opacity: 0.6;
+}
+
+.badge-text {
+  display: grid;
+  min-width: 0;
+  font-size: 14px;
+}
+
+/* The career: one row for each season, with a dot that shows the place. */
+.career-timeline {
+  position: relative;
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0 0 0 var(--space-2);
+  list-style: none;
+}
+
+.career-timeline > li {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.career-timeline > li + li::before {
+  position: absolute;
+  top: calc(-1 * var(--space-4));
+  left: 15px;
+  width: 2px;
+  height: var(--space-4);
+  background: var(--line-strong);
+  content: '';
+}
+
+.career-dot {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.career-timeline > li.medal-1 .career-dot,
+.career-timeline > li.medal-2 .career-dot,
+.career-timeline > li.medal-3 .career-dot {
+  border-color: var(--medal);
+  color: var(--medal);
+}
+
+.career-timeline p {
+  margin: 2px 0 0;
+}
+
+.career-place {
+  font-weight: 650;
+}
+
+.safety-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.safety-cards > .card {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+}
+
+.safety-cards p {
+  margin: 0;
+}
+
+.safety-big {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.safety-big b {
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 36px;
+}
+
+/* Career statistics: 3 groups of number tiles. */
+.stat-groups {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.25fr;
+  gap: var(--space-4);
+}
+
+.stat-group h3 {
+  margin: 0 0 var(--space-2);
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 112px), 1fr));
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+/* The lines between the tiles. The outer lines go under the border, so an empty cell at the
+   end of the grid stays clean. */
+.stat-tiles > div {
+  min-width: 0;
+  padding: var(--space-3);
+  box-shadow: 1px 0 0 var(--line), 0 1px 0 var(--line);
+}
+
+.stat-tiles dt {
+  min-height: 2lh;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 15px;
+  overflow-wrap: break-word;
+}
+
+.stat-tiles dd {
+  margin: 2px 0 0;
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 30px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-group.warn .stat-tiles dd.bad {
+  color: var(--warning-ink);
+}
+
+.stat-note {
+  margin: var(--space-2) 0 0;
+  font-size: 13px;
+}
+
+@media (max-width: 1000px) {
+  .stat-groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

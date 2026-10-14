@@ -14884,6 +14884,34 @@
         "title": "SeasonCardOut",
         "type": "object"
       },
+      "AchievementOut": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "goal": {
+            "title": "Goal",
+            "type": "integer"
+          },
+          "achieved": {
+            "title": "Achieved",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "key",
+          "count",
+          "goal",
+          "achieved"
+        ],
+        "title": "AchievementOut",
+        "type": "object"
+      },
       "AdjustmentOut": {
         "properties": {
           "kind": {
@@ -15005,6 +15033,16 @@
             },
             "title": "Restarts Caused",
             "type": "array"
+          },
+          "achievements": {
+            "items": {
+              "$ref": "#/components/schemas/AchievementOut"
+            },
+            "title": "Achievements",
+            "type": "array"
+          },
+          "stats": {
+            "$ref": "#/components/schemas/StatsOut"
           }
         },
         "required": [
@@ -15015,7 +15053,9 @@
           "seasons",
           "safety",
           "records",
-          "restarts_caused"
+          "restarts_caused",
+          "achievements",
+          "stats"
         ],
         "title": "ProfileOut",
         "type": "object"
@@ -15156,6 +15196,25 @@
           "starts": {
             "title": "Starts",
             "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "car_name": {
+            "title": "Car Name",
+            "type": "string"
+          },
+          "team": {
+            "title": "Team",
+            "type": "string"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/RecentOut"
+            },
+            "title": "History",
+            "type": "array"
           }
         },
         "required": [
@@ -15167,9 +15226,127 @@
           "points",
           "wins",
           "podiums",
-          "starts"
+          "starts",
+          "number",
+          "car_name",
+          "team",
+          "history"
         ],
         "title": "ProfileSeasonOut",
+        "type": "object"
+      },
+      "StatsOut": {
+        "properties": {
+          "starts": {
+            "title": "Starts",
+            "type": "integer"
+          },
+          "wins": {
+            "title": "Wins",
+            "type": "integer"
+          },
+          "podiums": {
+            "title": "Podiums",
+            "type": "integer"
+          },
+          "top5": {
+            "title": "Top5",
+            "type": "integer"
+          },
+          "poles": {
+            "title": "Poles",
+            "type": "integer"
+          },
+          "fastest_laps": {
+            "title": "Fastest Laps",
+            "type": "integer"
+          },
+          "best_finish": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Finish"
+          },
+          "average_finish": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Finish"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          },
+          "records": {
+            "title": "Records",
+            "type": "integer"
+          },
+          "win_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Win Rate"
+          },
+          "dnfs": {
+            "title": "Dnfs",
+            "type": "integer"
+          },
+          "dsqs": {
+            "title": "Dsqs",
+            "type": "integer"
+          },
+          "penalties": {
+            "title": "Penalties",
+            "type": "integer"
+          },
+          "incident_points": {
+            "title": "Incident Points",
+            "type": "integer"
+          },
+          "restarts_caused": {
+            "title": "Restarts Caused",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "starts",
+          "wins",
+          "podiums",
+          "top5",
+          "poles",
+          "fastest_laps",
+          "best_finish",
+          "average_finish",
+          "points",
+          "laps",
+          "records",
+          "win_rate",
+          "dnfs",
+          "dsqs",
+          "penalties",
+          "incident_points",
+          "restarts_caused"
+        ],
+        "title": "StatsOut",
         "type": "object"
       },
       "AdjustIn": {

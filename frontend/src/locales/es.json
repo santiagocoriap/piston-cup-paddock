@@ -1697,7 +1697,32 @@
     },
     "adjustPoints": "Puntos (negativo para restar)",
     "reason": "Motivo",
-    "adjustments": "Ajustes"
+    "adjustments": "Ajustes",
+    "badges": "Logros",
+    "badge": {
+      "win": "Primera victoria",
+      "podium": "Primer podio",
+      "pole": "Primera pole",
+      "fastest_lap": "Vuelta rápida",
+      "starts": "10 largadas",
+      "record": "Récord de pista"
+    },
+    "badgeCount_one": "{{count}} vez",
+    "badgeCount_other": "{{count}} veces",
+    "badgeGoal": "{{count}} de {{goal}}",
+    "recent": "Últimos resultados · {{season}}",
+    "place": "P{{rank}} de {{entries}} · {{points}} pts",
+    "winsCount_one": "{{count}} victoria",
+    "winsCount_other": "{{count}} victorias",
+    "podiumsCount_one": "{{count}} podio",
+    "podiumsCount_other": "{{count}} podios",
+    "startsCount_one": "{{count}} largada",
+    "startsCount_other": "{{count}} largadas",
+    "perStartValue": "{{value}} pts por largada",
+    "levelLabel": "Nivel {{level}}: {{points}} de {{next}} puntos de carrera",
+    "levelWord": "NIVEL",
+    "pointsOf": "{{points}} / {{next}} puntos de carrera",
+    "officialOnly": "Solo cuentan los resultados oficiales."
   },
   "attendance": {
     "title": "¿Venís?",
@@ -1974,5 +1999,29 @@
     "lapsColumn": "Vueltas",
     "bestColumn": "Mejor vuelta",
     "averageColumn": "Promedio"
+  },
+  "stats": {
+    "title": "Estadísticas",
+    "results": "Resultados",
+    "totals": "Totales",
+    "mistakes": "Errores e incidentes",
+    "starts": "Largadas",
+    "wins": "Victorias",
+    "podiums": "Podios",
+    "top5": "Top 5",
+    "poles": "Poles",
+    "fastestLaps": "Vueltas rápidas",
+    "bestFinish": "Mejor puesto",
+    "averageFinish": "Puesto promedio",
+    "points": "Puntos",
+    "laps": "Vueltas",
+    "records": "Récords",
+    "winRate": "Victorias por largada",
+    "dnfs": "Abandonos",
+    "dsqs": "Descalificado",
+    "penalties": "Sanciones",
+    "incidentPoints": "Puntos de incidente",
+    "restartsCaused": "Reinicios causados",
+    "note": "Cuentan los resultados oficiales y provisionales de las temporadas que podés ver. Los puntos de incidente vienen del colector."
   }
 }
