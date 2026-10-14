@@ -5,7 +5,7 @@ from datetime import datetime
 
 from django.http import Http404, HttpRequest
 from django.shortcuts import get_object_or_404
-from ninja import Router, Schema
+from ninja import Field, Router, Schema
 from ninja.errors import HttpError
 
 from apps.competition.models import Round
@@ -43,6 +43,7 @@ class SetupOut(Schema):
     entries: list[PushEntryOut]
     conditions: dict
     warnings: list[str]
+    open_slots: int
     latest: PushOut | None
     has_collector: bool
 
@@ -88,6 +89,7 @@ def _setup_out(request: HttpRequest, round_: Round) -> SetupOut:
         entries=content["entries"],
         conditions=content["conditions"],
         warnings=content["warnings"],
+        open_slots=content["open_slots"],
         latest=_push_out(round_.server_pushes.select_related("requested_by", "collector").first()),
         has_collector=championship.collectors.filter(revoked_at__isnull=True).exists(),
     )
@@ -99,11 +101,17 @@ def server_setup_preview(request: HttpRequest, round_id: int):
     return _setup_out(request, _managed_round(request, round_id))
 
 
+class PushIn(Schema):
+    # The free slots for this push only. None: the setting of the championship.
+    open_slots: int | None = Field(None, ge=0, le=40)
+
+
 @router.post("/rounds/{round_id}/server-push", response=SetupOut)
-def server_push(request: HttpRequest, round_id: int):
+def server_push(request: HttpRequest, round_id: int, payload: PushIn | None = None):
     round_ = _managed_round(request, round_id)
+    slots = payload.open_slots if payload else None
     try:
-        server_setup.push(round_, request.user, _base_url(request))
+        server_setup.push(round_, request.user, _base_url(request), slots)
     except server_setup.SetupError as error:
         raise HttpError(422, error.code) from error
     return _setup_out(request, round_)

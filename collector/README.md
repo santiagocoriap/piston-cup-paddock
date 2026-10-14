@@ -2,27 +2,61 @@
 
 The collector runs on the computer of the AC server. It sends new result files and Real Penalty logs to the app. It can also listen to the UDP plugin events.
 
-The collector only reads. It never writes in the server folders, and it never sends a packet to the AC server. If the app is not available, the collector keeps the files and sends them later.
+The collector only reads, with two exceptions that are off by default: "Enviar al servidor" and the request for car positions. See below. If the app is not available, the collector keeps the files and sends them later.
 
-## Install
+## Install (Windows program)
 
-1. Install Python 3.11 or newer on the server computer. The collector needs no other package.
+1. In the app, open the championship page. In "Colectores", make a key.
+2. Click "Descargar colector". You get `paddock-collector.zip`. The key is in it, so keep it secret.
+3. Unzip it on the server computer, for example to `C:\PaddockCollector`.
+4. Open `collector.ini` in Notepad. In `[server]`, write the server folders and the path of `ac_penalty.exe` (`realpenalty_exe`).
+5. Double-click `instalar.bat`. The shortcut "Iniciar Paddock" comes on the desktop.
+
+Windows SmartScreen can show "Windows protected your PC", because the program has no code signature. Click "More info", then "Run anyway".
+
+To remove the shortcut, double-click `desinstalar.bat`.
+
+### Before each race
+
+Open "Iniciar Paddock" in place of Real Penalty. It starts Real Penalty in its own window, and the collector with no window. Then start the server in Content Manager as before.
+
+- The collector does not start with Windows. It runs only for the race night.
+- It stops by itself 15 minutes after the AC server stops, when it sent everything (`stop_after_minutes`). The wait is always longer than the wait for the last Real Penalty log.
+- If the server never starts, it stops after 6 hours.
+- A second click finds the first collector and does not start one more. It still starts Real Penalty when Real Penalty does not run.
+- The log is `collector.log`, next to `collector.ini`. A wrong `collector.ini` shows a message.
+
+### Updates
+
+At each start, the collector asks the app for a newer version. It downloads the program from the app, checks the SHA-256 sum, and starts the new program. The old file stays as `paddock-collector.old.exe` until the next start.
+
+### New version (for the developers)
+
+1. Change `VERSION` in `paddock_collector.py`.
+2. Push a tag with the same version: `git tag collector-v1.2.0`, then `git push origin collector-v1.2.0`.
+3. GitHub Actions builds `paddock-collector.exe` and makes a release with `SHA256SUMS` (`.github/workflows/collector.yml`).
+4. The app sees the release within one hour. The collectors update within one day.
+
+`COLLECTOR_RELEASE_REPO` in the app settings names the repository with the releases.
+
+## Install with Python (other systems, or for development)
+
+1. Install Python 3.11 or newer. The collector needs no other package.
 2. Copy this folder to the server computer.
-3. In the app, open the championship page. In "Colectores", make a key. The app shows the key one time only.
-4. Copy `collector.example.ini` to `collector.ini`. Put in the app address, the key, and the server folders.
-5. Check the key:
+3. Copy `collector.example.ini` to `collector.ini`. Put in the app address, the key, and the server folders.
+4. Check the key:
 
    ```
    python paddock_collector.py --config collector.ini --check
    ```
 
-6. Start the collector:
+5. Start the collector:
 
    ```
    python paddock_collector.py --config collector.ini
    ```
 
-To start it with Windows, make a task in Task Scheduler that runs the command of step 6 at startup.
+On Windows, `python paddock_collector.py --config collector.ini --install` puts the shortcut for this command on the desktop. The Python script does not update itself.
 
 ## What happens to a file
 
@@ -45,7 +79,7 @@ With this, an admin sends the race setup from the round page of the app: the dri
 3. Before a race, stop the server. On the round page, open "Administrar" and click "Enviar al servidor".
 4. Wait for "Escrito en el servidor" in the dialog (about 30 seconds). Then start the preset in Content Manager.
 
-After the league drivers, the entry list gets 10 open slots with the league cars, so a driver can change to an extra car. `open_slots` in `collector.ini` changes the number. The spectator slots of the preset, such as Race Control, stay.
+After the league drivers, the entry list gets open slots with the league cars, so a driver can change to an extra car. The admins set the number on the championship page (10 by default), and they can change it for one push in the dialog. The spectator slots of the preset, such as Race Control, stay.
 
 The collector writes only while the server is stopped. Before it writes, it copies the old files to `paddock-backups` in the preset folder. To go back, copy them from there. Close the preset editor of Content Manager before the push, so it does not write over the new files.
 

@@ -25,6 +25,8 @@ export function ServerPushPanel({ roundId }: { roundId: number }) {
   const [setup, setSetup] = useState<Setup | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  // The free slots for this push. Empty: the setting of the championship.
+  const [slots, setSlots] = useState('')
 
   useEffect(() => {
     let stop = false
@@ -50,7 +52,8 @@ export function ServerPushPanel({ roundId }: { roundId: number }) {
   async function send() {
     setError(null)
     setBusy(true)
-    const { data, error } = await api.POST('/api/rounds/{round_id}/server-push', { params: { path } })
+    const body = slots === '' ? {} : { open_slots: Number(slots) }
+    const { data, error } = await api.POST('/api/rounds/{round_id}/server-push', { params: { path }, body })
     setBusy(false)
     if (data) setSetup(data)
     else setError(errorMessage(t, error))
@@ -128,6 +131,18 @@ export function ServerPushPanel({ roundId }: { roundId: number }) {
           })}
         </ul>
       )}
+      <label className="setting-number">
+        {t('serverPush.openSlots')}
+        <input
+          type="number"
+          min={0}
+          max={40}
+          value={slots}
+          placeholder={String(setup.open_slots)}
+          onChange={(e) => setSlots(e.target.value)}
+        />
+        <small className="muted">{t('serverPush.openSlotsHelp', { count: setup.open_slots })}</small>
+      </label>
       {latest && (
         <p className={latest.status === 'failed' ? 'error' : 'muted'} role="status">
           {t(`serverPush.status.${latest.status}`, {

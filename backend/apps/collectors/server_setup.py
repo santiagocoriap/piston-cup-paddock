@@ -85,8 +85,9 @@ def conditions(announced: dict) -> dict:
     return found
 
 
-def build(round_: Round, base_url: str) -> dict:
-    """The content of a push, without the race code. The preview shows it before the push."""
+def build(round_: Round, base_url: str, open_slots: int | None = None) -> dict:
+    """The content of a push, without the race code. The preview shows it before the push.
+    open_slots: the free slots after the drivers. None: the setting of the championship."""
     values = assigned_values(round_)
     entries = []
     warnings = []
@@ -119,14 +120,15 @@ def build(round_: Round, base_url: str) -> dict:
         "track": {"key": _key(layout.track.key), "layout": _key(layout.key)},
         "entries": entries,
         "conditions": conditions(announced),
+        "open_slots": round_.season.championship.open_slots if open_slots is None else open_slots,
         "script": {"url": f"{base_url}/api/script/paddock.lua"},
         "warnings": warnings,
     }
 
 
-def push(round_: Round, user, base_url: str) -> ServerPush:
+def push(round_: Round, user, base_url: str, open_slots: int | None = None) -> ServerPush:
     """Make a push for the collector. A newer push replaces a push that waits."""
-    content = build(round_, base_url)
+    content = build(round_, base_url, open_slots)
     championship = round_.season.championship
     with transaction.atomic():
         code = script.new_code(championship, user)

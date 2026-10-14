@@ -258,7 +258,7 @@ Answers and changes from the first idea:
 - The league uses a Content Manager preset, in `server/presets/<name>/`. The collector writes `entry_list.ini`, `server_cfg.ini`, and `csp_extra_options.ini` there. Content Manager makes the `$CSP0:` welcome block from `csp_extra_options.ini` when an admin starts the preset.
 - An admin stops the server before the push and starts it after. The collector checks for an `acServer.exe` process and for a busy TCP port. While the server runs, it tells the app "waiting".
 - The collector keeps the `csp/<build>/../` prefix of `TRACK`, the Content Manager sections, and the spectator slots of the entry list (for example Race Control).
-- After the league drivers, the entry list gets at least 10 open slots with the league cars in turn, so a driver can change to an extra car (`open_slots` in `collector.ini`).
+- After the league drivers, the entry list gets open slots with the league cars in turn, so a driver can change to an extra car. The admins set the number on the championship page (10 by default), and they can change it for one push.
 - `BASE_TEMPERATURE_ROAD` is the difference from the air, so the app sends the track temperature minus the air temperature.
 - The app sends the weather only when the announced weather is an AC weather name, such as `sol_05_broken_clouds`. Then the preset keeps one weather only. A free text such as "Despejado" keeps the weathers of the preset, and the dialog says so.
 - Each push makes a new race code. A newer push replaces a push that waits.
@@ -299,7 +299,17 @@ Answers and changes from the first idea:
 
 ## Phase 5: Install with one click
 
+Status: done on October 14, 2026, for the server collector. The app part is `backend/apps/collectors/release.py`. The build is `.github/workflows/collector.yml`. The first release needs a `collector-v1.1.0` tag.
+
 Estimate: 1.5 to 2 days.
+
+Changes from the first idea:
+
+- The collectors download the new program from the app (`GET /api/collector/download`, with their key), not from GitHub. The app gets it from the newest GitHub release one time and keeps a copy.
+- The app keeps only a hash of a key. So "Descargar colector" is available only right after "Crear clave", when the page still has the key.
+- The collector does not start with Windows. Content Manager and `acServer.exe` cannot start another program. The admin already starts Real Penalty by hand before each race. So the desktop shortcut "Iniciar Paddock" starts Real Penalty and the collector together, with no new step for the admin.
+- The collector stops by itself 15 minutes after the AC server stops, when it sent everything. Without a server, it stops after 6 hours. Only one collector runs on a PC.
+- After an update, the collector starts the new program at once and stops.
 
 ### Builds
 
@@ -309,8 +319,8 @@ Estimate: 1.5 to 2 days.
 ### Server collector
 
 1. In "Colectores", the button "Crear clave" also offers "Descargar colector". The zip has the `.exe` and a `collector.ini` with the app address and the new key.
-2. The command `paddock-collector.exe --install` makes a Windows task that starts the collector when Windows starts (`schtasks`, part of Windows).
-3. The command `--uninstall` removes the task.
+2. The command `paddock-collector.exe --install` puts the shortcut "Iniciar Paddock" on the desktop. It starts Real Penalty and the collector.
+3. The command `--uninstall` removes the shortcut.
 
 ### Drivers
 
@@ -318,7 +328,7 @@ Drivers install nothing for league races: the server sends the script (phase 0 a
 
 ### Updates
 
-1. Each collector asks for the latest version one time a day.
+1. Each collector asks for the latest version at each start, and one time a day while it runs.
 2. It downloads the new `.exe`, checks the SHA-256 sum, and uses it at the next start.
 
 ### Risk

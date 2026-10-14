@@ -2010,6 +2010,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/collector/version": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Collector Version */
+        get: operations["apps_collectors_api_collector_version"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/collector/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Collector Download
+         * @description The newest program, for the update of a collector.
+         */
+        get: operations["apps_collectors_api_collector_download"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/championships/{championship_id}/collectors": {
         parameters: {
             query?: never;
@@ -2022,6 +2059,27 @@ export interface paths {
         put?: never;
         /** New Collector */
         post: operations["apps_collectors_api_new_collector"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/collectors/{collector_id}/package": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Collector Package
+         * @description "Descargar colector": a zip with the program and a collector.ini with this key. The app
+         *     keeps only a hash of the key, so the admin sends the key back (it shows one time only).
+         */
+        post: operations["apps_collectors_api_collector_package"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3102,6 +3160,8 @@ export interface components {
             provisional_reports: boolean;
             /** Auto Publish Results */
             auto_publish_results: boolean;
+            /** Open Slots */
+            open_slots: number;
         };
         /** NameIn */
         NameIn: {
@@ -3124,6 +3184,8 @@ export interface components {
             provisional_reports: boolean;
             /** Auto Publish Results */
             auto_publish_results: boolean;
+            /** Open Slots */
+            open_slots: number;
             /** Seasons */
             seasons: components["schemas"]["SeasonSummary"][];
             latest: components["schemas"]["LatestSeasonOut"] | null;
@@ -3209,6 +3271,8 @@ export interface components {
             provisional_reports?: boolean | null;
             /** Auto Publish Results */
             auto_publish_results?: boolean | null;
+            /** Open Slots */
+            open_slots?: number | null;
         };
         /** RoleOut */
         RoleOut: {
@@ -5670,6 +5734,13 @@ export interface components {
             /** Events */
             events: components["schemas"]["EventIn"][];
         };
+        /** CollectorVersionOut */
+        CollectorVersionOut: {
+            /** Version */
+            version: string | null;
+            /** Sha256 */
+            sha256: string | null;
+        };
         /** CollectorFileOut */
         CollectorFileOut: {
             /** Id */
@@ -5766,6 +5837,11 @@ export interface components {
         CollectorIn: {
             /** Name */
             name: string;
+        };
+        /** PackageIn */
+        PackageIn: {
+            /** Key */
+            key: string;
         };
         /** AssignIn */
         AssignIn: {
@@ -6521,9 +6597,16 @@ export interface components {
             };
             /** Warnings */
             warnings: string[];
+            /** Open Slots */
+            open_slots: number;
             latest: components["schemas"]["PushOut"] | null;
             /** Has Collector */
             has_collector: boolean;
+        };
+        /** PushIn */
+        PushIn: {
+            /** Open Slots */
+            open_slots?: number | null;
         };
         /** CommandOut */
         CommandOut: {
@@ -9839,6 +9922,44 @@ export interface operations {
             };
         };
     };
+    apps_collectors_api_collector_version: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectorVersionOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_api_collector_download: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     apps_collectors_api_list_collectors: {
         parameters: {
             query?: never;
@@ -9884,6 +10005,30 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CollectorCreatedOut"];
                 };
+            };
+        };
+    };
+    apps_collectors_api_collector_package: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collector_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PackageIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -10660,7 +10805,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PushIn"] | null;
+            };
+        };
         responses: {
             /** @description OK */
             200: {

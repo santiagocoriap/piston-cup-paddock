@@ -5662,6 +5662,54 @@
         ]
       }
     },
+    "/api/collector/version": {
+      "get": {
+        "operationId": "apps_collectors_api_collector_version",
+        "summary": "Collector Version",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectorVersionOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collectors"
+        ],
+        "security": [
+          {
+            "CollectorAuth": []
+          }
+        ]
+      }
+    },
+    "/api/collector/download": {
+      "get": {
+        "operationId": "apps_collectors_api_collector_download",
+        "summary": "Collector Download",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "The newest program, for the update of a collector.",
+        "tags": [
+          "collectors"
+        ],
+        "security": [
+          {
+            "CollectorAuth": []
+          }
+        ]
+      }
+    },
     "/api/championships/{championship_id}/collectors": {
       "get": {
         "operationId": "apps_collectors_api_list_collectors",
@@ -5732,6 +5780,47 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CollectorIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/collectors/{collector_id}/package": {
+      "post": {
+        "operationId": "apps_collectors_api_collector_package",
+        "summary": "Collector Package",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collector_id",
+            "schema": {
+              "title": "Collector Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "\"Descargar colector\": a zip with the program and a collector.ini with this key. The app\nkeeps only a hash of the key, so the admin sends the key back (it shows one time only).",
+        "tags": [
+          "collectors"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PackageIn"
               }
             }
           },
@@ -7054,6 +7143,23 @@
         "tags": [
           "server setup"
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/PushIn"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "required": false
+        },
         "security": [
           {
             "SessionAuth": []
@@ -8765,6 +8871,10 @@
           "auto_publish_results": {
             "title": "Auto Publish Results",
             "type": "boolean"
+          },
+          "open_slots": {
+            "title": "Open Slots",
+            "type": "integer"
           }
         },
         "required": [
@@ -8774,7 +8884,8 @@
           "league_name",
           "can_manage",
           "provisional_reports",
-          "auto_publish_results"
+          "auto_publish_results",
+          "open_slots"
         ],
         "title": "ChampionshipOut",
         "type": "object"
@@ -8824,6 +8935,10 @@
             "title": "Auto Publish Results",
             "type": "boolean"
           },
+          "open_slots": {
+            "title": "Open Slots",
+            "type": "integer"
+          },
           "seasons": {
             "items": {
               "$ref": "#/components/schemas/SeasonSummary"
@@ -8857,6 +8972,7 @@
           "can_manage",
           "provisional_reports",
           "auto_publish_results",
+          "open_slots",
           "seasons",
           "latest",
           "progress"
@@ -9112,6 +9228,19 @@
               }
             ],
             "title": "Auto Publish Results"
+          },
+          "open_slots": {
+            "anyOf": [
+              {
+                "maximum": 40,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Open Slots"
           }
         },
         "title": "ChampionshipSettingsIn",
@@ -16840,6 +16969,38 @@
         "title": "EventsIn",
         "type": "object"
       },
+      "CollectorVersionOut": {
+        "properties": {
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
+          }
+        },
+        "required": [
+          "version",
+          "sha256"
+        ],
+        "title": "CollectorVersionOut",
+        "type": "object"
+      },
       "CollectorFileOut": {
         "properties": {
           "id": {
@@ -17114,6 +17275,21 @@
           "name"
         ],
         "title": "CollectorIn",
+        "type": "object"
+      },
+      "PackageIn": {
+        "properties": {
+          "key": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key"
+        ],
+        "title": "PackageIn",
         "type": "object"
       },
       "AssignIn": {
@@ -19200,6 +19376,10 @@
             "title": "Warnings",
             "type": "array"
           },
+          "open_slots": {
+            "title": "Open Slots",
+            "type": "integer"
+          },
           "latest": {
             "anyOf": [
               {
@@ -19220,10 +19400,30 @@
           "entries",
           "conditions",
           "warnings",
+          "open_slots",
           "latest",
           "has_collector"
         ],
         "title": "SetupOut",
+        "type": "object"
+      },
+      "PushIn": {
+        "properties": {
+          "open_slots": {
+            "anyOf": [
+              {
+                "maximum": 40,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Open Slots"
+          }
+        },
+        "title": "PushIn",
         "type": "object"
       },
       "CommandOut": {

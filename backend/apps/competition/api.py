@@ -117,6 +117,7 @@ class ChampionshipOut(Schema):
     can_manage: bool
     provisional_reports: bool
     auto_publish_results: bool
+    open_slots: int
 
 
 class ChampionshipSettingsIn(Schema):
@@ -124,6 +125,7 @@ class ChampionshipSettingsIn(Schema):
 
     provisional_reports: bool | None = None
     auto_publish_results: bool | None = None
+    open_slots: int | None = Field(None, ge=0, le=40)
 
 
 class NextRoundBrief(Schema):
@@ -258,6 +260,7 @@ def _championship_out(user, championship: Championship) -> dict:
         "can_manage": can_manage(user, championship),
         "provisional_reports": championship.provisional_reports,
         "auto_publish_results": championship.auto_publish_results,
+        "open_slots": championship.open_slots,
     }
 
 
@@ -468,7 +471,7 @@ def championship_settings(request, championship_id: int, payload: ChampionshipSe
     require(can_manage(request.user, championship))
     changes = []
     fields = []
-    for name in ("provisional_reports", "auto_publish_results"):
+    for name in ("provisional_reports", "auto_publish_results", "open_slots"):
         value = getattr(payload, name)
         if value is not None and value != getattr(championship, name):
             changes.append(change(name, getattr(championship, name), value))

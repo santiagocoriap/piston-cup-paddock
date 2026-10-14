@@ -137,7 +137,9 @@
     "roleCapability": "{{capability}} for {{role}}",
     "roleMenu": "Actions for the role {{name}}",
     "rename": "Change the name",
-    "autoPublish": "Publish clean collector results automatically (they stay provisional)"
+    "autoPublish": "Publish clean collector results automatically (they stay provisional)",
+    "openSlots": "Open slots on the server",
+    "openSlotsHelp": "Extra cars after the league drivers, so a driver can change car. \"Send to server\" uses this number."
   },
   "season": {
     "plannedRounds": "{{count}} planned rounds",
@@ -415,7 +417,9 @@
     "bad_zip": "The file is not a valid ZIP.",
     "too_many_files": "The ZIP has too many files. Use the league list.",
     "image_too_large": "The picture is bigger than 5 MB.",
-    "image_not_supported": "The picture must be a PNG or a JPEG."
+    "image_not_supported": "The picture must be a PNG or a JPEG.",
+    "no_release": "The app does not have the collector program yet. Try again later.",
+    "wrong_key": "The key is not for this collector."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -1524,7 +1528,9 @@
       "not_readable": "unknown format"
     },
     "chooseRound": "Round for {{name}}",
-    "assign": "Assign"
+    "assign": "Assign",
+    "download": "Download collector",
+    "downloadHelp": "A zip with the Windows program and a collector.ini with this key. Copy it to the server PC and follow LEEME.txt."
   },
   "telemetry": {
     "title": "Telemetry",
@@ -2171,6 +2177,8 @@
     "errors": {
       "server_running": "the server is running",
       "writing_disabled": "the collector does not write: write_server_config = false"
-    }
+    },
+    "openSlots": "Open slots",
+    "openSlotsHelp": "Empty: {{count}}, the number of the championship. Another number counts only for this push."
   }
 }

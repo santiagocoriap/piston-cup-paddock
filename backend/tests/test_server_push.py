@@ -136,3 +136,25 @@ def test_a_name_with_a_line_break_is_cleaned(api, champ_admin, round_, entries):
     driver.save()
     setup = api(champ_admin).get(f"/rounds/{round_.id}/server-setup").json()
     assert setup["entries"][0]["name"] == "Ana ADMIN_PASSWORD=x"
+
+
+def test_the_admin_sets_the_open_slots(api, champ_admin, championship, key, round_, entries):
+    assert api(champ_admin).get(f"/rounds/{round_.id}/server-setup").json()["open_slots"] == 10
+    response = api(champ_admin).client.patch(
+        f"/api/championships/{championship.id}/settings",
+        {"open_slots": 4},
+        content_type="application/json",
+    )
+    assert response.json()["open_slots"] == 4
+    assert api(champ_admin).get(f"/rounds/{round_.id}/server-setup").json()["open_slots"] == 4
+
+    # One push with another number. The setting stays.
+    api(champ_admin).post(f"/rounds/{round_.id}/server-push", {"open_slots": 12})
+    assert collector(key, "get", "/collector/commands").json()["content"]["open_slots"] == 12
+    assert api(champ_admin).get(f"/rounds/{round_.id}/server-setup").json()["open_slots"] == 4
+    too_many = api(champ_admin).client.patch(
+        f"/api/championships/{championship.id}/settings",
+        {"open_slots": 99},
+        content_type="application/json",
+    )
+    assert too_many.status_code == 422

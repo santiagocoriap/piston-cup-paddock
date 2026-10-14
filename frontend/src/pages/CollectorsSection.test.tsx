@@ -35,4 +35,34 @@ describe('CollectorsSection', () => {
     expect(await screen.findByText(/en la fecha/)).toBeInTheDocument()
     expect(calls.find((c) => c.key === 'POST /api/collector-files/7/assign')!.body).toEqual({ round_id: 3 })
   })
+
+  it('downloads the collector zip with the new key', async () => {
+    const objectUrl = vi.fn(() => 'blob:zip')
+    Object.assign(URL, { createObjectURL: objectUrl, revokeObjectURL: vi.fn() })
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
+    const calls = mockApi({
+      'GET /api/championships/2/collectors': () => json(200, { collectors: [collector], rounds, files: [] }),
+      'POST /api/championships/2/collectors': () => json(201, { ...collector, id: 2, name: 'Otro', key: 'pcc_secret' }),
+      'POST /api/collectors/2/package': () => new Response('zip', { status: 200, headers: { 'Content-Type': 'application/zip' } }),
+    })
+    renderPage(<CollectorsSection championshipId={2} />, { path: '/championships/:id', url: '/championships/2' })
+    await userEvent.type(await screen.findByLabelText('Nombre'), 'Otro')
+    await userEvent.click(screen.getByRole('button', { name: 'Crear clave' }))
+    await userEvent.click(await screen.findByRole('button', { name: 'Descargar colector' }))
+    await vi.waitFor(() => expect(click).toHaveBeenCalled())
+    expect(calls.find((c) => c.key === 'POST /api/collectors/2/package')!.body).toEqual({ key: 'pcc_secret' })
+  })
+
+  it('says when there is no program yet', async () => {
+    mockApi({
+      'GET /api/championships/2/collectors': () => json(200, { collectors: [collector], rounds, files: [] }),
+      'POST /api/championships/2/collectors': () => json(201, { ...collector, id: 2, name: 'Otro', key: 'pcc_secret' }),
+      'POST /api/collectors/2/package': () => json(503, { detail: 'no_release' }),
+    })
+    renderPage(<CollectorsSection championshipId={2} />, { path: '/championships/:id', url: '/championships/2' })
+    await userEvent.type(await screen.findByLabelText('Nombre'), 'Otro')
+    await userEvent.click(screen.getByRole('button', { name: 'Crear clave' }))
+    await userEvent.click(await screen.findByRole('button', { name: 'Descargar colector' }))
+    expect(await screen.findByText(/todavía no tiene el programa/)).toBeInTheDocument()
+  })
 })

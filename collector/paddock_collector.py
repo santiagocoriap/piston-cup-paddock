@@ -17,6 +17,13 @@ Safety rules:
 
 Only the Python standard library. Python 3.11 or newer. Run:
     python paddock_collector.py --config collector.ini
+
+The Windows program (paddock-collector.exe, built by GitHub Actions) also has:
+    --install     put the shortcut "Iniciar Paddock" on the desktop
+    --uninstall   remove the shortcut
+The admin uses the shortcut before a race, in place of Real Penalty: the collector starts Real
+Penalty (realpenalty_exe in collector.ini) and itself. The collector stops by itself after the AC
+server stops. It never starts with Windows. At each start, it asks the app for a new version.
 """
 
 from __future__ import annotations
@@ -27,12 +34,15 @@ import hashlib
 import io
 import json
 import logging
+import logging.handlers
+import os
 import re
 import shutil
 import socket
 import sqlite3
 import struct
 import subprocess
+import sys
 import threading
 import time
 import urllib.error
@@ -44,7 +54,13 @@ from pathlib import Path
 
 log = logging.getLogger("paddock_collector")
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
+UPDATE_SECONDS = 24 * 3600
+SHORTCUT_NAME = "Iniciar Paddock.lnk"
+# Only one collector runs on a PC: the second one cannot take this local port, and it stops.
+INSTANCE_PORT = 47615
+# Without an AC server, the collector stops after this time. A forgotten collector stops too.
+NO_SERVER_SECONDS = 6 * 3600
 EVENT_BATCH = 200
 PING_SECONDS = 300  # The app shows a collector as stopped after 15 minutes without a ping.
 LOCAL_ADDRESSES = {"127.0.0.1", "::1", "::ffff:127.0.0.1"}
@@ -89,8 +105,12 @@ class Settings:
     preset_dir: Path | None = None
     # Off by default: the collector only reads. The server owner turns it on.
     write_server_config: bool = False
-    # Free slots after the league drivers, so a driver can change to an extra car.
+    # Free slots after the league drivers, when the app sends no number (an old app).
     open_slots: int = 10
+    # ac_penalty.exe. The collector starts it, when it does not run yet. Empty: not started.
+    realpenalty_exe: Path | None = None
+    # The collector stops this many minutes after the AC server stops. 0: it never stops.
+    stop_after_minutes: int = 15
 
     @classmethod
     def load(cls, path: Path) -> Settings:
@@ -115,6 +135,8 @@ class Settings:
             preset_dir=folder(server.get("preset_dir", "")),
             write_server_config=collector.getboolean("write_server_config", False),
             open_slots=max(0, collector.getint("open_slots", 10)),
+            realpenalty_exe=folder(server.get("realpenalty_exe", "")),
+            stop_after_minutes=max(0, collector.getint("stop_after_minutes", 15)),
             penalty_dir=folder(server.get("realpenalty_logs_dir", "")),
             spool_dir=Path(collector.get("spool_dir", "spool")),
             udp_port=collector.getint("udp_port", 0),
@@ -334,6 +356,247 @@ class App:
     def report(self, push_id: int, status: str, error: str = "") -> dict:
         body = json.dumps({"status": status, "error": error}).encode()
         return self._request(f"/api/collector/commands/{push_id}", body, "application/json")
+
+    def _get(self, path: str, timeout: int = 30) -> bytes:
+        request = urllib.request.Request(
+            self.settings.app_url + path,
+            headers={
+                "Authorization": f"Bearer {self.settings.key}",
+                "User-Agent": f"paddock-collector/{VERSION}",
+            },
+        )
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            return response.read()
+
+    def get_version(self) -> dict:
+        return json.loads(self._get("/api/collector/version") or b"{}")
+
+    def download_program(self) -> bytes:
+        return self._get("/api/collector/download", timeout=300)
+
+
+# Update (the Windows program only)
+
+
+def newer(version: str, than: str) -> bool:
+    def parts(text: str) -> tuple[int, ...]:
+        return tuple(int(n) for n in re.findall(r"\d+", text)[:3])
+
+    return parts(version) > parts(than)
+
+
+def program_path() -> Path | None:
+    """The .exe of the Windows program. None when Python runs the script: no self-update."""
+    return Path(sys.executable).resolve() if getattr(sys, "frozen", False) else None
+
+
+def apply_update(exe: Path, data: bytes, sha256: str) -> None:
+    """Put the new program in the place of the old one. Windows lets a running program file
+    get a new name, so the old file becomes <name>.old.exe. The next start deletes it."""
+    if hashlib.sha256(data).hexdigest() != sha256.lower():
+        raise ValueError("The new program has a wrong SHA-256 sum")
+    new = exe.with_name(f"{exe.stem}.new.exe")
+    old = exe.with_name(f"{exe.stem}.old.exe")
+    new.write_bytes(data)
+    old.unlink(missing_ok=True)
+    exe.replace(old)
+    new.replace(exe)
+
+
+def remove_old_program(exe: Path | None) -> None:
+    if exe is None:
+        return
+    try:
+        exe.with_name(f"{exe.stem}.old.exe").unlink(missing_ok=True)
+    except OSError:
+        pass  # The old program still stops. The next start tries again.
+
+
+def check_update(app: App, exe: Path | None) -> bool:
+    """True when a new program is in place. The caller then starts it."""
+    if exe is None:
+        return False
+    found = app.get_version()
+    version, sha256 = found.get("version"), found.get("sha256")
+    if not version or not sha256 or not newer(version, VERSION):
+        return False
+    log.info("Updating the collector from %s to %s", VERSION, version)
+    apply_update(exe, app.download_program(), sha256)
+    return True
+
+
+def restart(exe: Path) -> None:
+    # PYINSTALLER_RESET_ENVIRONMENT: the new program unpacks its own files, not the files of
+    # this program, which go away when this program stops.
+    env = {**os.environ, "PYINSTALLER_RESET_ENVIRONMENT": "1"}
+    release_instance()  # The new program must get the port of the single collector.
+    flags = getattr(subprocess, "DETACHED_PROCESS", 0) | getattr(
+        subprocess, "CREATE_NEW_PROCESS_GROUP", 0
+    )
+    subprocess.Popen([str(exe), *sys.argv[1:]], env=env, creationflags=flags, close_fds=True)
+    logging.shutdown()
+    os._exit(0)
+
+
+# Start and stop with the race (Real Penalty, the desktop shortcut, and the stop)
+
+
+def process_running(image: str) -> bool:
+    """True when a program with this file name runs on this PC (Windows only)."""
+    try:
+        listed = subprocess.run(
+            ["tasklist", "/FI", f"IMAGENAME eq {image}", "/NH"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return image.lower() in listed.stdout.lower()
+
+
+def start_real_penalty(settings: Settings) -> bool:
+    """Start Real Penalty in its own window, as the admin did by hand. True when started."""
+    exe = settings.realpenalty_exe
+    if exe is None or process_running(exe.name):
+        return False
+    if not exe.is_file():
+        log.warning("Real Penalty is not at %s", exe)
+        return False
+    flags = getattr(subprocess, "CREATE_NEW_CONSOLE", 0)
+    subprocess.Popen([str(exe)], cwd=exe.parent, creationflags=flags, close_fds=True)
+    log.info("Started Real Penalty: %s", exe)
+    return True
+
+
+class Lifetime:
+    """When the collector stops by itself: some time after the AC server stops, when nothing
+    waits for the upload. The wait is longer than the wait for the last Real Penalty log."""
+
+    def __init__(self, settings: Settings, now: float):
+        minutes = settings.stop_after_minutes
+        self.wait = max(minutes * 60, settings.log_stable_seconds + 300) if minutes else 0
+        self.seen = False  # The admin starts the collector before the server.
+        self.last = now
+
+    def done(self, server_up: bool, idle: bool, now: float) -> bool:
+        if not self.wait:
+            return False
+        if server_up:
+            self.seen, self.last = True, now
+            return False
+        limit = self.wait if self.seen else NO_SERVER_SECONDS
+        return idle and now - self.last >= limit
+
+
+def ac_server_up(settings: Settings) -> bool:
+    if settings.preset_dir:
+        return server_running(settings.preset_dir)
+    return process_running("acServer.exe")
+
+
+_holder: list[socket.socket] = []
+
+
+def one_instance(port: int = INSTANCE_PORT) -> bool:
+    """Hold a local port that only one collector can hold. False: a collector already runs."""
+    holder = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        holder.bind(("127.0.0.1", port))
+    except OSError:
+        holder.close()
+        return False
+    _holder.append(holder)
+    return True
+
+
+def release_instance() -> None:
+    while _holder:
+        _holder.pop().close()
+
+
+def say(text: str) -> None:
+    """A message for the admin. The Windows program has no console, so it shows a window."""
+    log.info(text)
+    if sys.stdout is not None:
+        print(text)
+    elif os.name == "nt":
+        import ctypes
+
+        ctypes.windll.user32.MessageBoxW(None, text, "Paddock", 0x40)
+
+
+def launch(config: Path) -> tuple[str, str]:
+    """The program and the arguments of the shortcut."""
+    if getattr(sys, "frozen", False):
+        target, first = sys.executable, []
+    else:
+        target, first = sys.executable, [str(Path(__file__).resolve())]
+    return target, subprocess.list2cmdline([*first, "--config", str(config.resolve())])
+
+
+# PowerShell gets the values in environment variables, so a path cannot change the script.
+MAKE_SHORTCUT = (
+    "$d=[Environment]::GetFolderPath('Desktop');"
+    "$s=(New-Object -ComObject WScript.Shell).CreateShortcut((Join-Path $d $env:PADDOCK_NAME));"
+    "$s.TargetPath=$env:PADDOCK_TARGET;$s.Arguments=$env:PADDOCK_ARGS;"
+    "$s.WorkingDirectory=$env:PADDOCK_DIR;"
+    "$s.Description='Real Penalty y el colector de Paddock';$s.Save()"
+)
+REMOVE_SHORTCUT = (
+    "$d=[Environment]::GetFolderPath('Desktop');"
+    "Remove-Item -LiteralPath (Join-Path $d $env:PADDOCK_NAME) -ErrorAction SilentlyContinue"
+)
+
+
+def _powershell(script: str, values: dict[str, str]) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["powershell", "-NoProfile", "-NonInteractive", "-Command", script],
+        env={**os.environ, "PADDOCK_NAME": SHORTCUT_NAME, **values},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def load_settings(config: Path) -> Settings | None:
+    """The settings, or None after a message for the admin. The Windows program has no
+    console, so an error with no message looks like a program that does nothing."""
+    try:
+        return Settings.load(config)
+    except (SystemExit, configparser.Error, KeyError, ValueError) as error:
+        say(f"collector.ini tiene un error: {error}")
+        return None
+
+
+def install(config: Path) -> int:
+    settings = load_settings(config)
+    if settings is None:
+        return 1
+    target, arguments = launch(config)
+    result = _powershell(
+        MAKE_SHORTCUT,
+        {"PADDOCK_TARGET": target, "PADDOCK_ARGS": arguments, "PADDOCK_DIR": str(config.parent)},
+    )
+    if result.returncode:
+        say(f"No se pudo crear el acceso directo: {(result.stderr or result.stdout).strip()}")
+        return 1
+    text = (
+        'Listo. En el escritorio está "Iniciar Paddock". Usalo antes de cada carrera, en lugar de '
+        "abrir Real Penalty: abre Real Penalty y el colector. El colector se cierra solo cuando "
+        "el servidor se apaga."
+    )
+    if settings.realpenalty_exe is None:
+        text += " collector.ini no tiene realpenalty_exe, así que solo abre el colector."
+    say(text)
+    return 0
+
+
+def uninstall() -> int:
+    _powershell(REMOVE_SHORTCUT, {})
+    say('Listo. El acceso directo "Iniciar Paddock" ya no está en el escritorio.')
+    return 0
 
 
 # Race setup ("Enviar al servidor")
@@ -570,18 +833,8 @@ def csp_options(text: str, script: dict) -> str:
 
 def server_running(preset_dir: Path) -> bool:
     """True when an AC server runs on this PC, or the TCP port of the preset is in use."""
-    try:
-        listed = subprocess.run(
-            ["tasklist", "/FI", "IMAGENAME eq acServer.exe", "/NH"],
-            capture_output=True,
-            text=True,
-            timeout=15,
-            check=False,
-        )
-        if "acserver.exe" in listed.stdout.lower():
-            return True
-    except (OSError, subprocess.SubprocessError):
-        pass  # Not Windows: the port check below still works.
+    if process_running("acServer.exe"):
+        return True  # Not Windows: the port check below still works.
     text, _ = read_text(preset_dir / "server_cfg.ini")
     try:
         port = int(ini_get(text, "SERVER", "TCP_PORT") or 0)
@@ -641,7 +894,9 @@ def handle_command(app: App, settings: Settings, reported: dict[int, str]) -> No
         tell("waiting", "server_running")
         return
     try:
-        backup = write_setup(settings.preset_dir, content, open_slots=settings.open_slots)
+        # The admin sets the free slots in the app. An old app sends no number.
+        slots = content.get("open_slots", settings.open_slots)
+        backup = write_setup(settings.preset_dir, content, open_slots=int(slots))
     except (OSError, ValueError, KeyError, configparser.Error) as error:
         log.exception("Writing the race setup failed")
         tell("failed", type(error).__name__)
@@ -947,8 +1202,11 @@ def run(settings: Settings) -> None:
     if settings.udp_port:
         EventListener(settings, state, uuid.uuid4().hex).start()
     wait = settings.poll_seconds
-    next_ping = 0.0
+    next_ping = next_update = 0.0
     reported: dict[int, str] = {}
+    exe = program_path()
+    remove_old_program(exe)
+    lifetime = Lifetime(settings, time.time())
     while True:
         try:
             spool_files(settings, state, time.time())
@@ -960,27 +1218,74 @@ def run(settings: Settings) -> None:
         except Exception:  # The loop must keep running. The log has the details.
             log.exception("Collector loop error")
             ok = False
+        if exe and time.time() >= next_update:
+            next_update = time.time() + UPDATE_SECONDS
+            try:
+                if check_update(app, exe):
+                    restart(exe)
+            except Exception:  # A failed update keeps the old program. It tries the next day.
+                log.exception("Update error")
+        idle = ok and not state.unsent_files() and not state.unsent_events(1)
+        if lifetime.done(ac_server_up(settings), idle, time.time()):
+            log.info("The AC server stopped and everything is sent. The collector stops.")
+            return
         # After a failure, wait longer each time, up to 10 minutes.
         wait = settings.poll_seconds if ok else min(wait * 2, 600)
         time.sleep(wait)
+
+
+def setup_logging(folder: Path) -> None:
+    """The log goes to collector.log next to collector.ini (1 MB, with 3 older files), and to
+    the console when there is one."""
+    handlers: list[logging.Handler] = [
+        logging.handlers.RotatingFileHandler(
+            folder / "collector.log", maxBytes=1024 * 1024, backupCount=3, encoding="utf-8"
+        )
+    ]
+    if sys.stderr is not None:
+        handlers.append(logging.StreamHandler())
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s", handlers=handlers
+    )
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--config", type=Path, default=Path("collector.ini"))
     parser.add_argument("--check", action="store_true", help="Check the key and stop.")
+    parser.add_argument("--install", action="store_true", help="Make the desktop shortcut.")
+    parser.add_argument("--uninstall", action="store_true", help="Remove the desktop shortcut.")
     args = parser.parse_args()
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    settings = Settings.load(args.config)
+    config = args.config.resolve()
+    # A shortcut can start in another folder. Relative folders, such as the spool folder, are next
+    # to collector.ini.
+    os.chdir(config.parent)
+    setup_logging(config.parent)
+    if args.uninstall:
+        raise SystemExit(uninstall())
+    if args.install:
+        raise SystemExit(install(config))
+    settings = load_settings(config)
+    if settings is None:
+        raise SystemExit(1)
     if args.check:
         request = urllib.request.Request(
             settings.app_url + "/api/collector/ping",
             headers={"Authorization": f"Bearer {settings.key}"},
         )
         with urllib.request.urlopen(request, timeout=30) as response:
-            print(json.loads(response.read()))
+            say(str(json.loads(response.read())))
         return
-    run(settings)
+    # The shortcut "Iniciar Paddock" also starts Real Penalty, also when a collector already runs.
+    start_real_penalty(settings)
+    if not one_instance():
+        log.info("A collector already runs on this PC. This one stops.")
+        return
+    log.info("Paddock collector %s", VERSION)
+    try:
+        run(settings)
+    finally:
+        release_instance()
 
 
 if __name__ == "__main__":

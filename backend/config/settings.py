@@ -121,6 +121,12 @@ USE_TZ = True
 # Uploaded evidence, for example result files. Docker keeps it in the media-data volume.
 MEDIA_ROOT = Path(env("MEDIA_ROOT", str(BASE_DIR / "media")))
 BACKUP_ROOT = Path(env("BACKUP_ROOT", str(BASE_DIR / "backups")))
+# The GitHub repository with the collector releases (tags collector-v*). Empty: no downloads.
+COLLECTOR_RELEASE_REPO = env("COLLECTOR_RELEASE_REPO", "santiagocoriap/piston-cup-paddock")
+# The example collector.ini. "Descargar colector" fills it in with the app address and the key.
+COLLECTOR_INI_TEMPLATE = Path(
+    env("COLLECTOR_INI_TEMPLATE", str(BASE_DIR.parent / "collector" / "collector.example.ini"))
+)
 MEDIA_URL = "/media/"
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024

@@ -23,6 +23,9 @@ class Championship(models.Model):
     # Apply a clean result file from the server collector with no admin click. The result
     # stays provisional until an admin approves it. See docs/adr/0002-collector-automation.md.
     auto_publish_results = models.BooleanField(default=True)
+    # Free slots after the league drivers in the server entry list, so a driver can change to an
+    # extra car. "Enviar al servidor" sends this number. An admin can change it for one push.
+    open_slots = models.PositiveSmallIntegerField(default=10)
 
     class Meta:
         ordering = ["name"]

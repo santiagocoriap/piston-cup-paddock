@@ -14,6 +14,7 @@ const setup = (latest: unknown) => ({
   ],
   conditions: { sun_angle: 40, air_temp_c: 24, road_offset_c: 7, grip_pct: 89 },
   warnings: ['no_guid:Bob', 'weather_kept'],
+  open_slots: 10,
   latest,
   has_collector: true,
 })
@@ -34,5 +35,19 @@ describe('ServerPushPanel', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Enviar al servidor' }))
     expect(await screen.findByText(/Espera al colector/)).toBeInTheDocument()
     expect(calls.some((c) => c.key === 'POST /api/rounds/9/server-push')).toBe(true)
+  })
+
+  it('sends another number of open slots for one push', async () => {
+    const calls = mockApi({
+      'GET /api/rounds/9/server-setup': () => json(200, setup(null)),
+      'POST /api/rounds/9/server-push': () => json(200, setup(null)),
+    })
+    renderPage(<ServerPushPanel roundId={9} />, { path: '/', url: '/' })
+    const input = await screen.findByLabelText(/Lugares libres/)
+    expect(input).toHaveAttribute('placeholder', '10')
+    await userEvent.type(input, '4')
+    await userEvent.click(screen.getByRole('button', { name: 'Enviar al servidor' }))
+    await screen.findByText('Ana')
+    expect(calls.find((c) => c.key === 'POST /api/rounds/9/server-push')?.body).toEqual({ open_slots: 4 })
   })
 })

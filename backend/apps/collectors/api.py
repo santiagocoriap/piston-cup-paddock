@@ -4,7 +4,7 @@ The admin endpoints use the normal session."""
 from datetime import datetime
 from typing import Literal
 
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from ninja import File, Form, Router, Schema, Status
 from ninja.errors import HttpError
@@ -15,12 +15,14 @@ from pydantic import Field
 from apps.competition.models import Championship, Round
 from apps.competition.permissions import can, can_manage, can_view
 
+from . import release
 from .models import CollectorFile, CollectorToken
 from .services import (
     CollectorError,
     assign,
     authenticate,
     create_token,
+    key_matches,
     receive_events,
     receive_file,
     revoke_token,
@@ -96,6 +98,33 @@ def upload_events(request, payload: EventsIn):
     except CollectorError as error:
         raise HttpError(422, str(error)) from error
     return EventsOut(new=new)
+
+
+class CollectorVersionOut(Schema):
+    # None: no release yet, or GitHub is not available. The collector asks again the next day.
+    version: str | None
+    sha256: str | None
+
+
+@router.get("/collector/version", response=CollectorVersionOut, auth=CollectorAuth())
+def collector_version(request):
+    found = release.latest()
+    return CollectorVersionOut(version=found and found.version, sha256=found and found.sha256)
+
+
+@router.get("/collector/download", auth=CollectorAuth())
+def collector_download(request):
+    """The newest program, for the update of a collector."""
+    found = release.latest()
+    if found is None:
+        raise HttpError(503, "no_release")
+    try:
+        data = release.program(found)
+    except (OSError, release.ReleaseError) as error:
+        raise HttpError(503, "no_release") from error
+    response = HttpResponse(data, content_type="application/octet-stream")
+    response["X-Paddock-Version"] = found.version
+    return response
 
 
 # Admin side
@@ -221,6 +250,31 @@ def new_collector(request, championship_id: int, payload: CollectorIn):
     championship = _championship(request.user, championship_id)
     token, raw = create_token(championship, payload.name, request.user)
     return Status(201, CollectorCreatedOut(**_collector_out(token), key=raw))
+
+
+class PackageIn(Schema):
+    key: str = Field(min_length=1, max_length=200)
+
+
+@router.post("/collectors/{collector_id}/package")
+def collector_package(request, collector_id: int, payload: PackageIn):
+    """ "Descargar colector": a zip with the program and a collector.ini with this key. The app
+    keeps only a hash of the key, so the admin sends the key back (it shows one time only)."""
+    token = get_object_or_404(CollectorToken, pk=collector_id)
+    _championship(request.user, token.championship_id)
+    if token.revoked_at is not None or not key_matches(token, payload.key):
+        raise HttpError(422, "wrong_key")
+    found = release.latest()
+    if found is None:
+        raise HttpError(503, "no_release")
+    app_url = request.build_absolute_uri("/").rstrip("/")
+    try:
+        data = release.package(found, app_url, payload.key.strip())
+    except (OSError, release.ReleaseError) as error:
+        raise HttpError(503, "no_release") from error
+    response = HttpResponse(data, content_type="application/zip")
+    response["Content-Disposition"] = 'attachment; filename="paddock-collector.zip"'
+    return response
 
 
 @router.post("/collectors/{collector_id}/revoke", response=CollectorsOut)

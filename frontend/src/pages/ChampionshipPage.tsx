@@ -292,6 +292,26 @@ function SeasonsTab({ data, onChange }: { data: Detail; onChange: () => void }) 
         />
         {t('championship.autoPublish')}
       </label>
+      <label className="setting-number">
+        {t('championship.openSlots')}
+        <input
+          type="number"
+          min={0}
+          max={40}
+          defaultValue={data.open_slots}
+          key={data.open_slots}
+          onBlur={async (e) => {
+            const value = Number(e.target.value)
+            if (!Number.isInteger(value) || value < 0 || value > 40 || value === data.open_slots) return
+            await api.PATCH('/api/championships/{championship_id}/settings', {
+              params: { path },
+              body: { open_slots: value },
+            })
+            onChange()
+          }}
+        />
+        <small className="muted">{t('championship.openSlotsHelp')}</small>
+      </label>
     </div>
   )
 }

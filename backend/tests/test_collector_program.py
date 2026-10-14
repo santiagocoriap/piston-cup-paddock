@@ -1,6 +1,7 @@
 """The server collector program in collector/. It runs without Django, so these tests use a
 small fake app server."""
 
+import hashlib
 import importlib.util
 import json
 import os
@@ -506,3 +507,144 @@ def test_an_unsafe_car_or_track_name_stops_the_write(preset):
         pc.write_setup(preset, {**CONTENT, "entries": [bad]})
     with pytest.raises(ValueError):
         pc.write_setup(preset, {**CONTENT, "track": {"key": "../x\n", "layout": ""}})
+
+
+# Phase 5: the Windows program
+
+
+def test_newer_version():
+    assert pc.newer("1.10.0", "1.9.3")
+    assert not pc.newer("1.1.0", "1.1.0")
+    assert not pc.newer("1.0.9", "1.1.0")
+
+
+def test_an_update_replaces_the_program_and_keeps_the_old_one(tmp_path):
+    exe = tmp_path / "paddock-collector.exe"
+    exe.write_bytes(b"old")
+    new = b"new program"
+    pc.apply_update(exe, new, hashlib.sha256(new).hexdigest())
+    assert exe.read_bytes() == new
+    assert (tmp_path / "paddock-collector.old.exe").read_bytes() == b"old"
+    pc.remove_old_program(exe)
+    assert not (tmp_path / "paddock-collector.old.exe").exists()
+
+
+def test_an_update_with_a_wrong_sum_keeps_the_program(tmp_path):
+    exe = tmp_path / "paddock-collector.exe"
+    exe.write_bytes(b"old")
+    with pytest.raises(ValueError):
+        pc.apply_update(exe, b"changed", "0" * 64)
+    assert exe.read_bytes() == b"old"
+    assert not (tmp_path / "paddock-collector.new.exe").exists()
+
+
+class UpdateApp:
+    def __init__(self, version):
+        self.version = version
+        self.downloads = 0
+
+    def get_version(self):
+        return {"version": self.version, "sha256": hashlib.sha256(b"v2").hexdigest()}
+
+    def download_program(self):
+        self.downloads += 1
+        return b"v2"
+
+
+def test_check_update_only_for_a_newer_program(tmp_path):
+    exe = tmp_path / "paddock-collector.exe"
+    exe.write_bytes(b"v1")
+    assert not pc.check_update(UpdateApp(pc.VERSION), exe)
+    assert not pc.check_update(UpdateApp(None), exe)
+    assert not pc.check_update(UpdateApp("99.0.0"), None)  # Python runs the script: no update.
+    app = UpdateApp("99.0.0")
+    assert pc.check_update(app, exe)
+    assert (app.downloads, exe.read_bytes()) == (1, b"v2")
+
+
+def test_the_shortcut_runs_with_the_full_config_path(tmp_path):
+    _target, arguments = pc.launch(tmp_path / "collector.ini")
+    assert "--config" in arguments
+    assert str((tmp_path / "collector.ini").resolve()) in arguments
+
+
+def test_install_gives_the_paths_to_powershell_in_variables(tmp_path, monkeypatch):
+    config = tmp_path / "collector.ini"
+    config.write_text(
+        (Path(pc.__file__).parent / "collector.example.ini").read_text("utf-8"), "utf-8"
+    )
+    seen = {}
+
+    def fake_run(command, env, **kwargs):
+        seen.update(command=command, env=env)
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(pc.subprocess, "run", fake_run)
+    monkeypatch.setattr(pc, "say", lambda text: None)
+    assert pc.install(config) == 0
+    assert str(config.resolve()) not in " ".join(seen["command"])  # Not in the script.
+    assert seen["env"]["PADDOCK_NAME"] == "Iniciar Paddock.lnk"
+    assert str(config.resolve()) in seen["env"]["PADDOCK_ARGS"]
+
+
+def settings_for_life(**values):
+    return SimpleNamespace(**{"stop_after_minutes": 15, "log_stable_seconds": 600, **values})
+
+
+def test_the_collector_stops_after_the_server_stops():
+    life = pc.Lifetime(settings_for_life(), now=0)
+    assert not life.done(server_up=False, idle=True, now=3600)  # Before the race: it waits.
+    assert not life.done(server_up=True, idle=True, now=4000)
+    assert not life.done(server_up=False, idle=True, now=4000 + 899)
+    assert not life.done(server_up=False, idle=False, now=4000 + 900)  # Files still to send.
+    assert life.done(server_up=False, idle=True, now=4000 + 900)
+
+
+def test_the_stop_waits_for_the_last_real_penalty_log():
+    life = pc.Lifetime(settings_for_life(stop_after_minutes=1, log_stable_seconds=600), now=0)
+    life.done(server_up=True, idle=True, now=0)
+    assert not life.done(server_up=False, idle=True, now=600)
+    assert life.done(server_up=False, idle=True, now=900)
+
+
+def test_a_forgotten_collector_stops_and_zero_never_stops():
+    life = pc.Lifetime(settings_for_life(), now=0)
+    assert life.done(server_up=False, idle=True, now=pc.NO_SERVER_SECONDS)
+    never = pc.Lifetime(settings_for_life(stop_after_minutes=0), now=0)
+    assert not never.done(server_up=False, idle=True, now=10**9)
+
+
+def test_real_penalty_starts_only_when_it_does_not_run(tmp_path, monkeypatch):
+    exe = tmp_path / "ac_penalty.exe"
+    exe.write_bytes(b"MZ")
+    started = []
+    monkeypatch.setattr(pc.subprocess, "Popen", lambda args, **kwargs: started.append(args))
+    settings = SimpleNamespace(realpenalty_exe=exe)
+    monkeypatch.setattr(pc, "process_running", lambda image: True)
+    assert not pc.start_real_penalty(settings)
+    monkeypatch.setattr(pc, "process_running", lambda image: False)
+    assert pc.start_real_penalty(settings)
+    assert started == [[str(exe)]]
+    assert not pc.start_real_penalty(SimpleNamespace(realpenalty_exe=None))
+    assert not pc.start_real_penalty(SimpleNamespace(realpenalty_exe=tmp_path / "none.exe"))
+
+
+def test_only_one_collector_runs():
+    port = 47999
+    assert pc.one_instance(port)
+    assert not pc.one_instance(port)
+    pc.release_instance()
+    assert pc.one_instance(port)
+    pc.release_instance()
+
+
+def test_a_broken_config_gives_a_message(tmp_path, monkeypatch):
+    messages = []
+    monkeypatch.setattr(pc, "say", messages.append)
+    config = tmp_path / "collector.ini"
+    config.write_text("[app]\nurl = x\nbroken line\n", encoding="utf-8")
+    assert pc.load_settings(config) is None
+    assert pc.load_settings(tmp_path / "missing.ini") is None
+    assert (
+        all(m.startswith("collector.ini tiene un error") for m in messages) and len(messages) == 2
+    )

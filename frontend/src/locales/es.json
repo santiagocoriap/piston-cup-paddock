@@ -137,7 +137,9 @@
     "roleCapability": "{{capability}} para {{role}}",
     "roleMenu": "Acciones del rol {{name}}",
     "rename": "Cambiar el nombre",
-    "autoPublish": "Publicar solos los resultados del colector cuando no tienen problemas (quedan provisionales)"
+    "autoPublish": "Publicar solos los resultados del colector cuando no tienen problemas (quedan provisionales)",
+    "openSlots": "Lugares libres en el servidor",
+    "openSlotsHelp": "Autos extra después de los pilotos de la liga, para cambiar de auto. \"Enviar al servidor\" usa este número."
   },
   "season": {
     "plannedRounds": "{{count}} carreras previstas",
@@ -415,7 +417,9 @@
     "bad_zip": "El archivo no es un ZIP válido.",
     "too_many_files": "El ZIP tiene demasiados archivos. Usá la lista de la liga.",
     "image_too_large": "La imagen pesa más de 5 MB.",
-    "image_not_supported": "La imagen tiene que ser PNG o JPEG."
+    "image_not_supported": "La imagen tiene que ser PNG o JPEG.",
+    "no_release": "La app todavía no tiene el programa del colector. Probá más tarde.",
+    "wrong_key": "La clave no es de este colector."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -1524,7 +1528,9 @@
       "not_readable": "formato desconocido"
     },
     "chooseRound": "Fecha para {{name}}",
-    "assign": "Asignar"
+    "assign": "Asignar",
+    "download": "Descargar colector",
+    "downloadHelp": "Un zip con el programa para Windows y un collector.ini con esta clave. Copialo a la PC del servidor y seguí LEEME.txt."
   },
   "telemetry": {
     "title": "Telemetría",
@@ -2171,6 +2177,8 @@
     "errors": {
       "server_running": "el servidor está encendido",
       "writing_disabled": "el colector tiene la escritura apagada: write_server_config = false"
-    }
+    },
+    "openSlots": "Lugares libres",
+    "openSlotsHelp": "Vacío: {{count}}, el número del campeonato. Otro número cuenta solo para este envío."
   }
 }

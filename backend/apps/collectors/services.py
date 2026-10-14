@@ -7,6 +7,7 @@ problem waits for an admin.
 """
 
 import hashlib
+import hmac
 import json
 import logging
 import re
@@ -61,6 +62,10 @@ def create_token(championship: Championship, name: str, user) -> tuple[Collector
             params={"name": name},
         )
     return token, raw
+
+
+def key_matches(token: CollectorToken, raw: str) -> bool:
+    return hmac.compare_digest(token.token_hash, _hash(raw.strip()))
 
 
 def revoke_token(token: CollectorToken, user) -> None:
