@@ -9,6 +9,7 @@ from ninja.errors import HttpError
 from ninja.files import UploadedFile
 from pydantic import AwareDatetime
 
+from apps.collectors.conditions import differences, server_conditions
 from apps.collectors.incident_api import accepted_race_incidents
 from apps.competition.models import ChampionshipMember, Round, Season, SeasonEntry
 from apps.competition.permissions import can, can_manage, can_view, capabilities
@@ -26,6 +27,7 @@ from .services import (
     approve_result,
     decide_appeal,
     decide_protest,
+    mark_dnf,
     protest_deadline,
     save_result,
     season_standings,
@@ -157,8 +159,23 @@ class HandicapCheckOut(Schema):
     observed_pct: int
 
 
+class ServerConditionsOut(Schema):
+    session_type: str
+    started_at: datetime
+    weather: str | None
+    air_temp_c: int | None
+    track_temp_c: int | None
+    time_of_day: str | None
+    grip_pct: int | None
+
+
 class BriefingOut(Schema):
     announced_conditions: dict
+    # What the server used, from the collector. None before the collector sends a session.
+    server_conditions: ServerConditionsOut | None = None
+    # The announced conditions that the server did not use: "air_temp", "track_temp",
+    # "time_of_day", or "grip".
+    conditions_differ: list[str] = []
     protest_window_minutes: int
     restart_guidance: str
     first_lap_cutoff: str
@@ -349,6 +366,7 @@ def _lines(version: ResultVersion) -> list[LineOut]:
 
 
 def _round_detail(user, round_: Round) -> RoundDetail:
+    real = server_conditions(round_)
     season = round_.season
     mine = my_handicap(user, round_)
     result = (
@@ -389,6 +407,8 @@ def _round_detail(user, round_: Round) -> RoundDetail:
         can_protest=_can_protest(user, round_, result),
         briefing=BriefingOut(
             announced_conditions=round_.announced_conditions,
+            server_conditions=ServerConditionsOut(**vars(real)) if real else None,
+            conditions_differ=differences(round_.announced_conditions, real),
             protest_window_minutes=season.protest_window_minutes,
             restart_guidance=round_.track_layout.restart_guidance,
             first_lap_cutoff=round_.track_layout.first_lap_cutoff,
@@ -501,6 +521,15 @@ def get_version(request, round_id: int, number: int):
     round_ = _visible_round(request.user, round_id)
     version = get_object_or_404(ResultVersion, result__round=round_, number=number)
     return _lines(version)
+
+
+@router.post("/rounds/{round_id}/result/lines/{entry_id}/dnf", response=RoundDetail)
+def put_line_dnf(request, round_id: int, entry_id: int):
+    """Mark one driver as DNF with one click. The result gets a new version."""
+    round_ = _visible_round(request.user, round_id)
+    _require(request.user, round_, "results")
+    _run(lambda: mark_dnf(round_, entry_id, request.user))
+    return _round_detail(request.user, round_)
 
 
 @router.put("/rounds/{round_id}/result", response=RoundDetail)

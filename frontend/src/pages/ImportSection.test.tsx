@@ -106,6 +106,7 @@ describe('ImportSection and the collector', () => {
     expect(screen.getByText('El lastre o el restrictor del archivo no es el asignado.')).toBeInTheDocument()
     expect(screen.getByText('La fecha ya tiene resultado: un admin decide si lo cambia.')).toBeInTheDocument()
     expect(screen.getByText('Publicado por el colector')).toBeInTheDocument()
-    expect(screen.getByText('Revisá si abandonaron: Vice.')).toBeInTheDocument()
+    expect(screen.getByText(/Vice hizo menos vueltas que el ganador/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Marcar DNF' })).toBeInTheDocument()
   })
 })

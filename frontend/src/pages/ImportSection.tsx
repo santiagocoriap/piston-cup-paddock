@@ -120,13 +120,18 @@ export function ImportSection({
                   </ul>
                 )}
                 {(item.review_flags ?? []).length > 0 && (
-                  <p className="auto-notes">
-                    {t('imports.checkDnf', {
-                      names: (item.review_flags ?? [])
-                        .map((flag) => entries.find((e) => e.entry_id === flag.entry_id)?.driver_name ?? `#${flag.entry_id}`)
-                        .join(', '),
-                    })}
-                  </p>
+                  <ul className="auto-notes dnf-notes">
+                    {(item.review_flags ?? []).map((flag) => (
+                      <DnfNote
+                        key={flag.entry_id}
+                        roundId={roundId}
+                        name={entries.find((e) => e.entry_id === flag.entry_id)?.driver_name ?? `#${flag.entry_id}`}
+                        entryId={flag.entry_id}
+                        code={flag.code}
+                        onMarked={onApplied}
+                      />
+                    ))}
+                  </ul>
                 )}
               </li>
             ))}
@@ -344,3 +349,55 @@ function DriverRow({
     </tr>
   )
 }
+
+/** One driver with fewer laps than the winner. A disconnect before the end points to a DNF.
+ * The admin marks the DNF with one click. */
+function DnfNote({
+  roundId,
+  entryId,
+  name,
+  code,
+  onMarked,
+}: {
+  roundId: number
+  entryId: number
+  name: string
+  code: string
+  onMarked: () => void
+}) {
+  const { t } = useTranslation()
+  const [done, setDone] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function mark() {
+    setError(null)
+    const { error } = await api.POST('/api/rounds/{round_id}/result/lines/{entry_id}/dnf', {
+      params: { path: { round_id: roundId, entry_id: entryId } },
+    })
+    if (error) setError(errorMessage(t, error))
+    else {
+      setDone(true)
+      onMarked()
+    }
+  }
+
+  return (
+    <li>
+      {t(`imports.dnfNote.${code}`, { name, defaultValue: t('imports.dnfNote.fewer_laps', { name }) })}{' '}
+      {done ? (
+        <span className="badge">{t('imports.dnfMarked')}</span>
+      ) : (
+        <button type="button" className="link" onClick={mark}>
+          {t('imports.markDnf')}
+        </button>
+      )}
+      {error && (
+        <span role="alert" className="error">
+          {' '}
+          {error}
+        </span>
+      )}
+    </li>
+  )
+}
+

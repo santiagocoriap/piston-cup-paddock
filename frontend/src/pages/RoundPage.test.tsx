@@ -244,6 +244,32 @@ describe('RoundPage', () => {
     expect(within(briefing).getByText(/Plazo de protestas: 60 minutos/)).toBeInTheDocument()
   })
 
+  it('shows what the server used and where it differs from the announcement', async () => {
+    mockApi({
+      ...noRestarts,
+      'GET /api/rounds/9': () =>
+        json(200, round(false, null, {
+          briefing: {
+            announced_conditions: { time_of_day: '15:30', weather: 'Despejado', air_temp_c: 28, track_temp_c: 30, grip: '', notes: '' },
+            protest_window_minutes: 60,
+            my_handicap: null,
+            server_conditions: {
+              session_type: 'race', started_at: '2026-10-11T22:27:00Z', weather: '3_clear',
+              air_temp_c: 20, track_temp_c: 31, time_of_day: '16:00', grip_pct: 89,
+            },
+            conditions_differ: ['air_temp'],
+          },
+        })),
+    })
+    show(DRIVER)
+    const briefing = await screen.findByRole('region', { name: 'Briefing' })
+    expect(within(briefing).getByText('En el servidor')).toBeInTheDocument()
+    expect(within(briefing).getAllByText('Despejado')).toHaveLength(2)
+    expect(within(briefing).getByText('20 °C')).toBeInTheDocument()
+    expect(within(briefing).getByText('89 %')).toBeInTheDocument()
+    expect(within(briefing).getByRole('status')).toHaveTextContent('No coincide con lo anunciado: temperatura del aire.')
+  })
+
   it('opens the analysis in tabs and keeps the race tab first', async () => {
     const line = { entry_id: 1, status: 'finished', position: 1, entered_status: 'finished', entered_position: 1, pole: false, fastest_lap: false, number: 1, driver_name: 'Bing', points: 25 }
     mockApi({ ...noRestarts, 'GET /api/rounds/9': () => json(200, round(false, [line])) })

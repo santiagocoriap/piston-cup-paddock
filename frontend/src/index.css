@@ -8898,3 +8898,13 @@ p.auto-notes {
   gap: var(--space-1);
   margin: 0;
 }
+
+/* A server value that is not as announced. */
+.lap-details .differ dd {
+  color: var(--warning-ink, var(--warning));
+  font-weight: 700;
+}
+
+.dnf-notes li + li {
+  margin-top: var(--space-1);
+}

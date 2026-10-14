@@ -1,7 +1,7 @@
 """Race results: versions, penalties, protests, approval, and standings."""
 
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import timedelta
 
 from django.db import transaction
@@ -177,6 +177,21 @@ def save_result(round_: Round, lines: list[Line], user, reason: str = "") -> Rac
         if before is None:
             _notify_season(round_, "result.published")
     return result
+
+
+def mark_dnf(round_: Round, entry_id: int, user) -> RaceResult:
+    """Change one line of the result to DNF, for example after the collector saw the driver
+    leave before the end. The change is a new version, with the reason in the history."""
+    result = RaceResult.objects.filter(round=round_).select_related("current_version").first()
+    if result is None or result.current_version is None:
+        raise ResultError("result_required")
+    lines = entered_lines(result.current_version)
+    if not any(line.entry_id == entry_id for line in lines):
+        raise ResultError("entry_not_in_result")
+    lines = [
+        replace(line, status=Status.DNF) if line.entry_id == entry_id else line for line in lines
+    ]
+    return save_result(round_, lines, user, reason="DNF: left the server before the end")
 
 
 def _notify_season(round_: Round, kind: str) -> None:

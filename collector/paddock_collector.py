@@ -76,6 +76,9 @@ class Settings:
     log_stable_seconds: int = 600
     poll_seconds: int = 15
     since: str = ""  # Files older than this date (YYYY-MM-DD) are not sent.
+    # The server_cfg.ini that the AC server uses. The collector reads the time of day and the
+    # start grip from it at each new session. Empty: the app gets no time of day and no grip.
+    server_cfg: Path | None = None
 
     @classmethod
     def load(cls, path: Path) -> Settings:
@@ -91,6 +94,7 @@ class Settings:
             app_url=app["url"].rstrip("/"),
             key=app["key"].strip(),
             results_dir=folder(server.get("results_dir", "")),
+            server_cfg=folder(server.get("server_cfg", "")),
             penalty_dir=folder(server.get("realpenalty_logs_dir", "")),
             spool_dir=Path(collector.get("spool_dir", "spool")),
             udp_port=collector.getint("udp_port", 0),
@@ -368,6 +372,35 @@ class Reader:
         return self.buf.read(self.byte() * 4).decode("utf-32-le", errors="replace")
 
 
+def time_of_day(sun_angle: float) -> str:
+    """The clock time of an AC sun angle: 0 is 13:00, and 16 degrees is one hour."""
+    minutes = round(13 * 60 + sun_angle * 60 / 16)
+    minutes = max(0, min(24 * 60 - 1, minutes))
+    return f"{minutes // 60:02d}:{minutes % 60:02d}"
+
+
+def server_conditions(path: Path | None) -> dict:
+    """The time of day and the start grip from server_cfg.ini. The collector only reads it."""
+    if path is None:
+        return {}
+    parser = configparser.ConfigParser(strict=False, interpolation=None)
+    try:
+        if not parser.read(path, encoding="utf-8"):
+            return {}
+    except (configparser.Error, UnicodeDecodeError):
+        return {}
+    found: dict = {}
+    try:
+        found["time_of_day"] = time_of_day(float(parser.get("SERVER", "SUN_ANGLE")))
+    except (configparser.Error, ValueError):
+        pass
+    try:
+        found["grip_pct"] = int(parser.get("DYNAMIC_TRACK", "SESSION_START"))
+    except (configparser.Error, ValueError):
+        pass
+    return found
+
+
 def parse_packet(data: bytes, drivers: dict[int, dict]) -> dict | None:
     """One UDP packet to one event, or None for a packet that the app does not use.
     drivers maps car IDs to the driver, so events can carry the GUID."""
@@ -389,17 +422,23 @@ def parse_packet(data: bytes, drivers: dict[int, dict]) -> dict | None:
         kind = reader.byte()
         minutes = reader.uint16()
         laps = reader.uint16()
-        return {
-            "kind": "session_started",
-            "data": {
-                "track": track,
-                "layout": layout,
-                "name": name,
-                "type": kind,
-                "minutes": minutes,
-                "laps": laps,
-            },
+        data = {
+            "track": track,
+            "layout": layout,
+            "name": name,
+            "type": kind,
+            "minutes": minutes,
+            "laps": laps,
         }
+        try:
+            # The conditions of the session. An old server can send a shorter packet.
+            reader.uint16()  # wait time
+            data["air_temp_c"] = reader.byte()
+            data["road_temp_c"] = reader.byte()
+            data["weather"] = reader.string()
+        except struct.error:
+            pass
+        return {"kind": "session_started", "data": data}
     if packet in (NEW_CONNECTION, CONNECTION_CLOSED):
         name = reader.stringw()
         guid = reader.stringw()
@@ -515,6 +554,8 @@ class EventListener(threading.Thread):
             return event
         if event["kind"] in ("session_started", "session_ended"):
             self.flush_positions()
+        if event["kind"] == "session_started":
+            event["data"].update(server_conditions(self.settings.server_cfg))
         event["at"] = datetime.fromtimestamp(now, UTC).isoformat()
         self._store(event)
         if event["kind"] == "session_started":

@@ -915,6 +915,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/result/lines/{entry_id}/dnf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Put Line Dnf
+         * @description Mark one driver as DNF with one click. The result gets a new version.
+         */
+        post: operations["apps_results_api_put_line_dnf"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/rounds/{round_id}/result": {
         parameters: {
             query?: never;
@@ -3389,6 +3409,12 @@ export interface components {
             announced_conditions: {
                 [key: string]: unknown;
             };
+            server_conditions?: components["schemas"]["ServerConditionsOut"] | null;
+            /**
+             * Conditions Differ
+             * @default []
+             */
+            conditions_differ?: string[];
             /** Protest Window Minutes */
             protest_window_minutes: number;
             /** Restart Guidance */
@@ -3642,6 +3668,26 @@ export interface components {
             pole_bonus: number;
             /** Fastest Lap Bonus */
             fastest_lap_bonus: number;
+        };
+        /** ServerConditionsOut */
+        ServerConditionsOut: {
+            /** Session Type */
+            session_type: string;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /** Weather */
+            weather: string | null;
+            /** Air Temp C */
+            air_temp_c: number | null;
+            /** Track Temp C */
+            track_temp_c: number | null;
+            /** Time Of Day */
+            time_of_day: string | null;
+            /** Grip Pct */
+            grip_pct: number | null;
         };
         /**
          * Status
@@ -7925,6 +7971,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LineOut"][];
+                };
+            };
+        };
+    };
+    apps_results_api_put_line_dnf: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundDetail"];
                 };
             };
         };

@@ -46,6 +46,8 @@ Real Penalty already uses the UDP plugin connection. Content Manager can send th
 
 The collector records session starts and ends, connections, laps, and collisions. It accepts packets only from the same computer.
 
+At each session start, the collector also sends the weather and the temperatures of the server. To also send the time of day and the start grip, set `server_cfg` in `collector.ini` to the `server_cfg.ini` that the server uses. With Content Manager, it is in the cfg folder of the server preset. The collector only reads it.
+
 ### Car positions for the replay (optional)
 
 The replay needs car positions. The AC server sends them only to a plugin that asks for them.

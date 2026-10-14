@@ -239,3 +239,26 @@ def test_position_request_only_when_turned_on(tmp_path):
     on.sock = FakeSocket()
     assert on.handle(new_session(), "127.0.0.1")["kind"] == "session_started"
     assert on.sock.sent == [(struct.pack("<BH", 200, 200), ("127.0.0.1", 11000))]
+
+
+def test_new_session_carries_the_weather_and_the_temperatures():
+    event = pc.parse_packet(new_session(), {})
+    assert event["kind"] == "session_started"
+    assert (event["data"]["air_temp_c"], event["data"]["road_temp_c"]) == (20, 25)
+    assert event["data"]["weather"] == "3_clear"
+
+
+def test_sun_angle_becomes_the_time_of_day():
+    assert pc.time_of_day(0) == "13:00"
+    assert pc.time_of_day(-80) == "08:00"
+    assert pc.time_of_day(48) == "16:00"
+
+
+def test_session_start_reads_the_time_and_the_grip_of_the_server(tmp_path):
+    cfg = tmp_path / "server_cfg.ini"
+    cfg.write_text(
+        "[SERVER]\nNAME=x\nSUN_ANGLE=48\n\n[DYNAMIC_TRACK]\nSESSION_START=89\n", encoding="utf-8"
+    )
+    assert pc.server_conditions(cfg) == {"time_of_day": "16:00", "grip_pct": 89}
+    assert pc.server_conditions(tmp_path / "missing.ini") == {}
+    assert pc.server_conditions(None) == {}

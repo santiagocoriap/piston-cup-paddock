@@ -84,11 +84,7 @@ def auto_apply(result_import: ResultImport) -> None:
             apply(result_import, None, statuses={}, ignored=[])
             result_import.auto_status = ResultImport.AutoState.APPLIED
             result_import.auto_reasons = []
-            result_import.review_flags = [
-                {"entry_id": row.entry_id, "code": "fewer_laps"}
-                for row in view.drivers
-                if "fewer_laps" in row.warnings
-            ]
+            result_import.review_flags = _review_flags(result_import.round, view.drivers)
             result_import.save(update_fields=["auto_status", "auto_reasons", "review_flags"])
             record(
                 COLLECTOR,
@@ -107,6 +103,19 @@ def auto_apply(result_import: ResultImport) -> None:
         return
     if view.session_type == "race":
         auto_penalties(round_)
+
+
+def _review_flags(round_: Round, rows) -> list[dict]:
+    """A note for each driver with fewer laps than the winner: "disconnected" when the server
+    saw the driver leave before the end (a likely DNF), else "fewer_laps" (lapped or DNF)."""
+    from apps.collectors.disconnects import left_early
+
+    lapped = [row for row in rows if "fewer_laps" in row.warnings]
+    gone = left_early(round_, {row.guid for row in lapped})
+    return [
+        {"entry_id": row.entry_id, "code": "disconnected" if row.guid in gone else "fewer_laps"}
+        for row in lapped
+    ]
 
 
 def _race_end(result_import: ResultImport) -> datetime | None:

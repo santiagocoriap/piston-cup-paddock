@@ -839,7 +839,12 @@
       "unmatched_drivers": "Some drivers in the file have no entry.",
       "result_exists": "The round already has a result: an admin decides on a change."
     },
-    "checkDnf": "Check for a DNF: {{names}}."
+    "dnfNote": {
+      "disconnected": "{{name}} left the server before the end: likely a DNF.",
+      "fewer_laps": "{{name}} did fewer laps than the winner: check for a DNF."
+    },
+    "markDnf": "Mark DNF",
+    "dnfMarked": "Marked DNF"
   },
   "handicaps": {
     "title": "Ballast and restrictor",
@@ -1214,7 +1219,31 @@
     "notEntered": "You are not in this season.",
     "eventTime": "Event time: {{time}} ({{zone}})",
     "restartGuidance": "First-lap restarts",
-    "cutoff": "Cutoff"
+    "cutoff": "Cutoff",
+    "serverConditions": "On the server",
+    "serverFrom": "What the server used in the {{session}}, from the collector.",
+    "differ": "Not as announced: {{list}}.",
+    "differNames": {
+      "air_temp": "air temperature",
+      "track_temp": "track temperature",
+      "time_of_day": "time of day",
+      "grip": "grip"
+    },
+    "weathers": {
+      "clear": "Clear",
+      "mid_clear": "Mostly clear",
+      "light_clouds": "Some clouds",
+      "mid_clouds": "Cloudy",
+      "heavy_clouds": "Heavy clouds",
+      "light_fog": "Mist",
+      "heavy_fog": "Fog",
+      "broken_clouds": "Broken clouds",
+      "overcast": "Overcast",
+      "light_rain": "Light rain",
+      "rain": "Rain",
+      "heavy_rain": "Heavy rain",
+      "thunderstorm": "Thunderstorm"
+    }
   },
   "account": {
     "title": "My account",

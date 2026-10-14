@@ -182,3 +182,45 @@ def test_logs_before_the_result_wait_for_the_result(key, round_, entries):
 
     send(key, RACE, content=clean_race())
     assert Restart.objects.count() == len(race_logs()) - 1
+
+
+def collector_events(key, items):
+    batch = {"run_id": "night", "events": [{"seq": n, **item} for n, item in enumerate(items)]}
+    return Client().post(
+        "/api/collector/events",
+        batch,
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {key}",
+    )
+
+
+def at(hour, minute):
+    return datetime(2026, 10, 11, hour, minute, tzinfo=TZ).isoformat()
+
+
+def test_a_driver_who_left_the_server_gets_a_dnf_note(api, champ_admin, key, round_, entries):
+    gone, stayed = "76561190000000004", "76561190000000006"
+    race = {"type": 3, "track": "ks_highlands", "layout": "layout_long"}
+    collector_events(
+        key,
+        [
+            {"kind": "connected", "at": at(19, 20), "data": {"guid": gone, "car_model": "x"}},
+            {"kind": "connected", "at": at(19, 20), "data": {"guid": stayed, "car_model": "x"}},
+            {"kind": "session_started", "at": at(19, 27), "data": race},
+            {"kind": "disconnected", "at": at(19, 40), "data": {"guid": gone, "car_model": "x"}},
+            {"kind": "session_ended", "at": at(20, 7), "data": {}},
+        ],
+    )
+    send(key, RACE, content=clean_race())
+
+    flags = {f["entry_id"]: f["code"] for f in ResultImport.objects.get().review_flags}
+    assert flags[entries[gone].id] == "disconnected"
+    assert flags[entries[stayed].id] == "fewer_laps"
+
+    # One click: the admin marks the DNF. The result gets a new version with the reason.
+    response = api(champ_admin).post(f"/rounds/{round_.id}/result/lines/{entries[gone].id}/dnf")
+    assert response.status_code == 200
+    result = RaceResult.objects.get(round=round_)
+    line = result.current_version.lines.get(entry=entries[gone])
+    assert line.entered_status == "dnf"
+    assert result.versions.count() == 2

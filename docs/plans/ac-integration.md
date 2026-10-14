@@ -211,7 +211,17 @@ A lap that fails one rule goes nowhere. A lap from the optional practice app is 
 
 ## Phase 3: Read the conditions and the disconnects
 
+Status: done on October 14, 2026. The code is in `backend/apps/collectors/conditions.py` and `backend/apps/collectors/disconnects.py`.
+
 Estimate: 1 day.
+
+What changed from the first idea:
+
+- The weather, the air temperature, and the road temperature come in the UDP `NEW_SESSION` message. The collector does not need a file for them.
+- Only the time of day (from `SUN_ANGLE`) and the start grip (from `[DYNAMIC_TRACK] SESSION_START`) come from `server_cfg.ini`. The owner gives its path in `collector.ini` (`server_cfg`). Without it, the app gets the weather and the temperatures only.
+- The app reads the conditions on the fly from the collector events, as for the sessions of phase 2. No new table.
+- The round page warns when the air is more than 2 °C away, the track more than 3 °C, the time more than 30 minutes, or the grip more than 3 points.
+- "Marcar DNF" on the round page changes one line with one click. The result gets a new version with the reason.
 
 ### Conditions from the server
 

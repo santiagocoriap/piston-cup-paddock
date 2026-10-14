@@ -839,7 +839,12 @@
       "unmatched_drivers": "Hay pilotos del archivo sin inscripción.",
       "result_exists": "La fecha ya tiene resultado: un admin decide si lo cambia."
     },
-    "checkDnf": "Revisá si abandonaron: {{names}}."
+    "dnfNote": {
+      "disconnected": "{{name}} se desconectó antes del final: probable abandono.",
+      "fewer_laps": "{{name}} hizo menos vueltas que el ganador: revisá si abandonó."
+    },
+    "markDnf": "Marcar DNF",
+    "dnfMarked": "Marcado DNF"
   },
   "handicaps": {
     "title": "Lastre y restrictor",
@@ -1214,7 +1219,31 @@
     "notEntered": "No estás inscripto en esta temporada.",
     "eventTime": "Hora del evento: {{time}} ({{zone}})",
     "restartGuidance": "Reinicios en la primera vuelta",
-    "cutoff": "Límite"
+    "cutoff": "Límite",
+    "serverConditions": "En el servidor",
+    "serverFrom": "Lo que usó el servidor en la {{session}}, según el colector.",
+    "differ": "No coincide con lo anunciado: {{list}}.",
+    "differNames": {
+      "air_temp": "temperatura del aire",
+      "track_temp": "temperatura de pista",
+      "time_of_day": "hora",
+      "grip": "grip"
+    },
+    "weathers": {
+      "clear": "Despejado",
+      "mid_clear": "Casi despejado",
+      "light_clouds": "Algunas nubes",
+      "mid_clouds": "Nublado",
+      "heavy_clouds": "Muy nublado",
+      "light_fog": "Neblina",
+      "heavy_fog": "Niebla",
+      "broken_clouds": "Nubes sueltas",
+      "overcast": "Cubierto",
+      "light_rain": "Lluvia leve",
+      "rain": "Lluvia",
+      "heavy_rain": "Lluvia fuerte",
+      "thunderstorm": "Tormenta"
+    }
   },
   "account": {
     "title": "Mi cuenta",

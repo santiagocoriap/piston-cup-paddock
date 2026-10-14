@@ -2636,6 +2636,53 @@
         ]
       }
     },
+    "/api/rounds/{round_id}/result/lines/{entry_id}/dnf": {
+      "post": {
+        "operationId": "apps_results_api_put_line_dnf",
+        "summary": "Put Line Dnf",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "entry_id",
+            "schema": {
+              "title": "Entry Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "Mark one driver as DNF with one click. The result gets a new version.",
+        "tags": [
+          "results"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/rounds/{round_id}/result": {
       "put": {
         "operationId": "apps_results_api_put_result",
@@ -9746,6 +9793,24 @@
             "title": "Announced Conditions",
             "type": "object"
           },
+          "server_conditions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ServerConditionsOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conditions_differ": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Conditions Differ",
+            "type": "array"
+          },
           "protest_window_minutes": {
             "title": "Protest Window Minutes",
             "type": "integer"
@@ -10547,6 +10612,85 @@
           "fastest_lap_bonus"
         ],
         "title": "RulesOut",
+        "type": "object"
+      },
+      "ServerConditionsOut": {
+        "properties": {
+          "session_type": {
+            "title": "Session Type",
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "weather": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weather"
+          },
+          "air_temp_c": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Air Temp C"
+          },
+          "track_temp_c": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Temp C"
+          },
+          "time_of_day": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Of Day"
+          },
+          "grip_pct": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grip Pct"
+          }
+        },
+        "required": [
+          "session_type",
+          "started_at",
+          "weather",
+          "air_temp_c",
+          "track_temp_c",
+          "time_of_day",
+          "grip_pct"
+        ],
+        "title": "ServerConditionsOut",
         "type": "object"
       },
       "Status": {

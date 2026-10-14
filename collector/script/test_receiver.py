@@ -40,10 +40,17 @@ class Handler(BaseHTTPRequestHandler):
             data = json.loads(raw)
         except ValueError:
             data = {"not_json": raw[:200].decode("utf-8", "replace")}
-        record = {"at": datetime.now(UTC).isoformat(), "path": self.path, "bytes": length, "data": data}
+        record = {
+            "at": datetime.now(UTC).isoformat(),
+            "path": self.path,
+            "bytes": length,
+            "data": data,
+        }
         with LOG.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(record) + "\n")
-        summary = {k: v for k, v in data.items() if k != "samples"} if isinstance(data, dict) else data
+        summary = (
+            {k: v for k, v in data.items() if k != "samples"} if isinstance(data, dict) else data
+        )
         print(f"{datetime.now():%H:%M:%S} {self.path} {length} bytes {summary}")
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
