@@ -489,6 +489,147 @@
         ]
       }
     },
+    "/api/catalog/tracks/{track_id}": {
+      "patch": {
+        "operationId": "apps_catalog_api_edit_track",
+        "summary": "Edit Track",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "track_id",
+            "schema": {
+              "title": "Track Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackEditIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/layouts/{layout_id}": {
+      "patch": {
+        "operationId": "apps_catalog_api_edit_layout",
+        "summary": "Edit Layout",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layout_id",
+            "schema": {
+              "title": "Layout Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LayoutOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LayoutEditIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/cars/{car_id}": {
+      "patch": {
+        "operationId": "apps_catalog_api_edit_car",
+        "summary": "Edit Car",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "car_id",
+            "schema": {
+              "title": "Car Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CarEditIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/catalog/classes": {
       "get": {
         "operationId": "apps_catalog_api_list_classes",
@@ -716,6 +857,115 @@
             "SessionAuth": []
           }
         ]
+      },
+      "post": {
+        "operationId": "apps_catalog_api_upload_layout_image",
+        "summary": "Upload Layout Image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layout_id",
+            "schema": {
+              "title": "Layout Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "kind",
+            "schema": {
+              "title": "Kind",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LayoutOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "format": "binary",
+                    "title": "File",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "file"
+                ],
+                "title": "FileParams",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "apps_catalog_api_remove_layout_image",
+        "summary": "Remove Layout Image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layout_id",
+            "schema": {
+              "title": "Layout Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "kind",
+            "schema": {
+              "title": "Kind",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LayoutOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
       }
     },
     "/api/catalog/cars/{car_id}/images/{kind}": {
@@ -745,6 +995,115 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_catalog_api_upload_car_image",
+        "summary": "Upload Car Image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "car_id",
+            "schema": {
+              "title": "Car Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "kind",
+            "schema": {
+              "title": "Kind",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "format": "binary",
+                    "title": "File",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "file"
+                ],
+                "title": "FileParams",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "apps_catalog_api_remove_car_image",
+        "summary": "Remove Car Image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "car_id",
+            "schema": {
+              "title": "Car Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "kind",
+            "schema": {
+              "title": "Kind",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarOut"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -6645,6 +7004,81 @@
           "country": {
             "title": "Country",
             "type": "string"
+          },
+          "city": {
+            "title": "City",
+            "type": "string"
+          },
+          "width_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width M"
+          },
+          "direction": {
+            "title": "Direction",
+            "type": "string"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "author": {
+            "title": "Author",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
           }
         },
         "required": [
@@ -6657,7 +7091,18 @@
           "has_outline",
           "has_preview",
           "length_m",
-          "country"
+          "country",
+          "city",
+          "width_m",
+          "direction",
+          "latitude",
+          "longitude",
+          "year",
+          "author",
+          "version",
+          "url",
+          "description",
+          "tags"
         ],
         "title": "LayoutOut",
         "type": "object"
@@ -6676,6 +7121,10 @@
             "title": "Name",
             "type": "string"
           },
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
           "layouts": {
             "items": {
               "$ref": "#/components/schemas/LayoutOut"
@@ -6688,6 +7137,7 @@
           "id",
           "key",
           "name",
+          "country",
           "layouts"
         ],
         "title": "TrackOut",
@@ -6705,6 +7155,12 @@
             "maxLength": 200,
             "minLength": 1,
             "title": "Name",
+            "type": "string"
+          },
+          "country": {
+            "default": "",
+            "maxLength": 100,
+            "title": "Country",
             "type": "string"
           }
         },
@@ -6777,6 +7233,123 @@
           "author": {
             "title": "Author",
             "type": "string"
+          },
+          "game_class": {
+            "title": "Game Class",
+            "type": "string"
+          },
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "power_hp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Hp"
+          },
+          "torque_nm": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Torque Nm"
+          },
+          "weight_kg": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Kg"
+          },
+          "top_speed_kmh": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top Speed Kmh"
+          },
+          "acceleration": {
+            "title": "Acceleration",
+            "type": "string"
+          },
+          "power_to_weight": {
+            "title": "Power To Weight",
+            "type": "string"
+          },
+          "specs_text": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Specs Text",
+            "type": "object"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "power_curve": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Power Curve",
+            "type": "array"
+          },
+          "torque_curve": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Torque Curve",
+            "type": "array"
           }
         },
         "required": [
@@ -6786,7 +7359,23 @@
           "has_preview",
           "has_badge",
           "brand",
-          "author"
+          "author",
+          "game_class",
+          "country",
+          "year",
+          "power_hp",
+          "torque_nm",
+          "weight_kg",
+          "top_speed_kmh",
+          "acceleration",
+          "power_to_weight",
+          "specs_text",
+          "version",
+          "url",
+          "description",
+          "tags",
+          "power_curve",
+          "torque_curve"
         ],
         "title": "CarOut",
         "type": "object"
@@ -6842,6 +7431,444 @@
           }
         },
         "title": "GuidanceIn",
+        "type": "object"
+      },
+      "TrackEditIn": {
+        "properties": {
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "TrackEditIn",
+        "type": "object"
+      },
+      "LayoutEditIn": {
+        "description": "The fields to change. A field that the request leaves out keeps its value.",
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "length_m": {
+            "anyOf": [
+              {
+                "maximum": 100000,
+                "minimum": 100,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Length M"
+          },
+          "width_m": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width M"
+          },
+          "pit_boxes": {
+            "anyOf": [
+              {
+                "maximum": 200,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pit Boxes"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "direction": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                  "clockwise",
+                  "anticlockwise"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direction"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "maximum": 90,
+                "minimum": -90,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "maximum": 180,
+                "minimum": -180,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 2100,
+                "minimum": 1880,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "maxLength": 50,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "maxLength": 50,
+                  "type": "string"
+                },
+                "maxItems": 30,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "title": "LayoutEditIn",
+        "type": "object"
+      },
+      "CarEditIn": {
+        "description": "The fields to change. A field that the request leaves out keeps its value.",
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "brand": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand"
+          },
+          "game_class": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Game Class"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 2100,
+                "minimum": 1880,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "power_hp": {
+            "anyOf": [
+              {
+                "maximum": 5000,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Hp"
+          },
+          "torque_nm": {
+            "anyOf": [
+              {
+                "maximum": 10000,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Torque Nm"
+          },
+          "weight_kg": {
+            "anyOf": [
+              {
+                "maximum": 20000,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Kg"
+          },
+          "top_speed_kmh": {
+            "anyOf": [
+              {
+                "maximum": 1500,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top Speed Kmh"
+          },
+          "acceleration": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acceleration"
+          },
+          "power_to_weight": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power To Weight"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "maxLength": 50,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "maxLength": 50,
+                  "type": "string"
+                },
+                "maxItems": 30,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "title": "CarEditIn",
         "type": "object"
       },
       "CarClassOut": {
@@ -7353,6 +8380,13 @@
                 "type": "null"
               }
             ]
+          },
+          "progress": {
+            "items": {
+              "$ref": "#/components/schemas/LatestSeasonOut"
+            },
+            "title": "Progress",
+            "type": "array"
           }
         },
         "required": [
@@ -7363,7 +8397,8 @@
           "can_manage",
           "provisional_reports",
           "seasons",
-          "latest"
+          "latest",
+          "progress"
         ],
         "title": "ChampionshipDetail",
         "type": "object"
@@ -11007,6 +12042,13 @@
             },
             "title": "Laps",
             "type": "array"
+          },
+          "stints": {
+            "items": {
+              "$ref": "#/components/schemas/StintOut"
+            },
+            "title": "Stints",
+            "type": "array"
           }
         },
         "required": [
@@ -11019,7 +12061,8 @@
           "clean_average",
           "theoretical_ms",
           "best_sectors_ms",
-          "laps"
+          "laps",
+          "stints"
         ],
         "title": "DriverLapsOut",
         "type": "object"
@@ -11159,6 +12202,68 @@
           "drivers"
         ],
         "title": "RoundLapsOut",
+        "type": "object"
+      },
+      "StintOut": {
+        "properties": {
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "first_lap": {
+            "title": "First Lap",
+            "type": "integer"
+          },
+          "last_lap": {
+            "title": "Last Lap",
+            "type": "integer"
+          },
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          },
+          "tyre": {
+            "title": "Tyre",
+            "type": "string"
+          },
+          "best_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Ms"
+          },
+          "average_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Ms"
+          },
+          "ends_in_pit": {
+            "title": "Ends In Pit",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "number",
+          "first_lap",
+          "last_lap",
+          "laps",
+          "tyre",
+          "best_ms",
+          "average_ms",
+          "ends_in_pit"
+        ],
+        "title": "StintOut",
         "type": "object"
       },
       "CompareLapOut": {

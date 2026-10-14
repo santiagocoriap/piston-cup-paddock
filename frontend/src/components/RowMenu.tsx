@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { Icon } from './Icon'
 
 // An item runs onSelect, or it is a link to a file to download (href).
@@ -16,7 +16,9 @@ export function RowMenu({
   // Content for a labelled button. Without it, the button is the "more" icon.
   trigger?: ReactNode
 }) {
-  const [place, setPlace] = useState<{ top: number; right: number } | null>(null)
+  // "below" and "above" are the bottom and the top of the button when the menu opened.
+  const [place, setPlace] = useState<{ top: number; right: number; below: number; above: number } | null>(null)
+  const list = useRef<HTMLUListElement>(null)
   const ref = useRef<HTMLDivElement>(null)
   const button = useRef<HTMLButtonElement>(null)
   const open = place !== null
@@ -27,7 +29,7 @@ export function RowMenu({
     // Close the menu only when the button really moved.
     const moved = () => {
       const box = button.current?.getBoundingClientRect()
-      if (!box || box.bottom + 4 !== place.top) close()
+      if (!box || box.bottom !== place.below) close()
     }
     const outside = (event: MouseEvent) => {
       if (!ref.current?.contains(event.target as Node)) close()
@@ -44,6 +46,14 @@ export function RowMenu({
       window.removeEventListener('scroll', moved, true)
     }
   }, [place])
+  useLayoutEffect(() => {
+    const height = list.current?.offsetHeight ?? 0
+    if (!place || place.top !== place.below + 4) return
+    const fitsBelow = place.below + 4 + height <= window.innerHeight - 8
+    const fitsAbove = place.above - 4 - height >= 8
+    if (!fitsBelow && fitsAbove) setPlace({ ...place, top: place.above - 4 - height })
+  }, [place])
+
   return (
     <div className="row-menu" ref={ref}>
       <button
@@ -55,13 +65,13 @@ export function RowMenu({
         onClick={(event) => {
           if (open) return setPlace(null)
           const box = event.currentTarget.getBoundingClientRect()
-          setPlace({ top: box.bottom + 4, right: window.innerWidth - box.right })
+          setPlace({ top: box.bottom + 4, right: window.innerWidth - box.right, below: box.bottom, above: box.top })
         }}
       >
         {trigger ?? <Icon name="more" />}
       </button>
       {place && (
-        <ul className="row-menu-list" style={{ top: place.top, right: place.right }}>
+        <ul ref={list} className="row-menu-list" style={{ top: place.top, right: place.right }}>
           {items.map((item) => (
             <li key={item.label}>
               {item.href ? (

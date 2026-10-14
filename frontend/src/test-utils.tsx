@@ -3,11 +3,24 @@ import type { ReactElement } from 'react'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { vi } from 'vitest'
 import type { Me } from './api/client'
+import type { components } from './api/schema'
 import type { Mode } from './session'
 import { SessionProvider } from './SessionProvider'
 
 export const ADMIN: Me = { id: 1, username: 'santi', language: 'es', timezone: '', is_admin: true, can_admin: true, can_manage: true }
 export const DRIVER: Me = { id: 2, username: 'racer', language: 'es', timezone: '', is_admin: false, can_admin: false, can_manage: false }
+
+type Car = components['schemas']['CarOut']
+
+/** A catalog car with every field empty, plus the given fields. */
+export function carOf(fields: Partial<Car> & Pick<Car, 'id' | 'key' | 'name'>): Car {
+  return {
+    has_preview: false, has_badge: false, brand: '', author: '', game_class: '', country: '', year: null,
+    power_hp: null, torque_nm: null, weight_kg: null, top_speed_kmh: null, acceleration: '', power_to_weight: '',
+    specs_text: {}, version: '', url: '', description: '', tags: [], power_curve: [], torque_curve: [],
+    ...fields,
+  }
+}
 
 export function json(status: number, body?: unknown) {
   return new Response(body === undefined ? null : JSON.stringify(body), {

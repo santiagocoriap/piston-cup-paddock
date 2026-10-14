@@ -21,6 +21,7 @@ from .penalty_services import preview as penalty_preview
 from .penalty_services import upload_log
 from .real_penalty import PenaltyLogError
 from .services import apply, link_guid, preview, upload
+from .stints import split_stints
 
 router = Router(tags=["imports"])
 
@@ -282,6 +283,17 @@ class AverageOut(Schema):
     excluded: dict[str, int]
 
 
+class StintOut(Schema):
+    number: int
+    first_lap: int
+    last_lap: int
+    laps: int
+    tyre: str
+    best_ms: int | None
+    average_ms: int | None
+    ends_in_pit: bool
+
+
 class DriverLapsOut(Schema):
     entry_id: int
     driver_name: str
@@ -293,6 +305,8 @@ class DriverLapsOut(Schema):
     theoretical_ms: int | None
     best_sectors_ms: list[int | None]
     laps: list[MarkedLapOut]
+    # The race laps in stints. A session other than the race has no stints.
+    stints: list[StintOut]
 
 
 class RoundLapsOut(Schema):
@@ -336,6 +350,12 @@ def get_laps(request, round_id: int, session: Literal["race", "qualifying", "pra
                     )
                     for lap in laps.laps
                 ],
+                stints=[
+                    StintOut(**vars(stint))
+                    for stint in split_stints([lap.row for lap in laps.laps])
+                ]
+                if data.session == "race"
+                else [],
             )
             for info, laps in data.drivers
         ],

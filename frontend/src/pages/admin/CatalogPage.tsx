@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router'
 import { api } from '../../api/client'
@@ -13,6 +13,9 @@ import { errorMessage } from '../../lib/errors'
 import { panelId, tabId } from '../../lib/tabs'
 import { useLoad } from '../../lib/useLoad'
 import { CarClassesSection } from './CarClassesSection'
+import { CatalogEdit, MissingImage } from './CatalogEdit'
+import { CarSheet, CarStats, LayoutSheet, LayoutStats } from './CatalogFacts'
+import { carFields, layoutFields } from './catalogFields'
 import { GameImagesSection } from './GameImagesSection'
 import { Breadcrumbs } from '../../components/Breadcrumbs'
 
@@ -23,10 +26,43 @@ type Car = components['schemas']['CarOut']
 const TABS = ['tracks', 'cars', 'classes', 'images'] as const
 type Tab = (typeof TABS)[number]
 type Creating = 'track' | 'car' | 'class' | null
+type ImageFilter = '' | 'with' | 'without'
+
+const has = (text: string | null | undefined, needle: string) => (text ?? '').toLowerCase().includes(needle)
+
+/** A track matches by its name, a layout name, or a country. The image filter looks at the maps. */
+function trackMatches(track: Track, query: string, image: ImageFilter, country: string): boolean {
+  const needle = query.trim().toLowerCase()
+  const text =
+    !needle ||
+    has(track.name, needle) ||
+    has(track.country, needle) ||
+    track.layouts.some((layout) => has(layout.name, needle) || has(layout.country, needle))
+  const inCountry = country === '' || (country === 'none' ? !track.country : track.country === country)
+  const maps = track.layouts.map((layout) => layout.has_outline)
+  const picture =
+    image === '' || (image === 'with' ? maps.some(Boolean) : maps.length === 0 || maps.some((set) => !set))
+  return text && picture && inCountry
+}
+
+/** A car matches by its name or its brand, its class ("none" for no class), and its photo. */
+function carMatches(car: Car, classIds: number[], query: string, carClass: string, image: ImageFilter): boolean {
+  const needle = query.trim().toLowerCase()
+  const text = !needle || has(car.name, needle) || has(car.brand, needle)
+  const inClass = carClass === '' || (carClass === 'none' ? classIds.length === 0 : classIds.includes(Number(carClass)))
+  const picture = image === '' || (image === 'with') === car.has_preview
+  return text && inClass && picture
+}
 
 export function CatalogPage() {
   const { t } = useTranslation()
   const tracks = useLoad(() => api.GET('/api/catalog/tracks'), [])
+  const [trackQuery, setTrackQuery] = useState('')
+  const [trackImage, setTrackImage] = useState<ImageFilter>('')
+  const [trackCountry, setTrackCountry] = useState('')
+  const [carQuery, setCarQuery] = useState('')
+  const [carClass, setCarClass] = useState('')
+  const [carImage, setCarImage] = useState<ImageFilter>('')
   const cars = useLoad(() => api.GET('/api/catalog/cars'), [])
   const classes = useLoad(() => api.GET('/api/catalog/classes'), [])
   const [params, setParams] = useSearchParams()
@@ -35,6 +71,21 @@ export function CatalogPage() {
   const tab: Tab = TABS.includes(asked as Tab) ? (asked as Tab) : 'tracks'
 
   if (!tracks.data || !cars.data || !classes.data) return <Loading failed={tracks.failed || cars.failed || classes.failed} />
+  const classList = classes.data
+  const classesOf = (carId: number) => classList.filter((item) => item.car_ids.includes(carId))
+  const shownTracks = tracks.data.filter((track) => trackMatches(track, trackQuery, trackImage, trackCountry))
+  const countries = [...new Set(tracks.data.map((track) => track.country).filter(Boolean))].sort((a, b) =>
+    a.localeCompare(b),
+  )
+  const shownCars = cars.data.filter((car) =>
+    carMatches(
+      car,
+      classesOf(car.id).map((item) => item.id),
+      carQuery,
+      carClass,
+      carImage,
+    ),
+  )
 
   const layouts = tracks.data.flatMap((track) => track.layouts)
   const counts: Record<Tab, number> = {
@@ -97,11 +148,44 @@ export function CatalogPage() {
               {createButton('tracks')}
             </EmptyState>
           ) : (
-            <div className="track-list">
-              {tracks.data.map((track) => (
-                <TrackCard key={track.id} track={track} onChange={tracks.reload} />
-              ))}
-            </div>
+            <>
+              <FilterBar
+                query={trackQuery}
+                onQuery={setTrackQuery}
+                placeholder={t('catalogFilter.trackPlaceholder')}
+                image={trackImage}
+                onImage={setTrackImage}
+                count={t('catalogFilter.trackCount', { count: shownTracks.length })}
+              >
+                <label className="catalog-select-filter">
+                  <span className="sr-only">{t('catalogFilter.country')}</span>
+                  <select value={trackCountry} onChange={(e) => setTrackCountry(e.target.value)}>
+                    <option value="">{t('catalogFilter.allCountries')}</option>
+                    {countries.map((country) => (
+                      <option key={country} value={country}>
+                        {country}
+                      </option>
+                    ))}
+                    <option value="none">{t('catalogFilter.noCountry')}</option>
+                  </select>
+                </label>
+              </FilterBar>
+              {shownTracks.length === 0 ? (
+                <NoMatch
+                  onClear={() => {
+                    setTrackQuery('')
+                    setTrackImage('')
+                    setTrackCountry('')
+                  }}
+                />
+              ) : (
+                <div className="track-list">
+                  {shownTracks.map((track) => (
+                    <TrackCard key={track.id} track={track} onChange={tracks.reload} />
+                  ))}
+                </div>
+              )}
+            </>
           ))}
 
         {tab === 'cars' &&
@@ -110,11 +194,55 @@ export function CatalogPage() {
               {createButton('cars')}
             </EmptyState>
           ) : (
-            <ul className="catalog-grid">
-              {cars.data.map((car) => (
-                <CarCard key={car.id} car={car} />
-              ))}
-            </ul>
+            <>
+              <FilterBar
+                query={carQuery}
+                onQuery={setCarQuery}
+                placeholder={t('catalogFilter.carPlaceholder')}
+                image={carImage}
+                onImage={setCarImage}
+                count={t('catalogFilter.carCount', { count: shownCars.length })}
+              />
+              {classes.data.length > 0 && (
+                <div className="kind-chips" role="group" aria-label={t('catalogFilter.classLabel')}>
+                  {[
+                    { id: '', name: t('catalogFilter.allClasses') },
+                    ...classes.data.map((item) => ({ id: String(item.id), name: item.name })),
+                    { id: 'none', name: t('catalog.noClass') },
+                  ].map((option) => (
+                    <button
+                      key={option.id || 'all'}
+                      type="button"
+                      className="kind-chip"
+                      aria-pressed={carClass === option.id}
+                      onClick={() => setCarClass(option.id)}
+                    >
+                      {option.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {shownCars.length === 0 ? (
+                <NoMatch
+                  onClear={() => {
+                    setCarQuery('')
+                    setCarClass('')
+                    setCarImage('')
+                  }}
+                />
+              ) : (
+                <ul className="catalog-grid">
+                  {shownCars.map((car) => (
+                    <CarCard
+                      key={car.id}
+                      car={car}
+                      classes={classesOf(car.id).map((item) => item.name)}
+                      onChange={cars.reload}
+                    />
+                  ))}
+                </ul>
+              )}
+            </>
           ))}
 
         {tab === 'classes' &&
@@ -144,7 +272,11 @@ export function CatalogPage() {
           submitLabel={t('common.create')}
           onSubmit={async (form) => {
             const { error } = await api.POST('/api/catalog/tracks', {
-              body: { key: String(form.get('key')), name: String(form.get('name')) },
+              body: {
+                key: String(form.get('key')),
+                name: String(form.get('name')),
+                country: String(form.get('country') ?? '').trim(),
+              },
             })
             if (!error) {
               setCreating(null)
@@ -154,6 +286,10 @@ export function CatalogPage() {
           }}
         >
           <KeyAndName />
+          <label>
+            {t('catalogEdit.country')}
+            <input name="country" maxLength={100} />
+          </label>
         </ActionForm>
       </Dialog>
 
@@ -225,17 +361,25 @@ function TrackCard({ track, onChange }: { track: Track; onChange: () => void }) 
           <Icon name="map" />
         </span>
         <div>
-          <h2 className="track-name">{track.name}</h2>
-          <p className="mono muted">{track.key}</p>
+          <h2 className="track-name" title={track.name}>
+            {track.name}
+          </h2>
+          {track.country && <p className="muted">{track.country}</p>}
         </div>
         <span className="muted track-count">{t('catalog.layoutCount', { count: track.layouts.length })}</span>
+        <CatalogEdit
+          name={track.name}
+          country={track.country}
+          base={`/api/catalog/tracks/${track.id}`}
+          onChange={onChange}
+        />
       </header>
       {track.layouts.length === 0 ? (
         <p className="muted">{t('catalog.noLayouts')}</p>
       ) : (
         <ul className="catalog-grid layout-grid">
           {track.layouts.map((layout) => (
-            <LayoutCard key={layout.id} track={track} layout={layout} onSaved={onChange} />
+            <LayoutCard key={layout.id} layout={layout} onSaved={onChange} />
           ))}
         </ul>
       )}
@@ -244,55 +388,98 @@ function TrackCard({ track, onChange }: { track: Track; onChange: () => void }) 
   )
 }
 
-function LayoutCard({ track, layout, onSaved }: { track: Track; layout: Layout; onSaved: () => void }) {
+function LayoutCard({ layout, onSaved }: { layout: Layout; onSaved: () => void }) {
   const { t } = useTranslation()
-  const facts = [
-    layout.length_m ? `${(layout.length_m / 1000).toFixed(3)} km` : null,
-    layout.country || null,
-    layout.pit_boxes ? t('catalog.pitBoxes', { count: layout.pit_boxes }) : null,
-  ].filter(Boolean)
+  const base = `/api/catalog/layouts/${layout.id}`
+  // A new picture keeps its address, so the version makes the browser load it again.
+  const [version, setVersion] = useState(0)
+  const changed = () => {
+    setVersion((v) => v + 1)
+    onSaved()
+  }
   return (
     <li className="catalog-card">
       <div className="catalog-media track">
         {layout.has_outline ? (
-          <img src={`/api/catalog/layouts/${layout.id}/images/outline`} alt="" />
+          <img src={`${base}/images/outline?v=${version}`} alt="" />
         ) : (
-          <span className="catalog-missing">{t('catalog.noImage')}</span>
+          <MissingImage base={base} kind="outline" onChange={changed} />
         )}
       </div>
       <div className="catalog-body">
-        <h3>{layout.name}</h3>
-        <p className="mono muted">
-          {track.key}
-          {layout.key && `/${layout.key}`}
-        </p>
-        {facts.length > 0 && <p className="muted">{facts.join(' · ')}</p>}
+        <div className="catalog-title">
+          <h3 title={layout.name}>{layout.name}</h3>
+          <CatalogEdit
+            name={layout.name}
+            fields={layoutFields(layout, t)}
+            base={base}
+            images={[
+              { kind: 'outline', set: layout.has_outline },
+              { kind: 'preview', set: layout.has_preview },
+            ]}
+            onChange={changed}
+          />
+        </div>
+        {(layout.city || layout.country) && (
+          <p className="muted">{[layout.city, layout.country].filter(Boolean).join(', ')}</p>
+        )}
+        <LayoutStats layout={layout} />
+        <LayoutSheet layout={layout} />
         <GuidanceForm layout={layout} onSaved={onSaved} />
       </div>
     </li>
   )
 }
 
-function CarCard({ car }: { car: Car }) {
+function CarCard({ car, classes, onChange }: { car: Car; classes: string[]; onChange: () => void }) {
   const { t } = useTranslation()
+  const base = `/api/catalog/cars/${car.id}`
+  // A new picture keeps its address, so the version makes the browser load it again.
+  const [version, setVersion] = useState(0)
+  const changed = () => {
+    setVersion((v) => v + 1)
+    onChange()
+  }
   return (
     <li className="catalog-card">
       <div className="catalog-media car">
         {car.has_preview ? (
-          <img src={`/api/catalog/cars/${car.id}/images/preview`} alt="" />
+          <img src={`${base}/images/preview?v=${version}`} alt="" />
         ) : (
-          <span className="catalog-missing">{t('catalog.noImage')}</span>
+          <MissingImage base={base} kind="preview" onChange={changed} />
         )}
-        {car.has_badge && <img className="catalog-badge" src={`/api/catalog/cars/${car.id}/images/badge`} alt="" />}
+        {car.has_badge && <img className="catalog-badge" src={`${base}/images/badge?v=${version}`} alt="" />}
       </div>
       <div className="catalog-body">
-        <h3>{car.name}</h3>
-        <p className="mono muted">{car.key}</p>
-        {(car.brand || car.author) && (
-          <p className="muted">
-            {[car.brand, car.author ? t('catalog.images.author', { author: car.author }) : null].filter(Boolean).join(' · ')}
-          </p>
+        <div className="catalog-title">
+          <h3 title={car.name}>{car.name}</h3>
+          <CatalogEdit
+            name={car.name}
+            fields={carFields(car, t)}
+            base={base}
+            images={[
+              { kind: 'preview', set: car.has_preview },
+              { kind: 'badge', set: car.has_badge },
+            ]}
+            onChange={changed}
+          />
+        </div>
+        <p className="car-classes">
+          {classes.length > 0 ? (
+            classes.map((name) => (
+              <span key={name} className="badge">
+                {name}
+              </span>
+            ))
+          ) : (
+            <span className="muted">{t('catalog.noClass')}</span>
+          )}
+        </p>
+        {(car.brand || car.country || car.year) && (
+          <p className="muted">{[car.brand, car.country, car.year].filter(Boolean).join(' · ')}</p>
         )}
+        <CarStats car={car} />
+        <CarSheet car={car} />
       </div>
     </li>
   )
@@ -415,5 +602,57 @@ function GuidanceForm({ layout, onSaved }: { layout: Layout; onSaved: () => void
         </label>
       </ActionForm>
     </details>
+  )
+}
+
+/** The search box, the image filter, and the count of a catalog list. */
+function FilterBar({
+  query,
+  onQuery,
+  placeholder,
+  image,
+  onImage,
+  count,
+  children,
+}: {
+  children?: ReactNode
+  query: string
+  onQuery: (value: string) => void
+  placeholder: string
+  image: ImageFilter
+  onImage: (value: ImageFilter) => void
+  count: string
+}) {
+  const { t } = useTranslation()
+  return (
+    <div className="table-tools catalog-filters">
+      <label className="search-field">
+        <span className="sr-only">{t('catalogFilter.search')}</span>
+        <Icon name="search" small />
+        <input type="search" value={query} placeholder={placeholder} onChange={(e) => onQuery(e.target.value)} />
+      </label>
+      {children}
+      <label className="catalog-select-filter">
+        <span className="sr-only">{t('catalogFilter.image')}</span>
+        <select value={image} onChange={(e) => onImage(e.target.value as ImageFilter)}>
+          <option value="">{t('catalogFilter.images.all')}</option>
+          <option value="with">{t('catalogFilter.images.with')}</option>
+          <option value="without">{t('catalogFilter.images.without')}</option>
+        </select>
+      </label>
+      <span className="muted">{count}</span>
+    </div>
+  )
+}
+
+function NoMatch({ onClear }: { onClear: () => void }) {
+  const { t } = useTranslation()
+  return (
+    <p className="muted catalog-no-match">
+      {t('catalogFilter.noMatch')}{' '}
+      <button type="button" className="link" onClick={onClear}>
+        {t('catalogFilter.clear')}
+      </button>
+    </p>
   )
 }

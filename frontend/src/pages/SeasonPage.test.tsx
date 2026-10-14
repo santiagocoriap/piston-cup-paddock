@@ -110,6 +110,15 @@ describe('SeasonPage', () => {
     )
   })
 
+  it('highlights the clicked section, also the second one of a row', async () => {
+    mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
+    show(DRIVER)
+    const nav = await screen.findByRole('navigation', { name: 'Secciones de la temporada' })
+    await userEvent.click(within(nav).getByRole('link', { name: 'Seguridad' }))
+    expect(within(nav).getByRole('link', { name: 'Seguridad' })).toHaveAttribute('aria-current', 'location')
+    expect(within(nav).getByRole('link', { name: 'Pelea por el título' })).not.toHaveAttribute('aria-current')
+  })
+
   it('marks the next round with a status for screen readers', async () => {
     mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
     show(DRIVER)

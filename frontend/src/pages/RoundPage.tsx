@@ -21,6 +21,7 @@ import { ReplaySection } from './ReplaySection'
 import { ReportSection } from './ReportSection'
 import { Briefing } from './Briefing'
 import { RestartsSection } from './RestartsSection'
+import { StrategySection } from './StrategySection'
 import { AddPenaltyForm, ApproveButton, Penalties, Protests, ResultStatus, Versions } from './ResultReview'
 import { TelemetrySection } from './TelemetrySection'
 import { AttendanceCard } from './AttendanceCard'
@@ -242,6 +243,9 @@ export function RoundPage() {
           )}
           {hasResult && <Podium round={data} />}
           {hasResult ? <ResultTable round={data} /> : <p>{t('round.noResult')}</p>}
+          {hasResult && (
+            <StrategySection roundId={data.id} order={(data.result ?? []).map((line) => line.entry_id)} />
+          )}
           <p className="muted round-rules">
             {t('round.rules', { version: data.rules.version, points: data.rules.points_by_position.join('-') })}{' '}
             {(data.rules.pole_bonus > 0 || data.rules.fastest_lap_bonus > 0) &&

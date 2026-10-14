@@ -3008,7 +3008,7 @@ button.tab[aria-selected='true']::after {
 
 .track-head {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   gap: var(--space-3);
   align-items: center;
 }
@@ -3265,13 +3265,20 @@ label.dropzone:focus-within {
   cursor: pointer;
 }
 
+/* On a phone: the icon, the name, and the menu in one row. The count goes under the name. */
 @media (max-width: 700px) {
   .track-head {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr) auto;
   }
 
   .track-count {
+    grid-row: 2;
     grid-column: 2;
+  }
+
+  .track-head .catalog-edit {
+    grid-row: 1;
+    grid-column: 3;
   }
 }
 
@@ -5300,7 +5307,9 @@ textarea:focus-visible {
   text-align: right;
 }
 
-.standings td.points-col {
+/* The cell stays a table cell, so its row lines meet the other cells. The span inside lays out
+   the bar and the number. */
+.points-cell {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -5370,10 +5379,18 @@ textarea:focus-visible {
   background: var(--surface-1);
 }
 
+.entry-grid li > span {
+  min-width: 0;
+}
+
+/* A long name ends with "…". The full name shows on hover. */
 .entry-grid b,
 .entry-grid .muted,
 .entry-team {
   display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .entry-grid .muted,
@@ -6317,4 +6334,612 @@ td.pos.medal-3 {
   width: 18px;
   height: 18px;
   color: var(--medal);
+}
+
+/* ---------- Championship page ---------- */
+.champ-hero .eyebrow {
+  margin: 0 0 var(--space-1);
+}
+
+.season-progress {
+  display: grid;
+  width: 100%;
+  gap: 6px;
+  margin-top: var(--space-4);
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.season-progress-bar {
+  display: block;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.season-progress-bar span {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--brand);
+}
+
+.champ-facts {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: var(--space-4) 0 0;
+}
+
+.champ-facts dt {
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.champ-facts dd {
+  margin: 2px 0 0;
+  font-weight: 650;
+}
+
+.champ-facts dd small {
+  display: block;
+  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.champ-admin {
+  margin-top: var(--space-7);
+  padding: var(--space-5);
+  border-top: 4px solid var(--brand);
+  border-radius: var(--radius-md);
+  background: var(--admin-surface);
+}
+
+.champ-admin > h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 0;
+}
+
+/* The admin tabs: a column on the left, the panel on the right. */
+.champ-admin-layout {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.champ-admin-panel {
+  min-width: 0;
+}
+
+.champ-admin-panel > .card + .card {
+  margin-top: var(--space-5);
+}
+
+.champ-tab .section-head h3 {
+  margin: 0;
+}
+
+.tab-row.vertical {
+  flex-direction: column;
+  margin: 0;
+  overflow: visible;
+  box-shadow: inset 1px 0 0 var(--line);
+}
+
+.tab-row.vertical button.tab {
+  justify-content: flex-start;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.tab-row.vertical button.tab[aria-selected='true'] {
+  background: var(--surface-2);
+}
+
+.tab-row.vertical button.tab[aria-selected='true']::after {
+  top: var(--space-2);
+  right: auto;
+  bottom: var(--space-2);
+  left: 0;
+  width: 2px;
+  height: auto;
+}
+
+@media (max-width: 760px) {
+  .champ-admin-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tab-row.vertical {
+    flex-direction: row;
+    overflow-x: auto;
+    box-shadow: inset 0 -1px 0 var(--line);
+  }
+
+  .tab-row.vertical button.tab {
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  }
+
+  .tab-row.vertical button.tab[aria-selected='true']::after {
+    top: auto;
+    right: var(--space-3);
+    bottom: 0;
+    left: var(--space-3);
+    width: auto;
+    height: 2px;
+  }
+}
+
+.member-name {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+
+.member-name .avatar {
+  width: 28px;
+  height: 28px;
+  background: var(--surface-3);
+  color: var(--ink);
+  font-size: 11px;
+}
+
+.members-table select {
+  min-width: 180px;
+}
+
+.roles-table th.c,
+.roles-table td.c {
+  text-align: center;
+}
+
+.roles-table th.r,
+.roles-table td.r {
+  text-align: right;
+}
+
+/* A status list: a colored dot, the text, and an action on the right. */
+.status-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.status-list > li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: start;
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+}
+
+.status-main p {
+  margin: 2px 0 0;
+  font-size: 14px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--ink-3);
+}
+
+.status-dot.ok {
+  background: var(--success);
+}
+
+.status-dot.warn {
+  background: var(--warning);
+}
+
+.status-dot.error {
+  background: var(--danger);
+}
+
+.status-dot.off {
+  background: var(--line-strong);
+}
+
+.status-problems {
+  margin: 4px 0 0;
+  padding-left: var(--space-4);
+  color: var(--warning-ink);
+  font-size: 14px;
+}
+
+.status-detail {
+  margin-top: var(--space-1);
+  font-size: 13px;
+}
+
+.status-detail pre {
+  max-height: 160px;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2);
+  overflow: auto;
+  border-radius: var(--radius-xs);
+  background: var(--surface-2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Catalog edits: the name with its "⋯" menu, and the empty picture box with an upload button. */
+.catalog-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.catalog-title h3,
+.track-name {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.car-classes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+}
+
+.car-classes .badge {
+  margin-left: 0;
+}
+
+.catalog-edit {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+}
+
+.catalog-edit .error {
+  max-width: 220px;
+  font-size: 13px;
+  text-align: right;
+}
+
+.catalog-missing-box {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  text-align: center;
+}
+
+.catalog-missing-box button.small {
+  margin-left: 0;
+}
+
+.catalog-hint {
+  font-size: 12px;
+}
+
+/* ---------- Fold-out lists ---------- */
+/* Every fold-out has a chevron on the right that turns when it opens. */
+summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+summary::after {
+  display: inline-block;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-left: var(--space-3);
+  border-right: 2px solid var(--ink-2);
+  border-bottom: 2px solid var(--ink-2);
+  transform: translateY(-3px) rotate(45deg);
+  transition: transform var(--dur-base) ease-out;
+  content: '';
+}
+
+details[open] > summary::after {
+  transform: translateY(1px) rotate(-135deg);
+}
+
+/* A plain fold-out is a rounded box: the title row on top, the content below it. */
+details:not([class]) {
+  margin-top: var(--space-3);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+details:not([class]) + details:not([class]) {
+  margin-top: var(--space-2);
+}
+
+details:not([class])[open] {
+  padding-bottom: var(--space-3);
+}
+
+details:not([class]) > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--target-min);
+  margin: 0 calc(-1 * var(--space-4));
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+details:not([class]) > summary:hover {
+  background: var(--surface-2);
+}
+
+details:not([class])[open] > summary {
+  margin-bottom: var(--space-3);
+  border-bottom: 1px solid var(--line);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+/* Inside a table cell, the fold-out stays small: no box, the chevron after the text. */
+td details:not([class]) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+td details:not([class]) > summary {
+  justify-content: flex-start;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: inherit;
+}
+
+td details:not([class]) > summary:hover {
+  background: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  summary::after {
+    transition: none;
+  }
+}
+
+/* Catalog filters: the search box grows, the picture filter keeps its width. */
+.catalog-filters {
+  justify-content: flex-start;
+  margin-bottom: var(--space-4);
+}
+
+.catalog-filters > .muted {
+  margin-left: auto;
+}
+
+.catalog-select-filter select {
+  min-width: 190px;
+}
+
+.catalog-no-match {
+  margin: var(--space-5) 0;
+}
+
+/* Catalog facts: 4 main numbers in a 2 by 2 grid, and the data sheet in a fold-out. */
+.catalog-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: var(--space-3) 0 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--line);
+}
+
+.catalog-stats > div {
+  min-width: 0;
+  padding: var(--space-2);
+  background: var(--surface-1);
+}
+
+.catalog-stats dt {
+  overflow: hidden;
+  color: var(--ink-3);
+  font-size: 11px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.catalog-stats dd {
+  margin: 2px 0 0;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.catalog-description {
+  margin: 0 0 var(--space-3);
+  color: var(--ink-2);
+  font-size: 14px;
+  white-space: pre-line;
+}
+
+.catalog-sheet {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+}
+
+.catalog-sheet > div {
+  display: grid;
+  grid-template-columns: minmax(0, 120px) minmax(0, 1fr);
+  gap: var(--space-2);
+  font-size: 14px;
+}
+
+.catalog-sheet dt {
+  color: var(--ink-3);
+}
+
+.catalog-sheet dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+form.card > label.wide {
+  grid-column: 1 / -1;
+}
+
+/* ---------- Race strategy ---------- */
+/* The tyre colors: soft red, medium yellow, hard white, intermediate green, wet blue. */
+.tyre-soft {
+  --tyre: #e5484d;
+}
+
+.tyre-medium {
+  --tyre: #f5c542;
+}
+
+.tyre-hard {
+  --tyre: #e8e6e3;
+}
+
+.tyre-inter {
+  --tyre: #3fb27f;
+}
+
+.tyre-wet {
+  --tyre: #3b82f6;
+}
+
+.tyre-other {
+  --tyre: var(--ink-3);
+}
+
+.strategy {
+  margin-top: var(--space-6);
+}
+
+.strategy-rows {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.strategy-rows > li {
+  display: grid;
+  grid-template-columns: minmax(0, 180px) minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.strategy-name .car-number {
+  display: inline;
+  margin-right: 6px;
+}
+
+.strategy-name {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.strategy-bar {
+  position: relative;
+  display: block;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.stint {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 2px solid var(--surface-1);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--tyre) 22%, var(--surface-2));
+  box-shadow: inset 0 -3px 0 var(--tyre);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.strategy-stops {
+  min-width: 70px;
+  color: var(--ink-2);
+  font-size: 13px;
+  text-align: right;
+}
+
+.strategy-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  font-size: 13px;
+}
+
+.strategy-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tyre-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tyre);
+  vertical-align: middle;
+}
+
+.strategy-table td.r,
+.strategy-table th.r {
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .strategy-rows > li {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .strategy-bar {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
 }

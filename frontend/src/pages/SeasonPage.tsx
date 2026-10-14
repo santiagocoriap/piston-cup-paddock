@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router'
 import { api } from '../api/client'
@@ -35,7 +35,7 @@ export function SeasonPage() {
 
   const data = season.data
   const adminView = useAdminView(data?.can_manage ?? false)
-  const active = useActiveSection(SECTIONS, data !== undefined)
+  const [active, choose] = useActiveSection(SECTIONS, data !== undefined)
   if (!data) return <Loading failed={season.failed} />
   const now = Date.now()
   const upcoming = data.rounds.filter(
@@ -154,6 +154,10 @@ export function SeasonPage() {
               href={`#${id}`}
               className={active === id ? 'active' : undefined}
               aria-current={active === id ? 'location' : undefined}
+              onClick={(event) => {
+                event.preventDefault()
+                choose(id)
+              }}
             >
               {labels[id]}
             </a>
@@ -227,10 +231,12 @@ export function SeasonPage() {
                           ))}
                           <td className="r">{row.wins}</td>
                           <td className="points-col">
-                            <span className="points-bar" aria-hidden="true">
-                              <span style={{ width: `${(row.points / top) * 100}%` }} />
+                            <span className="points-cell">
+                              <span className="points-bar" aria-hidden="true">
+                                <span style={{ width: `${(row.points / top) * 100}%` }} />
+                              </span>
+                              <span className="points">{row.points}</span>
                             </span>
-                            <span className="points">{row.points}</span>
                           </td>
                         </tr>
                       )
@@ -409,8 +415,10 @@ export function SeasonPage() {
                   <li key={entry.id}>
                     <span className="entry-number">{entry.number}</span>
                     <span>
-                      <b>{entry.driver_name}</b>
-                      <span className="muted">{entry.car_name}</span>
+                      <b title={entry.driver_name}>{entry.driver_name}</b>
+                      <span className="muted" title={entry.car_name}>
+                        {entry.car_name}
+                      </span>
                       {entry.team && <span className="entry-team">{entry.team}</span>}
                     </span>
                   </li>
@@ -429,17 +437,30 @@ type FormProps = { seasonId: number; onChange: () => void; onDone: () => void }
 /** The sections of the page, in order. The side navigation links to them. */
 const SECTIONS = ['standings', 'title', 'safety', 'handicaps', 'calendar', 'ballots', 'rules', 'report', 'entries'] as const
 
-/** The section at the top of the screen, for the side navigation. */
-function useActiveSection(ids: readonly string[], ready: boolean): string {
+/** The section for the side navigation, and a function that scrolls to a section on a click.
+ *
+ * Two rules keep the highlight on the right link:
+ * - A click selects its link and scrolls to the section with a smooth movement. The selection
+ *   holds until the person scrolls again. Without this rule, a click on the second section of a
+ *   row ("Seguridad") highlights the first one, and a click on a short last section highlights
+ *   the section above it.
+ * - On a scroll, the current link stays while its section is still at the top of the screen.
+ *   The first section at the top gets the highlight only when the current one leaves. */
+function useActiveSection(ids: readonly string[], ready: boolean): [string, (id: string) => void] {
   const [active, setActive] = useState(ids[0])
+  // "free": the scroll decides. "moving": the smooth scroll of a click runs.
+  // "held": the click scroll ended, and the click choice holds until the next scroll.
+  const mode = useRef<'free' | 'moving' | 'held'>('free')
+  const timer = useRef(0)
   useEffect(() => {
     if (!ready || typeof IntersectionObserver === 'undefined') return
     const visible = new Map<string, boolean>()
+    const update = () =>
+      setActive((current) => (visible.get(current) ? current : (ids.find((id) => visible.get(id)) ?? current)))
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) visible.set(entry.target.id, entry.isIntersecting)
-        const first = ids.find((id) => visible.get(id))
-        if (first) setActive(first)
+        if (mode.current === 'free') update()
       },
       // A section counts when it crosses the top third of the screen.
       { rootMargin: '-80px 0px -66% 0px' },
@@ -448,9 +469,38 @@ function useActiveSection(ids: readonly string[], ready: boolean): string {
       const element = document.getElementById(id)
       if (element) observer.observe(element)
     }
-    return () => observer.disconnect()
+    const onScrollEnd = () => {
+      if (mode.current === 'moving') mode.current = 'held'
+    }
+    // A scroll after the click scroll (wheel, keys, scrollbar) ends the click choice.
+    const onScroll = () => {
+      if (mode.current !== 'held') return
+      mode.current = 'free'
+      update()
+    }
+    window.addEventListener('scrollend', onScrollEnd)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('scrollend', onScrollEnd)
+      window.removeEventListener('scroll', onScroll)
+      window.clearTimeout(timer.current)
+    }
   }, [ids, ready])
-  return active
+  const choose = (id: string) => {
+    mode.current = 'moving'
+    setActive(id)
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    document.getElementById(id)?.scrollIntoView?.({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+    window.history.replaceState(window.history.state, '', `#${id}`)
+    // Without a "scrollend" event (an old browser, or no scroll at all), the choice holds after 1 s.
+    window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(onTimeout, 1000)
+  }
+  const onTimeout = () => {
+    if (mode.current === 'moving') mode.current = 'held'
+  }
+  return [active, choose]
 }
 
 function SeasonSettingsForm({

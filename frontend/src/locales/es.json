@@ -113,7 +113,28 @@
     "latest": "Más reciente",
     "openSeason": "Abrir temporada",
     "protestWindow_one": "Protestas: {{count}} minuto después del resultado provisional",
-    "protestWindow_other": "Protestas: {{count}} minutos después del resultado provisional"
+    "protestWindow_other": "Protestas: {{count}} minutos después del resultado provisional",
+    "current": "Temporada actual",
+    "progress": "{{done}} de {{total}} fechas",
+    "adminTabs": {
+      "seasons": "Temporadas",
+      "members": "Miembros",
+      "roles": "Roles",
+      "health": "Salud",
+      "collectors": "Colectores"
+    },
+    "addMember": "Agregar miembro",
+    "roleOf": "Rol de {{name}}",
+    "capabilityShort": {
+      "results": "Resultados",
+      "penalties": "Sanciones",
+      "restarts": "Reinicios",
+      "reports": "Reportes",
+      "records": "Récords"
+    },
+    "roleCapability": "{{capability}} para {{role}}",
+    "roleMenu": "Acciones del rol {{name}}",
+    "rename": "Cambiar el nombre"
   },
   "season": {
     "plannedRounds": "{{count}} carreras previstas",
@@ -260,7 +281,8 @@
     "tracksEmptyText": "Agregá la primera pista. Después agregás sus trazados.",
     "carsEmptyText": "Agregá el primer auto con su carpeta en AC.",
     "newLayoutFor": "Nuevo trazado: {{name}}",
-    "layoutCreated": "Trazado «{{name}}» creado."
+    "layoutCreated": "Trazado «{{name}}» creado.",
+    "noClass": "Sin clase"
   },
   "errors": {
     "generic": "Algo salió mal. Intentá de nuevo.",
@@ -388,7 +410,9 @@
     "pool_empty": "El pool de condiciones de la temporada está vacío.",
     "backup_running": "Ya hay un backup en curso.",
     "bad_zip": "El archivo no es un ZIP válido.",
-    "too_many_files": "El ZIP tiene demasiados archivos. Usá la lista de la liga."
+    "too_many_files": "El ZIP tiene demasiados archivos. Usá la lista de la liga.",
+    "image_too_large": "La imagen pesa más de 5 MB.",
+    "image_not_supported": "La imagen tiene que ser PNG o JPEG."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -556,7 +580,18 @@
       "round.conditions_redrawn": "{{actor}} volvió a sortear las condiciones de la fecha {{number}} ({{track}}).",
       "season.conditions_pool": "{{actor}} cambió el pool de condiciones de {{season}}.",
       "backup.started": "{{actor}} empezó un backup.",
-      "catalog.game_images": "{{actor}} importó imágenes del juego: {{layouts}} trazados y {{cars}} autos."
+      "catalog.game_images": "{{actor}} importó imágenes del juego: {{layouts}} trazados y {{cars}} autos.",
+      "track.renamed": "{{actor}} editó la pista {{name}}.",
+      "layout.renamed": "{{actor}} cambió el nombre del trazado a {{name}}.",
+      "car.renamed": "{{actor}} cambió el nombre del auto a {{name}}.",
+      "layout.outline_set": "{{actor}} subió el mapa de {{name}}.",
+      "layout.preview_set": "{{actor}} subió la foto de {{name}}.",
+      "layout.outline_removed": "{{actor}} quitó el mapa de {{name}}.",
+      "layout.preview_removed": "{{actor}} quitó la foto de {{name}}.",
+      "car.preview_set": "{{actor}} subió la foto del auto {{name}}.",
+      "car.badge_set": "{{actor}} subió el logo del auto {{name}}.",
+      "car.preview_removed": "{{actor}} quitó la foto del auto {{name}}.",
+      "car.badge_removed": "{{actor}} quitó el logo del auto {{name}}."
     },
     "fields": {
       "role": "Rol",
@@ -1503,7 +1538,8 @@
       "report": "Reporte",
       "job": "Tarea del worker"
     },
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "detail": "Ver detalle"
   },
   "incidents": {
     "title": "Incidentes",
@@ -1839,5 +1875,104 @@
   "fileDrop": {
     "choose": "Elegí un archivo",
     "orDrop": "o arrastralo acá"
+  },
+  "catalogEdit": {
+    "menu": "Acciones de {{name}}",
+    "rename": "Cambiar el nombre",
+    "name": "Nombre",
+    "file": "Imagen para {{name}}",
+    "upload": {
+      "outline": "Subir el mapa",
+      "preview": "Subir la foto",
+      "badge": "Subir el logo"
+    },
+    "remove": {
+      "outline": "Quitar el mapa",
+      "preview": "Quitar la foto",
+      "badge": "Quitar el logo"
+    },
+    "confirmRemove": "¿Quitar esta imagen?",
+    "help": "PNG o JPEG, hasta 5 MB.",
+    "editTrack": "Editar el nombre y el país",
+    "country": "País",
+    "editFacts": "Editar los datos"
+  },
+  "catalogFilter": {
+    "search": "Buscar",
+    "trackPlaceholder": "Buscar pista, trazado o país",
+    "carPlaceholder": "Buscar auto o marca",
+    "image": "Imagen",
+    "images": {
+      "all": "Todas las imágenes",
+      "with": "Con imagen",
+      "without": "Sin imagen"
+    },
+    "classLabel": "Clase",
+    "allClasses": "Todas las clases",
+    "trackCount_one": "{{count}} pista",
+    "trackCount_other": "{{count}} pistas",
+    "carCount_one": "{{count}} auto",
+    "carCount_other": "{{count}} autos",
+    "noMatch": "Ningún resultado con estos filtros.",
+    "clear": "Quitar los filtros",
+    "country": "País",
+    "allCountries": "Todos los países",
+    "noCountry": "Sin país"
+  },
+  "facts": {
+    "length": "Largo",
+    "width": "Ancho",
+    "pitBoxes": "Boxes",
+    "direction": "Sentido",
+    "directions": {
+      "clockwise": "Horario",
+      "anticlockwise": "Antihorario"
+    },
+    "power": "Potencia",
+    "torque": "Torque",
+    "weight": "Peso",
+    "topSpeed": "Velocidad máxima",
+    "sheet": "Ficha técnica",
+    "place": "Lugar",
+    "position": "Coordenadas",
+    "year": "Año",
+    "author": "Autor del mod",
+    "version": "Versión",
+    "url": "Sitio web",
+    "brand": "Marca",
+    "country": "País",
+    "city": "Ciudad",
+    "gameClass": "Clase del mod",
+    "acceleration": "Aceleración",
+    "powerToWeight": "Peso por potencia",
+    "tags": "Etiquetas (separadas por coma)",
+    "description": "Descripción",
+    "lengthM": "Largo (m)",
+    "widthM": "Ancho (m)",
+    "latitude": "Latitud",
+    "longitude": "Longitud",
+    "powerHp": "Potencia (hp)",
+    "torqueNm": "Torque (Nm)",
+    "weightKg": "Peso (kg)",
+    "topSpeedKmh": "Velocidad máxima (km/h)"
+  },
+  "strategy": {
+    "title": "Estrategia y neumáticos",
+    "noPitData": "Sin logs de Real Penalty, solo un cambio de neumático marca una parada.",
+    "driver": "Stints de {{name}}",
+    "stops_one": "{{count}} parada",
+    "stops_other": "{{count}} paradas",
+    "stint_one": "Stint {{number}}: {{tyre}}, vuelta {{first}} ({{count}} vuelta)",
+    "stint_other": "Stint {{number}}: {{tyre}}, vueltas {{first}} a {{last}} ({{count}} vueltas)",
+    "best": "mejor {{time}}",
+    "average": "promedio {{time}}",
+    "laps_one": "{{count}} vuelta",
+    "laps_other": "{{count}} vueltas",
+    "table": "Detalle de los stints",
+    "stintColumn": "Stint",
+    "tyre": "Neumático",
+    "lapsColumn": "Vueltas",
+    "bestColumn": "Mejor vuelta",
+    "averageColumn": "Promedio"
   }
 }

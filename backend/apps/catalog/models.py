@@ -16,6 +16,8 @@ class Track(models.Model):
 
     key = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=200)
+    # The country of the track. The game files give it for each layout. An admin can change it.
+    country = models.CharField(max_length=100, blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -40,6 +42,18 @@ class TrackLayout(models.Model):
     preview = models.FileField(upload_to=layout_image_path, blank=True)
     length_m = models.PositiveIntegerField(null=True, blank=True)
     country = models.CharField(max_length=100, blank=True)
+    # More facts from ui_track.json. An admin can change each one.
+    city = models.CharField(max_length=100, blank=True)
+    width_m = models.PositiveSmallIntegerField(null=True, blank=True)
+    direction = models.CharField(max_length=40, blank=True)  # "clockwise" or "anticlockwise".
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    year = models.PositiveSmallIntegerField(null=True, blank=True)
+    author = models.CharField(max_length=200, blank=True)
+    version = models.CharField(max_length=50, blank=True)
+    url = models.CharField(max_length=300, blank=True)
+    description = models.TextField(blank=True)
+    tags = models.JSONField(default=list, blank=True)
 
     class Meta:
         ordering = ["track__name", "name"]
@@ -65,6 +79,25 @@ class Car(models.Model):
     badge = models.FileField(upload_to=car_image_path, blank=True)
     brand = models.CharField(max_length=100, blank=True)
     author = models.CharField(max_length=200, blank=True)
+    # More facts from ui_car.json. The numbers come from the "specs" texts, for example
+    # "584 whp" gives 584. The texts stay in specs_text, because the formats differ a lot.
+    game_class = models.CharField(max_length=60, blank=True)  # The "class" of the mod.
+    country = models.CharField(max_length=100, blank=True)
+    year = models.PositiveSmallIntegerField(null=True, blank=True)
+    power_hp = models.PositiveIntegerField(null=True, blank=True)
+    torque_nm = models.PositiveIntegerField(null=True, blank=True)
+    weight_kg = models.PositiveIntegerField(null=True, blank=True)
+    top_speed_kmh = models.PositiveIntegerField(null=True, blank=True)
+    acceleration = models.CharField(max_length=60, blank=True)  # For example "3.2s 0-100".
+    power_to_weight = models.CharField(max_length=60, blank=True)  # For example "2.04 kg/hp".
+    specs_text = models.JSONField(default=dict, blank=True)
+    version = models.CharField(max_length=50, blank=True)
+    url = models.CharField(max_length=300, blank=True)
+    description = models.TextField(blank=True)
+    tags = models.JSONField(default=list, blank=True)
+    # [rpm, value] pairs from the game, for a power and a torque chart.
+    power_curve = models.JSONField(default=list, blank=True)
+    torque_curve = models.JSONField(default=list, blank=True)
 
     class Meta:
         ordering = ["name"]

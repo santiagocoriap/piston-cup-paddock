@@ -113,7 +113,28 @@
     "latest": "Latest",
     "openSeason": "Open season",
     "protestWindow_one": "Protests: {{count}} minute after the provisional result",
-    "protestWindow_other": "Protests: {{count}} minutes after the provisional result"
+    "protestWindow_other": "Protests: {{count}} minutes after the provisional result",
+    "current": "Current season",
+    "progress": "{{done}} of {{total}} rounds",
+    "adminTabs": {
+      "seasons": "Seasons",
+      "members": "Members",
+      "roles": "Roles",
+      "health": "Health",
+      "collectors": "Collectors"
+    },
+    "addMember": "Add a member",
+    "roleOf": "Role of {{name}}",
+    "capabilityShort": {
+      "results": "Results",
+      "penalties": "Penalties",
+      "restarts": "Restarts",
+      "reports": "Reports",
+      "records": "Records"
+    },
+    "roleCapability": "{{capability}} for {{role}}",
+    "roleMenu": "Actions for the role {{name}}",
+    "rename": "Change the name"
   },
   "season": {
     "plannedRounds": "{{count}} planned rounds",
@@ -260,7 +281,8 @@
     "tracksEmptyText": "Add the first track. Then add its layouts.",
     "carsEmptyText": "Add the first car with its AC folder.",
     "newLayoutFor": "New layout: {{name}}",
-    "layoutCreated": "Layout “{{name}}” created."
+    "layoutCreated": "Layout “{{name}}” created.",
+    "noClass": "No class"
   },
   "errors": {
     "generic": "Something went wrong. Try again.",
@@ -388,7 +410,9 @@
     "pool_empty": "The conditions pool of the season is empty.",
     "backup_running": "A backup is already running.",
     "bad_zip": "The file is not a valid ZIP.",
-    "too_many_files": "The ZIP has too many files. Use the league list."
+    "too_many_files": "The ZIP has too many files. Use the league list.",
+    "image_too_large": "The picture is bigger than 5 MB.",
+    "image_not_supported": "The picture must be a PNG or a JPEG."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -556,7 +580,18 @@
       "round.conditions_redrawn": "{{actor}} drew the conditions of round {{number}} ({{track}}) again.",
       "season.conditions_pool": "{{actor}} changed the conditions pool of {{season}}.",
       "backup.started": "{{actor}} started a backup.",
-      "catalog.game_images": "{{actor}} imported game images: {{layouts}} layouts and {{cars}} cars."
+      "catalog.game_images": "{{actor}} imported game images: {{layouts}} layouts and {{cars}} cars.",
+      "track.renamed": "{{actor}} edited the track {{name}}.",
+      "layout.renamed": "{{actor}} renamed the layout to {{name}}.",
+      "car.renamed": "{{actor}} renamed the car to {{name}}.",
+      "layout.outline_set": "{{actor}} uploaded the map of {{name}}.",
+      "layout.preview_set": "{{actor}} uploaded the photo of {{name}}.",
+      "layout.outline_removed": "{{actor}} removed the map of {{name}}.",
+      "layout.preview_removed": "{{actor}} removed the photo of {{name}}.",
+      "car.preview_set": "{{actor}} uploaded the photo of the car {{name}}.",
+      "car.badge_set": "{{actor}} uploaded the logo of the car {{name}}.",
+      "car.preview_removed": "{{actor}} removed the photo of the car {{name}}.",
+      "car.badge_removed": "{{actor}} removed the logo of the car {{name}}."
     },
     "fields": {
       "role": "Role",
@@ -1503,7 +1538,8 @@
       "report": "Report",
       "job": "Worker task"
     },
-    "retry": "Retry"
+    "retry": "Retry",
+    "detail": "Show the details"
   },
   "incidents": {
     "title": "Incidents",
@@ -1839,5 +1875,104 @@
   "fileDrop": {
     "choose": "Choose a file",
     "orDrop": "or drop it here"
+  },
+  "catalogEdit": {
+    "menu": "Actions for {{name}}",
+    "rename": "Change the name",
+    "name": "Name",
+    "file": "Picture for {{name}}",
+    "upload": {
+      "outline": "Upload the map",
+      "preview": "Upload the photo",
+      "badge": "Upload the logo"
+    },
+    "remove": {
+      "outline": "Remove the map",
+      "preview": "Remove the photo",
+      "badge": "Remove the logo"
+    },
+    "confirmRemove": "Remove this picture?",
+    "help": "PNG or JPEG, up to 5 MB.",
+    "editTrack": "Edit the name and the country",
+    "country": "Country",
+    "editFacts": "Edit the data"
+  },
+  "catalogFilter": {
+    "search": "Search",
+    "trackPlaceholder": "Search a track, a layout, or a country",
+    "carPlaceholder": "Search a car or a brand",
+    "image": "Picture",
+    "images": {
+      "all": "All pictures",
+      "with": "With a picture",
+      "without": "Without a picture"
+    },
+    "classLabel": "Class",
+    "allClasses": "All classes",
+    "trackCount_one": "{{count}} track",
+    "trackCount_other": "{{count}} tracks",
+    "carCount_one": "{{count}} car",
+    "carCount_other": "{{count}} cars",
+    "noMatch": "No result with these filters.",
+    "clear": "Clear the filters",
+    "country": "Country",
+    "allCountries": "All countries",
+    "noCountry": "No country"
+  },
+  "facts": {
+    "length": "Length",
+    "width": "Width",
+    "pitBoxes": "Pit boxes",
+    "direction": "Direction",
+    "directions": {
+      "clockwise": "Clockwise",
+      "anticlockwise": "Anticlockwise"
+    },
+    "power": "Power",
+    "torque": "Torque",
+    "weight": "Weight",
+    "topSpeed": "Top speed",
+    "sheet": "Data sheet",
+    "place": "Place",
+    "position": "Coordinates",
+    "year": "Year",
+    "author": "Mod author",
+    "version": "Version",
+    "url": "Website",
+    "brand": "Brand",
+    "country": "Country",
+    "city": "City",
+    "gameClass": "Mod class",
+    "acceleration": "Acceleration",
+    "powerToWeight": "Weight per power",
+    "tags": "Tags (with commas between them)",
+    "description": "Description",
+    "lengthM": "Length (m)",
+    "widthM": "Width (m)",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "powerHp": "Power (hp)",
+    "torqueNm": "Torque (Nm)",
+    "weightKg": "Weight (kg)",
+    "topSpeedKmh": "Top speed (km/h)"
+  },
+  "strategy": {
+    "title": "Strategy and tyres",
+    "noPitData": "Without Real Penalty logs, only a tyre change shows a stop.",
+    "driver": "Stints of {{name}}",
+    "stops_one": "{{count}} stop",
+    "stops_other": "{{count}} stops",
+    "stint_one": "Stint {{number}}: {{tyre}}, lap {{first}} ({{count}} lap)",
+    "stint_other": "Stint {{number}}: {{tyre}}, laps {{first}} to {{last}} ({{count}} laps)",
+    "best": "best {{time}}",
+    "average": "average {{time}}",
+    "laps_one": "{{count}} lap",
+    "laps_other": "{{count}} laps",
+    "table": "Stint details",
+    "stintColumn": "Stint",
+    "tyre": "Tyre",
+    "lapsColumn": "Laps",
+    "bestColumn": "Best lap",
+    "averageColumn": "Average"
   }
 }

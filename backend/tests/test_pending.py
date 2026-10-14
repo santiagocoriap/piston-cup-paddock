@@ -86,5 +86,21 @@ def test_championship_gives_the_latest_season_progress_and_next_round(
     assert latest["leader"] is None  # No result lines yet.
 
 
+def test_championship_gives_the_progress_of_each_season(api, champ_admin, championship, layout):
+    old = Season.objects.create(championship=championship, name="2025", planned_round_count=4)
+    new = Season.objects.create(championship=championship, name="2026", planned_round_count=8)
+    first = Round.objects.create(season=old, number=1, track_layout=layout)
+    Round.objects.create(season=old, number=2, track_layout=layout)
+    RaceResult.objects.create(round=first, status=RaceResult.State.OFFICIAL)
+
+    data = api(champ_admin).get(f"/championships/{championship.id}").json()
+
+    progress = {p["season_id"]: p for p in data["progress"]}
+    assert [p["season_id"] for p in data["progress"]] == [s["id"] for s in data["seasons"]]
+    assert (progress[old.id]["done"], progress[old.id]["total"]) == (1, 4)
+    assert progress[old.id]["next_round"]["number"] == 2
+    assert (progress[new.id]["done"], progress[new.id]["next_round"]) == (0, None)
+
+
 def test_championship_with_no_season_has_no_latest(api, champ_admin, championship):
     assert api(champ_admin).get(f"/championships/{championship.id}").json()["latest"] is None

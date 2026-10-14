@@ -22,6 +22,7 @@ from django.db import transaction
 
 from apps.audit.services import record
 
+from .game_facts import car_facts, fill_empty, layout_facts
 from .models import Car, TrackLayout
 
 MAX_IMAGE_BYTES = 5 * 1024 * 1024
@@ -160,14 +161,9 @@ def _ui_json(data: bytes | None) -> dict:
         return result
 
 
-def _length(value) -> int | None:
-    match = re.search(r"[\d.,]+", str(value or ""))
-    if not match:
-        return None
-    number = float(match.group(0).replace(",", "."))
-    # Some tracks give kilometres ("5.2 km"), most give metres ("12191").
-    metres = number * 1000 if "km" in str(value).lower() or number < 100 else number
-    return round(metres) if 100 <= metres <= 100_000 else None
+def save_image(field_file, kind: str, data: bytes) -> None:
+    """Store a PNG or a JPEG in a picture field. The file name gets the right extension."""
+    _put(field_file, f"{kind}.png" if data.startswith(PNG) else f"{kind}.jpg", data)
 
 
 def _put(field_file, name: str, data: bytes) -> None:
@@ -197,9 +193,13 @@ def import_game_images(source: _Source, user=None) -> Report:
             _put(layout.outline, "outline.png", outline)
         if preview:
             _put(layout.preview, "preview.png", preview)
-        layout.length_m = _length(info.get("length")) or layout.length_m
-        layout.country = str(info.get("country") or layout.country)[:100]
+        # The facts fill only empty fields, so an admin edit stays.
+        fill_empty(layout, layout_facts(info))
         layout.save()
+        # The track gets the country of the game files, unless an admin already set one.
+        if layout.country and not layout.track.country:
+            layout.track.country = layout.country
+            layout.track.save(update_fields=["country"])
         report.layouts.append(label)
 
     for car in Car.objects.order_by("key"):
@@ -218,8 +218,7 @@ def import_game_images(source: _Source, user=None) -> Report:
             _put(car.badge, "badge.png", badge)
         if preview:
             _put(car.preview, "preview.jpg", preview)
-        car.brand = str(info.get("brand") or car.brand)[:100]
-        car.author = str(info.get("author") or car.author)[:200]
+        fill_empty(car, car_facts(info))
         car.save()
         report.cars.append(car.key)
 

@@ -54,11 +54,14 @@ test('an admin sets up a season without voting and enters a result', async ({ pa
   // The championships are on Inicio.
   await navLink(page, 'Inicio').click()
   await page.getByRole('link', { name: names.championship }).click()
+  // The admin tools open on the "Temporadas" tab. The form opens in a dialog.
+  await page.getByRole('button', { name: 'Nueva temporada' }).click()
   await submitForm(page, 'Nueva temporada', {
     'Nombre de la temporada': '2026',
     'Carreras previstas': '8',
   })
-  await page.getByRole('link', { name: '2026' }).click()
+  // The header and the season card both link to the new season.
+  await page.getByRole('link', { name: '2026' }).first().click()
   // Wait for the season page, then check its planned rounds: 0 run of 8.
   await expect(page.getByRole('heading', { level: 1, name: '2026' })).toBeVisible()
   await expect(page.getByRole('definition').filter({ hasText: /0\/\s*8/ })).toBeVisible()

@@ -11,6 +11,9 @@ import { BackupStatus } from './BackupStatus'
 
 type Health = components['schemas']['HealthOut']
 
+/** The dot color of each collector status. */
+const COLLECTOR_TONE: Record<string, string> = { running: 'ok', stopped: 'error', never: 'warn', revoked: 'off' }
+
 /** Collector status, missing data of recent rounds, and failed tasks, in one card. */
 export function HealthSection({ championshipId }: { championshipId: number }) {
   const { t, i18n } = useTranslation()
@@ -46,14 +49,19 @@ export function HealthSection({ championshipId }: { championshipId: number }) {
       {data.collectors.length === 0 ? (
         <p className="muted">{t('health.noCollectors')}</p>
       ) : (
-        <ul className="list">
+        <ul className="status-list">
           {data.collectors.map((collector) => (
             <li key={collector.id}>
-              <strong>{collector.name}</strong>{' '}
-              <span className={`badge health-${collector.status}`}>{t(`health.status.${collector.status}`)}</span> ·{' '}
-              {t('health.lastSeen', { date: date(collector.last_seen_at) })} ·{' '}
-              {t('health.lastFile', { date: date(collector.last_file_at) })} ·{' '}
-              {t('health.lastEvent', { date: date(collector.last_event_at) })}
+              <span className={`status-dot ${COLLECTOR_TONE[collector.status] ?? 'warn'}`} aria-hidden="true" />
+              <div className="status-main">
+                <strong>{collector.name}</strong>{' '}
+                <span className={`badge health-${collector.status}`}>{t(`health.status.${collector.status}`)}</span>
+                <p className="muted">
+                  {t('health.lastSeen', { date: date(collector.last_seen_at) })} ·{' '}
+                  {t('health.lastFile', { date: date(collector.last_file_at) })} ·{' '}
+                  {t('health.lastEvent', { date: date(collector.last_event_at) })}
+                </p>
+              </div>
             </li>
           ))}
         </ul>
@@ -62,23 +70,24 @@ export function HealthSection({ championshipId }: { championshipId: number }) {
 
       <h4>{t('health.rounds')}</h4>
       {data.rounds.length === 0 && <p className="muted">{t('health.noRounds')}</p>}
-      <ul className="list">
+      <ul className="status-list">
         {data.rounds.map((round) => (
           <li key={round.id}>
-            <Link to={`/rounds/${round.id}`}>
-              {round.season_name} R{round.number} · {round.track_name}
-            </Link>{' '}
-            {round.problems.length === 0 ? (
-              <span className="success">✓ {t('health.complete')}</span>
-            ) : (
-              <ul>
-                {round.problems.map((problem) => (
-                  <li key={problem} className="warning">
-                    {t(`health.problems.${problem}`, round.counts)}
-                  </li>
-                ))}
-              </ul>
-            )}
+            <span className={`status-dot ${round.problems.length === 0 ? 'ok' : 'warn'}`} aria-hidden="true" />
+            <div className="status-main">
+              <Link to={`/rounds/${round.id}`}>
+                {round.season_name} · {t('season.roundLabel', { number: round.number })} · {round.track_name}
+              </Link>
+              {round.problems.length === 0 ? (
+                <p className="muted">{t('health.complete')}</p>
+              ) : (
+                <ul className="status-problems">
+                  {round.problems.map((problem) => (
+                    <li key={problem}>{t(`health.problems.${problem}`, round.counts)}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </li>
         ))}
       </ul>
@@ -87,11 +96,22 @@ export function HealthSection({ championshipId }: { championshipId: number }) {
       {data.failed.length === 0 ? (
         <p className="muted">{t('health.noFailed')}</p>
       ) : (
-        <ul className="list">
+        <ul className="status-list">
           {data.failed.map((task) => (
             <li key={`${task.kind}-${task.id}`}>
-              {t(`health.kind.${task.kind}`)} · {task.label} · {task.error} · {date(task.at)}{' '}
-              <button type="button" className="link-button" onClick={() => retry(task.kind, task.id)}>
+              <span className="status-dot error" aria-hidden="true" />
+              <div className="status-main">
+                <strong>
+                  {t(`health.kind.${task.kind}`)} · {task.label}
+                </strong>
+                <p className="muted">{date(task.at)}</p>
+                {/* The raw error is long. It stays folded until someone needs it. */}
+                <details className="status-detail">
+                  <summary>{t('health.detail')}</summary>
+                  <pre className="mono">{task.error}</pre>
+                </details>
+              </div>
+              <button type="button" className="secondary small" onClick={() => retry(task.kind, task.id)}>
                 {t('health.retry')}
               </button>
             </li>

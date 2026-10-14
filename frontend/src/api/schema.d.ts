@@ -201,6 +201,57 @@ export interface paths {
         patch: operations["apps_catalog_api_set_guidance"];
         trace?: never;
     };
+    "/api/catalog/tracks/{track_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Track */
+        patch: operations["apps_catalog_api_edit_track"];
+        trace?: never;
+    };
+    "/api/catalog/layouts/{layout_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Layout */
+        patch: operations["apps_catalog_api_edit_layout"];
+        trace?: never;
+    };
+    "/api/catalog/cars/{car_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Car */
+        patch: operations["apps_catalog_api_edit_car"];
+        trace?: never;
+    };
     "/api/catalog/classes": {
         parameters: {
             query?: never;
@@ -286,8 +337,10 @@ export interface paths {
         /** Layout Image */
         get: operations["apps_catalog_api_layout_image"];
         put?: never;
-        post?: never;
-        delete?: never;
+        /** Upload Layout Image */
+        post: operations["apps_catalog_api_upload_layout_image"];
+        /** Remove Layout Image */
+        delete: operations["apps_catalog_api_remove_layout_image"];
         options?: never;
         head?: never;
         patch?: never;
@@ -303,8 +356,10 @@ export interface paths {
         /** Car Image */
         get: operations["apps_catalog_api_car_image"];
         put?: never;
-        post?: never;
-        delete?: never;
+        /** Upload Car Image */
+        post: operations["apps_catalog_api_upload_car_image"];
+        /** Remove Car Image */
+        delete: operations["apps_catalog_api_remove_car_image"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2463,6 +2518,28 @@ export interface components {
             length_m: number | null;
             /** Country */
             country: string;
+            /** City */
+            city: string;
+            /** Width M */
+            width_m: number | null;
+            /** Direction */
+            direction: string;
+            /** Latitude */
+            latitude: number | null;
+            /** Longitude */
+            longitude: number | null;
+            /** Year */
+            year: number | null;
+            /** Author */
+            author: string;
+            /** Version */
+            version: string;
+            /** Url */
+            url: string;
+            /** Description */
+            description: string;
+            /** Tags */
+            tags: string[];
         };
         /** TrackOut */
         TrackOut: {
@@ -2472,6 +2549,8 @@ export interface components {
             key: string;
             /** Name */
             name: string;
+            /** Country */
+            country: string;
             /** Layouts */
             layouts: components["schemas"]["LayoutOut"][];
         };
@@ -2481,6 +2560,11 @@ export interface components {
             key: string;
             /** Name */
             name: string;
+            /**
+             * Country
+             * @default
+             */
+            country?: string;
         };
         /** LayoutIn */
         LayoutIn: {
@@ -2518,6 +2602,40 @@ export interface components {
             brand: string;
             /** Author */
             author: string;
+            /** Game Class */
+            game_class: string;
+            /** Country */
+            country: string;
+            /** Year */
+            year: number | null;
+            /** Power Hp */
+            power_hp: number | null;
+            /** Torque Nm */
+            torque_nm: number | null;
+            /** Weight Kg */
+            weight_kg: number | null;
+            /** Top Speed Kmh */
+            top_speed_kmh: number | null;
+            /** Acceleration */
+            acceleration: string;
+            /** Power To Weight */
+            power_to_weight: string;
+            /** Specs Text */
+            specs_text: {
+                [key: string]: string;
+            };
+            /** Version */
+            version: string;
+            /** Url */
+            url: string;
+            /** Description */
+            description: string;
+            /** Tags */
+            tags: string[];
+            /** Power Curve */
+            power_curve: number[][];
+            /** Torque Curve */
+            torque_curve: number[][];
         };
         /** CarIn */
         CarIn: {
@@ -2540,6 +2658,87 @@ export interface components {
             first_lap_cutoff?: string;
             /** Pit Boxes */
             pit_boxes?: number | null;
+        };
+        /** TrackEditIn */
+        TrackEditIn: {
+            /** Name */
+            name: string;
+            /** Country */
+            country?: string | null;
+        };
+        /**
+         * LayoutEditIn
+         * @description The fields to change. A field that the request leaves out keeps its value.
+         */
+        LayoutEditIn: {
+            /** Name */
+            name?: string | null;
+            /** Length M */
+            length_m?: number | null;
+            /** Width M */
+            width_m?: number | null;
+            /** Pit Boxes */
+            pit_boxes?: number | null;
+            /** Country */
+            country?: string | null;
+            /** City */
+            city?: string | null;
+            /** Direction */
+            direction?: ("" | "clockwise" | "anticlockwise") | null;
+            /** Latitude */
+            latitude?: number | null;
+            /** Longitude */
+            longitude?: number | null;
+            /** Year */
+            year?: number | null;
+            /** Author */
+            author?: string | null;
+            /** Version */
+            version?: string | null;
+            /** Url */
+            url?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Tags */
+            tags?: string[] | null;
+        };
+        /**
+         * CarEditIn
+         * @description The fields to change. A field that the request leaves out keeps its value.
+         */
+        CarEditIn: {
+            /** Name */
+            name?: string | null;
+            /** Brand */
+            brand?: string | null;
+            /** Game Class */
+            game_class?: string | null;
+            /** Country */
+            country?: string | null;
+            /** Year */
+            year?: number | null;
+            /** Power Hp */
+            power_hp?: number | null;
+            /** Torque Nm */
+            torque_nm?: number | null;
+            /** Weight Kg */
+            weight_kg?: number | null;
+            /** Top Speed Kmh */
+            top_speed_kmh?: number | null;
+            /** Acceleration */
+            acceleration?: string | null;
+            /** Power To Weight */
+            power_to_weight?: string | null;
+            /** Author */
+            author?: string | null;
+            /** Version */
+            version?: string | null;
+            /** Url */
+            url?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Tags */
+            tags?: string[] | null;
         };
         /** CarClassOut */
         CarClassOut: {
@@ -2719,6 +2918,8 @@ export interface components {
             /** Seasons */
             seasons: components["schemas"]["SeasonSummary"][];
             latest: components["schemas"]["LatestSeasonOut"] | null;
+            /** Progress */
+            progress: components["schemas"]["LatestSeasonOut"][];
         };
         /** LatestSeasonOut */
         LatestSeasonOut: {
@@ -3942,6 +4143,8 @@ export interface components {
             best_sectors_ms: (number | null)[];
             /** Laps */
             laps: components["schemas"]["MarkedLapOut"][];
+            /** Stints */
+            stints: components["schemas"]["StintOut"][];
         };
         /** MarkedLapOut */
         MarkedLapOut: {
@@ -3982,6 +4185,25 @@ export interface components {
             clean_rules: string[];
             /** Drivers */
             drivers: components["schemas"]["DriverLapsOut"][];
+        };
+        /** StintOut */
+        StintOut: {
+            /** Number */
+            number: number;
+            /** First Lap */
+            first_lap: number;
+            /** Last Lap */
+            last_lap: number;
+            /** Laps */
+            laps: number;
+            /** Tyre */
+            tyre: string;
+            /** Best Ms */
+            best_ms: number | null;
+            /** Average Ms */
+            average_ms: number | null;
+            /** Ends In Pit */
+            ends_in_pit: boolean;
         };
         /** CompareLapOut */
         CompareLapOut: {
@@ -6156,6 +6378,84 @@ export interface operations {
             };
         };
     };
+    apps_catalog_api_edit_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                track_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrackEditIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_edit_layout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                layout_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LayoutEditIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_edit_car: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                car_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CarEditIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarOut"];
+                };
+            };
+        };
+    };
     apps_catalog_api_list_classes: {
         parameters: {
             query?: never;
@@ -6297,6 +6597,62 @@ export interface operations {
             };
         };
     };
+    apps_catalog_api_upload_layout_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                layout_id: number;
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_remove_layout_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                layout_id: number;
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutOut"];
+                };
+            };
+        };
+    };
     apps_catalog_api_car_image: {
         parameters: {
             query?: never;
@@ -6315,6 +6671,62 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    apps_catalog_api_upload_car_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                car_id: number;
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_remove_car_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                car_id: number;
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarOut"];
+                };
             };
         };
     };

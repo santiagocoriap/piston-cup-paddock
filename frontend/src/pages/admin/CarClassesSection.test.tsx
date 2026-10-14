@@ -1,16 +1,12 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { json, mockApi, renderPage } from '../../test-utils'
+import { carOf, json, mockApi, renderPage } from '../../test-utils'
 import { CarClassesSection } from './CarClassesSection'
 
 afterEach(() => vi.restoreAllMocks())
 
-const noImages = { has_preview: false, has_badge: false, brand: '', author: '' }
-const cars = [
-  { id: 1, key: 'acura', name: 'Acura', ...noImages },
-  { id: 2, key: 'cadillac', name: 'Cadillac', ...noImages },
-]
+const cars = [carOf({ id: 1, key: 'acura', name: 'Acura' }), carOf({ id: 2, key: 'cadillac', name: 'Cadillac' })]
 
 describe('CarClassesSection', () => {
   it('shows the cars of a class and saves a change with a reason', async () => {

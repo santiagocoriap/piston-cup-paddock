@@ -142,6 +142,8 @@ class LatestSeasonOut(Schema):
 class ChampionshipDetail(ChampionshipOut):
     seasons: list[SeasonSummary]
     latest: LatestSeasonOut | None
+    # The progress of each season, in the order of "seasons", for the season cards.
+    progress: list[LatestSeasonOut]
 
 
 class MemberIn(Schema):
@@ -387,11 +389,14 @@ def list_championships(request):
 def get_championship(request, championship_id: int):
     championship = _visible_championship(request.user, championship_id)
     seasons = list(championship.seasons.all())
+    progress = {s.id: _latest(s) for s in seasons}
+    # The newest season. The list order can change, so the dates decide.
+    newest = max(seasons, key=lambda s: (s.created_at, s.id)) if seasons else None
     return {
         **_championship_out(request.user, championship),
         "seasons": [_season_summary(s) for s in seasons],
-        # The newest season. The list order can change, so the dates decide.
-        "latest": _latest(max(seasons, key=lambda s: (s.created_at, s.id))) if seasons else None,
+        "latest": progress[newest.id] if newest else None,
+        "progress": [progress[s.id] for s in seasons],
     }
 
 
