@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { navLink, signIn } from './helpers'
+import { navLink, openRoundAdmin, signIn } from './helpers'
 
 const LOG_FOLDER = fileURLToPath(
   new URL('../../samples/2026-10-11-ks-highlands/realpenalty/', import.meta.url),
@@ -65,6 +65,8 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
 
   await page.getByRole('button', { name: 'Modo admin' }).click()
   await page.goto(`/rounds/${round.id}`)
+  // Each admin tool of the race tab opens in a dialog.
+  await openRoundAdmin(page, 'Importar archivo de resultados')
   await page.getByLabel('Archivo de resultados', { exact: true }).setInputFiles(RACE_FILE)
   await page.getByRole('form', { name: 'Importar archivo de resultados' }).getByRole('button', { name: 'Subir y revisar' }).click()
 
@@ -74,6 +76,7 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
   await preview.getByLabel('Estado final Driver 04').selectOption('dnf')
   await preview.getByRole('button', { name: 'Aplicar el archivo' }).click()
   await expect(preview.getByText('Archivo aplicado.')).toBeVisible()
+  await page.keyboard.press('Escape')
 
   const result = page.getByRole('table').first()
   await expect(result.getByRole('row', { name: /Driver 01/ })).toContainText('25')
@@ -81,11 +84,13 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
 
   // The Real Penalty logs of the night add the 20 abandoned starts as restarts.
   const logFiles = readdirSync(LOG_FOLDER).filter((name) => name.endsWith('.log')).map((name) => join(LOG_FOLDER, name))
+  await openRoundAdmin(page, 'Importar logs de Real Penalty')
   await page.getByLabel('Logs de Real Penalty', { exact: true }).setInputFiles(logFiles)
   await page.getByRole('form', { name: 'Importar logs de Real Penalty' }).getByRole('button', { name: 'Subir y revisar' }).click()
   await expect(page.getByText('Se agregan 20 reinicios antes de la carrera que cuenta.')).toBeVisible()
   await page.getByRole('button', { name: 'Aplicar los logs' }).click()
   await expect(page.getByText('Logs aplicados.')).toBeVisible()
+  await page.keyboard.press('Escape')
   // The round page has a tab for each part.
   await page.getByRole('button', { name: 'Reinicios' }).click()
   await expect(page.getByText('20 reinicios antes de la largada aceptada')).toBeVisible()
@@ -109,9 +114,11 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
 
   // The same file again adds nothing.
   await page.getByRole('button', { name: 'Carrera' }).click()
+  await openRoundAdmin(page, 'Importar archivo de resultados')
   await page.getByLabel('Archivo de resultados', { exact: true }).setInputFiles(RACE_FILE)
   await page.getByRole('form', { name: 'Importar archivo de resultados' }).getByRole('button', { name: 'Subir y revisar' }).click()
   await expect(page.getByText('Este archivo ya estaba subido. No se agregó nada.')).toBeVisible()
+  await page.keyboard.press('Escape')
 
   // The winner carries the first win step into the next round.
   await page.goto(`/seasons/${season.id}`)
@@ -123,7 +130,7 @@ test('an admin imports a real AC result file and applies it', async ({ page }, t
   // An official result makes the race laps into track records.
   await page.goto(`/rounds/${round.id}`)
   await page.getByRole('button', { name: 'Aprobar como oficial' }).click()
-  await expect(page.getByText('Oficial', { exact: true })).toBeVisible()
+  await expect(page.getByText('Oficial', { exact: true }).first()).toBeVisible()
   await navLink(page, 'Récords').click()
   const raceBoard = page.getByRole('article', { name: /Récord de carrera: Highlands · Long · Acura/ })
   await expect(raceBoard).toContainText('3:09.296')

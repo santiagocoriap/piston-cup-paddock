@@ -33,13 +33,19 @@ describe('EngineerSection', () => {
     expect(screen.getByText(/Consejos de setup: apagados. Hacen falta datos de setup, combustible/)).toBeInTheDocument()
   })
 
-  it('stays hidden without own laps', async () => {
+  it('says why the tab is empty without own laps', async () => {
     mockApi({
       'GET /api/rounds/9/engineer': () =>
         json(200, { reference: null, laps: [], lap_length_m: null, zones: 0, advice: [], setup_missing: [], gaps: ['not_enough_laps'] }),
     })
-    const { container } = renderPage(<EngineerSection roundId={9} />, { path: '/rounds/:roundId', url: '/rounds/9', me: DRIVER })
-    await new Promise((resolve) => setTimeout(resolve, 50))
-    expect(container).toBeEmptyDOMElement()
+    renderPage(<EngineerSection roundId={9} />, { path: '/rounds/:roundId', url: '/rounds/9', me: DRIVER })
+    expect(await screen.findByText('Sin vueltas tuyas')).toBeInTheDocument()
+  })
+
+  it('asks for a driver profile when the account has none', async () => {
+    mockApi({ 'GET /api/rounds/9/engineer': () => json(422, { detail: 'no_driver_profile' }) })
+    renderPage(<EngineerSection roundId={9} />, { path: '/rounds/:roundId', url: '/rounds/9', me: DRIVER })
+    expect(await screen.findByText('Necesitás un perfil de piloto')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Ir a Inicio' })).toHaveAttribute('href', '/')
   })
 })

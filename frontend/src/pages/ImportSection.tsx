@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api, readCookie } from '../api/client'
+import { FileDrop } from '../components/FileDrop'
 import type { components } from '../api/schema'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime, formatLapTime } from '../lib/format'
@@ -67,10 +68,7 @@ export function ImportSection({
       <h3>{t('imports.title')}</h3>
       <p className="muted">{t('imports.help')}</p>
       <form className="upload" onSubmit={submit} aria-label={t('imports.title')}>
-        <label>
-          {t('imports.file')}
-          <input name="file" type="file" accept=".json,application/json" required />
-        </label>
+        <FileDrop label={t('imports.file')} name="file" accept=".json,application/json" required />
         <button type="submit">{t('imports.upload')}</button>
       </form>
       {message && (

@@ -10,6 +10,7 @@ import { Icon } from '../components/Icon'
 import { Loading } from '../components/Layout'
 import { formatDateTime, formatLapTime } from '../lib/format'
 import { initials } from '../lib/initials'
+import { medal } from '../lib/medal'
 import { useLoad } from '../lib/useLoad'
 import { useMode } from '../session'
 import { Breadcrumbs } from '../components/Breadcrumbs'
@@ -297,7 +298,7 @@ function BoardCard({ board, onChange }: { board: Board; onChange: () => void }) 
               // Longer is faster: the record fills the bar, the slowest lap fills a fifth.
               const pace = gap <= 0 ? 100 : 100 - (gap / maxGap) * 80
               return (
-                <tr key={lap.lap_id} className={index < 3 ? `podium podium-${index + 1}` : undefined}>
+                <tr key={lap.lap_id} className={medal(index + 1) || undefined}>
                   <td>
                     <span className="position">{index + 1}</span>
                   </td>

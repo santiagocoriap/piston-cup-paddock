@@ -451,7 +451,11 @@
     "minutesLeft_one": "Cierre de protestas · queda {{count}} minuto",
     "minutesLeft_other": "Cierre de protestas · quedan {{count}} minutos",
     "windowClosed": "Plazo de protestas cerrado",
-    "protestLink": "Presentar una protesta"
+    "protestLink": "Presentar una protesta",
+    "winner": "Ganó {{name}}",
+    "podium": "Podio",
+    "pointsShort_one": "{{count}} pt",
+    "pointsShort_other": "{{count}} pts"
   },
   "mode": {
     "label": "Modo",
@@ -667,7 +671,12 @@
     "suggested": "Sugerencia (primer choque del colector): {{names}}. Un admin confirma.",
     "incidents_one": "{{count}} incidente en esa largada",
     "incidents_other": "{{count}} incidentes en esa largada",
-    "incidentLine": "{{seconds}} s después de largar · vuelta {{lap}} · {{cars}}"
+    "incidentLine": "{{seconds}} s después de largar · vuelta {{lap}} · {{cars}}",
+    "timeline": "Largadas",
+    "groupCount_one": "×{{count}}",
+    "groupCount_other": "×{{count}}",
+    "showEach": "Ver uno por uno",
+    "hideEach": "Ocultar"
   },
   "review": {
     "status": {
@@ -1314,7 +1323,8 @@
     },
     "tyre": "Neumático",
     "incident": "Incidente",
-    "contact": "contacto"
+    "contact": "contacto",
+    "howItWorks": "Cómo se calculan"
   },
   "title": {
     "title": "Pelea por el título",
@@ -1810,5 +1820,24 @@
     "ballast": "Lastre",
     "restrictor": "Restrictor",
     "steps": "{{steps}} · máx. {{cap}}"
+  },
+  "tabEmpty": {
+    "noCollector": "Sin datos del colector",
+    "incidents": "El colector del servidor no mandó eventos para esta fecha. Los incidentes aparecen cuando el colector corre durante la carrera.",
+    "noPositions": "Sin posiciones para la repetición",
+    "replay": "La repetición usa las posiciones que manda el colector del servidor. Esta fecha no tiene posiciones.",
+    "noTelemetry": "Sin vueltas de telemetría",
+    "telemetry": "Las vueltas aparecen cuando un piloto sube la telemetría de esta fecha desde su colector.",
+    "noProfile": "Necesitás un perfil de piloto",
+    "engineerProfile": "El ingeniero usa tus vueltas de telemetría. Elegí tu perfil de piloto en Inicio.",
+    "goHome": "Ir a Inicio",
+    "noOwnLaps": "Sin vueltas tuyas",
+    "engineerLaps": "El ingeniero da consejos cuando subís la telemetría de esta fecha.",
+    "noLaps": "Sin vueltas",
+    "laps": "Las vueltas aparecen cuando un admin sube el archivo de resultados del servidor."
+  },
+  "fileDrop": {
+    "choose": "Elegí un archivo",
+    "orDrop": "o arrastralo acá"
   }
 }

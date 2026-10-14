@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { useLoad } from '../lib/useLoad'
+import { TabEmpty } from './TabEmpty'
 
 type Car = components['schemas']['CarTrackOut']
 
@@ -74,7 +75,17 @@ export function ReplaySection({ roundId }: { roundId: number }) {
     }
   }, [playing, speed, duration])
 
-  if (!data || !data.has_positions) return null
+  if (!data) return null
+  if (!data.has_positions) {
+    return (
+      <TabEmpty
+        heading={t('replay.title')}
+        icon="map"
+        title={t('tabEmpty.noPositions')}
+        text={t('tabEmpty.replay')}
+      />
+    )
+  }
   const xs = data.cars.flatMap((c) => c.x)
   const zs = data.cars.flatMap((c) => c.z)
   const [minX, maxX, minZ, maxZ] = [Math.min(...xs), Math.max(...xs), Math.min(...zs), Math.max(...zs)]

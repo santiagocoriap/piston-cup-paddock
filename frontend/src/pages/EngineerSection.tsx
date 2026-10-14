@@ -1,7 +1,9 @@
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
 import { api } from '../api/client'
 import { formatLapTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { TabEmpty } from './TabEmpty'
 
 /** Driving advice for the signed-in driver, from their own telemetry laps. */
 export function EngineerSection({ roundId }: { roundId: number }) {
@@ -11,8 +13,32 @@ export function EngineerSection({ roundId }: { roundId: number }) {
     [roundId],
   )
   const data = load.data
-  // No driver profile or no telemetry: the section stays hidden.
-  if (!data || data.laps.length === 0) return null
+  // The API answers "no_driver_profile" when the account has no driver.
+  if (load.failed) {
+    return (
+      <TabEmpty
+        heading={t('engineer.title')}
+        icon="user"
+        title={t('tabEmpty.noProfile')}
+        text={t('tabEmpty.engineerProfile')}
+      >
+        <Link className="small-link" to="/">
+          {t('tabEmpty.goHome')}
+        </Link>
+      </TabEmpty>
+    )
+  }
+  if (!data) return null
+  if (data.laps.length === 0) {
+    return (
+      <TabEmpty
+        heading={t('engineer.title')}
+        icon="timer"
+        title={t('tabEmpty.noOwnLaps')}
+        text={t('tabEmpty.engineerLaps')}
+      />
+    )
+  }
   const reference = data.reference
 
   return (

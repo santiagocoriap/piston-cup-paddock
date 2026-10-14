@@ -11,6 +11,7 @@ import { Icon, type IconName } from '../components/Icon'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { medal } from '../lib/medal'
 import { useMe } from '../session'
 
 type Card = components['schemas']['SeasonCardOut']
@@ -402,12 +403,10 @@ function ToDo({ card, openBallots }: { card: Card; openBallots: Ballot[] }) {
 
 type Result = Card['history'][number]
 
-/** "win", "podium", "out" (DNF, DNS, or DSQ), or "" for any other finish. */
+/** A medal class for the top 3, "out" (DNF, DNS, or DSQ), or "" for any other finish. */
 function resultTone(result: Result): string {
   if (result.status !== 'finished') return 'out'
-  if (result.position === 1) return 'win'
-  if (result.position !== null && result.position <= 3) return 'podium'
-  return ''
+  return medal(result.position)
 }
 
 function Recent({ card }: { card: Card }) {

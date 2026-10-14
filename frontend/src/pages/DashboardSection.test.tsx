@@ -123,7 +123,7 @@ describe('DashboardSection', () => {
     renderPage(<DashboardSection />, { path: '/', url: '/', me: DRIVER })
     const recent = (await screen.findByRole('heading', { name: 'Últimos resultados' })).parentElement!
     const chips = within(recent).getAllByRole('listitem')
-    expect(chips.map((chip) => chip.className)).toEqual(['result-chip out', 'result-chip win'])
+    expect(chips.map((chip) => chip.className)).toEqual(['result-chip out', 'result-chip medal-1'])
     expect(chips[0]).toHaveTextContent('Fecha 2 · MonzaP4 DNF12 pts')
     expect(within(recent).getByRole('img', { name: 'Posición por fecha: Fecha 1 P1, Fecha 2 P4' })).toBeInTheDocument()
   })

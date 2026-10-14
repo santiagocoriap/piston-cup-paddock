@@ -4,6 +4,7 @@ import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { formatLapTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { TabEmpty } from './TabEmpty'
 
 type LapDetail = components['schemas']['LapDetailOut']
 
@@ -15,7 +16,17 @@ export function TelemetrySection({ roundId }: { roundId: number }) {
     [roundId],
   )
   const [detail, setDetail] = useState<LapDetail | null>(null)
-  if (!laps.data || laps.data.length === 0) return null
+  if (!laps.data) return null
+  if (laps.data.length === 0) {
+    return (
+      <TabEmpty
+        heading={t('telemetry.roundTitle')}
+        icon="timer"
+        title={t('tabEmpty.noTelemetry')}
+        text={t('tabEmpty.telemetry')}
+      />
+    )
+  }
 
   async function open(id: number) {
     const { data } = await api.GET('/api/telemetry-laps/{lap_id}', { params: { path: { lap_id: id } } })

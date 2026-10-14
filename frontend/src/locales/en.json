@@ -451,7 +451,11 @@
     "minutesLeft_one": "Protests close · {{count}} minute left",
     "minutesLeft_other": "Protests close · {{count}} minutes left",
     "windowClosed": "Protest window closed",
-    "protestLink": "Send a protest"
+    "protestLink": "Send a protest",
+    "winner": "{{name}} won",
+    "podium": "Podium",
+    "pointsShort_one": "{{count}} pt",
+    "pointsShort_other": "{{count}} pts"
   },
   "mode": {
     "label": "Mode",
@@ -667,7 +671,12 @@
     "suggested": "Suggestion (first collision from the collector): {{names}}. An admin confirms.",
     "incidents_one": "{{count}} incident in that start",
     "incidents_other": "{{count}} incidents in that start",
-    "incidentLine": "{{seconds}} s after the start · lap {{lap}} · {{cars}}"
+    "incidentLine": "{{seconds}} s after the start · lap {{lap}} · {{cars}}",
+    "timeline": "Starts",
+    "groupCount_one": "×{{count}}",
+    "groupCount_other": "×{{count}}",
+    "showEach": "Show each one",
+    "hideEach": "Hide"
   },
   "review": {
     "status": {
@@ -1314,7 +1323,8 @@
     },
     "tyre": "Tyre",
     "incident": "Incident",
-    "contact": "contact"
+    "contact": "contact",
+    "howItWorks": "How it works"
   },
   "title": {
     "title": "Title fight",
@@ -1810,5 +1820,24 @@
     "ballast": "Ballast",
     "restrictor": "Restrictor",
     "steps": "{{steps}} · max. {{cap}}"
+  },
+  "tabEmpty": {
+    "noCollector": "No collector data",
+    "incidents": "The server collector sent no events for this round. Incidents show when the collector runs during the race.",
+    "noPositions": "No positions for the replay",
+    "replay": "The replay uses the positions that the server collector sends. This round has no positions.",
+    "noTelemetry": "No telemetry laps",
+    "telemetry": "Laps show when a driver uploads the telemetry of this round from their collector.",
+    "noProfile": "You need a driver profile",
+    "engineerProfile": "The engineer uses your telemetry laps. Choose your driver profile on Home.",
+    "goHome": "Go to Home",
+    "noOwnLaps": "No laps of yours",
+    "engineerLaps": "The engineer gives advice when you upload the telemetry of this round.",
+    "noLaps": "No laps",
+    "laps": "Laps show when an admin uploads the result file of the server."
+  },
+  "fileDrop": {
+    "choose": "Choose a file",
+    "orDrop": "or drop it here"
   }
 }

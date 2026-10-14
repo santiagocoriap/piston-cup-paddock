@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { navLink, openAdminForm, signIn, submitForm } from './helpers'
+import { navLink, openAdminForm, openRoundAdmin, signIn, submitForm } from './helpers'
 
 // Each run starts with an empty test database. global-teardown.ts deletes it after the run.
 const run = Date.now().toString(36)
@@ -90,20 +90,23 @@ test('an admin sets up a season without voting and enters a result', async ({ pa
 
   // A restart before the race that counts. The round page has a tab for each part.
   await page.getByRole('button', { name: 'Reinicios' }).click()
+  await page.getByRole('button', { name: 'Registrar reinicio' }).click()
   await submitForm(page, 'Registrar reinicio', { Vuelta: '1', Lugar: 'T1' })
   await expect(page.getByText('1 reinicio antes de la largada aceptada')).toBeVisible()
   await expect(page.getByText('Largada 2: en curso')).toBeVisible()
   await page.getByRole('button', { name: 'Carrera' }).click()
+  await openRoundAdmin(page, 'Cargar resultado')
   await page.getByLabel(`Estado ${names.driver}`).selectOption('finished')
   await page.getByLabel(`Pos. ${names.driver}`).fill('1')
   await page.getByRole('button', { name: 'Guardar resultado' }).click()
-  await expect(page.getByRole('status')).toContainText('Resultado guardado.')
+  // The dialog closes after the save.
+  await expect(page.getByLabel(`Estado ${names.driver}`)).toBeHidden()
   await page.getByRole('button', { name: 'Reinicios' }).click()
   await expect(page.getByText('Largada 2: aceptada')).toBeVisible()
   await page.getByRole('button', { name: 'Carrera' }).click()
-  await expect(page.getByText('Provisional', { exact: true })).toBeVisible()
+  await expect(page.getByText('Provisional', { exact: true }).first()).toBeVisible()
   await page.getByRole('button', { name: 'Aprobar como oficial' }).click()
-  await expect(page.getByText('Oficial', { exact: true })).toBeVisible()
+  await expect(page.getByText('Oficial', { exact: true }).first()).toBeVisible()
   await expect(page.getByRole('table').first().getByRole('row', { name: new RegExp(names.driver) })).toContainText('25')
 
   await page.getByRole('link', { name: '2026' }).click()

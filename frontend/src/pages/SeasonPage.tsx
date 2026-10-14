@@ -10,6 +10,7 @@ import { RowMenu } from '../components/RowMenu'
 import { Loading } from '../components/Layout'
 import { currentTimeZone, formatDateTime, localInputToIso } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { medal } from '../lib/medal'
 import { useAdminView } from '../session'
 import { BallotsSection } from './BallotsSection'
 import { CalendarAdmin } from './CalendarAdmin'
@@ -197,9 +198,15 @@ export function SeasonPage() {
                       const top = standings.data![0].points || 1
                       return (
                         <tr key={row.entry_id} className={row.rank === 1 ? 'leader' : undefined}>
-                          <td className="pos" title={shared ? t('standings.shared') : undefined}>
-                            {row.rank}
-                            {shared && '='}
+                          <td
+                            className={`pos ${medal(row.rank)}`.trim()}
+                            title={shared ? t('standings.shared') : undefined}
+                          >
+                            <span className="pos-medal">
+                              {medal(row.rank) && <Icon name="medal" small />}
+                              {row.rank}
+                              {shared && '='}
+                            </span>
                           </td>
                           <td>
                             <span className="car-number">#{row.number}</span>
@@ -209,7 +216,7 @@ export function SeasonPage() {
                           {row.rounds.map((score) => (
                             <td
                               key={score.round_number}
-                              className={`round-col hide-sm ${score.position === 1 ? 'win' : ''} ${
+                              className={`round-col hide-sm ${medal(score.position)} ${
                                 score.status !== null && !score.official ? 'provisional' : ''
                               }`}
                             >

@@ -1,6 +1,13 @@
 // Outline icons drawn on a 24px grid with a 1.85 stroke, in the style of Lucide.
 const PATHS = {
   home: ['M3 10.5 12 3l9 7.5', 'M5 9.5V21h14V9.5', 'M10 21v-6h4v6'],
+  medal: [
+    'M7.2 15 2.7 7.1a2 2 0 0 1 .1-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.1a2 2 0 0 1 .1 2.2L16.8 15',
+    'M11 12 5.1 2.2',
+    'm13 12 5.9-9.8',
+    'M8 7h8',
+    'C12 17 5',
+  ],
   trophy: ['M8 21h8', 'M12 17v4', 'M7 4h10v5a5 5 0 0 1-10 0z', 'M7 6H4a3 3 0 0 0 3 4', 'M17 6h3a3 3 0 0 1-3 4'],
   timer: ['M10 2h4', 'M12 14l3-3', 'C12 14 8'],
   user: ['C12 8 4', 'M4 21a8 8 0 0 1 16 0'],

@@ -4404,6 +4404,44 @@
         ]
       }
     },
+    "/api/rounds/{round_id}/tab-counts": {
+      "get": {
+        "operationId": "apps_dashboard_api_round_tab_counts",
+        "summary": "Round Tab Counts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TabCountsOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "How much data each tab of the round page has.",
+        "tags": [
+          "dashboard"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/seasons/{season_id}/export/results.csv": {
       "get": {
         "operationId": "apps_core_exports_export_results",
@@ -14058,6 +14096,44 @@
           "reason"
         ],
         "title": "AdjustIn",
+        "type": "object"
+      },
+      "TabCountsOut": {
+        "properties": {
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          },
+          "incidents": {
+            "title": "Incidents",
+            "type": "integer"
+          },
+          "replay": {
+            "title": "Replay",
+            "type": "integer"
+          },
+          "restarts": {
+            "title": "Restarts",
+            "type": "integer"
+          },
+          "telemetry": {
+            "title": "Telemetry",
+            "type": "integer"
+          },
+          "reports": {
+            "title": "Reports",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "laps",
+          "incidents",
+          "replay",
+          "restarts",
+          "telemetry",
+          "reports"
+        ],
+        "title": "TabCountsOut",
         "type": "object"
       },
       "AccountOut": {

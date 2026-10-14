@@ -7,12 +7,13 @@ from ninja import Field, Router, Schema
 from ninja.errors import HttpError
 
 from apps.collectors.safety_api import driver_ratings
-from apps.competition.models import Championship
-from apps.competition.permissions import can_manage, is_league_admin
+from apps.competition.models import Championship, Round
+from apps.competition.permissions import can_manage, can_view, is_league_admin
 from apps.identity.models import DriverProfile
 
 from .pending import pending
 from .profile import adjust_career, can_see_driver, career, records, restarts_caused, seasons
+from .round_tabs import tab_counts
 from .search import search
 from .services import driver_dashboard
 
@@ -272,3 +273,21 @@ def adjust(request, driver_id: int, payload: AdjustIn):
         raise HttpError(403, "forbidden")
     adjust_career(driver, request.user, payload.kind, payload.points, payload.reason)
     return _profile(request.user, driver)
+
+
+class TabCountsOut(Schema):
+    laps: int
+    incidents: int
+    replay: int
+    restarts: int
+    telemetry: int
+    reports: int
+
+
+@router.get("/rounds/{round_id}/tab-counts", response=TabCountsOut)
+def round_tab_counts(request, round_id: int):
+    """How much data each tab of the round page has."""
+    round_ = get_object_or_404(Round.objects.select_related("season__championship"), pk=round_id)
+    if not can_view(request.user, round_.season.championship):
+        raise Http404
+    return TabCountsOut(**vars(tab_counts(request.user, round_)))

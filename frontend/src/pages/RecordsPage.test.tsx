@@ -61,7 +61,7 @@ describe('RecordsPage', () => {
     renderPage(<RecordsPage />, { path: '/records', url: '/records', me: DRIVER })
     const table = await screen.findByRole('table', { name: 'Mejores vueltas' })
     const rows = within(table).getAllByRole('row').slice(1)
-    expect(rows.map((row) => row.className)).toEqual(['podium podium-1', 'podium podium-2', 'podium podium-3'])
+    expect(rows.map((row) => row.className)).toEqual(['medal-1', 'medal-2', 'medal-3'])
     expect(rows[2]).toHaveTextContent('PGPedro Gómez3:10.500+1.204')
   })
 })

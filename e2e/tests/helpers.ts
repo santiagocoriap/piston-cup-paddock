@@ -46,6 +46,12 @@ export function navLink(page: Page, name: string): Locator {
     .getByRole('link', { name: new RegExp(`^${name}( ?,|$)`) })
 }
 
+/** Open an admin tool of the round race tab in its dialog, from the "Administrar" menu. */
+export async function openRoundAdmin(page: Page, name: string) {
+  await page.getByRole('button', { name: 'Administrar', exact: true }).click()
+  await page.getByRole('button', { name, exact: true }).click()
+}
+
 /** Open an admin form of a season page section in its dialog. A section with one form has a button
  * with the form name. A section with more forms has an "Administrar" menu. */
 export async function openAdminForm(page: Page, sectionId: string, name: string) {

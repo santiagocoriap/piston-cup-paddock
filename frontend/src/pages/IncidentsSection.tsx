@@ -5,6 +5,7 @@ import type { components } from '../api/schema'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { TabEmpty } from './TabEmpty'
 
 type Incidents = components['schemas']['IncidentsOut']
 type Incident = components['schemas']['IncidentOut']
@@ -13,8 +14,7 @@ type Outcome = 'open' | 'no_action' | 'racing_incident' | 'penalty'
 type Filters = { driver: string; attempt: string; lap: string; kind: string; minSpeed: number; outcome: string }
 const NO_FILTERS: Filters = { driver: '', attempt: '', lap: '', kind: '', minSpeed: 0, outcome: '' }
 
-/** Incidents from the collector events. Without events, the section stays hidden and the
- *  results and tables work as before. */
+/** Incidents from the collector events. Without events, the tab says why it is empty. */
 export function IncidentsSection({ roundId }: { roundId: number }) {
   const { t } = useTranslation()
   const load = useLoad(
@@ -25,7 +25,17 @@ export function IncidentsSection({ roundId }: { roundId: number }) {
   const [filters, setFilters] = useState<Filters>(NO_FILTERS)
   const [selected, setSelected] = useState<number | null>(null)
   const data = override ?? load.data
-  if (!data || !data.has_events) return null
+  if (!data) return null
+  if (!data.has_events) {
+    return (
+      <TabEmpty
+        heading={t('incidents.title')}
+        icon="alert"
+        title={t('tabEmpty.noCollector')}
+        text={t('tabEmpty.incidents')}
+      />
+    )
+  }
 
   const drivers = [...new Set(data.incidents.flatMap((i) => i.cars))].sort()
   const attempts = [...new Set(data.incidents.map((i) => i.attempt))].sort((a, b) => a - b)

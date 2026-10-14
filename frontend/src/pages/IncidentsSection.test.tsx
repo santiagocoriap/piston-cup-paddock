@@ -45,10 +45,9 @@ describe('IncidentsSection', () => {
     expect(calls.find((c) => c.key === 'PUT /api/rounds/9/incidents/1/review')!.body).toEqual({ outcome: 'racing_incident', note: '' })
   })
 
-  it('stays hidden without collector events', async () => {
+  it('says why the tab is empty without collector events', async () => {
     mockApi({ 'GET /api/rounds/9/incidents': () => json(200, { ...data(), has_events: false, incidents: [] }) })
-    const { container } = renderPage(<IncidentsSection roundId={9} />, page)
-    await new Promise((resolve) => setTimeout(resolve, 50))
-    expect(container).toBeEmptyDOMElement()
+    renderPage(<IncidentsSection roundId={9} />, page)
+    expect(await screen.findByText('Sin datos del colector')).toBeInTheDocument()
   })
 })

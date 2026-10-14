@@ -1596,6 +1596,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/tab-counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Round Tab Counts
+         * @description How much data each tab of the round page has.
+         */
+        get: operations["apps_dashboard_api_round_tab_counts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/seasons/{season_id}/export/results.csv": {
         parameters: {
             query?: never;
@@ -4830,6 +4850,21 @@ export interface components {
             points?: number;
             /** Reason */
             reason: string;
+        };
+        /** TabCountsOut */
+        TabCountsOut: {
+            /** Laps */
+            laps: number;
+            /** Incidents */
+            incidents: number;
+            /** Replay */
+            replay: number;
+            /** Restarts */
+            restarts: number;
+            /** Telemetry */
+            telemetry: number;
+            /** Reports */
+            reports: number;
         };
         /** AccountOut */
         AccountOut: {
@@ -8278,6 +8313,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProfileOut"];
+                };
+            };
+        };
+    };
+    apps_dashboard_api_round_tab_counts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TabCountsOut"];
                 };
             };
         };
