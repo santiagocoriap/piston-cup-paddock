@@ -22,6 +22,8 @@ The Windows program (paddock-collector.exe, built by GitHub Actions) also has:
     --install     show the setup window, then put the shortcut "Iniciar Paddock" on the desktop
     --setup       show the setup window only (the folders of the AC server)
     --uninstall   remove the shortcut
+While it runs, an icon next to the Windows clock shows the state. Its menu has "Configurar…",
+"Abrir registro", and "Salir".
 The admin uses the shortcut before a race, in place of Real Penalty: the collector starts Real
 Penalty (realpenalty_exe in collector.ini) and itself. The collector stops by itself after the AC
 server stops. It never starts with Windows. At each start, it asks the app for a new version.
@@ -55,7 +57,7 @@ from pathlib import Path
 
 log = logging.getLogger("paddock_collector")
 
-VERSION = "1.3.0"
+VERSION = "1.4.0"
 UPDATE_SECONDS = 24 * 3600
 SHORTCUT_NAME = "Iniciar Paddock.lnk"
 # Only one collector runs on a PC: the second one cannot take this local port, and it stops.
@@ -444,6 +446,233 @@ def restart(exe: Path) -> None:
     subprocess.Popen([str(exe), *sys.argv[1:]], env=env, creationflags=flags, close_fds=True)
     logging.shutdown()
     os._exit(0)
+
+
+# The icon next to the Windows clock: the state, and a menu to set up, read the log, or stop.
+
+STOP = threading.Event()  # "Salir": the main loop stops at once.
+AGAIN = threading.Event()  # After "Configurar…": the collector starts again with the new folders.
+STATUS = {"text": "Paddock: arrancando"}
+
+MENU_SETUP, MENU_LOG, MENU_EXIT = 1, 2, 3
+
+
+def set_status(text: str) -> None:
+    STATUS["text"] = f"Paddock: {text}"[:127]
+
+
+def own_command(*arguments: str) -> list[str]:
+    """This program with other arguments: the .exe, or Python with this script."""
+    if getattr(sys, "frozen", False):
+        return [sys.executable, *arguments]
+    return [sys.executable, str(Path(__file__).resolve()), *arguments]
+
+
+def tray_action(command: int, config: Path, run_setup=None, open_file=None) -> None:
+    """What a menu item does. run_setup and open_file are for the tests."""
+    if command == MENU_SETUP:
+        run_setup = run_setup or (
+            lambda: subprocess.run(own_command("--setup", "--config", str(config)), check=False)
+        )
+        if run_setup().returncode == 0:
+            log.info("New setup saved. The collector starts again.")
+            AGAIN.set()
+            STOP.set()
+    elif command == MENU_LOG:
+        (open_file or os.startfile)(str(config.parent / "collector.log"))
+    elif command == MENU_EXIT:
+        log.info("Stopped from the icon.")
+        STOP.set()
+
+
+class Tray(threading.Thread):
+    """The tray icon, with the Windows API through ctypes (no extra package)."""
+
+    def __init__(self, config: Path):
+        super().__init__(daemon=True, name="tray")
+        self.config = config
+
+    def run(self) -> None:
+        try:
+            self._loop()
+        except Exception:  # Without the icon, the collector still works.
+            log.exception("Tray icon error")
+
+    def _loop(self) -> None:
+        import ctypes
+        from ctypes import wintypes
+
+        user32 = ctypes.WinDLL("user32", use_last_error=True)
+        shell32 = ctypes.WinDLL("shell32", use_last_error=True)
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        lresult = ctypes.c_ssize_t
+        wndproc = ctypes.WINFUNCTYPE(
+            lresult, wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM
+        )
+
+        class WndClass(ctypes.Structure):
+            _fields_ = [
+                ("style", wintypes.UINT),
+                ("lpfnWndProc", wndproc),
+                ("cbClsExtra", ctypes.c_int),
+                ("cbWndExtra", ctypes.c_int),
+                ("hInstance", wintypes.HINSTANCE),
+                ("hIcon", wintypes.HICON),
+                ("hCursor", wintypes.HANDLE),
+                ("hbrBackground", wintypes.HBRUSH),
+                ("lpszMenuName", wintypes.LPCWSTR),
+                ("lpszClassName", wintypes.LPCWSTR),
+            ]
+
+        class NotifyIconData(ctypes.Structure):
+            _fields_ = [
+                ("cbSize", wintypes.DWORD),
+                ("hWnd", wintypes.HWND),
+                ("uID", wintypes.UINT),
+                ("uFlags", wintypes.UINT),
+                ("uCallbackMessage", wintypes.UINT),
+                ("hIcon", wintypes.HICON),
+                ("szTip", wintypes.WCHAR * 128),
+                ("dwState", wintypes.DWORD),
+                ("dwStateMask", wintypes.DWORD),
+                ("szInfo", wintypes.WCHAR * 256),
+                ("uVersion", wintypes.UINT),
+                ("szInfoTitle", wintypes.WCHAR * 64),
+                ("dwInfoFlags", wintypes.DWORD),
+                ("guidItem", ctypes.c_byte * 16),
+                ("hBalloonIcon", wintypes.HICON),
+            ]
+
+        user32.DefWindowProcW.argtypes = [
+            wintypes.HWND,
+            wintypes.UINT,
+            wintypes.WPARAM,
+            wintypes.LPARAM,
+        ]
+        user32.DefWindowProcW.restype = lresult
+        user32.CreateWindowExW.argtypes = [
+            wintypes.DWORD,
+            wintypes.LPCWSTR,
+            wintypes.LPCWSTR,
+            wintypes.DWORD,
+            ctypes.c_int,
+            ctypes.c_int,
+            ctypes.c_int,
+            ctypes.c_int,
+            wintypes.HWND,
+            wintypes.HMENU,
+            wintypes.HINSTANCE,
+            wintypes.LPVOID,
+        ]
+        user32.CreateWindowExW.restype = wintypes.HWND
+        user32.TrackPopupMenu.argtypes = [
+            wintypes.HMENU,
+            wintypes.UINT,
+            ctypes.c_int,
+            ctypes.c_int,
+            ctypes.c_int,
+            wintypes.HWND,
+            wintypes.LPVOID,
+        ]
+        user32.TrackPopupMenu.restype = ctypes.c_int
+        user32.AppendMenuW.argtypes = [
+            wintypes.HMENU,
+            wintypes.UINT,
+            ctypes.c_size_t,
+            wintypes.LPCWSTR,
+        ]
+        user32.CreatePopupMenu.restype = wintypes.HMENU
+        user32.SetTimer.argtypes = [wintypes.HWND, ctypes.c_size_t, wintypes.UINT, wintypes.LPVOID]
+        user32.LoadIconW.argtypes = [wintypes.HINSTANCE, wintypes.LPCWSTR]
+        user32.LoadIconW.restype = wintypes.HICON
+        shell32.ExtractIconW.argtypes = [wintypes.HINSTANCE, wintypes.LPCWSTR, wintypes.UINT]
+        shell32.ExtractIconW.restype = wintypes.HICON
+        shell32.Shell_NotifyIconW.argtypes = [wintypes.DWORD, ctypes.POINTER(NotifyIconData)]
+        kernel32.GetModuleHandleW.restype = wintypes.HINSTANCE
+
+        wm_destroy, wm_timer, wm_tray = 0x0002, 0x0113, 0x0400 + 20
+        wm_lbuttonup, wm_rbuttonup = 0x0202, 0x0205
+        nim_add, nim_modify, nim_delete = 0, 1, 2
+        nif_message, nif_icon, nif_tip = 1, 2, 4
+
+        instance = kernel32.GetModuleHandleW(None)
+        icon = shell32.ExtractIconW(instance, sys.executable, 0) if program_path() else None
+        icon = icon or user32.LoadIconW(None, ctypes.cast(ctypes.c_void_p(32512), wintypes.LPCWSTR))
+        data = NotifyIconData()
+        shown = {"tip": ""}
+
+        def update_tip(hwnd) -> None:
+            if STATUS["text"] != shown["tip"]:
+                shown["tip"] = data.szTip = STATUS["text"]
+                shell32.Shell_NotifyIconW(nim_modify, ctypes.byref(data))
+
+        def show_menu(hwnd) -> None:
+            menu = user32.CreatePopupMenu()
+            user32.AppendMenuW(menu, 0x0001, 0, f"Paddock colector {VERSION}")  # Grayed.
+            user32.AppendMenuW(menu, 0x0800, 0, None)  # A line.
+            user32.AppendMenuW(menu, 0, MENU_SETUP, "Configurar…")
+            user32.AppendMenuW(menu, 0, MENU_LOG, "Abrir registro")
+            user32.AppendMenuW(menu, 0x0800, 0, None)
+            user32.AppendMenuW(menu, 0, MENU_EXIT, "Salir")
+            point = wintypes.POINT()
+            user32.GetCursorPos(ctypes.byref(point))
+            user32.SetForegroundWindow(hwnd)  # Else the menu does not close on a click outside.
+            command = user32.TrackPopupMenu(menu, 0x0100 | 0x0002, point.x, point.y, 0, hwnd, None)
+            user32.DestroyMenu(menu)
+            if command:
+                threading.Thread(
+                    target=tray_action, args=(command, self.config), daemon=True
+                ).start()
+
+        def proc(hwnd, message, wparam, lparam):
+            if message == wm_tray and lparam in (wm_lbuttonup, wm_rbuttonup):
+                show_menu(hwnd)
+                return 0
+            if message == wm_timer:
+                if STOP.is_set():
+                    user32.DestroyWindow(hwnd)
+                else:
+                    update_tip(hwnd)
+                return 0
+            if message == wm_destroy:
+                shell32.Shell_NotifyIconW(nim_delete, ctypes.byref(data))
+                user32.PostQuitMessage(0)
+                return 0
+            return user32.DefWindowProcW(hwnd, message, wparam, lparam)
+
+        self._proc = wndproc(proc)  # Keep a reference: Windows calls it.
+        window_class = WndClass(
+            lpfnWndProc=self._proc, hInstance=instance, lpszClassName="PaddockTray"
+        )
+        user32.RegisterClassW(ctypes.byref(window_class))
+        hwnd = user32.CreateWindowExW(
+            0, "PaddockTray", "Paddock", 0, 0, 0, 0, 0, None, None, instance, None
+        )
+        data.cbSize = ctypes.sizeof(NotifyIconData)
+        data.hWnd = hwnd
+        data.uID = 1
+        data.uFlags = nif_message | nif_icon | nif_tip
+        data.uCallbackMessage = wm_tray
+        data.hIcon = icon
+        data.szTip = shown["tip"] = STATUS["text"]
+        if not shell32.Shell_NotifyIconW(nim_add, ctypes.byref(data)):
+            log.warning("Windows did not show the tray icon")
+            return
+        log.info("Tray icon shown")
+        user32.SetTimer(hwnd, 1, 1000, None)
+        message = wintypes.MSG()
+        while user32.GetMessageW(ctypes.byref(message), None, 0, 0) > 0:
+            user32.TranslateMessage(ctypes.byref(message))
+            user32.DispatchMessageW(ctypes.byref(message))
+
+
+def start_again() -> None:
+    """Start this program again, for example after a new setup."""
+    env = {**os.environ, "PYINSTALLER_RESET_ENVIRONMENT": "1"}
+    flags = getattr(subprocess, "DETACHED_PROCESS", 0) | getattr(
+        subprocess, "CREATE_NEW_PROCESS_GROUP", 0
+    )
+    subprocess.Popen(own_command(*sys.argv[1:]), env=env, creationflags=flags, close_fds=True)
 
 
 # Start and stop with the race (Real Penalty, the desktop shortcut, and the stop)
@@ -1556,12 +1785,20 @@ def run(settings: Settings) -> None:
             except Exception:  # A failed update keeps the old program. It tries the next day.
                 log.exception("Update error")
         idle = ok and not state.unsent_files() and not state.unsent_events(1)
-        if lifetime.done(ac_server_up(settings), idle, time.time()):
+        server_up = ac_server_up(settings)
+        if lifetime.done(server_up, idle, time.time()):
             log.info("The AC server stopped and everything is sent. The collector stops.")
             return
-        # After a failure, wait longer each time, up to 10 minutes.
+        if not ok:
+            set_status("sin conexión con la app, reintenta solo")
+        elif server_up:
+            set_status("servidor en marcha, mandando datos")
+        else:
+            set_status("esperando el servidor")
+        # After a failure, wait longer each time, up to 10 minutes. "Salir" ends the wait.
         wait = settings.poll_seconds if ok else min(wait * 2, 600)
-        time.sleep(wait)
+        if STOP.wait(wait):
+            return
 
 
 def setup_logging(folder: Path) -> None:
@@ -1596,9 +1833,11 @@ def main() -> None:
         raise SystemExit(uninstall())
     if args.install:
         raise SystemExit(install(config))
+    if args.setup:
+        # Only the window. A running collector starts again by itself after "Guardar".
+        raise SystemExit(0 if setup_window(config) else 1)
     # The Windows program shows the setup window when the folders are missing.
-    wants_setup = args.setup or (getattr(sys, "frozen", False) and needs_setup(config))
-    if wants_setup and not setup_window(config):
+    if getattr(sys, "frozen", False) and needs_setup(config) and not setup_window(config):
         raise SystemExit(1)
     settings = load_settings(config)
     if settings is None:
@@ -1614,13 +1853,19 @@ def main() -> None:
     # The shortcut "Iniciar Paddock" also starts Real Penalty, also when a collector already runs.
     start_real_penalty(settings)
     if not one_instance():
-        log.info("A collector already runs on this PC. This one stops.")
+        say("El colector ya está corriendo. Su ícono está al lado del reloj de Windows.")
         return
     log.info("Paddock collector %s", VERSION)
+    if os.name == "nt":
+        Tray(config).start()
     try:
         run(settings)
     finally:
+        STOP.set()  # The icon goes away.
         release_instance()
+    if AGAIN.is_set():
+        time.sleep(1.5)  # The icon thread removes the old icon.
+        start_again()
 
 
 if __name__ == "__main__":

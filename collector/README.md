@@ -12,7 +12,7 @@ The collector only reads, with two exceptions that are off by default: "Enviar a
 4. Double-click `instalar.bat`. A setup window opens. It finds Assetto Corsa in the Steam folders, and from it the results folder, Real Penalty, the Real Penalty logs, and the newest Content Manager preset. Each field has a "Buscar…" button.
 5. Click "Guardar". The shortcut "Iniciar Paddock" comes on the desktop.
 
-To change the folders later, run `paddock-collector.exe --setup`. The program also shows the window when the results folder is missing.
+To change the folders later, click the icon next to the clock, then "Configurar…". Or run `paddock-collector.exe --setup`. The program also shows the window when the results folder is missing.
 
 Windows SmartScreen can show "Windows protected your PC", because the program has no code signature. Click "More info", then "Run anyway".
 
@@ -27,6 +27,7 @@ Open "Iniciar Paddock" in place of Real Penalty. It starts Real Penalty in its o
 - If the server never starts, it stops after 6 hours.
 - A second click finds the first collector and does not start one more. It still starts Real Penalty when Real Penalty does not run.
 - The log is `collector.log`, next to `collector.ini`. A wrong `collector.ini` shows a message.
+- While it runs, an icon next to the Windows clock shows the state. A click on the icon opens a menu: "Configurar…" (the setup window, then the collector starts again), "Abrir registro", and "Salir".
 
 ### Updates
 

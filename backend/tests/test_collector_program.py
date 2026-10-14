@@ -806,3 +806,34 @@ def test_a_push_to_another_preset_writes_it_and_keeps_it(tmp_path, monkeypatch):
     )
     pc.handle_command(bad, settings, {})
     assert reports[-1] == (10, "failed", "unknown_preset")
+
+
+# The tray icon
+
+
+def test_the_tray_menu_items(tmp_path):
+    config = tmp_path / "collector.ini"
+    pc.STOP.clear()
+    pc.AGAIN.clear()
+    opened = []
+    pc.tray_action(pc.MENU_LOG, config, open_file=opened.append)
+    assert opened == [str(tmp_path / "collector.log")]
+    assert not pc.STOP.is_set()
+
+    pc.tray_action(pc.MENU_SETUP, config, run_setup=lambda: SimpleNamespace(returncode=1))
+    assert not pc.STOP.is_set()  # Cancelled: the collector goes on.
+    pc.tray_action(pc.MENU_SETUP, config, run_setup=lambda: SimpleNamespace(returncode=0))
+    assert pc.STOP.is_set() and pc.AGAIN.is_set()  # Saved: it starts again.
+
+    pc.STOP.clear()
+    pc.AGAIN.clear()
+    pc.tray_action(pc.MENU_EXIT, config)
+    assert pc.STOP.is_set() and not pc.AGAIN.is_set()
+    pc.STOP.clear()
+
+
+def test_the_own_command_runs_the_script_with_python():
+    command = pc.own_command("--setup")
+    assert command[0] == sys.executable
+    assert command[1].endswith("paddock_collector.py")
+    assert command[-1] == "--setup"
