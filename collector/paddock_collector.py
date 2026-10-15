@@ -32,6 +32,7 @@ server stops. It never starts with Windows. At each start, it asks the app for a
 from __future__ import annotations
 
 import argparse
+import base64
 import configparser
 import hashlib
 import io
@@ -51,13 +52,14 @@ import time
 import urllib.error
 import urllib.request
 import uuid
+import zlib
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
 log = logging.getLogger("paddock_collector")
 
-VERSION = "1.6.0"
+VERSION = "1.6.1"
 UPDATE_SECONDS = 24 * 3600
 SHORTCUT_NAME = "Iniciar Paddock.lnk"
 # Only one collector runs on a PC: the second one cannot take this local port, and it stops.
@@ -1447,7 +1449,7 @@ def write_setup(
     now = now or datetime.now()
     backup = preset_dir / "paddock-backups" / now.strftime("%Y%m%d-%H%M%S")
     backup.mkdir(parents=True, exist_ok=True)
-    names = ("server_cfg.ini", "entry_list.ini", "csp_extra_options.ini")
+    names = ("server_cfg.ini", "entry_list.ini", "csp_extra_options.ini", "cm_welcome.txt")
     for name in names:
         if (preset_dir / name).exists():
             shutil.copy2(preset_dir / name, backup / name)
@@ -1461,7 +1463,25 @@ def write_setup(
     write_text(preset_dir / "entry_list.ini", entries_text, entries_newline)
     write_text(preset_dir / "server_cfg.ini", cfg_text, cfg_newline)
     write_text(preset_dir / "csp_extra_options.ini", csp_text, csp_newline)
+    welcome_old, welcome_newline = read_text(preset_dir / "cm_welcome.txt")
+    # The copy has the bytes of the file, with its line ends.
+    welcome_text = welcome_with_csp(welcome_old, csp_text.replace("\n", csp_newline))
+    write_text(preset_dir / "cm_welcome.txt", welcome_text, welcome_newline)
     return backup
+
+
+CSP_BLOCK = re.compile(r"\t*\$CSP0:[A-Za-z0-9+/=]*")
+
+
+def welcome_with_csp(welcome: str, csp_text: str) -> str:
+    """The welcome text of the preset with a new copy of the CSP options. Content Manager does
+    not read csp_extra_options.ini when it starts a server: it sends the copy that it keeps at
+    the end of cm_welcome.txt, made when an admin saved the preset. The copy is 32 tabs, then
+    $CSP0: and the options file, compressed with zlib, in base64 without "=". The tabs hide it
+    in the chat of the players."""
+    visible = CSP_BLOCK.sub("", welcome).rstrip()
+    packed = base64.b64encode(zlib.compress(csp_text.rstrip("\r\n").encode("utf-8"), 9))
+    return visible + "\t" * 32 + "$CSP0:" + packed.decode("ascii").rstrip("=")
 
 
 def handle_command(app: App, settings: Settings, reported: dict[int, str]) -> None:

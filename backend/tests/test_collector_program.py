@@ -924,3 +924,30 @@ def test_the_relay_keeps_other_plugins_in_order(tmp_path):
     text = (tmp_path / "settings.ini").read_text()
     assert pc.ini_get(text, "Plugins_Relay", "OTHER_UDP_PLUGIN") == "127.0.0.1:9100;127.0.0.1:12000"
     assert pc.ini_get(text, "Plugins_Relay", "UDP_PORT") == "9101;12001"
+
+
+def csp_of(welcome: str) -> str:
+    import base64
+    import re
+    import zlib
+
+    packed = re.search(r"\$CSP0:([A-Za-z0-9+/]+)", welcome)[1]
+    return zlib.decompress(base64.b64decode(packed + "=" * (-len(packed) % 4))).decode("utf-8")
+
+
+def test_the_welcome_text_gets_the_new_csp_options():
+    tabs = "\t" * 32
+    old = "Hola pilotos" + tabs + "$CSP0:eJxzdHJ2AQAD0QE5"
+    new = pc.welcome_with_csp(old, "[SCRIPT_1]\r\nSCRIPT='x'\r\n")
+    assert new.startswith("Hola pilotos" + tabs + "$CSP0:")
+    assert new.count("$CSP0:") == 1
+    assert csp_of(new) == "[SCRIPT_1]\r\nSCRIPT='x'"
+    only_block = pc.welcome_with_csp("", "[A]")
+    assert only_block.startswith(tabs + "$CSP0:") and csp_of(only_block) == "[A]"
+
+
+def test_a_push_also_writes_the_welcome_copy(preset):
+    (preset / "cm_welcome.txt").write_text("\t" * 32 + "$CSP0:eJxzdHJ2AQAD0QE5", encoding="utf-8")
+    pc.write_setup(preset, CONTENT)
+    csp = csp_of((preset / "cm_welcome.txt").read_text(encoding="utf-8"))
+    assert "[SCRIPT_1]" in csp and "raceCode" in csp
