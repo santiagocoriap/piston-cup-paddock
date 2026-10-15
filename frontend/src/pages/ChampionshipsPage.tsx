@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
+import { Breadcrumbs } from '../components/Breadcrumbs'
 import { Icon, type IconName } from '../components/Icon'
 import { Loading } from '../components/Layout'
 import { formatDateTime } from '../lib/format'
@@ -14,17 +15,31 @@ type Championship = components['schemas']['ChampionshipOut']
 type PendingKind = components['schemas']['PendingOut']
 type PendingItem = components['schemas']['PendingItemOut']
 
-/** The home page: the dashboard of the driver, what waits for an admin, and the championships. */
+/** The home page: the dashboard of the driver, and what waits for an admin. */
+export function HomePage() {
+  return (
+    <>
+      <DashboardSection />
+      <PendingSection />
+    </>
+  )
+}
+
+/** The championships of the user, on their own page. */
 export function ChampionshipsPage() {
   const { t } = useTranslation()
   const { data, failed } = useLoad(() => api.GET('/api/championships'), [])
 
   return (
     <>
-      <DashboardSection />
-      <PendingSection />
-      <section aria-labelledby="championships">
-        <h2 id="championships">{t('championships.title')}</h2>
+      <Breadcrumbs items={[{ label: t('championships.title') }]} />
+      <header className="page-head">
+        <div>
+          <h1>{t('championships.title')}</h1>
+          <p className="muted">{t('championships.help')}</p>
+        </div>
+      </header>
+      <section aria-label={t('championships.title')}>
         {!data && <Loading failed={failed} />}
         {data?.length === 0 && <p className="muted">{t('championships.empty')}</p>}
         <ul className="champ-grid">

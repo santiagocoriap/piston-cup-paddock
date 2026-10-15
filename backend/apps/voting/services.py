@@ -181,6 +181,13 @@ def eligible_voters(ballot: Ballot) -> dict[int, int]:
         championship=ballot.season.championship, role__in=ballot.eligible_roles
     )
     user_ids = set(members.values_list("user_id", flat=True))
+    if ChampionshipMember.Role.DRIVER in ballot.eligible_roles:
+        # A driver of the season votes as a driver, also with another role (an admin who races).
+        user_ids |= set(
+            ballot.season.entries.filter(driver__user__isnull=False).values_list(
+                "driver__user_id", flat=True
+            )
+        )
     if ballot.prior_season_id and ballot.min_prior_starts > 0:
         starts = _prior_starts(ballot.prior_season, user_ids)
         user_ids = {u for u in user_ids if starts.get(u, 0) >= ballot.min_prior_starts}

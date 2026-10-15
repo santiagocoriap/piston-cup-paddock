@@ -969,3 +969,19 @@ def test_a_push_waits_while_content_manager_is_open(tmp_path, monkeypatch):
     monkeypatch.setattr(pc, "content_manager_open", lambda: True)
     pc.handle_command(app, on, {})
     assert reports == [(7, "waiting", "content_manager_open")]
+
+
+def test_a_new_key_goes_in_with_the_setup(tmp_path):
+    ac = ac_tree(tmp_path)
+    config = tmp_path / "collector.ini"
+    config.write_text(
+        (Path(pc.__file__).parent / "collector.example.ini").read_text("utf-8"), "utf-8"
+    )
+    key = "pcc_" + "a" * 43
+    pc.save_setup(
+        config, pc.detect(ac), False, app={"url": "https://paddock.example.org", "key": key}
+    )
+    settings = pc.Settings.load(config)
+    assert (settings.app_url, settings.key) == ("https://paddock.example.org", key)
+    assert pc.app_problems({"url": "https://x.org", "key": key}) == []
+    assert len(pc.app_problems({"url": "x.org", "key": "abc"})) == 2

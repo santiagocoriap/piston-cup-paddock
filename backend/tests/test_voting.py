@@ -5,7 +5,8 @@ from django.core.files.base import ContentFile
 from django.utils import timezone
 
 from apps.catalog.models import Track, TrackLayout
-from apps.competition.models import ChampionshipMember, Round
+from apps.competition.models import ChampionshipMember, Round, SeasonEntry
+from apps.identity.models import DriverProfile
 from apps.voting.models import Ballot, Vote
 
 
@@ -404,3 +405,23 @@ def test_options_and_voters_carry_their_pictures(
     ]
     v1 = next(v for v in detail["voters"] if v["username"] == "v1")
     assert (v1["voted"], v1["avatar_url"]) == (True, voters[0].avatar_url())
+
+
+def test_an_admin_who_races_can_vote_and_sees_my_ballots(
+    api, admin, champ_admin, season, layouts, voters, car
+):
+    driver = DriverProfile.objects.create(display_name="Admin driver", user=champ_admin)
+    SeasonEntry.objects.create(season=season, driver=driver, car=car, number=7)
+    detail = ballot(admin, season)
+    for layout in layouts[:3]:
+        detail = add(admin, detail["id"], layout)
+    detail = admin.post(f"/ballots/{detail['id']}/open").json()
+    choice = {"option_ids": [detail["options"][0]["id"]]}
+    assert admin.put(f"/ballots/{detail['id']}/vote", choice).status_code == 200
+
+    mine = api(voters[1]).get("/me/ballots").json()
+    assert [(row["id"], row["voted"], row["status"]) for row in mine] == [
+        (detail["id"], False, "open")
+    ]
+    assert mine[0]["season"] == season.name
+    assert admin.get("/me/ballots").json()[0]["voted"] is True

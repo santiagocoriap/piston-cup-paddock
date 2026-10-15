@@ -2,7 +2,7 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ADMIN, DRIVER, json, mockApi, renderPage } from '../test-utils'
-import { ChampionshipsPage } from './ChampionshipsPage'
+import { ChampionshipsPage, HomePage } from './ChampionshipsPage'
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -40,7 +40,7 @@ function mockHome(extra: Record<string, () => Response> = {}) {
 describe('Home for an admin', () => {
   it('lists what is pending, with links and the count of the rest', async () => {
     mockHome()
-    renderPage(<ChampionshipsPage />, { path: '/', url: '/', me: ADMIN })
+    renderPage(<HomePage />, { path: '/', url: '/', me: ADMIN })
     const list = await screen.findByRole('heading', { name: 'Pendiente' })
     const section = list.closest('section')!
     expect(within(section).getByText('6 resultados para aprobar')).toBeInTheDocument()
@@ -52,13 +52,14 @@ describe('Home for an admin', () => {
 
   it('says when nothing is pending', async () => {
     mockHome({ 'GET /api/pending': () => json(200, []) })
-    renderPage(<ChampionshipsPage />, { path: '/', url: '/', me: ADMIN })
+    renderPage(<HomePage />, { path: '/', url: '/', me: ADMIN })
     expect(await screen.findByText('Nada pendiente.')).toBeInTheDocument()
   })
 
   it('shows the progress, the next round, and the leader on the card', async () => {
     mockHome()
-    renderPage(<ChampionshipsPage />, { path: '/', url: '/', me: ADMIN })
+    renderPage(<ChampionshipsPage />, { path: '/championships', url: '/championships', me: ADMIN })
+    expect(await screen.findByRole('heading', { level: 1, name: 'Campeonatos' })).toBeInTheDocument()
     const card = (await screen.findByText('Líder: Driver 03')).closest('li')!
     expect(card).toHaveTextContent('2026 · 1 de 8 fechas')
     expect(card).toHaveTextContent('Próxima: Fecha 2 · Highlands · Long · Sin fecha')
@@ -75,7 +76,7 @@ describe('Home for an admin', () => {
         ]),
       'POST /api/drivers/3/link': () => json(200, {}),
     })
-    renderPage(<ChampionshipsPage />, { path: '/', url: '/', me: ADMIN })
+    renderPage(<HomePage />, { path: '/', url: '/', me: ADMIN })
     expect(await screen.findByText('Elegí tu perfil de piloto para ver tus carreras acá.')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Elegí tu perfil' }))
     const dialog = screen.getByRole('dialog', { name: 'Vincular mi cuenta' })
@@ -89,12 +90,12 @@ describe('Home for an admin', () => {
 
   it('hides the link box and remembers it', async () => {
     mockHome()
-    const first = renderPage(<ChampionshipsPage />, { path: '/', url: '/', me: ADMIN })
+    const first = renderPage(<HomePage />, { path: '/', url: '/', me: ADMIN })
     await userEvent.click(await screen.findByRole('button', { name: 'No corro en esta liga' }))
     expect(screen.queryByText('Todavía no corrés con esta cuenta')).not.toBeInTheDocument()
     first.unmount()
-    renderPage(<ChampionshipsPage />, { path: '/', url: '/', me: ADMIN })
-    await screen.findByText('Líder: Driver 03')
+    renderPage(<HomePage />, { path: '/', url: '/', me: ADMIN })
+    await screen.findByRole('heading', { name: 'Pendiente' })
     expect(screen.queryByText('Todavía no corrés con esta cuenta')).not.toBeInTheDocument()
   })
 })
@@ -102,7 +103,7 @@ describe('Home for an admin', () => {
 describe('Home for a driver', () => {
   it('asks an admin to link the profile, and shows no pending list', async () => {
     mockHome()
-    renderPage(<ChampionshipsPage />, { path: '/', url: '/', me: DRIVER })
+    renderPage(<HomePage />, { path: '/', url: '/', me: DRIVER })
     expect(await screen.findByText(/Pedile a un admin que lo vincule/)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Elegí tu perfil' })).not.toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Pendiente' })).not.toBeInTheDocument()

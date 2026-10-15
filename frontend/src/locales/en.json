@@ -49,7 +49,8 @@
       "season": "Seasons",
       "round": "Rounds",
       "driver": "Drivers"
-    }
+    },
+    "votes": "Votes"
   },
   "common": {
     "create": "Create",
@@ -75,7 +76,8 @@
     "next": "Next: Round {{number}} · {{track}}",
     "noNext": "There are no more rounds in the calendar.",
     "leader": "Leader: {{name}}",
-    "noDate": "No date"
+    "noDate": "No date",
+    "help": "The championships where you race or are an admin. Open one to see its seasons, rounds, and members."
   },
   "championship": {
     "seasons": "Seasons",
@@ -1531,7 +1533,7 @@
     "chooseRound": "Round for {{name}}",
     "assign": "Assign",
     "download": "Download collector",
-    "downloadHelp": "A zip with the Windows program and a collector.ini with this key. Copy it to the server PC and follow LEEME.txt.",
+    "downloadHelp": "A zip with the Windows program and a collector.ini with this key. Copy it to the server PC and follow LEEME.txt. Collector already there? You need no zip: copy the key, click the Paddock icon, then “Configurar…”, and paste it.",
     "copy": "Copy key",
     "copied": "Copied"
   },
@@ -2189,5 +2191,42 @@
     "preset": "Content Manager preset",
     "presetDefault": "The collector preset",
     "presetHelp": "The collector writes to this preset and uses it from now on. Then start this preset in Content Manager."
+  },
+  "votes": {
+    "help": "The votes where you can vote. The open ones come first.",
+    "open": "Open",
+    "done": "Finished",
+    "vote": "Vote",
+    "voted": "You voted",
+    "closes": "closes {{date}}",
+    "emptyTitle": "No votes",
+    "emptyText": "When an admin opens a vote where you can vote, it shows here and you get a notification."
+  },
+  "gameImport": {
+    "button": "Import from the game",
+    "title": "Import from the game",
+    "help": "Pick the content folder of Assetto Corsa (inside assettocorsa). The browser reads the cars and the tracks on your PC: it sends nothing yet. Then you choose which to add, and the app makes them with pictures and data. In Firefox, the browser asks if you want to upload the files: accept. It only reads the list.",
+    "pick": "Pick the content folder",
+    "pickAgain": "Pick another folder",
+    "wrongFolder": "That folder has no cars or tracks. Pick the assettocorsa folder or its content folder.",
+    "reading": "Reading the folder…",
+    "found_one": "{{count}} found",
+    "found_other": "{{count}} found",
+    "cars_one": "{{count}} car",
+    "cars_other": "{{count}} cars",
+    "tracks_one": "{{count}} track",
+    "tracks_other": "{{count}} tracks",
+    "layouts_one": "{{count}} layout",
+    "layouts_other": "{{count}} layouts",
+    "search": "Search by name or folder",
+    "onlyNew": "Only the ones not in the catalog",
+    "allShown": "Choose the {{count}} in the list",
+    "inCatalog": "In catalog",
+    "none": "Nothing to show.",
+    "import_one": "Import {{count}}",
+    "import_other": "Import {{count}}",
+    "sending": "Importing {{done}} of {{total}}…",
+    "done": "Done: {{cars}} new cars and {{tracks}} new tracks, with {{layouts}} layouts.",
+    "noFiles": "The browser gave no files. Pick the content folder again."
   }
 }

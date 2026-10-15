@@ -24,6 +24,7 @@ from .game_images import (
     open_source,
     save_image,
 )
+from .game_import import import_from_game
 from .models import Car, CarClass, CarClassMembership, Track, TrackLayout
 
 router = Router(tags=["catalog"])
@@ -463,6 +464,14 @@ class GameImagesReportOut(Schema):
 MAX_ZIP_BYTES = 200 * 1024 * 1024
 
 
+class GameImportOut(Schema):
+    new_tracks: list[str]
+    new_layouts: list[str]
+    new_cars: list[str]
+    layouts: list[str]
+    cars: list[str]
+
+
 @router.get("/game-images/needed", response=NeededOut)
 def game_images_needed(request):
     """The track and car folders of the catalog, for tools/pack_game_images.py."""
@@ -480,6 +489,20 @@ def upload_game_images(request, file: File[UploadedFile]):
     except GameImagesError as error:
         raise HttpError(400, error.code) from error
     return report
+
+
+@router.post("/game-import", response=GameImportOut)
+def game_import(request, file: File[UploadedFile]):
+    """ "Importar desde el juego": the browser sends the files of the chosen cars and tracks.
+    The app adds the ones that are new, with their pictures and data."""
+    require(manages_any_championship(request.user))
+    if file.size > MAX_ZIP_BYTES:
+        raise HttpError(400, "file_too_large")
+    try:
+        source = open_source(file)
+    except GameImagesError as error:
+        raise HttpError(400, error.code) from error
+    return import_from_game(source, request.user)
 
 
 def _image_response(field_file):

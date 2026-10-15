@@ -368,6 +368,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/catalog/game-import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Game Import
+         * @description "Importar desde el juego": the browser sends the files of the chosen cars and tracks.
+         *     The app adds the ones that are new, with their pictures and data.
+         */
+        post: operations["apps_catalog_api_game_import"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/catalog/layouts/{layout_id}/images/{kind}": {
         parameters: {
             query?: never;
@@ -1441,6 +1462,26 @@ export interface paths {
         post?: never;
         /** Delete Manual */
         delete: operations["apps_records_api_delete_manual"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/ballots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Ballots
+         * @description The ballots where the user is a voter: the open ones first, then the latest closed.
+         */
+        get: operations["apps_voting_api_my_ballots"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -3039,6 +3080,19 @@ export interface components {
             missing_layouts: string[];
             /** Missing Cars */
             missing_cars: string[];
+        };
+        /** GameImportOut */
+        GameImportOut: {
+            /** New Tracks */
+            new_tracks: string[];
+            /** New Layouts */
+            new_layouts: string[];
+            /** New Cars */
+            new_cars: string[];
+            /** Layouts */
+            layouts: string[];
+            /** Cars */
+            cars: string[];
         };
         /** DriverOut */
         DriverOut: {
@@ -4806,6 +4860,29 @@ export interface components {
             date: string;
             /** Source */
             source: string;
+        };
+        /** MyBallotOut */
+        MyBallotOut: {
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Title */
+            title: string;
+            /** Status */
+            status: string;
+            /** Parent Id */
+            parent_id: number | null;
+            /** Winners */
+            winners: string[];
+            /** Closes At */
+            closes_at: string | null;
+            /** Voted */
+            voted: boolean | null;
+            /** Championship */
+            championship: string;
+            /** Season */
+            season: string;
         };
         /** BallotSummary */
         BallotSummary: {
@@ -7213,6 +7290,36 @@ export interface operations {
             };
         };
     };
+    apps_catalog_api_game_import: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameImportOut"];
+                };
+            };
+        };
+    };
     apps_catalog_api_layout_image: {
         parameters: {
             query?: never;
@@ -8987,6 +9094,26 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    apps_voting_api_my_ballots: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyBallotOut"][];
+                };
             };
         };
     };

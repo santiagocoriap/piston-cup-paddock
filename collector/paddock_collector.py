@@ -59,7 +59,7 @@ from pathlib import Path
 
 log = logging.getLogger("paddock_collector")
 
-VERSION = "1.6.2"
+VERSION = "1.7.0"
 UPDATE_SECONDS = 24 * 3600
 SHORTCUT_NAME = "Iniciar Paddock.lnk"
 # Only one collector runs on a PC: the second one cannot take this local port, and it stops.
@@ -995,12 +995,27 @@ def relay_through_real_penalty(realpenalty_exe: Path) -> Path | None:
     return path
 
 
+def app_problems(app: dict[str, str]) -> list[str]:
+    problems = []
+    if not re.match(r"^https?://[^\s]+$", app.get("url", "")):
+        problems.append("La dirección de la app tiene que empezar con http:// o https://.")
+    if not re.match(r"^pcc_[A-Za-z0-9_\-]{20,}$", app.get("key", "")):
+        problems.append("La clave del colector empieza con pcc_. Copiala de la app.")
+    return problems
+
+
 def save_setup(
-    config: Path, values: dict[str, str], write_server: bool, udp_relay: bool = False
+    config: Path,
+    values: dict[str, str],
+    write_server: bool,
+    udp_relay: bool = False,
+    app: dict[str, str] | None = None,
 ) -> None:
     """Write the chosen folders into collector.ini and keep every other line. udp_relay: get the
-    server events through Real Penalty."""
+    server events through Real Penalty. app: a new app address and key."""
     text, newline = read_text(config)
+    for key, value in (app or {}).items():
+        text = ini_set(text, "app", key, value)
     for key in SETUP_FIELDS:
         text = ini_set(text, "server", key, values.get(key, ""))
     if values.get("preset_dir"):
@@ -1037,8 +1052,28 @@ def setup_window(config: Path) -> bool:
     root = tk.Tk()
     root.title("Paddock: configurar el colector")
     root.resizable(True, False)
+    # The app and the key. A new key from the app goes here: no new download.
+    top = ttk.Frame(root, padding=(16, 16, 16, 0))
+    top.grid(row=0, column=0, sticky="nsew")
+    top.columnconfigure(1, weight=1)
+    url_var = tk.StringVar(value=ini_get(text, "app", "url") or "")
+    key_var = tk.StringVar(value=ini_get(text, "app", "key") or "")
+    ttk.Label(top, text="Dirección de la app").grid(row=0, column=0, sticky="w", pady=4)
+    ttk.Entry(top, textvariable=url_var, width=84).grid(row=0, column=1, sticky="ew", padx=8)
+    ttk.Label(top, text="Clave del colector").grid(row=1, column=0, sticky="w", pady=4)
+    ttk.Entry(top, textvariable=key_var, width=84, show="•").grid(
+        row=1, column=1, sticky="ew", padx=8
+    )
+    ttk.Label(
+        top,
+        text=(
+            "Para cambiar la clave: en la app, Colectores > Crear clave > Copiar clave. "
+            "Pegala acá."
+        ),
+        foreground="#666",
+    ).grid(row=2, column=1, sticky="w", padx=8)
     frame = ttk.Frame(root, padding=16)
-    frame.grid(sticky="nsew")
+    frame.grid(row=1, column=0, sticky="nsew")
     root.columnconfigure(0, weight=1)
     frame.columnconfigure(1, weight=1)
 
@@ -1142,11 +1177,12 @@ def setup_window(config: Path) -> bool:
 
     def save() -> None:
         values = {key: variables[key].get().strip() for key in SETUP_FIELDS}
-        problems = setup_problems(values)
+        app = {"url": url_var.get().strip(), "key": key_var.get().strip()}
+        problems = app_problems(app) + setup_problems(values)
         if problems:
             messagebox.showerror("Paddock", "\n".join(problems), parent=root)
             return
-        save_setup(config, values, write_var.get(), relay_var.get())
+        save_setup(config, values, write_var.get(), relay_var.get(), app)
         saved["done"] = True
         root.destroy()
 

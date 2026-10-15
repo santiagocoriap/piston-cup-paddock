@@ -15,3 +15,6 @@ collector/collector.ini
 collector/spool/
 collector/driver.ini
 collector/driver-spool/
+
+# Local notes, for example test accounts
+*.local.md

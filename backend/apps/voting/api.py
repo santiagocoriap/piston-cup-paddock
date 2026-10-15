@@ -128,6 +128,11 @@ class BallotSummary(Schema):
     voted: bool | None
 
 
+class MyBallotOut(BallotSummary):
+    championship: str
+    season: str
+
+
 class BallotDetail(Schema):
     id: int
     season_id: int
@@ -322,6 +327,43 @@ def _option_image(option) -> str | None:
 
 def _settings(payload: BallotSettingsIn) -> dict:
     return payload.dict(exclude_unset=True, exclude={"kind"})
+
+
+@router.get("/me/ballots", response=list[MyBallotOut])
+def my_ballots(request):
+    """The ballots where the user is a voter: the open ones first, then the latest closed."""
+    voters = {
+        voter.ballot_id: voter.id
+        for voter in BallotVoter.objects.filter(user=request.user, power__gt=0)
+    }
+    voted = set(
+        Vote.objects.filter(voter_id__in=voters.values()).values_list("voter_id", flat=True)
+    )
+    ballots = (
+        Ballot.objects.filter(id__in=voters)
+        .exclude(status=Ballot.State.DRAFT)
+        .select_related("season__championship")
+        .prefetch_related("options")
+    )
+    rows = [
+        MyBallotOut(
+            id=b.id,
+            kind=b.kind,
+            title=b.title,
+            status=b.status,
+            parent_id=b.parent_id,
+            winners=[o.label for o in b.options.all() if o.selected]
+            if b.status == Ballot.State.DECIDED
+            else [],
+            closes_at=b.closes_at,
+            voted=voters[b.id] in voted,
+            championship=b.season.championship.name,
+            season=b.season.name,
+        )
+        for b in ballots
+    ]
+    rows.sort(key=lambda row: (row.status != Ballot.State.OPEN, -row.id))
+    return rows[:30]
 
 
 @router.get("/seasons/{season_id}/ballots", response=list[BallotSummary])

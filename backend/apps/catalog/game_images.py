@@ -178,10 +178,19 @@ def _layout_base(layout: TrackLayout) -> str:
 
 
 @transaction.atomic
-def import_game_images(source: _Source, user=None) -> Report:
+def import_game_images(
+    source: _Source,
+    user=None,
+    only_layouts: set[str] | None = None,
+    only_cars: set[str] | None = None,
+) -> Report:
+    """only_layouts and only_cars: work on these only ("track/layout" labels and car keys).
+    None: every layout and car of the catalog."""
     report = Report()
     for layout in TrackLayout.objects.select_related("track").order_by("track__key", "key"):
         label = f"{layout.track.key}/{layout.key}" if layout.key else layout.track.key
+        if only_layouts is not None and label.lower() not in {x.lower() for x in only_layouts}:
+            continue
         base = _layout_base(layout)
         outline = _image(source.read(f"{base}/outline.png", MAX_IMAGE_BYTES), PNG)
         preview = _image(source.read(f"{base}/preview.png", MAX_IMAGE_BYTES), PNG)
@@ -203,6 +212,8 @@ def import_game_images(source: _Source, user=None) -> Report:
         report.layouts.append(label)
 
     for car in Car.objects.order_by("key"):
+        if only_cars is not None and car.key.lower() not in {x.lower() for x in only_cars}:
+            continue
         base = f"cars/{car.key}"
         badge = _image(source.read(f"{base}/ui/badge.png", MAX_IMAGE_BYTES), PNG)
         preview = _image(source.read(f"{base}/preview.jpg", MAX_IMAGE_BYTES), JPEG)

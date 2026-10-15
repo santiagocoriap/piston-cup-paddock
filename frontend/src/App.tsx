@@ -14,9 +14,10 @@ import { DriversPage } from './pages/admin/DriversPage'
 import { LeaguesPage } from './pages/admin/LeaguesPage'
 import { BallotPage } from './pages/BallotPage'
 import { ChampionshipPage } from './pages/ChampionshipPage'
-import { ChampionshipsPage } from './pages/ChampionshipsPage'
+import { ChampionshipsPage, HomePage } from './pages/ChampionshipsPage'
 import { InvitePage } from './pages/InvitePage'
 import { RecordsPage } from './pages/RecordsPage'
+import { VotesPage } from './pages/VotesPage'
 import { RoundPage } from './pages/RoundPage'
 import { SeasonPage } from './pages/SeasonPage'
 import { useMode } from './session'
@@ -98,12 +99,14 @@ function AppRoutes({
   return (
     <Routes>
       <Route element={<Layout onSignOut={onSignOut} />}>
-        <Route index element={<ChampionshipsPage />} />
+        <Route index element={<HomePage />} />
+        <Route path="championships" element={<ChampionshipsPage />} />
         <Route path="championships/:championshipId" element={<ChampionshipPage />} />
         <Route path="seasons/:seasonId" element={<SeasonPage />} />
         <Route path="rounds/:roundId" element={<RoundPage />} />
         <Route path="drivers/:driverId" element={<DriverProfilePage />} />
         <Route path="records" element={<RecordsPage />} />
+        <Route path="votes" element={<VotesPage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="ballots/:ballotId" element={<BallotPage />} />
         {adminPages && <Route path="admin/leagues" element={<LeaguesPage />} />}

@@ -61,6 +61,9 @@ export function Layout({ onSignOut }: { onSignOut: () => void }) {
     () => (showPending ? api.GET('/api/pending') : Promise.resolve({ data: [] as Pending[] })),
     [showPending, pathname],
   )
+  // The votes that wait for this user, for every user, also outside the admin view.
+  const myBallots = useLoad(() => api.GET('/api/me/ballots'), [pathname])
+  const votesToCast = (myBallots.data ?? []).filter((b) => b.status === 'open' && !b.voted).length
   const count = (...kinds: string[]) =>
     (pending.data ?? []).filter((item) => kinds.includes(item.kind)).reduce((sum, item) => sum + item.count, 0)
 
@@ -76,6 +79,8 @@ export function Layout({ onSignOut }: { onSignOut: () => void }) {
 
   const main: NavEntry[] = [
     { to: '/', end: true, icon: 'home', label: t('nav.home'), count: count('results', 'protests', 'ballots_closed') },
+    { to: '/championships', icon: 'trophy', label: t('nav.championships') },
+    { to: '/votes', icon: 'check', label: t('nav.votes'), count: votesToCast },
     { to: '/records', icon: 'timer', label: t('nav.records') },
   ]
   const admin: NavEntry[] = [

@@ -48,7 +48,7 @@ export function ChampionshipPage() {
 
   return (
     <section>
-      <Breadcrumbs items={[{ label: data.name }]} />
+      <Breadcrumbs items={[{ label: t('championships.title'), to: '/championships' }, { label: data.name }]} />
       <header className="season-hero champ-hero">
         <div>
           <p className="eyebrow">{data.league_name}</p>

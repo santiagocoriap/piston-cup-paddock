@@ -17,6 +17,7 @@ import { CatalogEdit, MissingImage } from './CatalogEdit'
 import { CarSheet, CarStats, LayoutSheet, LayoutStats } from './CatalogFacts'
 import { carFields, layoutFields } from './catalogFields'
 import { GameImagesSection } from './GameImagesSection'
+import { GameImportDialog } from './GameImportDialog'
 import { Breadcrumbs } from '../../components/Breadcrumbs'
 
 type Track = components['schemas']['TrackOut']
@@ -58,6 +59,7 @@ export function CatalogPage() {
   const { t } = useTranslation()
   const tracks = useLoad(() => api.GET('/api/catalog/tracks'), [])
   const [trackQuery, setTrackQuery] = useState('')
+  const [importing, setImporting] = useState(false)
   const [trackImage, setTrackImage] = useState<ImageFilter>('')
   const [trackCountry, setTrackCountry] = useState('')
   const [carQuery, setCarQuery] = useState('')
@@ -125,7 +127,13 @@ export function CatalogPage() {
           <p className="muted">{t('catalog.help')}</p>
         </div>
         {/* With an empty list, the empty state has the button. */}
-        {counts[tab] > 0 && <div className="page-actions">{createButton(tab)}</div>}
+        <div className="page-actions">
+          <button type="button" onClick={() => setImporting(true)}>
+            <Icon name="download" small />
+            {t('gameImport.button')}
+          </button>
+          {counts[tab] > 0 && createButton(tab)}
+        </div>
       </header>
 
       <Tabs
@@ -331,6 +339,13 @@ export function CatalogPage() {
           </label>
         </ActionForm>
       </Dialog>
+      <GameImportDialog
+        open={importing}
+        onClose={() => setImporting(false)}
+        onImported={reloadImages}
+        knownCars={cars.data?.map((car) => car.key) ?? []}
+        knownTracks={tracks.data?.map((track) => track.key) ?? []}
+      />
     </section>
   )
 }

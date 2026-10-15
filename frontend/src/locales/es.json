@@ -49,7 +49,8 @@
       "season": "Temporadas",
       "round": "Fechas",
       "driver": "Pilotos"
-    }
+    },
+    "votes": "Votaciones"
   },
   "common": {
     "create": "Crear",
@@ -75,7 +76,8 @@
     "next": "Próxima: Fecha {{number}} · {{track}}",
     "noNext": "No hay más fechas en el calendario.",
     "leader": "Líder: {{name}}",
-    "noDate": "Sin fecha"
+    "noDate": "Sin fecha",
+    "help": "Los campeonatos donde corrés o sos admin. Abrí uno para ver sus temporadas, fechas y miembros."
   },
   "championship": {
     "seasons": "Temporadas",
@@ -1531,7 +1533,7 @@
     "chooseRound": "Fecha para {{name}}",
     "assign": "Asignar",
     "download": "Descargar colector",
-    "downloadHelp": "Un zip con el programa para Windows y un collector.ini con esta clave. Copialo a la PC del servidor y seguí LEEME.txt.",
+    "downloadHelp": "Un zip con el programa para Windows y un collector.ini con esta clave. Copialo a la PC del servidor y seguí LEEME.txt. ¿Ya tenés el colector? No hace falta el zip: copiá la clave, hacé clic en el ícono de Paddock, después en «Configurar…», y pegala.",
     "copy": "Copiar clave",
     "copied": "Copiada"
   },
@@ -2189,5 +2191,42 @@
     "preset": "Plantilla de Content Manager",
     "presetDefault": "La del colector",
     "presetHelp": "El colector escribe en esta plantilla y la usa desde ahora. Después, iniciá esta plantilla en Content Manager."
+  },
+  "votes": {
+    "help": "Las votaciones donde podés votar. Las abiertas van primero.",
+    "open": "Abiertas",
+    "done": "Terminadas",
+    "vote": "Votar",
+    "voted": "Ya votaste",
+    "closes": "cierra {{date}}",
+    "emptyTitle": "No hay votaciones",
+    "emptyText": "Cuando un admin abra una votación donde podés votar, aparece acá y te llega un aviso."
+  },
+  "gameImport": {
+    "button": "Importar desde el juego",
+    "title": "Importar desde el juego",
+    "help": "Elegí la carpeta content de Assetto Corsa (adentro de assettocorsa). El navegador lee los autos y las pistas en tu PC: no sube nada todavía. Después elegís cuáles agregar, y la app los crea con imágenes y datos. En Firefox, el navegador pregunta si querés subir los archivos: aceptá. Solo lee la lista.",
+    "pick": "Elegir la carpeta content",
+    "pickAgain": "Elegir otra carpeta",
+    "wrongFolder": "Esa carpeta no tiene cars ni tracks. Elegí la carpeta assettocorsa o su carpeta content.",
+    "reading": "Leyendo la carpeta…",
+    "found_one": "{{count}} encontrado",
+    "found_other": "{{count}} encontrados",
+    "cars_one": "{{count}} auto",
+    "cars_other": "{{count}} autos",
+    "tracks_one": "{{count}} pista",
+    "tracks_other": "{{count}} pistas",
+    "layouts_one": "{{count}} trazado",
+    "layouts_other": "{{count}} trazados",
+    "search": "Buscar por nombre o carpeta",
+    "onlyNew": "Solo los que no están en el catálogo",
+    "allShown": "Elegir los {{count}} de la lista",
+    "inCatalog": "Ya está",
+    "none": "Nada para mostrar.",
+    "import_one": "Importar {{count}}",
+    "import_other": "Importar {{count}}",
+    "sending": "Importando {{done}} de {{total}}…",
+    "done": "Listo: {{cars}} autos y {{tracks}} pistas nuevas, con {{layouts}} trazados.",
+    "noFiles": "El navegador no dio ningún archivo. Elegí la carpeta content otra vez."
   }
 }
