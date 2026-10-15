@@ -23,6 +23,11 @@ def test_a_stale_sample_inside_the_slack_also_goes_away():
     assert clean["t_ms"] == [40, 90, 100000]
 
 
+def test_a_last_sample_past_the_line_goes_away():
+    data = {"t_ms": [100, 200, 300, 350], "pos": [0.9, 0.99, 0.9995, 0.0002]}
+    assert trim_to_lap(data, 360) == {"t_ms": [100, 200, 300], "pos": [0.9, 0.99, 0.9995]}
+
+
 def test_a_clean_lap_stays_as_it_is():
     data = channels([69, 123, 113805])
     assert trim_to_lap(data, 113860) == data

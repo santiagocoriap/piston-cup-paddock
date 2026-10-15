@@ -2181,7 +2181,8 @@
     "errors": {
       "server_running": "el servidor está encendido",
       "writing_disabled": "el colector tiene la escritura apagada: write_server_config = false",
-      "unknown_preset": "el colector no tiene esa plantilla"
+      "unknown_preset": "el colector no tiene esa plantilla",
+      "content_manager_open": "Content Manager está abierto. Cerralo: al abrirlo otra vez, lee los archivos nuevos"
     },
     "openSlots": "Lugares libres",
     "openSlotsHelp": "Vacío: {{count}}, el número del campeonato. Otro número cuenta solo para este envío.",

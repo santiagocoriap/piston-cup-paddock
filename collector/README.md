@@ -85,8 +85,10 @@ With this, an admin sends the race setup from the round page of the app: the dri
 
 1. In `collector.ini`, set `preset_dir` to the preset folder, for example `C:\assettocorsa\server\presets\SERVER_01`.
 2. Set `write_server_config = true`.
-3. Before a race, stop the server. On the round page, open "Administrar" and click "Enviar al servidor".
-4. Wait for "Escrito en el servidor" in the dialog (about 30 seconds). Then start the preset in Content Manager.
+3. Before a race, stop the server and close Content Manager. On the round page, open "Administrar" and click "Enviar al servidor".
+4. Wait for "Escrito en el servidor" in the dialog (about 30 seconds). Then open Content Manager and start the preset.
+
+The push waits while Content Manager is open. Content Manager keeps the preset in its memory and saves that copy over the files when it starts the server. It reads the files again only when it opens.
 
 After the league drivers, the entry list gets open slots with the league cars, so a driver can change to an extra car. The admins set the number on the championship page (10 by default), and they can change it for one push in the dialog. The spectator slots of the preset, such as Race Control, stay.
 

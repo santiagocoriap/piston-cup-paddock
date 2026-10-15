@@ -6,6 +6,8 @@ the time of the lap before. A chart then draws a line back across the whole lap.
 keeps only the samples of the lap itself, in time order.
 """
 
+import json
+
 SLACK_MS = 200  # A sample can come a little after the lap time.
 
 
@@ -21,4 +23,28 @@ def trim_to_lap(channels: dict[str, list], lap_time_ms: int) -> dict[str, list]:
     run = keep[start:]
     if start and len(keep[:start]) > len(run):
         run = keep[:start]
+    # The last sample can be past the line already: the position goes from 0.99 to 0.0.
+    positions = channels.get("pos")
+    while positions and len(run) > 2 and positions[run[-1]] < 0.05 < 0.95 < positions[run[-2]]:
+        run = run[:-1]
     return {name: [values[i] for i in run] for name, values in channels.items()}
+
+
+def trim_stored_laps(lap_model) -> None:
+    """Clean the samples of the stored laps. The data migrations use it."""
+    from django.core.files.base import ContentFile
+
+    for lap in lap_model.objects.all().iterator():
+        try:
+            with lap.samples.open("rb") as handle:
+                channels = json.loads(handle.read())
+        except (OSError, ValueError):
+            continue  # A missing file stays missing.
+        if "t_ms" not in channels:
+            continue
+        clean = trim_to_lap(channels, lap.lap_time_ms)
+        if len(clean["t_ms"]) < 2 or clean == channels:
+            continue
+        content = json.dumps(clean, separators=(",", ":"), sort_keys=True).encode()
+        lap.samples.save("samples.json", ContentFile(content), save=False)
+        lap.save(update_fields=["samples"])

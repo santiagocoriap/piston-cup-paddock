@@ -59,7 +59,7 @@ from pathlib import Path
 
 log = logging.getLogger("paddock_collector")
 
-VERSION = "1.6.1"
+VERSION = "1.6.2"
 UPDATE_SECONDS = 24 * 3600
 SHORTCUT_NAME = "Iniciar Paddock.lnk"
 # Only one collector runs on a PC: the second one cannot take this local port, and it stops.
@@ -1484,6 +1484,13 @@ def welcome_with_csp(welcome: str, csp_text: str) -> str:
     return visible + "\t" * 32 + "$CSP0:" + packed.decode("ascii").rstrip("=")
 
 
+CONTENT_MANAGER = ("Content Manager.exe", "Content Manager Safe.exe")
+
+
+def content_manager_open() -> bool:
+    return any(process_running(name) for name in CONTENT_MANAGER)
+
+
 def handle_command(app: App, settings: Settings, reported: dict[int, str]) -> None:
     """Do the push that waits, if any. A step goes to the app one time only."""
     command = app.get_command()
@@ -1505,6 +1512,11 @@ def handle_command(app: App, settings: Settings, reported: dict[int, str]) -> No
         return
     if server_running(target):
         tell("waiting", "server_running")
+        return
+    if content_manager_open():
+        # Content Manager keeps the preset in its memory, and it saves that copy over the files
+        # when it starts the server. It reads the files again only when it opens.
+        tell("waiting", "content_manager_open")
         return
     try:
         # The admin sets the free slots in the app. An old app sends no number.

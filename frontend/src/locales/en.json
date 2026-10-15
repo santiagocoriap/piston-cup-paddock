@@ -2181,7 +2181,8 @@
     "errors": {
       "server_running": "the server is running",
       "writing_disabled": "the collector does not write: write_server_config = false",
-      "unknown_preset": "the collector does not have that preset"
+      "unknown_preset": "the collector does not have that preset",
+      "content_manager_open": "Content Manager is open. Close it: when it opens again, it reads the new files"
     },
     "openSlots": "Open slots",
     "openSlotsHelp": "Empty: {{count}}, the number of the championship. Another number counts only for this push.",

@@ -478,6 +478,7 @@ def test_the_collector_tells_each_step_one_time(preset, tmp_path, monkeypatch):
     on.write_server_config = True
     reported = {}
     app.reports = []
+    monkeypatch.setattr(pc, "content_manager_open", lambda: False)
     monkeypatch.setattr(pc, "server_running", lambda folder: True)
     pc.handle_command(app, on, reported)
     pc.handle_command(app, on, reported)
@@ -786,6 +787,7 @@ def test_a_push_to_another_preset_writes_it_and_keeps_it(tmp_path, monkeypatch):
 
     written = []
     monkeypatch.setattr(pc, "server_running", lambda preset: False)
+    monkeypatch.setattr(pc, "content_manager_open", lambda: False)
     monkeypatch.setattr(
         pc, "write_setup", lambda preset, content, open_slots: written.append(preset) or preset
     )
@@ -951,3 +953,19 @@ def test_a_push_also_writes_the_welcome_copy(preset):
     pc.write_setup(preset, CONTENT)
     csp = csp_of((preset / "cm_welcome.txt").read_text(encoding="utf-8"))
     assert "[SCRIPT_1]" in csp and "raceCode" in csp
+
+
+def test_a_push_waits_while_content_manager_is_open(tmp_path, monkeypatch):
+    reports = []
+    app = SimpleNamespace(
+        get_command=lambda: {"id": 7, "content": {"round": {"number": 1}}},
+        report=lambda push_id, status, error="": reports.append((push_id, status, error)),
+    )
+    preset = tmp_path / "presets" / "SERVER_01"
+    preset.mkdir(parents=True)
+    (preset / "server_cfg.ini").write_text("[SERVER]\n")
+    on = SimpleNamespace(write_server_config=True, preset_dir=preset, open_slots=10)
+    monkeypatch.setattr(pc, "server_running", lambda folder: False)
+    monkeypatch.setattr(pc, "content_manager_open", lambda: True)
+    pc.handle_command(app, on, {})
+    assert reports == [(7, "waiting", "content_manager_open")]
