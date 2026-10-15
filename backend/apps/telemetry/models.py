@@ -27,7 +27,7 @@ class Access(models.TextChoices):
 
 
 class TelemetrySharing(models.Model):
-    """Who sees the telemetry of a driver. Other drivers never get the inputs."""
+    """Who sees the telemetry of a driver. The driver chooses each level."""
 
     driver = models.OneToOneField(
         DriverProfile, on_delete=models.CASCADE, related_name="telemetry_sharing"

@@ -23,9 +23,9 @@ describe('TelemetryCard', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Crear clave' }))
     expect(await screen.findByDisplayValue('pdc_secret')).toBeInTheDocument()
 
-    // Other drivers can never get the full level.
+    // The driver can also give the full level to other drivers.
     const drivers = screen.getByLabelText('Otros pilotos')
-    expect(drivers.querySelector('option[value="full"]')).toBeNull()
+    expect(drivers.querySelector('option[value="full"]')).not.toBeNull()
     await userEvent.selectOptions(screen.getByLabelText('Compañeros de equipo'), 'full')
     await userEvent.selectOptions(drivers, 'laps')
     await userEvent.click(screen.getByRole('button', { name: 'Guardar' }))

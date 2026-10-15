@@ -1557,7 +1557,7 @@
       "laps": "Lap times and speed",
       "full": "Everything, with pedals and steering"
     },
-    "protected": "Other drivers never see your pedals, your steering, or your setup.",
+    "protected": "Choose “Everything” only if every driver may see your pedals and your steering. Your setup never shows.",
     "saved": "Saved.",
     "roundTitle": "Driver telemetry",
     "access": {

@@ -1557,7 +1557,7 @@
       "laps": "Tiempos y velocidad",
       "full": "Todo, con pedales y volante"
     },
-    "protected": "Los otros pilotos nunca ven tus pedales, tu volante ni tu setup.",
+    "protected": "Elegí «Todo» solo si querés que cualquier piloto vea tus pedales y tu volante. Tu setup nunca se muestra.",
     "saved": "Guardado.",
     "roundTitle": "Telemetría de pilotos",
     "access": {

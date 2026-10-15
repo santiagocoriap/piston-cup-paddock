@@ -39,11 +39,11 @@ export function TelemetryCard() {
     setMessage(error ? { kind: 'error', text: errorMessage(t, error) } : { kind: 'status', text: t('telemetry.saved') })
   }
 
-  const levels = (allowFull: boolean) => (
+  const levels = () => (
     <>
       <option value="none">{t('telemetry.levels.none')}</option>
       <option value="laps">{t('telemetry.levels.laps')}</option>
-      {allowFull && <option value="full">{t('telemetry.levels.full')}</option>}
+      <option value="full">{t('telemetry.levels.full')}</option>
     </>
   )
 
@@ -76,19 +76,19 @@ export function TelemetryCard() {
         <label>
           {t('telemetry.teammates')}
           <select name="teammates" defaultValue={data.sharing.teammates}>
-            {levels(true)}
+            {levels()}
           </select>
         </label>
         <label>
           {t('telemetry.drivers')}
           <select name="drivers" defaultValue={data.sharing.drivers}>
-            {levels(false)}
+            {levels()}
           </select>
         </label>
         <label>
           {t('telemetry.admins')}
           <select name="admins" defaultValue={data.sharing.admins}>
-            {levels(true)}
+            {levels()}
           </select>
         </label>
         <p className="muted">{t('telemetry.protected')}</p>

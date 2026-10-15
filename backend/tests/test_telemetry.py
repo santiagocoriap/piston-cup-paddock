@@ -109,17 +109,17 @@ def test_teammate_gets_what_the_owner_shares(api, uploaded):
     assert "brake" in api(users["mate"]).get(f"/telemetry-laps/{first['id']}").json()["channels"]
 
 
-def test_other_drivers_never_get_inputs(api, uploaded):
+def test_other_drivers_get_the_level_that_the_driver_chooses(api, uploaded):
     users, _, _, first = uploaded
     owner = api(users["owner"])
-    refused = owner.put(
-        "/me/telemetry/sharing", {"teammates": "laps", "drivers": "full", "admins": "laps"}
-    )
-    assert refused.status_code == 422
     owner.put("/me/telemetry/sharing", {"teammates": "laps", "drivers": "laps", "admins": "laps"})
     detail = api(users["rival"]).get(f"/telemetry-laps/{first['id']}").json()
     assert detail["access"] == "laps"
     assert "gas" not in detail["channels"] and "brake" not in detail["channels"]
+    owner.put("/me/telemetry/sharing", {"teammates": "laps", "drivers": "full", "admins": "laps"})
+    detail = api(users["rival"]).get(f"/telemetry-laps/{first['id']}").json()
+    assert detail["access"] == "full"
+    assert "gas" in detail["channels"] and "brake" in detail["channels"]
 
 
 def test_admin_access_follows_the_admin_setting(api, champ_admin, uploaded):

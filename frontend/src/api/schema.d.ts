@@ -5941,7 +5941,7 @@ export interface components {
              * Drivers
              * @enum {string}
              */
-            drivers: "none" | "laps";
+            drivers: "none" | "laps" | "full";
             /**
              * Admins
              * @enum {string}
@@ -5964,7 +5964,7 @@ export interface components {
              * Drivers
              * @enum {string}
              */
-            drivers: "none" | "laps";
+            drivers: "none" | "laps" | "full";
             /**
              * Admins
              * @enum {string}

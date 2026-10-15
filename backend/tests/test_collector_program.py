@@ -837,3 +837,21 @@ def test_the_own_command_runs_the_script_with_python():
     assert command[0] == sys.executable
     assert command[1].endswith("paddock_collector.py")
     assert command[-1] == "--setup"
+
+
+def test_a_real_penalty_log_waits_for_a_newer_log_of_its_own_series(tmp_path):
+    s = settings(tmp_path)
+    logs = tmp_path / "logs"
+    now = time.time()
+    old_output = logs / "output_20261014_204527.log"
+    practice_1 = logs / "practice_penalty_20261014_204737.log"
+    practice_2 = logs / "practice_penalty_20261014_204841.log"
+    for path in (old_output, practice_1, practice_2):
+        path.write_text("x")
+        os.utime(path, (now, now))  # All are still written.
+    names = {path.name for path, _kind in pc.candidates(s, now)}
+    # Only the first practice log is finished: a newer practice log exists. The output log is
+    # older than both practice logs, but its series has no newer log.
+    assert names == {practice_1.name}
+    assert pc.log_series(practice_2.name) == "practice_penalty"
+    assert pc.log_series("output_20261014_204527.log") == "output"

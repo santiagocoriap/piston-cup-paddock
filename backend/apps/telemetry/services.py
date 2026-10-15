@@ -5,8 +5,9 @@ Access levels:
 - "laps": lap time, track position, and speed. No inputs.
 - None: nothing.
 
-The driver always has full access. Other drivers get "laps" at most, whatever the driver
-chooses, so they never see inputs or setups. Basic results never need telemetry.
+The driver always has full access. The driver chooses the level for teammates, for other
+drivers, and for admins. "none" is the default for other drivers. Basic results never need
+telemetry.
 """
 
 import hashlib
@@ -132,8 +133,7 @@ def access(viewer, lap: TelemetryLap) -> str | None:
     if not can_view(viewer, championship):
         return None
     sharing = sharing_for(lap.driver)
-    # Other drivers never get more than lap times and speed.
-    levels = [Access.LAPS if sharing.drivers != Access.NONE else Access.NONE]
+    levels = [sharing.drivers]
     if _teammates(viewer_driver, lap):
         levels.append(sharing.teammates)
     if can_manage(viewer, championship):

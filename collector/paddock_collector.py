@@ -57,7 +57,7 @@ from pathlib import Path
 
 log = logging.getLogger("paddock_collector")
 
-VERSION = "1.4.0"
+VERSION = "1.4.1"
 UPDATE_SECONDS = 24 * 3600
 SHORTCUT_NAME = "Iniciar Paddock.lnk"
 # Only one collector runs on a PC: the second one cannot take this local port, and it stops.
@@ -264,14 +264,26 @@ def candidates(settings: Settings, now: float) -> list[tuple[Path, str]]:
             if path.stat().st_mtime >= since and stable(path, settings.result_stable_seconds, now):
                 found.append((path, "result"))
     if settings.penalty_dir and settings.penalty_dir.is_dir():
-        logs = sorted(settings.penalty_dir.glob("*.log"), key=lambda p: p.stat().st_mtime)
-        for index, path in enumerate(logs):
-            if path.stat().st_mtime < since:
-                continue
-            newer_exists = index < len(logs) - 1
-            if newer_exists or stable(path, settings.log_stable_seconds, now):
-                found.append((path, "penalty_log"))
+        # Real Penalty writes two series at the same time: output_<time>.log and
+        # practice_penalty_<time>.log (also qualify_ and race_). A log is finished when a newer
+        # log of the same series exists. A log of the other series says nothing about it.
+        series: dict[str, list[Path]] = {}
+        for path in settings.penalty_dir.glob("*.log"):
+            series.setdefault(log_series(path.name), []).append(path)
+        for logs in series.values():
+            logs.sort(key=lambda p: p.name)  # The name ends with the start time.
+            for index, path in enumerate(logs):
+                if path.stat().st_mtime < since:
+                    continue
+                newer_exists = index < len(logs) - 1
+                if newer_exists or stable(path, settings.log_stable_seconds, now):
+                    found.append((path, "penalty_log"))
     return found
+
+
+def log_series(name: str) -> str:
+    """ "practice_penalty_20261014_205243.log" -> "practice_penalty"."""
+    return re.sub(r"_?\d[\d_]*\.log$", "", name, flags=re.IGNORECASE) or name
 
 
 def spool_files(settings: Settings, state: State, now: float) -> int:

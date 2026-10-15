@@ -82,7 +82,7 @@ Level = Literal["none", "laps", "full"]
 
 class SharingIn(Schema):
     teammates: Level
-    drivers: Literal["none", "laps"]  # Other drivers never get the inputs.
+    drivers: Level  # "full" shows the inputs to every driver: the driver chooses it.
     admins: Level
 
 

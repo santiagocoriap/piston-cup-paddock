@@ -17526,7 +17526,8 @@
           "drivers": {
             "enum": [
               "none",
-              "laps"
+              "laps",
+              "full"
             ],
             "title": "Drivers",
             "type": "string"
@@ -17576,7 +17577,8 @@
           "drivers": {
             "enum": [
               "none",
-              "laps"
+              "laps",
+              "full"
             ],
             "title": "Drivers",
             "type": "string"
