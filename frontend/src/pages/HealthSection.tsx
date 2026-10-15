@@ -12,7 +12,7 @@ import { BackupStatus } from './BackupStatus'
 type Health = components['schemas']['HealthOut']
 
 /** The dot color of each collector status. */
-const COLLECTOR_TONE: Record<string, string> = { running: 'ok', stopped: 'error', never: 'warn', revoked: 'off' }
+const COLLECTOR_TONE: Record<string, string> = { running: 'ok', off: 'off', stopped: 'error', never: 'warn', revoked: 'off' }
 
 /** Collector status, missing data of recent rounds, and failed tasks, in one card. */
 export function HealthSection({ championshipId }: { championshipId: number }) {
@@ -61,6 +61,18 @@ export function HealthSection({ championshipId }: { championshipId: number }) {
                   {t('health.lastFile', { date: date(collector.last_file_at) })} ·{' '}
                   {t('health.lastEvent', { date: date(collector.last_event_at) })}
                 </p>
+                <p className="muted">
+                  {collector.version ? t('health.version', { version: collector.version }) : t('health.noVersion')}
+                  {collector.version && collector.latest_version && collector.version !== collector.latest_version && (
+                    <> · {t('health.updates', { version: collector.latest_version })}</>
+                  )}
+                  {collector.queued_files > 0 && <> · {t('health.queued', { count: collector.queued_files })}</>}
+                </p>
+                {collector.last_error && (
+                  <p className="warning">
+                    {t('health.lastError', { date: date(collector.last_error_at), error: collector.last_error })}
+                  </p>
+                )}
               </div>
             </li>
           ))}

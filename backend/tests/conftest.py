@@ -25,6 +25,12 @@ class Api:
 
 
 @pytest.fixture(autouse=True)
+def no_github(settings):
+    """The tests never ask GitHub for collector releases."""
+    settings.COLLECTOR_RELEASE_REPO = ""
+
+
+@pytest.fixture(autouse=True)
 def fast_passwords(settings):
     """A fast hash for tests only. Production keeps the strong default hash."""
     settings.PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]

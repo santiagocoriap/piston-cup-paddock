@@ -57,7 +57,7 @@ from pathlib import Path
 
 log = logging.getLogger("paddock_collector")
 
-VERSION = "1.4.1"
+VERSION = "1.5.0"
 UPDATE_SECONDS = 24 * 3600
 SHORTCUT_NAME = "Iniciar Paddock.lnk"
 # Only one collector runs on a PC: the second one cannot take this local port, and it stops.
@@ -359,6 +359,10 @@ class App:
     def send_events(self, run_id: str, events: list[dict]) -> dict:
         body = json.dumps({"run_id": run_id, "events": events}).encode()
         return self._request("/api/collector/events", body, "application/json")
+
+    def send_status(self, status: dict) -> dict:
+        body = json.dumps(status).encode()
+        return self._request("/api/collector/status", body, "application/json")
 
     def send_presets(self, presets: list[dict], current: str) -> dict:
         body = json.dumps({"presets": presets, "current": current}).encode()
@@ -1783,8 +1787,7 @@ def run(settings: Settings) -> None:
             handle_command(app, settings, reported)
             if time.time() >= next_ping:
                 app.ping()
-                if settings.preset_dir is not None:
-                    app.send_presets(preset_list(settings), settings.preset_dir.name)
+                send_status(app, settings, state)
                 next_ping = time.time() + PING_SECONDS
         except Exception:  # The loop must keep running. The log has the details.
             log.exception("Collector loop error")
@@ -1813,6 +1816,46 @@ def run(settings: Settings) -> None:
             return
 
 
+class LastError(logging.Handler):
+    """Keeps the last warning or error, for the health page of the app."""
+
+    def __init__(self) -> None:
+        super().__init__(level=logging.WARNING)
+        self.text = ""
+        self.at: datetime | None = None
+
+    def emit(self, record: logging.LogRecord) -> None:
+        self.text = record.getMessage().splitlines()[0][:200]
+        self.at = datetime.fromtimestamp(record.created, UTC)
+
+
+LAST_ERROR = LastError()
+
+
+def status_body(settings: Settings, state: State) -> dict:
+    body: dict = {
+        "queued_files": len(state.unsent_files()),
+        "last_error": LAST_ERROR.text,
+        "last_error_at": LAST_ERROR.at.isoformat() if LAST_ERROR.at else None,
+    }
+    if settings.preset_dir is not None:
+        body["presets"] = preset_list(settings)
+        body["current"] = settings.preset_dir.name
+    return body
+
+
+def send_status(app: App, settings: Settings, state: State) -> None:
+    body = status_body(settings, state)
+    try:
+        app.send_status(body)
+    except urllib.error.HTTPError as error:
+        if error.code != 404:
+            raise
+        # An older app has no status endpoint, only the presets.
+        if settings.preset_dir is not None:
+            app.send_presets(body["presets"], body["current"])
+
+
 def setup_logging(folder: Path) -> None:
     """The log goes to collector.log next to collector.ini (1 MB, with 3 older files), and to
     the console when there is one."""
@@ -1821,6 +1864,7 @@ def setup_logging(folder: Path) -> None:
             folder / "collector.log", maxBytes=1024 * 1024, backupCount=3, encoding="utf-8"
         )
     ]
+    handlers.append(LAST_ERROR)
     if sys.stderr is not None:
         handlers.append(logging.StreamHandler())
     logging.basicConfig(

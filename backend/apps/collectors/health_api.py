@@ -27,6 +27,11 @@ class CollectorHealthOut(Schema):
     last_seen_at: datetime | None
     last_file_at: datetime | None
     last_event_at: datetime | None
+    version: str
+    latest_version: str
+    queued_files: int
+    last_error: str
+    last_error_at: datetime | None
 
 
 class RoundHealthOut(Schema):

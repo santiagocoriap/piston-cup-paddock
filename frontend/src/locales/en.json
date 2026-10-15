@@ -1615,9 +1615,10 @@
     "noCollectors": "There are no collectors. Rounds are entered by hand.",
     "status": {
       "running": "running",
-      "stopped": "stopped",
+      "stopped": "stopped at race time",
       "never": "never connected",
-      "revoked": "revoked"
+      "revoked": "revoked",
+      "off": "off (normal away from a race)"
     },
     "lastSeen": "seen {{date}}",
     "lastFile": "last file {{date}}",
@@ -1643,7 +1644,13 @@
       "job": "Worker task"
     },
     "retry": "Retry",
-    "detail": "Show the details"
+    "detail": "Show the details",
+    "version": "version {{version}}",
+    "noVersion": "unknown version",
+    "updates": "updates to {{version}} at its start",
+    "queued_one": "{{count}} file waiting to send",
+    "queued_other": "{{count}} files waiting to send",
+    "lastError": "Last error ({{date}}): {{error}}"
   },
   "incidents": {
     "title": "Incidents",
@@ -1857,7 +1864,8 @@
       "ballot.reminder": "Reminder: you did not vote in {{ballot}} yet",
       "protest.appealed": "New appeal in R{{number}} · {{track}}",
       "protest.appeal_decided": "Your appeal in R{{number}} has a decision",
-      "import.blocked": "File to check: {{championship}} R{{number}} · {{track}}"
+      "import.blocked": "File to check: {{championship}} R{{number}} · {{track}}",
+      "collector.no_results": "No results: {{championship}} R{{number}} · {{track}}. The collector did not send the race file."
     },
     "all": "All",
     "unread": "Unread",

@@ -24,6 +24,11 @@ class CollectorToken(models.Model):
     # collector uses now. The collector sends them with each ping. "Enviar al servidor" lists them.
     presets = models.JSONField(default=list, blank=True)
     preset = models.CharField(max_length=100, blank=True)
+    # The health of the collector, from its User-Agent and its status every 5 minutes.
+    version = models.CharField(max_length=20, blank=True)
+    queued_files = models.PositiveIntegerField(default=0)
+    last_error = models.CharField(max_length=200, blank=True)
+    last_error_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["name"]

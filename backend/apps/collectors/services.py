@@ -64,6 +64,23 @@ def create_token(championship: Championship, name: str, user) -> tuple[Collector
     return token, raw
 
 
+USER_AGENT = re.compile(r"paddock-collector/(\d+\.\d+\.\d+)")
+
+
+def remember_version(token: CollectorToken, user_agent: str) -> None:
+    match = USER_AGENT.search(user_agent)
+    if match and match[1] != token.version:
+        token.version = match[1]
+        CollectorToken.objects.filter(pk=token.pk).update(version=match[1])
+
+
+def save_status(token: CollectorToken, queued: int, error: str, error_at) -> None:
+    token.queued_files = queued
+    token.last_error = error.strip()[:200]
+    token.last_error_at = error_at if token.last_error else None
+    token.save(update_fields=["queued_files", "last_error", "last_error_at"])
+
+
 def key_matches(token: CollectorToken, raw: str) -> bool:
     return hmac.compare_digest(token.token_hash, _hash(raw.strip()))
 

@@ -1615,9 +1615,10 @@
     "noCollectors": "No hay colectores. Las fechas se cargan a mano.",
     "status": {
       "running": "funciona",
-      "stopped": "detenido",
+      "stopped": "detenido en horario de carrera",
       "never": "nunca se conectó",
-      "revoked": "desactivado"
+      "revoked": "desactivado",
+      "off": "apagado (normal fuera de la carrera)"
     },
     "lastSeen": "visto {{date}}",
     "lastFile": "último archivo {{date}}",
@@ -1643,7 +1644,13 @@
       "job": "Tarea del worker"
     },
     "retry": "Reintentar",
-    "detail": "Ver detalle"
+    "detail": "Ver detalle",
+    "version": "versión {{version}}",
+    "noVersion": "versión desconocida",
+    "updates": "se actualiza a {{version}} al arrancar",
+    "queued_one": "{{count}} archivo esperando para mandar",
+    "queued_other": "{{count}} archivos esperando para mandar",
+    "lastError": "Último error ({{date}}): {{error}}"
   },
   "incidents": {
     "title": "Incidentes",
@@ -1857,7 +1864,8 @@
       "ballot.reminder": "Recordatorio: todavía no votaste en {{ballot}}",
       "protest.appealed": "Nueva apelación en R{{number}} · {{track}}",
       "protest.appeal_decided": "Tu apelación de R{{number}} tiene decisión",
-      "import.blocked": "Archivo para revisar: {{championship}} R{{number}} · {{track}}"
+      "import.blocked": "Archivo para revisar: {{championship}} R{{number}} · {{track}}",
+      "collector.no_results": "Sin resultados: {{championship}} R{{number}} · {{track}}. El colector no mandó el archivo de carrera."
     },
     "all": "Todas",
     "unread": "Sin leer",

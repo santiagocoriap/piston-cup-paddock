@@ -4,6 +4,7 @@ small fake app server."""
 import hashlib
 import importlib.util
 import json
+import logging
 import os
 import socket
 import struct
@@ -855,3 +856,24 @@ def test_a_real_penalty_log_waits_for_a_newer_log_of_its_own_series(tmp_path):
     assert names == {practice_1.name}
     assert pc.log_series(practice_2.name) == "practice_penalty"
     assert pc.log_series("output_20261014_204527.log") == "output"
+
+
+# Phase 6: the status for the health page
+
+
+def test_the_status_has_the_queue_and_the_last_error(tmp_path):
+    s = settings(tmp_path)
+    state = pc.State(tmp_path / "state.sqlite3")
+    copy = tmp_path / "copy.json"
+    copy.write_text("{}")
+    state.add_file("a" * 64, "2026_10_14_21_0_RACE.json", "result", copy)
+    handler = pc.LastError()
+    record = logging.LogRecord("x", logging.WARNING, "", 0, "Upload failed: HTTP 502", None, None)
+    handler.emit(record)
+    pc.LAST_ERROR.text, pc.LAST_ERROR.at = handler.text, handler.at
+    body = pc.status_body(s, state)
+    assert body["queued_files"] == 1
+    assert body["last_error"] == "Upload failed: HTTP 502"
+    assert body["last_error_at"]
+    assert "presets" not in body  # No preset folder in this setup.
+    pc.LAST_ERROR.text, pc.LAST_ERROR.at = "", None

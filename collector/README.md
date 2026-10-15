@@ -29,6 +29,10 @@ Open "Iniciar Paddock" in place of Real Penalty. It starts Real Penalty in its o
 - The log is `collector.log`, next to `collector.ini`. A wrong `collector.ini` shows a message.
 - While it runs, an icon next to the Windows clock shows the state. A click on the icon opens a menu: "Configurar…" (the setup window, then the collector starts again), "Abrir registro", and "Salir".
 
+### Health
+
+Every 5 minutes, the collector tells the app its version, the files that wait to go, and its last warning or error. The championship page shows them in "Salud". If a race has no result file 3 hours after its start, the results admins get an alert.
+
 ### Updates
 
 At each start, the collector asks the app for a newer version. It downloads the program from the app, checks the SHA-256 sum, and starts the new program. The old file stays as `paddock-collector.old.exe` until the next start.

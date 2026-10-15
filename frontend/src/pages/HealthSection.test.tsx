@@ -8,7 +8,11 @@ afterEach(() => vi.restoreAllMocks())
 
 const health = (failed: unknown[]) => ({
   collectors: [
-    { id: 1, name: 'Servidor AC', status: 'stopped', last_seen_at: '2026-10-11T22:00:00Z', last_file_at: null, last_event_at: null },
+    {
+      id: 1, name: 'Servidor AC', status: 'stopped', last_seen_at: '2026-10-11T22:00:00Z', last_file_at: null, last_event_at: null,
+      version: '1.4.1', latest_version: '1.5.0', queued_files: 2, last_error: 'Upload failed: HTTP 502',
+      last_error_at: '2026-10-11T22:00:00Z',
+    },
   ],
   rounds: [
     {
@@ -29,7 +33,9 @@ describe('HealthSection', () => {
       'POST /api/reports/5/retry': () => json(200, health([])),
     })
     renderPage(<HealthSection championshipId={2} />, { path: '/championships/:id', url: '/championships/2' })
-    expect(await screen.findByText('detenido')).toBeInTheDocument()
+    expect(await screen.findByText('detenido en horario de carrera')).toBeInTheDocument()
+    expect(screen.getByText(/versión 1.4.1 · se actualiza a 1.5.0 al arrancar · 2 archivos esperando/)).toBeInTheDocument()
+    expect(screen.getByText(/Último error .*: Upload failed: HTTP 502/)).toBeInTheDocument()
     expect(screen.getByText('3 vueltas no tienen sectores.')).toBeInTheDocument()
     expect(screen.getByText('Eventos parciales: 12 vueltas por UDP de 40 en el archivo.')).toBeInTheDocument()
     expect(screen.getByText(/El colector no mandó nada esa noche/)).toBeInTheDocument()

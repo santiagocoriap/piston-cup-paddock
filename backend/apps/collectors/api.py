@@ -25,7 +25,9 @@ from .services import (
     key_matches,
     receive_events,
     receive_file,
+    remember_version,
     revoke_token,
+    save_status,
 )
 
 router = Router(tags=["collectors"])
@@ -33,7 +35,10 @@ router = Router(tags=["collectors"])
 
 class CollectorAuth(HttpBearer):
     def authenticate(self, request, token):
-        return authenticate(token)
+        found = authenticate(token)
+        if found:
+            remember_version(found, request.headers.get("User-Agent", ""))
+        return found
 
 
 # Collector side
@@ -98,6 +103,26 @@ def upload_events(request, payload: EventsIn):
     except CollectorError as error:
         raise HttpError(422, str(error)) from error
     return EventsOut(new=new)
+
+
+class StatusIn(Schema):
+    queued_files: int = Field(0, ge=0)
+    last_error: str = Field("", max_length=500)
+    last_error_at: datetime | None = None
+    presets: list[dict] = Field(default_factory=list, max_length=50)
+    current: str = Field("", max_length=100)
+
+
+@router.post("/collector/status", auth=CollectorAuth())
+def collector_status(request, payload: StatusIn):
+    """The health of the collector, every 5 minutes: the files that wait, the last error, and
+    the Content Manager presets."""
+    save_status(request.auth, payload.queued_files, payload.last_error, payload.last_error_at)
+    if payload.presets:
+        from .server_setup import save_presets
+
+        save_presets(request.auth, payload.presets, payload.current)
+    return {"ok": True}
 
 
 class CollectorVersionOut(Schema):

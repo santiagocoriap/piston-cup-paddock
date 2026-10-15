@@ -51,7 +51,8 @@ def test_collector_status_running_stopped_never(api, night):
     assert health(api, admin, championship)["collectors"][0]["status"] == "running"
     token.last_seen_at = timezone.now() - timedelta(minutes=20)
     token.save()
-    assert health(api, admin, championship)["collectors"][0]["status"] == "stopped"
+    # Away from a race, a collector that does not run is normal.
+    assert health(api, admin, championship)["collectors"][0]["status"] == "off"
     # No file and no event near the round time: the collector did not run that night.
     assert "collector_stopped" in problems(health(api, admin, championship))
 

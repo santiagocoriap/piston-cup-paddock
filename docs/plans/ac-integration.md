@@ -337,7 +337,15 @@ Windows SmartScreen warns about an `.exe` with no code signature. The README tel
 
 ## Phase 6: Collector health and alerts
 
+Status: done on October 14, 2026. The alert is `backend/apps/collectors/alerts.py`, a worker task every 15 minutes.
+
 Estimate: 0.5 day.
+
+Changes from the first idea:
+
+- The app reads the version from the User-Agent of each request, so it knows the version of older collectors too.
+- The collector runs only on a race night. So "Salud" shows a collector that does not run as "apagado", which is normal. It is an error ("detenido en horario de carrera") only from 3 hours before to 3 hours after the start of a round.
+- The alert goes to the users with the results permission, one time for each round, and only in a championship with an active collector.
 
 1. "Colectores" shows for each collector: last contact, version, files in the queue, and the last error.
 2. The collector sends a short status every 5 minutes.

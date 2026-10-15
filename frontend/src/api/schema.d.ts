@@ -2010,6 +2010,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/collector/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Collector Status
+         * @description The health of the collector, every 5 minutes: the files that wait, the last error, and
+         *     the Content Manager presets.
+         */
+        post: operations["apps_collectors_api_collector_status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/collector/version": {
         parameters: {
             query?: never;
@@ -5754,6 +5775,30 @@ export interface components {
             /** Events */
             events: components["schemas"]["EventIn"][];
         };
+        /** StatusIn */
+        StatusIn: {
+            /**
+             * Queued Files
+             * @default 0
+             */
+            queued_files?: number;
+            /**
+             * Last Error
+             * @default
+             */
+            last_error?: string;
+            /** Last Error At */
+            last_error_at?: string | null;
+            /** Presets */
+            presets?: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Current
+             * @default
+             */
+            current?: string;
+        };
         /** CollectorVersionOut */
         CollectorVersionOut: {
             /** Version */
@@ -6075,6 +6120,16 @@ export interface components {
             last_file_at: string | null;
             /** Last Event At */
             last_event_at: string | null;
+            /** Version */
+            version: string;
+            /** Latest Version */
+            latest_version: string;
+            /** Queued Files */
+            queued_files: number;
+            /** Last Error */
+            last_error: string;
+            /** Last Error At */
+            last_error_at: string | null;
         };
         /** FailedTaskOut */
         FailedTaskOut: {
@@ -9964,6 +10019,28 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["EventsOut"];
                 };
+            };
+        };
+    };
+    apps_collectors_api_collector_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StatusIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
