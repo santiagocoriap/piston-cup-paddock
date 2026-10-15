@@ -877,3 +877,50 @@ def test_the_status_has_the_queue_and_the_last_error(tmp_path):
     assert body["last_error_at"]
     assert "presets" not in body  # No preset folder in this setup.
     pc.LAST_ERROR.text, pc.LAST_ERROR.at = "", None
+
+
+RP_SETTINGS = (
+    "[General]\r\nAC_SERVER_PATH=C:\\ac\\server\r\n\r\n[Plugins_Relay]\r\n"
+    "; list of all other UDP plugins\r\nOTHER_UDP_PLUGIN =\r\nUDP_PORT = \r\n"
+)
+
+
+def test_the_setup_sends_the_server_events_through_real_penalty(tmp_path):
+    ac = ac_tree(tmp_path)
+    rp = ac / "server" / "realpenalty" / "settings.ini"
+    rp.write_bytes(RP_SETTINGS.encode("latin-1"))
+    config = tmp_path / "collector.ini"
+    config.write_text(
+        (Path(pc.__file__).parent / "collector.example.ini").read_text("utf-8"), "utf-8"
+    )
+    pc.save_setup(config, pc.detect(ac), write_server=True, udp_relay=True)
+    text = rp.read_bytes().decode("latin-1")
+    assert "\r\n" in text and "\n\n" not in text.replace("\r\n", "")  # CRLF stays.
+    assert (
+        pc.ini_get(text.replace("\r\n", "\n"), "Plugins_Relay", "OTHER_UDP_PLUGIN")
+        == "127.0.0.1:12000"
+    )
+    assert pc.ini_get(text.replace("\r\n", "\n"), "Plugins_Relay", "UDP_PORT") == "12001"
+    assert (rp.parent / "settings.ini.paddock-backup").read_bytes() == RP_SETTINGS.encode("latin-1")
+    settings = pc.Settings.load(config)
+    assert (settings.udp_port, settings.server_udp_port, settings.request_positions) == (
+        12000,
+        12001,
+        True,
+    )
+    # A second save adds nothing.
+    pc.save_setup(config, pc.detect(ac), write_server=True, udp_relay=True)
+    again = rp.read_bytes().decode("latin-1").replace("\r\n", "\n")
+    assert pc.ini_get(again, "Plugins_Relay", "OTHER_UDP_PLUGIN") == "127.0.0.1:12000"
+
+
+def test_the_relay_keeps_other_plugins_in_order(tmp_path):
+    exe = tmp_path / "ac_penalty.exe"
+    exe.write_bytes(b"MZ")
+    (tmp_path / "settings.ini").write_text(
+        "[Plugins_Relay]\nOTHER_UDP_PLUGIN = 127.0.0.1:9100\nUDP_PORT = 9101\n"
+    )
+    pc.relay_through_real_penalty(exe)
+    text = (tmp_path / "settings.ini").read_text()
+    assert pc.ini_get(text, "Plugins_Relay", "OTHER_UDP_PLUGIN") == "127.0.0.1:9100;127.0.0.1:12000"
+    assert pc.ini_get(text, "Plugins_Relay", "UDP_PORT") == "9101;12001"

@@ -31,6 +31,7 @@ from apps.identity.models import DriverProfile
 from apps.imports.ac_results import track_key
 
 from .models import ScriptCode, TelemetryLap
+from .samples import trim_to_lap
 from .services import TelemetryError
 
 # An old race code still works for this long after a new one, for a race in progress.
@@ -356,7 +357,9 @@ def receive_lap(championship: Championship, payload: dict) -> tuple[TelemetryLap
         raise TelemetryError("unknown_driver")
     if not SeasonEntry.objects.filter(season__championship=championship, driver=driver).exists():
         raise TelemetryError("not_in_championship")
-    channels = _channels(payload.get("samples") or [])
+    channels = trim_to_lap(_channels(payload.get("samples") or []), int(payload["lap_time_ms"]))
+    if len(channels["t_ms"]) < 2:
+        raise TelemetryError("bad_samples")
     # The PC clock of the driver can be wrong. The age of the lap at the upload is right.
     age = max(0, int(payload["sent_at"]) - int(payload["ended_at"]))
     recorded_at = timezone.now() - timedelta(seconds=age)

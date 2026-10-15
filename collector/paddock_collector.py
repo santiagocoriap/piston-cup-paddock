@@ -57,7 +57,7 @@ from pathlib import Path
 
 log = logging.getLogger("paddock_collector")
 
-VERSION = "1.5.1"
+VERSION = "1.6.0"
 UPDATE_SECONDS = 24 * 3600
 SHORTCUT_NAME = "Iniciar Paddock.lnk"
 # Only one collector runs on a PC: the second one cannot take this local port, and it stops.
@@ -953,14 +953,62 @@ def setup_problems(values: dict[str, str]) -> list[str]:
     return problems
 
 
-def save_setup(config: Path, values: dict[str, str], write_server: bool) -> None:
-    """Write the chosen folders into collector.ini and keep every other line."""
+# The UDP ports between Real Penalty and the collector. Real Penalty gets the server events on
+# the UDP plugin port of the server, and it sends a copy to the collector (RELAY_EVENTS). The
+# collector sends its request for car positions to Real Penalty (RELAY_COMMANDS), which sends it
+# to the server.
+RELAY_EVENTS = 12000
+RELAY_COMMANDS = 12001
+
+
+def _list_add(text: str, item: str) -> str:
+    items = [part.strip() for part in text.split(";") if part.strip()]
+    return ";".join(items if item in items else [*items, item])
+
+
+def relay_through_real_penalty(realpenalty_exe: Path) -> Path | None:
+    """Add the collector to [Plugins_Relay] of the Real Penalty settings.ini. Gives the file,
+    or None without one. The first change keeps a copy as settings.ini.paddock-backup."""
+    path = realpenalty_exe.parent / "settings.ini"
+    if not path.is_file():
+        return None
+    raw = path.read_bytes()
+    try:
+        text, encoding = raw.decode("utf-8-sig"), "utf-8"
+    except UnicodeDecodeError:
+        text, encoding = raw.decode("latin-1"), "latin-1"
+    newline = "\r\n" if "\r\n" in text else "\n"
+    text = text.replace("\r\n", "\n")
+    address = f"127.0.0.1:{RELAY_EVENTS}"
+    plugins = ini_get(text, "Plugins_Relay", "OTHER_UDP_PLUGIN") or ""
+    if address in plugins:
+        return path  # Already there. The two lists stay in the same order.
+    ports = ini_get(text, "Plugins_Relay", "UDP_PORT") or ""
+    text = ini_set(text, "Plugins_Relay", "OTHER_UDP_PLUGIN", _list_add(plugins, address))
+    text = ini_set(text, "Plugins_Relay", "UDP_PORT", _list_add(ports, str(RELAY_COMMANDS)))
+    backup = path.with_name("settings.ini.paddock-backup")
+    if not backup.exists():
+        backup.write_bytes(raw)
+    path.write_bytes(text.replace("\n", newline).encode(encoding))
+    return path
+
+
+def save_setup(
+    config: Path, values: dict[str, str], write_server: bool, udp_relay: bool = False
+) -> None:
+    """Write the chosen folders into collector.ini and keep every other line. udp_relay: get the
+    server events through Real Penalty."""
     text, newline = read_text(config)
     for key in SETUP_FIELDS:
         text = ini_set(text, "server", key, values.get(key, ""))
     if values.get("preset_dir"):
         text = ini_set(text, "server", "server_cfg", "")  # The preset has its server_cfg.ini.
     text = ini_set(text, "collector", "write_server_config", "true" if write_server else "false")
+    exe = values.get("realpenalty_exe", "")
+    if udp_relay and exe and relay_through_real_penalty(Path(exe)):
+        text = ini_set(text, "collector", "udp_port", RELAY_EVENTS)
+        text = ini_set(text, "collector", "server_udp_port", RELAY_COMMANDS)
+        text = ini_set(text, "collector", "request_positions", "true")
     write_text(config, text, newline)
 
 
@@ -1071,6 +1119,16 @@ def setup_window(config: Path) -> bool:
             )
         ttk.Button(frame, text="Buscar…", command=picker(key)).grid(row=row, column=2)
 
+    # On by default: without the server events, the laps of the Paddock script cannot match.
+    relay_var = tk.BooleanVar(value=True)
+    ttk.Checkbutton(
+        frame,
+        text=(
+            "Recibir los datos en vivo del servidor a través de Real Penalty "
+            "(vueltas, salidas de pista, posiciones)"
+        ),
+        variable=relay_var,
+    ).grid(row=8, column=0, columnspan=3, sticky="w", pady=(6, 0))
     write_var = tk.BooleanVar(value=write_now)
     ttk.Checkbutton(
         frame,
@@ -1086,12 +1144,12 @@ def setup_window(config: Path) -> bool:
         if problems:
             messagebox.showerror("Paddock", "\n".join(problems), parent=root)
             return
-        save_setup(config, values, write_var.get())
+        save_setup(config, values, write_var.get(), relay_var.get())
         saved["done"] = True
         root.destroy()
 
     buttons = ttk.Frame(frame)
-    buttons.grid(row=8, column=0, columnspan=3, sticky="e", pady=(16, 0))
+    buttons.grid(row=9, column=0, columnspan=3, sticky="e", pady=(16, 0))
     ttk.Button(buttons, text="Cancelar", command=root.destroy).grid(row=0, column=0, padx=8)
     ttk.Button(buttons, text="Guardar", command=save).grid(row=0, column=1)
     root.mainloop()

@@ -12,6 +12,8 @@ The collector only reads, with two exceptions that are off by default: "Enviar a
 4. Double-click `instalar.bat`. A setup window opens. It finds Assetto Corsa in the Steam folders, and from it the results folder, Real Penalty, the Real Penalty logs, and the newest Content Manager preset. Each field has a "Buscar…" button.
 5. Click "Guardar". The shortcut "Iniciar Paddock" comes on the desktop.
 
+The window also has "Recibir los datos en vivo del servidor a través de Real Penalty", on by default. Real Penalty gets the UDP events of the server, and it sends a copy to the collector on port 12000 (`[Plugins_Relay]` in the Real Penalty `settings.ini`, with a copy of the old file as `settings.ini.paddock-backup`). The laps of the Paddock script need these events to match. Real Penalty reads the change at its next start.
+
 To change the folders later, click the icon next to the clock, then "Configurar…". Or run `paddock-collector.exe --setup`. The program also shows the window when the results folder is missing.
 
 Windows SmartScreen can show "Windows protected your PC", because the program has no code signature. Click "More info", then "Run anyway".
