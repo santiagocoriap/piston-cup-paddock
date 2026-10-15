@@ -332,7 +332,7 @@ def rematch(championship: Championship) -> int:
 
 def _channels(samples: list) -> dict[str, list]:
     """The script sends one row for each sample: time, position, speed, gas, brake, steer,
-    gear, rpm. The app stores one list for each channel, as for the driver collector."""
+    gear, rpm. The app stores one list for each channel."""
     names = ["t_ms", "pos", "speed_kmh", "gas", "brake", "steer", "gear", "rpm"]
     if not 0 < len(samples) <= MAX_SCRIPT_SAMPLES:
         raise TelemetryError("bad_samples")

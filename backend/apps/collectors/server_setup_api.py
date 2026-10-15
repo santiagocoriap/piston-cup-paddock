@@ -144,18 +144,6 @@ class CommandReportIn(Schema):
     error: str = ""
 
 
-class PresetsIn(Schema):
-    presets: list[dict] = Field(default_factory=list, max_length=50)
-    current: str = Field("", max_length=100)
-
-
-@router.post("/collector/presets", auth=CollectorAuth())
-def collector_presets(request: HttpRequest, payload: PresetsIn):
-    """The Content Manager presets of the server, for the list in "Enviar al servidor"."""
-    server_setup.save_presets(request.auth, payload.presets, payload.current)
-    return {"presets": len(request.auth.presets)}
-
-
 @router.get("/collector/commands", response=CommandOut, auth=CollectorAuth())
 def collector_command(request: HttpRequest):
     """The push that waits for the collector, or nothing."""

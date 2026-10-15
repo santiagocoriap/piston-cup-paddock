@@ -2141,40 +2141,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/telemetry/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Collector Status */
-        get: operations["apps_telemetry_api_collector_status"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/telemetry/laps": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Upload Lap */
-        post: operations["apps_telemetry_api_upload_lap"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/me/telemetry": {
         parameters: {
             query?: never;
@@ -2186,23 +2152,6 @@ export interface paths {
         get: operations["apps_telemetry_api_my_telemetry"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/me/telemetry/key": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** New Key */
-        post: operations["apps_telemetry_api_new_key"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2654,26 +2603,6 @@ export interface paths {
         put?: never;
         /** Server Push */
         post: operations["apps_collectors_server_setup_api_server_push"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/collector/presets": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Collector Presets
-         * @description The Content Manager presets of the server, for the list in "Enviar al servidor".
-         */
-        post: operations["apps_collectors_server_setup_api_collector_presets"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5913,62 +5842,10 @@ export interface components {
             /** Round Id */
             round_id: number;
         };
-        /** CollectorStatusOut */
-        CollectorStatusOut: {
-            /** Driver */
-            driver: string;
-            /** Laps */
-            laps: number;
-        };
-        /** LapReceivedOut */
-        LapReceivedOut: {
-            /** Id */
-            id: number;
-            /** Is New */
-            is_new: boolean;
-            /** Round Id */
-            round_id: number | null;
-        };
-        /** LapIn */
-        LapIn: {
-            /** Track */
-            track: string;
-            /** Car */
-            car: string;
-            /**
-             * Session Type
-             * @default
-             */
-            session_type?: string;
-            /** Lap Number */
-            lap_number: number;
-            /** Lap Time Ms */
-            lap_time_ms: number;
-            /**
-             * Valid
-             * @default true
-             */
-            valid?: boolean;
-            /**
-             * Recorded At
-             * Format: date-time
-             */
-            recorded_at: string;
-            /** Sample Hz */
-            sample_hz: number;
-            /** Channels */
-            channels: {
-                [key: string]: number[];
-            };
-        };
         /** MyTelemetryOut */
         MyTelemetryOut: {
             /** Has Driver */
             has_driver: boolean;
-            /** Has Key */
-            has_key: boolean;
-            /** Last Seen At */
-            last_seen_at: string | null;
             /** Laps */
             laps: number;
             /** Last Lap At */
@@ -5992,11 +5869,6 @@ export interface components {
              * @enum {string}
              */
             admins: "none" | "laps" | "full";
-        };
-        /** KeyOut */
-        KeyOut: {
-            /** Key */
-            key: string;
         };
         /** SharingIn */
         SharingIn: {
@@ -6695,18 +6567,6 @@ export interface components {
             open_slots?: number | null;
             /** Preset */
             preset?: string | null;
-        };
-        /** PresetsIn */
-        PresetsIn: {
-            /** Presets */
-            presets?: {
-                [key: string]: unknown;
-            }[];
-            /**
-             * Current
-             * @default
-             */
-            current?: string;
         };
         /** CommandOut */
         CommandOut: {
@@ -10202,50 +10062,6 @@ export interface operations {
             };
         };
     };
-    apps_telemetry_api_collector_status: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CollectorStatusOut"];
-                };
-            };
-        };
-    };
-    apps_telemetry_api_upload_lap: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LapIn"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LapReceivedOut"];
-                };
-            };
-        };
-    };
     apps_telemetry_api_my_telemetry: {
         parameters: {
             query?: never;
@@ -10262,26 +10078,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MyTelemetryOut"];
-                };
-            };
-        };
-    };
-    apps_telemetry_api_new_key: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["KeyOut"];
                 };
             };
         };
@@ -10941,28 +10737,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["SetupOut"];
                 };
-            };
-        };
-    };
-    apps_collectors_server_setup_api_collector_presets: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PresetsIn"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };

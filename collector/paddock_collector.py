@@ -57,7 +57,7 @@ from pathlib import Path
 
 log = logging.getLogger("paddock_collector")
 
-VERSION = "1.5.0"
+VERSION = "1.5.1"
 UPDATE_SECONDS = 24 * 3600
 SHORTCUT_NAME = "Iniciar Paddock.lnk"
 # Only one collector runs on a PC: the second one cannot take this local port, and it stops.
@@ -363,10 +363,6 @@ class App:
     def send_status(self, status: dict) -> dict:
         body = json.dumps(status).encode()
         return self._request("/api/collector/status", body, "application/json")
-
-    def send_presets(self, presets: list[dict], current: str) -> dict:
-        body = json.dumps({"presets": presets, "current": current}).encode()
-        return self._request("/api/collector/presets", body, "application/json")
 
     def get_command(self) -> dict:
         request = urllib.request.Request(
@@ -1845,15 +1841,7 @@ def status_body(settings: Settings, state: State) -> dict:
 
 
 def send_status(app: App, settings: Settings, state: State) -> None:
-    body = status_body(settings, state)
-    try:
-        app.send_status(body)
-    except urllib.error.HTTPError as error:
-        if error.code != 404:
-            raise
-        # An older app has no status endpoint, only the presets.
-        if settings.preset_dir is not None:
-            app.send_presets(body["presets"], body["current"])
+    app.send_status(status_body(settings, state))
 
 
 def setup_logging(folder: Path) -> None:

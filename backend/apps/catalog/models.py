@@ -122,10 +122,6 @@ class CarClass(models.Model):
     def __str__(self):
         return self.name
 
-    def image_url(self, kind: str) -> str | None:
-        """The API path of the preview or badge picture, or None without a picture."""
-        return f"/api/catalog/cars/{self.id}/images/{kind}" if getattr(self, kind) else None
-
 
 class CarClassMembership(models.Model):
     """A car is in a class from valid_from until valid_to. An open row has no valid_to. A

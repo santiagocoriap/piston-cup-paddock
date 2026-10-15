@@ -112,28 +112,3 @@ The replay needs car positions. The AC server sends them only to a plugin that a
 2. In `collector.ini`, set `server_udp_port` to that port, and set `request_positions = true`.
 
 At each new session the collector sends one packet to the server: the request for positions every 200 ms. It sends no other command. The old `live_logger.py` did the same next to Real Penalty.
-
-# Driver collector (optional)
-
-The driver collector runs on the PC of a driver, next to Assetto Corsa. It records speed, track position, and inputs for each lap and sends the laps to the app. Results and standings work without it.
-
-1. Install Python 3.11 or newer on your PC (Windows).
-2. In the app, open "Mi cuenta". In "Telemetría", make your key. The app shows the key one time only.
-3. Copy `driver.example.ini` to `driver.ini`. Put in the app address and your key.
-4. Check the key:
-
-   ```
-   python driver_collector.py --config driver.ini --check
-   ```
-
-5. Start the collector before or after AC:
-
-   ```
-   python driver_collector.py --config driver.ini
-   ```
-
-The window shows the status all the time: `[REC]` when it records, `[--]` when AC is not on track, and the number of laps that wait to go to the app.
-
-In "Mi cuenta" you choose who sees your laps: teammates, other drivers, and admins. Other drivers can see lap times and speed at most. They never see your inputs.
-
-The collector reads only the AC shared memory. Test it in a practice session first, and check that the laps show in the app.

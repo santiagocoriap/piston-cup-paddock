@@ -1537,17 +1537,9 @@
   },
   "telemetry": {
     "title": "Telemetry",
-    "help": "The driver collector is optional. It records speed, position, and pedals for each lap. Results work without it. Instructions are in collector/README.md.",
-    "noKey": "You have no key yet.",
-    "neverSeen": "The collector never connected.",
-    "lastSeen": "Collector seen {{date}}",
+    "help": "The Paddock script sends your laps from the league server, with speed, position, and pedals. You install nothing. Here you choose who sees them.",
     "laps_one": "{{count}} recorded lap",
     "laps_other": "{{count}} recorded laps",
-    "makeKey": "Make key",
-    "newKey": "Make new key",
-    "replaceKey": "The old key stops working. Continue?",
-    "keyOnce": "Copy the key now. The app does not show it again.",
-    "key": "Telemetry key",
     "sharing": "Who sees your telemetry",
     "teammates": "Teammates",
     "drivers": "Other drivers",
@@ -1571,7 +1563,8 @@
     "steerChart": "Steering of {{name}}",
     "gearChart": "Gears of {{name}}",
     "steer": "steering: the middle line is straight ahead",
-    "gear": "gear (max {{max}})"
+    "gear": "gear (max {{max}})",
+    "lastLap": "last {{date}}"
   },
   "compare": {
     "title": "Compare laps",

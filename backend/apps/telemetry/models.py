@@ -6,20 +6,6 @@ from apps.competition.models import Championship, Round
 from apps.identity.models import DriverProfile
 
 
-class DriverKey(models.Model):
-    """The key of the driver collector of one driver. The app keeps only a hash."""
-
-    driver = models.OneToOneField(
-        DriverProfile, on_delete=models.CASCADE, related_name="telemetry_key"
-    )
-    token_hash = models.CharField(max_length=64, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_seen_at = models.DateTimeField(null=True, blank=True)
-
-    def __str__(self):
-        return f"Telemetry key of {self.driver}"
-
-
 class Access(models.TextChoices):
     NONE = "none", _("Nothing")
     LAPS = "laps", _("Lap times and speed")
@@ -46,8 +32,8 @@ def telemetry_path(instance, filename):
 
 
 class TelemetryLap(models.Model):
-    """One lap from the driver collector or from the Paddock script. The samples are in a JSON
-    file."""
+    """One lap from the Paddock script. The samples are in a JSON file. Older laps came from the
+    driver collector, which is removed."""
 
     class Source(models.TextChoices):
         COLLECTOR = "collector", _("Driver collector")
@@ -58,7 +44,7 @@ class TelemetryLap(models.Model):
         LEAGUE = "league", _("A league session")
 
     driver = models.ForeignKey(DriverProfile, on_delete=models.CASCADE, related_name="laps")
-    source = models.CharField(max_length=10, choices=Source.choices, default=Source.COLLECTOR)
+    source = models.CharField(max_length=10, choices=Source.choices, default=Source.SCRIPT)
     # Only for a lap of the script: the championship of the race code, the match state, the
     # start of the server session, and the race start number.
     championship = models.ForeignKey(

@@ -4,12 +4,12 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import pytest
-from django.test import Client
 
 from apps.competition.models import ChampionshipMember, Round, SeasonEntry
 from apps.identity.models import DriverProfile
 from apps.telemetry.engineer import Trace, analyze, lap_length_m
-from apps.telemetry.services import create_key
+
+from .telemetry_laps import save_lap
 
 TZ = ZoneInfo("America/Argentina/Buenos_Aires")
 LENGTH_M = 5000
@@ -104,24 +104,15 @@ def setup(api, make_user, championship, season, car, layout, tmp_path, settings)
         ("slow", n, lap(brake_at=0.29), 181000 + n) for n in (1, 2, 3)
     ]
     for name, number, channels, time_ms in uploads:
-        key = create_key(users[name].driver_profile)
-        body = {
-            "track": "ks_highlands",
-            "car": "car",
-            "session_type": "race",
-            "lap_number": number,
-            "lap_time_ms": time_ms,
-            "recorded_at": "2026-10-11T22:40:00Z",
-            "sample_hz": 20,
-            "channels": channels,
-        }
-        response = Client().post(
-            "/api/telemetry/laps",
-            body,
-            content_type="application/json",
-            HTTP_AUTHORIZATION=f"Bearer {key}",
+        save_lap(
+            users[name].driver_profile,
+            round_,
+            channels,
+            car="car",
+            lap_number=number,
+            lap_time_ms=time_ms,
+            recorded_at=datetime.fromisoformat("2026-10-11T22:40:00+00:00"),
         )
-        assert response.json()["round_id"] == round_.id
     return users, round_
 
 

@@ -11,7 +11,7 @@ from .delta import delta, speed_at
 from .lap_services import _applied_import
 from .models import ImportedLap
 
-TELEMETRY_MATCH_MS = 50  # The driver collector and the server can differ by a few ms.
+TELEMETRY_MATCH_MS = 50  # The Paddock script and the server can differ by a few ms.
 
 
 class CompareError(ValueError):

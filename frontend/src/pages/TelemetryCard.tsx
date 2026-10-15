@@ -8,23 +8,13 @@ import { SettingsRow } from '../components/SettingsRow'
 
 type Level = 'none' | 'laps' | 'full'
 
-/** The driver collector key, its status, and who sees the telemetry of the driver. */
+/** The laps of the driver from the Paddock script, and who sees them. */
 export function TelemetryCard() {
   const { t, i18n } = useTranslation()
   const status = useLoad(() => api.GET('/api/me/telemetry'), [])
-  const [key, setKey] = useState<string | null>(null)
   const [message, setMessage] = useState<{ kind: 'error' | 'status'; text: string } | null>(null)
   const data = status.data
   if (!data || !data.has_driver || !data.sharing) return null
-
-  async function makeKey() {
-    if (data?.has_key && !window.confirm(t('telemetry.replaceKey'))) return
-    const { data: created, error } = await api.POST('/api/me/telemetry/key')
-    if (created) {
-      setKey(created.key)
-      status.reload()
-    } else setMessage({ kind: 'error', text: errorMessage(t, error) })
-  }
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -32,7 +22,7 @@ export function TelemetryCard() {
     const { error } = await api.PUT('/api/me/telemetry/sharing', {
       body: {
         teammates: form.get('teammates') as Level,
-        drivers: form.get('drivers') as 'none' | 'laps',
+        drivers: form.get('drivers') as Level,
         admins: form.get('admins') as Level,
       },
     })
@@ -50,27 +40,14 @@ export function TelemetryCard() {
   return (
     <SettingsRow id="telemetry" title={t('telemetry.title')} help={t('telemetry.help')}>
       <div className="key-status">
-        <span className={data.last_seen_at ? 'key-dot on' : data.has_key ? 'key-dot waiting' : 'key-dot'} aria-hidden="true" />
+        <span className={data.laps ? 'key-dot on' : 'key-dot'} aria-hidden="true" />
         <p>
-          <b>
-            {data.has_key
-              ? data.last_seen_at
-                ? t('telemetry.lastSeen', { date: formatDateTime(data.last_seen_at, i18n.language) })
-                : t('telemetry.neverSeen')
-              : t('telemetry.noKey')}
-          </b>
-          <span className="muted">{t('telemetry.laps', { count: data.laps })}</span>
+          <b>{t('telemetry.laps', { count: data.laps })}</b>
+          {data.last_lap_at && (
+            <span className="muted">{t('telemetry.lastLap', { date: formatDateTime(data.last_lap_at, i18n.language) })}</span>
+          )}
         </p>
-        <button type="button" className={data.has_key ? 'secondary' : undefined} onClick={makeKey}>
-          {data.has_key ? t('telemetry.newKey') : t('telemetry.makeKey')}
-        </button>
       </div>
-      {key && (
-        <div className="link-box" role="status">
-          <p>{t('telemetry.keyOnce')}</p>
-          <input readOnly value={key} onFocus={(e) => e.target.select()} aria-label={t('telemetry.key')} />
-        </div>
-      )}
       <form className="sharing-form" onSubmit={save} aria-label={t('telemetry.sharing')}>
         <h3>{t('telemetry.sharing')}</h3>
         <label>

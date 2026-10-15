@@ -8,20 +8,19 @@ import { TelemetrySection } from './TelemetrySection'
 afterEach(() => vi.restoreAllMocks())
 
 const status = {
-  has_driver: true, has_key: false, last_seen_at: null, laps: 0, last_lap_at: null,
+  has_driver: true, laps: 3, last_lap_at: '2026-10-14T23:55:00Z',
   sharing: { teammates: 'laps', drivers: 'none', admins: 'laps' },
 }
 
 describe('TelemetryCard', () => {
-  it('makes a key and saves who sees the telemetry', async () => {
+  it('shows the laps and saves who sees the telemetry', async () => {
     const calls = mockApi({
       'GET /api/me/telemetry': () => json(200, status),
-      'POST /api/me/telemetry/key': () => json(200, { key: 'pdc_secret' }),
       'PUT /api/me/telemetry/sharing': () => json(200, { teammates: 'full', drivers: 'laps', admins: 'laps' }),
     })
     renderPage(<TelemetryCard />, { path: '/account', url: '/account', me: DRIVER })
-    await userEvent.click(await screen.findByRole('button', { name: 'Crear clave' }))
-    expect(await screen.findByDisplayValue('pdc_secret')).toBeInTheDocument()
+    expect(await screen.findByText('3 vueltas grabadas')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /clave/i })).toBeNull()
 
     // The driver can also give the full level to other drivers.
     const drivers = screen.getByLabelText('Otros pilotos')

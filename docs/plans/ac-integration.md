@@ -44,7 +44,7 @@ Practice outside the league (optional, later): CSP also has Lua apps that load w
 | Part | What it does | Where |
 | --- | --- | --- |
 | Server collector | Sends result files, Real Penalty logs, and UDP events | `collector/paddock_collector.py` |
-| Driver collector | Sends the telemetry of each lap of one driver. Links a lap to a round only by track and time | `collector/driver_collector.py` |
+| Driver collector (removed on October 14, 2026) | Sent the telemetry of each lap of one driver. Linked a lap to a round only by track and time | The Paddock script replaces it |
 | Collector API | Ping, files, events, with a key for each championship | `backend/apps/collectors/api.py` |
 | Round match | Finds the round from the track and the session time | `backend/apps/collectors/services.py` |
 | Import preview | Matches drivers by GUID, and shows warnings | `backend/apps/imports/services.py` |
@@ -74,7 +74,7 @@ Estimate: half a day. Do this first, because phases 2 and 5 depend on it.
 
 ### Result
 
-The test used a local AC server with its own config, CSP 0.2.11-preview1, and the script `collector/script/paddock_test.lua`.
+The test used a local AC server with its own config, CSP 0.2.11-preview1, and a test script, `collector/script/paddock_test.lua` (removed after phase 2).
 
 | Point | Result |
 | --- | --- |
@@ -324,7 +324,7 @@ Changes from the first idea:
 
 ### Drivers
 
-Drivers install nothing for league races: the server sends the script (phase 0 and phase 2). The Python driver collector stays only as the fallback of phase 0.
+Drivers install nothing for league races: the server sends the script (phase 0 and phase 2). The Python driver collector and its key are removed: the script replaces them.
 
 ### Updates
 

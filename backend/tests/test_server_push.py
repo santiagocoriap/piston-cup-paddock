@@ -169,7 +169,7 @@ def test_the_admin_picks_another_preset(api, champ_admin, key, round_, entries):
         ],
         "current": "SERVER_01",
     }
-    assert collector(key, "post", "/collector/presets", sent).json() == {"presets": 2}
+    assert collector(key, "post", "/collector/status", sent).status_code == 200
     setup = api(champ_admin).get(f"/rounds/{round_.id}/server-setup").json()
     assert [p["folder"] for p in setup["presets"]] == ["SERVER_01", "Rain Piston"]
     assert setup["preset"] == "SERVER_01"

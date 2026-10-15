@@ -1,4 +1,5 @@
-"""Driver telemetry: receive laps from the driver collector, and decide who sees what.
+"""Driver telemetry: decide who sees what. The laps come from the Paddock script
+(script.py).
 
 Access levels:
 - "full": every channel, with the driver inputs.
@@ -10,27 +11,17 @@ drivers, and for admins. "none" is the default for other drivers. Basic results 
 telemetry.
 """
 
-import hashlib
 import json
-import secrets
-from datetime import timedelta
 
-from django.core.files.base import ContentFile
-from django.db import transaction
-from django.utils import timezone
-
-from apps.competition.models import Round, SeasonEntry
+from apps.competition.models import SeasonEntry
 from apps.competition.permissions import can_manage, can_view
 from apps.identity.models import DriverProfile
-from apps.imports.ac_results import track_key
 
-from .models import Access, DriverKey, TelemetryLap, TelemetrySharing
+from .models import Access, TelemetryLap, TelemetrySharing
 
+# The "laps" level gets only these. The other channels (gas, brake, steer, gear, rpm) are the
+# driver inputs: only the "full" level gets them.
 PUBLIC_CHANNELS = ["t_ms", "pos", "speed_kmh"]
-PROTECTED_CHANNELS = ["gas", "brake", "steer", "gear", "rpm"]
-CHANNELS = PUBLIC_CHANNELS + PROTECTED_CHANNELS
-MAX_SAMPLES = 20_000
-MATCH_WINDOW = timedelta(hours=12)
 RANK = {None: 0, Access.NONE: 0, Access.LAPS: 1, Access.FULL: 2}
 
 
@@ -38,77 +29,9 @@ class TelemetryError(ValueError):
     pass
 
 
-def _hash(raw: str) -> str:
-    return hashlib.sha256(raw.encode()).hexdigest()
-
-
-def create_key(driver: DriverProfile) -> str:
-    """Make a new key. The old key of the driver stops working."""
-    raw = "pdc_" + secrets.token_urlsafe(32)
-    DriverKey.objects.update_or_create(
-        driver=driver, defaults={"token_hash": _hash(raw), "last_seen_at": None}
-    )
-    return raw
-
-
-def authenticate(raw: str) -> DriverKey | None:
-    key = DriverKey.objects.filter(token_hash=_hash(raw)).select_related("driver__user").first()
-    if key:
-        DriverKey.objects.filter(pk=key.pk).update(last_seen_at=timezone.now())
-    return key
-
-
 def sharing_for(driver: DriverProfile) -> TelemetrySharing:
     sharing, _ = TelemetrySharing.objects.get_or_create(driver=driver)
     return sharing
-
-
-def _find_round(driver: DriverProfile, track: str, when) -> Round | None:
-    rounds = list(
-        Round.objects.filter(
-            season__entries__driver=driver,
-            scheduled_at__gte=when - MATCH_WINDOW,
-            scheduled_at__lte=when + MATCH_WINDOW,
-            track_layout__track__key=track,
-        ).distinct()
-    )
-    return rounds[0] if len(rounds) == 1 else None
-
-
-def receive_lap(key: DriverKey, lap: dict) -> tuple[TelemetryLap, bool]:
-    channels = lap["channels"]
-    unknown = set(channels) - set(CHANNELS)
-    if unknown or "t_ms" not in channels:
-        raise TelemetryError("unknown_channels")
-    lengths = {len(values) for values in channels.values()}
-    if len(lengths) != 1 or not 0 < lengths.pop() <= MAX_SAMPLES:
-        raise TelemetryError("bad_samples")
-    content = json.dumps(channels, separators=(",", ":"), sort_keys=True).encode()
-    sha256 = hashlib.sha256(
-        content + f"{lap['recorded_at'].isoformat()}:{lap['lap_number']}".encode()
-    ).hexdigest()
-    existing = TelemetryLap.objects.filter(driver=key.driver, sha256=sha256).first()
-    if existing:
-        return existing, False
-    track = track_key(lap["track"])
-    item = TelemetryLap(
-        driver=key.driver,
-        round=_find_round(key.driver, track, lap["recorded_at"]),
-        sha256=sha256,
-        session_type=lap.get("session_type", "")[:12],
-        track=track[:100],
-        car=lap["car"][:100],
-        lap_number=lap["lap_number"],
-        lap_time_ms=lap["lap_time_ms"],
-        valid=lap.get("valid", True),
-        recorded_at=lap["recorded_at"],
-        sample_hz=lap["sample_hz"],
-        uploaded_by=key.driver.user,
-    )
-    item.samples.save("samples.json", ContentFile(content), save=False)
-    with transaction.atomic():
-        item.save()
-    return item, True
 
 
 def _teammates(viewer_driver: DriverProfile | None, lap: TelemetryLap) -> bool:

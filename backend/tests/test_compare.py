@@ -1,13 +1,15 @@
 """Lap comparison: default laps, sector differences, and the delta along the track."""
 
+from datetime import datetime
+
 import pytest
 from django.core.management import call_command
-from django.test import Client
 
 from apps.competition.models import ChampionshipMember, Round, SeasonEntry
 from apps.imports.delta import delta
 from apps.imports.models import ImportedLap
-from apps.telemetry.services import create_key
+
+from .telemetry_laps import save_lap
 
 
 def lap(seconds_per_tenth):
@@ -80,23 +82,16 @@ def test_chosen_laps_and_telemetry_delta(api, night):
         .first()
     )
     for item, seconds in ((best, 10), (other, 11)):
-        key = create_key(item.entry.driver)
-        body = {
-            "track": "ks_highlands",
-            "car": "car",
-            "lap_number": item.lap_number,
-            "lap_time_ms": item.lap_time_ms,
-            "recorded_at": "2026-10-11T22:40:00Z",
-            "sample_hz": 20,
-            "channels": lap([seconds] * 10),
-        }
-        response = Client().post(
-            "/api/telemetry/laps",
-            body,
-            content_type="application/json",
-            HTTP_AUTHORIZATION=f"Bearer {key}",
+        save_lap(
+            item.entry.driver,
+            round_,
+            lap([seconds] * 10),
+            car="car",
+            session_type="",
+            lap_number=item.lap_number,
+            lap_time_ms=item.lap_time_ms,
+            recorded_at=datetime.fromisoformat("2026-10-11T22:40:00+00:00"),
         )
-        assert response.json()["round_id"] == round_.id
 
     data = api(admin).get(f"/rounds/{round_.id}/compare?a={best.id}&b={other.id}").json()
     assert (data["a"]["telemetry"], data["b"]["telemetry"]) == ("laps", "laps")

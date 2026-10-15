@@ -1537,17 +1537,9 @@
   },
   "telemetry": {
     "title": "Telemetría",
-    "help": "El colector de piloto es opcional. Graba velocidad, posición y pedales en cada vuelta. Los resultados funcionan sin él. Instrucciones en collector/README.md.",
-    "noKey": "Todavía no tenés clave.",
-    "neverSeen": "El colector nunca se conectó.",
-    "lastSeen": "Colector visto {{date}}",
+    "help": "El script de Paddock manda tus vueltas desde el servidor de la liga, con velocidad, posición y pedales. No instalás nada. Acá elegís quién las ve.",
     "laps_one": "{{count}} vuelta grabada",
     "laps_other": "{{count}} vueltas grabadas",
-    "makeKey": "Crear clave",
-    "newKey": "Crear clave nueva",
-    "replaceKey": "La clave anterior deja de funcionar. ¿Seguro?",
-    "keyOnce": "Copiá la clave ahora. La app no la muestra otra vez.",
-    "key": "Clave de telemetría",
     "sharing": "Quién ve tu telemetría",
     "teammates": "Compañeros de equipo",
     "drivers": "Otros pilotos",
@@ -1571,7 +1563,8 @@
     "steerChart": "Volante de {{name}}",
     "gearChart": "Marchas de {{name}}",
     "steer": "volante: la línea del medio es el volante derecho",
-    "gear": "marcha (máx. {{max}})"
+    "gear": "marcha (máx. {{max}})",
+    "lastLap": "última {{date}}"
   },
   "compare": {
     "title": "Comparar vueltas",
