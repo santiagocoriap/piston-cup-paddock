@@ -29,6 +29,7 @@ from .models import (
     RoundTrackChange,
     Season,
     SeasonEntry,
+    Team,
 )
 from .permissions import can_manage, can_view, is_league_admin, visible_championships
 
@@ -237,6 +238,8 @@ class RoundOut(Schema):
     cancelled: bool
     cancel_reason: str
     track_changes: list[TrackChangeOut]
+    # The conditions that an admin announced: time_of_day, weather, temperatures, grip, notes.
+    announced_conditions: dict
 
 
 class SeasonDetail(SeasonSummary):
@@ -305,6 +308,7 @@ def _round_out(round_: Round) -> RoundOut:
         origin=round_.origin,
         cancelled=round_.cancelled_at is not None,
         cancel_reason=round_.cancel_reason,
+        announced_conditions=round_.announced_conditions or {},
         track_changes=[
             TrackChangeOut(
                 old_layout=str(c.old_layout),
@@ -620,12 +624,100 @@ def get_season(request, season_id: int):
     return _season_detail(request.user, season)
 
 
+class TeamOut(Schema):
+    id: int
+    name: str
+
+
+class TeamIn(Schema):
+    name: str = Field(min_length=1, max_length=100)
+
+
+def _team_for(season: Season, name: str) -> str:
+    """The team name as the league has it. A new name becomes a team of the league."""
+    name = " ".join(name.split())
+    if not name:
+        return ""
+    league = season.championship.league
+    team = league.teams.filter(name__iexact=name).first()
+    return team.name if team else Team.objects.create(league=league, name=name).name
+
+
+@router.get("/seasons/{season_id}/teams", response=list[TeamOut])
+def season_teams(request, season_id: int):
+    """The teams of the league of the season, for the entry form."""
+    season = _visible_season(request.user, season_id)
+    return season.championship.league.teams.all()
+
+
+@router.post("/seasons/{season_id}/teams", response={201: TeamOut})
+def create_team(request, season_id: int, payload: TeamIn):
+    season = _visible_season(request.user, season_id)
+    require(can_manage(request.user, season.championship))
+    name = _team_for(season, payload.name)
+    return Status(201, season.championship.league.teams.get(name=name))
+
+
+@router.delete("/teams/{team_id}", response={204: None})
+def delete_team(request, team_id: int):
+    """A team leaves the list. Entries keep their team name."""
+    team = get_object_or_404(Team.objects.select_related("league"), pk=team_id)
+    championships = team.league.championships.all()
+    require(any(can_manage(request.user, c) for c in championships))
+    team.delete()
+    return Status(204, None)
+
+
+class EntryPatchIn(Schema):
+    car_id: int | None = None
+    number: int | None = Field(None, ge=1, le=999)
+    team: str | None = Field(None, max_length=100)
+
+
+@router.patch("/entries/{entry_id}", response=EntryOut)
+def update_entry(request, entry_id: int, payload: EntryPatchIn):
+    entry = get_object_or_404(
+        SeasonEntry.objects.select_related("season__championship__league", "driver", "car"),
+        pk=entry_id,
+    )
+    season = entry.season
+    if not can_view(request.user, season.championship):
+        raise Http404
+    require(can_manage(request.user, season.championship))
+    changes = []
+    if payload.car_id is not None and payload.car_id != entry.car_id:
+        car = get_object_or_404(Car, pk=payload.car_id)
+        changes.append(change("car", entry.car.name, car.name))
+        entry.car = car
+    if payload.number is not None and payload.number != entry.number:
+        changes.append(change("number", entry.number, payload.number))
+        entry.number = payload.number
+    if payload.team is not None:
+        team = _team_for(season, payload.team)
+        if team != entry.team:
+            changes.append(change("team", entry.team, team))
+            entry.team = team
+    with conflict_on_duplicate("entry_exists"):
+        entry.save()
+        record(
+            request.user,
+            "entry.changed",
+            "season",
+            season.id,
+            championship=season.championship,
+            params={"season": season.name, "driver": entry.driver.display_name},
+            changes=changes,
+        )
+    return _entry_out(entry)
+
+
 @router.post("/seasons/{season_id}/entries", response={201: EntryOut})
 def create_entry(request, season_id: int, payload: EntryIn):
     season = _visible_season(request.user, season_id)
     require(can_manage(request.user, season.championship))
     driver = get_object_or_404(DriverProfile, pk=payload.driver_id)
     car = get_object_or_404(Car, pk=payload.car_id)
+    payload.team = _team_for(season, payload.team)
     with conflict_on_duplicate("entry_exists"):
         entry = SeasonEntry.objects.create(
             season=season, driver=driver, car=car, number=payload.number, team=payload.team
@@ -786,6 +878,49 @@ def update_round(request, round_id: int, payload: RoundPatchIn):
         )
     round_.refresh_from_db()
     return _round_out(round_)
+
+
+class RoundOrderIn(Schema):
+    round_ids: list[int] = Field(max_length=100)
+
+
+@router.put("/seasons/{season_id}/round-order", response=list[RoundOut])
+def order_rounds(request, season_id: int, payload: RoundOrderIn):
+    """A new calendar order (drag and drop): round N is the Nth ID of the list. The list has
+    every round of the season. The dates stay with their rounds."""
+    season = get_object_or_404(Season.objects.select_related("championship"), pk=season_id)
+    if not can_view(request.user, season.championship):
+        raise Http404
+    require(can_manage(request.user, season.championship))
+    rounds = {r.id: r for r in season.rounds.select_related("track_layout__track")}
+    if sorted(payload.round_ids) != sorted(rounds):
+        raise HttpError(422, "round_list_mismatch")
+    with transaction.atomic():
+        # Two steps, so no two rounds have the same number on the way.
+        for offset, round_id in enumerate(payload.round_ids, start=1):
+            Round.objects.filter(pk=round_id).update(number=1000 + offset)
+        for number, round_id in enumerate(payload.round_ids, start=1):
+            Round.objects.filter(pk=round_id).update(number=number)
+        record(
+            request.user,
+            "season.rounds_ordered",
+            "season",
+            season.id,
+            championship=season.championship,
+            params={"season": season.name},
+            changes=[
+                change(
+                    "order",
+                    ", ".join(
+                        str(rounds[i].track_layout)
+                        for i in sorted(rounds, key=lambda i: rounds[i].number)
+                    ),
+                    ", ".join(str(rounds[i].track_layout) for i in payload.round_ids),
+                )
+            ],
+        )
+    ordered = season.rounds.select_related("track_layout__track").order_by("number")
+    return [_round_out(r) for r in ordered]
 
 
 def _managed_round(user, round_id: int) -> Round:

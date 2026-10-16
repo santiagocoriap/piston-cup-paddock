@@ -27,8 +27,8 @@ const data = {
 }
 
 const rounds = [
-  { id: 1, number: 1, track_layout_id: 1, track_name: 'Highlands', layout_name: 'Long', scheduled_at: '2026-10-11T00:00:00Z', origin: 'manual', cancelled: false, cancel_reason: '', track_changes: [] },
-  { id: 3, number: 3, track_layout_id: 1, track_name: 'Spa', layout_name: 'GP', scheduled_at: '2026-10-25T00:00:00Z', origin: 'manual', cancelled: false, cancel_reason: '', track_changes: [] },
+  { id: 1, number: 1, track_layout_id: 1, track_name: 'Highlands', layout_name: 'Long', scheduled_at: '2026-10-11T00:00:00Z', origin: 'manual', cancelled: false, cancel_reason: '', track_changes: [], announced_conditions: {} },
+  { id: 3, number: 3, track_layout_id: 1, track_name: 'Spa', layout_name: 'GP', scheduled_at: '2026-10-25T00:00:00Z', origin: 'manual', cancelled: false, cancel_reason: '', track_changes: [], announced_conditions: {} },
 ]
 
 function show(adminView: boolean, extra = {}) {

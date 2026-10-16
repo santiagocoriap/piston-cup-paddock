@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../../api/client'
 import type { components } from '../../api/schema'
 import { ActionForm } from '../../components/ActionForm'
+import { DangerMenu } from '../../components/DangerMenu'
 
 type CarClass = components['schemas']['CarClassOut']
 type Car = components['schemas']['CarOut']
@@ -25,7 +26,10 @@ function ClassCard({ item, cars, onSaved }: { item: CarClass; cars: Car[]; onSav
   const names = cars.filter((c) => item.car_ids.includes(c.id)).map((c) => c.name)
   return (
     <div className="card class-card">
-      <h3>{item.name}</h3>
+      <div className="class-head">
+        <h3>{item.name}</h3>
+        <DangerMenu target={{ kind: 'car_class', id: item.id, name: item.name }} onDeleted={onSaved} />
+      </div>
       <p>{names.length > 0 ? names.join(', ') : t('classes.noCars')}</p>
       <button type="button" className="secondary small" onClick={() => setEditing((e) => !e)}>
         {t('classes.editCars')}

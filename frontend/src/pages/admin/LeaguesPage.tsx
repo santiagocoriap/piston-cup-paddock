@@ -11,6 +11,7 @@ import { Loading } from '../../components/Layout'
 import { errorMessage } from '../../lib/errors'
 import { useLoad } from '../../lib/useLoad'
 import { Breadcrumbs } from '../../components/Breadcrumbs'
+import { DangerMenu } from '../../components/DangerMenu'
 
 type League = components['schemas']['LeagueOut']
 
@@ -92,10 +93,13 @@ function LeagueCard({ league, onChange }: { league: League; onChange: () => void
           {t('leagues.seasonCount', { count: seasons })}
         </span>
       </button>
-      <p className="league-zone muted">
-        <Icon name="clock" small />
-        {t('leagues.timezone', { zone: league.timezone })}
-      </p>
+      <div className="league-tools">
+        <p className="league-zone muted">
+          <Icon name="clock" small />
+          {t('leagues.timezone', { zone: league.timezone })}
+        </p>
+        <DangerMenu target={{ kind: 'league', id: league.id, name: league.name }} onDeleted={onChange} />
+      </div>
       <div id={listId} hidden={!open}>
         {league.championships.length === 0 && <p className="muted league-none">{t('leagues.noChampionships')}</p>}
         <ul className="league-tree">
@@ -108,6 +112,10 @@ function LeagueCard({ league, onChange }: { league: League; onChange: () => void
                 {t('leagues.open')}
                 <Icon name="arrow" small />
               </Link>
+              <DangerMenu
+                target={{ kind: 'championship', id: championship.id, name: championship.name }}
+                onDeleted={onChange}
+              />
             </li>
           ))}
         </ul>

@@ -152,3 +152,21 @@ def test_round_without_events_has_no_incidents(api, champ_admin, season, layout)
     round_ = Round.objects.create(season=season, number=2, track_layout=layout, scheduled_at=START)
     data = api(champ_admin).get(f"/rounds/{round_.id}/incidents").json()
     assert (data["has_events"], data["incidents"]) == (False, [])
+
+
+def test_only_the_last_start_counts_for_the_race(api, champ_admin, night):
+    from apps.collectors.incident_api import accepted_race_incidents
+
+    data = api(champ_admin).get(f"/rounds/{night.id}/incidents").json()
+    assert data["last_start"] == 2
+    incidents, _, _ = accepted_race_incidents(night)
+    # The contact of start 1 is from before the restart. Only the wall of start 2 counts.
+    assert [i.kind for i in incidents] == ["env"]
+
+
+def test_a_crash_only_in_the_first_start_does_not_count(champ_admin, night):
+    from apps.collectors.incident_api import accepted_race_incidents
+
+    CollectorEvent.objects.filter(kind="collision_env").delete()
+    incidents, _, has_events = accepted_race_incidents(night)
+    assert has_events and incidents == []

@@ -12,7 +12,16 @@ export function TitleSection({ seasonId }: { seasonId: number }) {
     [seasonId],
   )
   const data = title.data
-  if (!data || data.rounds_with_result === 0 || data.drivers.length === 0) return null
+  if (!data) return null
+  if (data.rounds_with_result === 0 || data.drivers.length === 0) {
+    // Before the first result there is no fight yet. The box says what will be here.
+    return (
+      <section aria-label={t('title.title')}>
+        <h2>{t('title.title')}</h2>
+        <p className="muted">{t('title.empty')}</p>
+      </section>
+    )
+  }
   const leader = data.drivers.find((d) => d.entry_id === data.leader_id)
   const contenders = data.drivers.filter((d) => d.status !== 'eliminated')
   const line = leader && data.leader_target !== null ? leader.points + data.leader_target : null

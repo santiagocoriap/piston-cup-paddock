@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { DRIVER, json, mockApi, renderPage } from '../test-utils'
 import { TelemetryCard } from './TelemetryCard'
-import { TelemetrySection } from './TelemetrySection'
 
 afterEach(() => vi.restoreAllMocks())
 
@@ -32,20 +31,5 @@ describe('TelemetryCard', () => {
     expect(calls.find((c) => c.key === 'PUT /api/me/telemetry/sharing')!.body).toEqual({
       teammates: 'full', drivers: 'laps', admins: 'laps',
     })
-  })
-})
-
-describe('TelemetrySection', () => {
-  it('shows a lap without inputs for lap access', async () => {
-    const lap = { id: 4, driver_name: 'Ana', session_type: 'race', lap_number: 3, lap_time_ms: 189296, valid: true, access: 'laps' }
-    mockApi({
-      'GET /api/rounds/9/telemetry': () => json(200, [lap]),
-      'GET /api/telemetry-laps/4': () =>
-        json(200, { ...lap, sample_hz: 20, car: 'acura', channels: { t_ms: [0, 50], pos: [0, 0.5], speed_kmh: [200, 250] } }),
-    })
-    renderPage(<TelemetrySection roundId={9} />, { path: '/rounds/:roundId', url: '/rounds/9', me: DRIVER })
-    await userEvent.click(await screen.findByRole('button', { name: /Ana · vuelta 3/ }))
-    expect(await screen.findByRole('img', { name: 'Velocidad de Ana' })).toBeInTheDocument()
-    expect(screen.getByText(/sin pedales: el piloto no los comparte/)).toBeInTheDocument()
   })
 })

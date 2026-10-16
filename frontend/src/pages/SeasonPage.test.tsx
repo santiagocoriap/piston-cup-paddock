@@ -134,7 +134,8 @@ describe('SeasonPage', () => {
       ...catalog,
     })
     show()
-    await userEvent.click(await screen.findByRole('button', { name: 'Administrar' }))
+    const calendar = (await screen.findByRole('heading', { name: 'Calendario' })).closest('section')!
+    await userEvent.click(within(calendar).getByRole('button', { name: 'Administrar' }))
     await userEvent.click(screen.getByRole('button', { name: 'Agregar fecha' }))
     const form = await screen.findByRole('form', { name: 'Agregar fecha' })
     await within(form).findByRole('option', { name: 'Highlands · Long' }) // Wait for the list.
@@ -157,13 +158,16 @@ describe('SeasonPage', () => {
       ...standings,
       'POST /api/seasons/5/entries': () => json(409, { detail: 'entry_exists' }),
       ...catalog,
-      'GET /api/drivers': () => json(200, [{ id: 3, display_name: 'Bing', steam_guid: null, user_id: null, username: null }]),
+      'GET /api/drivers': () => json(200, [{ id: 99, display_name: 'Bing', steam_guid: null, user_id: null, username: null }]),
+      'GET /api/seasons/5/teams': () => json(200, [{ id: 1, name: 'Rojo' }]),
     })
     show()
-    await userEvent.click(await screen.findByRole('button', { name: 'Inscribir piloto' }))
+    const entries = (await screen.findByRole('heading', { name: 'Pilotos inscriptos' })).closest('section')!
+    await userEvent.click(within(entries).getByRole('button', { name: 'Administrar' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Inscribir piloto' }))
     const form = await screen.findByRole('form', { name: 'Inscribir piloto' })
     await within(form).findByRole('option', { name: 'Bing' }) // Wait for the list.
-    await userEvent.selectOptions(await within(form).findByLabelText('Piloto'), '3')
+    await userEvent.selectOptions(await within(form).findByLabelText('Piloto'), '99')
     await userEvent.selectOptions(await within(form).findByLabelText('Auto'), '2')
     await userEvent.type(within(form).getByLabelText('Número'), '93')
     await userEvent.click(within(form).getByRole('button', { name: 'Agregar' }))

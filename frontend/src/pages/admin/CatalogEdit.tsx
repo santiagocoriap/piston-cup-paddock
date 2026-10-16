@@ -5,6 +5,7 @@ import { ActionForm } from '../../components/ActionForm'
 import { Dialog } from '../../components/Dialog'
 import { RowMenu, type MenuItem } from '../../components/RowMenu'
 import { errorMessage } from '../../lib/errors'
+import { ConfirmDelete, type DeleteTarget } from '../../components/ConfirmDelete'
 
 export type ImageKind = 'outline' | 'preview' | 'badge'
 
@@ -76,6 +77,8 @@ type Props = {
   base: string
   images?: { kind: ImageKind; set: boolean }[]
   onChange: () => void
+  /** With it, the menu ends with a red delete. */
+  deleteTarget?: DeleteTarget
 }
 
 /** Send a request with the CSRF token. A picture goes as a form, a name as JSON. */
@@ -91,9 +94,10 @@ async function send(method: string, url: string, body?: FormData | object) {
 }
 
 /** The edit menu of a catalog item: change the name, and upload or remove each picture. */
-export function CatalogEdit({ name, country, fields, base, images = [], onChange }: Props) {
+export function CatalogEdit({ name, country, fields, base, images = [], onChange, deleteTarget }: Props) {
   const { t } = useTranslation()
   const [renaming, setRenaming] = useState(false)
+  const [deleting, setDeleting] = useState<DeleteTarget | null>(null)
   const [error, setError] = useState<string | null>(null)
   const file = useRef<HTMLInputElement>(null)
   const uploadKind = useRef<ImageKind>('preview')
@@ -135,11 +139,15 @@ export function CatalogEdit({ name, country, fields, base, images = [], onChange
       { label: t(`catalogEdit.upload.${kind}`), onSelect: () => pick(kind) },
       ...(set ? [{ label: t(`catalogEdit.remove.${kind}`), onSelect: () => remove(kind) }] : []),
     ]),
+    ...(deleteTarget
+      ? [{ label: t(`deletion.delete.${deleteTarget.kind}`), danger: true, onSelect: () => setDeleting(deleteTarget) }]
+      : []),
   ]
 
   return (
     <span className="catalog-edit">
       <RowMenu label={t('catalogEdit.menu', { name })} items={items} />
+      <ConfirmDelete target={deleting} onClose={() => setDeleting(null)} onDeleted={onChange} />
       <input
         ref={file}
         className="sr-only"

@@ -45,11 +45,19 @@ test('an admin fixes a track, runs a track vote, and the winners fill the calend
   // A track ballot with two choices for each driver. The first step of the form has these fields.
   await openAdminForm(page, 'ballots', 'Nueva votación')
   await submitForm(page, 'Nueva votación', { Título: `Pistas ${run}`, 'Opciones por piloto': '2' })
-  await page.getByRole('link', { name: `Pistas ${run}` }).click()
+  // Open the ballot by its address. A click on the card sometimes lands before the list reloads.
+  const ballotLink = page.getByRole('link', { name: `Pistas ${run}` })
+  await page.goto((await ballotLink.getAttribute('href'))!)
+  await expect(page.getByRole('heading', { level: 1, name: `Pistas ${run}` })).toBeVisible()
   // The ballot tools open in dialogs from the "Administrar" menu.
+  // All options in one checklist: tick the three tracks, then save.
+  await openRoundAdmin(page, 'Opciones de la votación')
+  const picker = page.getByRole('dialog')
   for (const name of ['Monza', 'Imola', 'Suzuka']) {
-    await openRoundAdmin(page, 'Agregar opción')
-    await submitForm(page, 'Agregar opción', {}, { Pista: `${name} ${run} · GP` })
+    await picker.getByRole('checkbox', { name: new RegExp(`${name} ${run}`) }).check()
+  }
+  await picker.getByRole('button', { name: 'Guardar (3 opciones)' }).click()
+  for (const name of ['Monza', 'Imola', 'Suzuka']) {
     await expect(page.getByText(`${name} ${run} - GP`).first()).toBeVisible()
   }
   await openRoundAdmin(page, 'Abrir la votación')

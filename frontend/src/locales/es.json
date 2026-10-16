@@ -422,7 +422,9 @@
     "image_not_supported": "La imagen tiene que ser PNG o JPEG.",
     "no_release": "La app todavía no tiene el programa del colector. Probá más tarde.",
     "wrong_key": "La clave no es de este colector.",
-    "unknown_preset": "El colector no tiene esa plantilla de Content Manager."
+    "unknown_preset": "El colector no tiene esa plantilla de Content Manager.",
+    "delete_self": "No podés borrar tu propia cuenta.",
+    "last_admin": "Es el último admin de la liga: no se puede borrar."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -499,7 +501,9 @@
     "adminShort": "Admin",
     "bannerTag": "MODO ADMINISTRACIÓN",
     "bannerText": "Los cambios afectan a toda la liga y quedan en el historial.",
-    "bannerShort": "Modo admin"
+    "bannerShort": "Modo admin",
+    "steward": "Modo comisario",
+    "stewardShort": "Comisario"
   },
   "audit": {
     "title": "Historial de cambios",
@@ -1013,7 +1017,7 @@
     "label": "Nombre de la clase",
     "remove": "Quitar",
     "power": "Valor del voto",
-    "setPower": "Cambiar el valor de un voto",
+    "setPower": "Votos por usuario",
     "user": "Usuario",
     "open": "Abrir la votación",
     "openHelp": "Al abrir, la lista de votantes queda fija.",
@@ -1050,7 +1054,6 @@
     },
     "minParticipationRule": "Tiene que votar al menos el {{pct}} % de los votantes.",
     "lowParticipationHappened": "Votaron muy pocos: la votación cerró sin ganador. Un admin decide.",
-    "excludedTracks": "Pistas que no se pueden votar",
     "showVoterNames": "Mostrar quién votó (no qué votó)",
     "votedNames": "Ya votaron: {{names}}",
     "remindNow": "Recordar ahora a quien no votó",
@@ -1080,7 +1083,17 @@
     "remindHelp": "Se avisa a quien todavía no votó.",
     "sendReminder": "Enviar recordatorio",
     "votes_one": "{{count}} voto",
-    "votes_other": "{{count}} votos"
+    "votes_other": "{{count}} votos",
+    "addFreeOption": "Agregar opción libre",
+    "choiceLimit": "Opciones que puede elegir",
+    "powerHelp": "Valor del voto: cuántas veces cuenta cada elección. Opciones que puede elegir: cuántas puede tildar (la votación tiene {{count}}).",
+    "choiceExceptions": "Opciones con otro límite: {{list}}",
+    "inCalendar": "Las pistas ganadoras ya están en el calendario de la temporada.",
+    "toCalendar": "Ordenarlas y ponerles fecha",
+    "settings": "Ajustes de la votación",
+    "goVote": "Votar",
+    "goSee": "Ver",
+    "settingsSaved": "Ajustes guardados."
   },
   "calendar": {
     "fixed": "Reservar pista fija",
@@ -1088,11 +1101,9 @@
     "position": "Posición (opcional)",
     "date": "Día y hora (opcional)",
     "noDate": "Sin fecha",
-    "edit": "Cambiar posición o fecha",
     "round": "Fecha",
     "votedSlots": "{{count}} fechas libres para votar",
     "allowRepeats": "Una pista fija también puede ser candidata en la votación",
-    "conditions": "Condiciones anunciadas (opcional)",
     "timesNote": "Horarios en {{zone}}.",
     "download": "Descargar calendario (.ics)",
     "addRound": "Agregar esta fecha a mi calendario",
@@ -1488,7 +1499,8 @@
     "line": "{{name}} es campeón con {{points}} pts",
     "ownShort": "Depende de sí mismo",
     "helpShort": "Necesita ayuda",
-    "barLabel": "{{name}}: {{points}} pts ahora, máximo posible {{best}}"
+    "barLabel": "{{name}}: {{points}} pts ahora, máximo posible {{best}}",
+    "empty": "Aparece después de la primera carrera con resultado. Muestra quién todavía puede ganar el campeonato y cuántos puntos necesita el líder."
   },
   "seasonReport": {
     "title": "Reporte de la temporada",
@@ -1669,52 +1681,77 @@
     "all": "Todos",
     "summary": "Largada {{attempt}} · vuelta {{lap}} · {{cars}} · {{speed}} km/h",
     "map": "Mapa de incidentes",
-    "mapHelp": "Cada punto es un incidente, en su posición en la pista. Las zonas rojas muestran dónde hay muchos. Esta pista todavía no tiene el dibujo del circuito.",
+    "mapHelp": "Cada punto es un incidente, en su posición en la pista. Las zonas rojas muestran dónde hay muchos. La línea blanca es la pista, según las posiciones grabadas.",
     "noPositions": "Los incidentes no tienen posición.",
     "detail": "Eventos del incidente",
     "review": "Revisar incidente",
     "note": "Nota",
     "saveReview": "Guardar revisión",
-    "lap": "Vuelta"
+    "lap": "Vuelta",
+    "mapHelpNoTrack": "Cada punto es un incidente, en su posición en la pista. Las zonas rojas muestran dónde hay muchos. Sin posiciones grabadas, el mapa no dibuja la pista.",
+    "beforeRestart": "Antes del reinicio"
   },
   "engineer": {
     "title": "Ingeniero de carrera",
-    "reference": "Referencia: {{driver}}, vuelta {{lap}} ({{time}}), la vuelta más rápida que podés ver.",
-    "referenceOwn": "Referencia: tu mejor vuelta, la {{lap}} ({{time}}). Nadie más comparte una vuelta más rápida.",
-    "lapsUsed_one": "Se compara {{count}} vuelta tuya.",
-    "lapsUsed_other": "Se comparan {{count}} vueltas tuyas.",
-    "length": "largo de vuelta medido: {{meters}} m",
-    "notEnough": "Hacen falta al menos dos vueltas tuyas con telemetría y una referencia.",
-    "caution": "Esto muestra dónde perdés tiempo frente a la referencia, no por qué. Solo compara velocidad, porque los otros pilotos no comparten sus pedales. Un consejo aparece solo si la diferencia se repite.",
-    "noAdvice": "En las {{zones}} frenadas no hay una diferencia que se repita.",
-    "evidence": "Datos de tus vueltas",
-    "test": "Probá",
-    "kind": {
-      "brake_later": {
-        "title": "Frenada {{zone}} (al {{position}} % de la vuelta)",
-        "finding": "Empezás a frenar en promedio {{difference}} m antes que la referencia, en {{showing}} de {{total}} vueltas.",
-        "unit": "m antes",
-        "test": "frená 10 m más tarde durante 3 vueltas y mirá si baja el tiempo del sector. Si te pasás de la curva, volvé al punto anterior."
-      },
-      "carry_speed": {
-        "title": "Curva {{zone}} (al {{position}} % de la vuelta)",
-        "finding": "Tu velocidad mínima es {{difference}} km/h más baja que la referencia ({{reference}} km/h), en {{showing}} de {{total}} vueltas.",
-        "unit": "km/h",
-        "test": "soltá el freno un poco antes y llevá más velocidad al vértice durante 3 vueltas. Compará la velocidad de salida."
-      },
-      "consistent_exit": {
-        "title": "Salida {{zone}} (al {{position}} % de la vuelta)",
-        "finding": "Tu velocidad de salida cambia mucho de vuelta a vuelta (desvío {{difference}} km/h). La referencia sale a {{reference}} km/h.",
-        "unit": "km/h",
-        "test": "elegí un punto fijo para acelerar a fondo y repetilo 5 vueltas. Una salida pareja suele valer más que una salida rápida de vez en cuando."
-      }
+    "driver": "Piloto",
+    "yourLap": "Tu vuelta",
+    "compareWith": "Comparar con",
+    "ownLap": "Tu vuelta {{number}} · {{time}}",
+    "ownBest": "Tus mejores curvas",
+    "reference": "Referencia: {{name}}",
+    "gap": "Diferencia",
+    "ideal": "Tu vuelta ideal",
+    "idealGain": "{{seconds}} s menos, con tu mejor tiempo en cada curva",
+    "noPedals": "Esta vuelta no tiene pedales: el ingeniero solo compara velocidad.",
+    "noLaps": "Hacen falta vueltas válidas con telemetría en esta sesión. Una vuelta con un corte no cuenta.",
+    "whereToGain": "Dónde ganar tiempo",
+    "nothingToGain": "En ninguna curva perdés más de 0.04 s frente a la referencia.",
+    "corner": "Curva {{number}}",
+    "cornerShort": "Curva",
+    "noCause": "La diferencia no tiene una sola causa clara: está repartida en toda la curva. Miralo en la telemetría.",
+    "openTelemetry": "Ver en la telemetría",
+    "openTelemetryFor": "Ver la curva {{number}} en la telemetría",
+    "allCorners": "Todas las curvas",
+    "time": "Tiempo",
+    "brake": "Frenada",
+    "minSpeed": "Mínima",
+    "throttle": "Fondo",
+    "exit": "Salida",
+    "gear": "Marcha",
+    "tableHelp": "Tiempo: lo que ganás (−) o perdés (+) en la curva y en la recta que sigue. Frenada y Fondo: metros desde la línea de largada donde empezás a frenar y donde volvés a acelerar a fondo, con la diferencia entre paréntesis (− es antes). Mínima y Salida: tu velocidad y la diferencia con la referencia. Marcha: la tuya / la de la referencia.",
+    "consistency": "Consistencia",
+    "spreadText": "entre {{best}} s y {{worst}} s según la vuelta (desvío {{spread}} s)",
+    "spreadBrake": "Tu punto de frenada cambia unos {{meters}} m de vuelta a vuelta.",
+    "spreadMin": "Tu velocidad mínima cambia unos {{kmh}} km/h de vuelta a vuelta.",
+    "caution": "El ingeniero mide diferencias, no errores. Probá un cambio por vez durante algunas vueltas y mirá el tiempo de esa curva.",
+    "map": "Mapa de la pista con las curvas numeradas",
+    "mapHelp": "Rojo: perdés tiempo. Verde: ganás. Tocá un número para ver la curva en la tabla.",
+    "pin": "Curva {{number}}: {{loss}}",
+    "noteTitle": "Resumen del ingeniero (IA)",
+    "noteWriting": "El ingeniero está escribiendo…",
+    "noteFailed": "No se pudo escribir el resumen. Probá de nuevo más tarde.",
+    "noAi": "La IA no está configurada en esta app.",
+    "askNote": "Pedir el resumen",
+    "noteHelp": "Claude escribe un resumen corto con estos números. Cuesta unos centavos de dólar y se guarda para esta vuelta y esta referencia.",
+    "cause": {
+      "brake_early": "Empezás a frenar {{difference}} m antes que la referencia.",
+      "brake_late": "Frenás {{difference}} m más tarde y llegás más lento al vértice.",
+      "brake_soft": "Frenás más suave: {{yours}} % de pedal contra {{reference}} %.",
+      "min_speed": "Tu velocidad mínima es {{yours}} km/h, la de la referencia {{reference}} km/h.",
+      "throttle_late": "Volvés a fondo {{difference}} m más tarde.",
+      "coasting": "Vas {{yours}} m sin pedales, la referencia {{reference}} m.",
+      "exit_speed": "Salís a {{yours}} km/h, la referencia a {{reference}} km/h.",
+      "gear": "Usás la marcha {{yours}} en el vértice, la referencia la {{reference}}."
     },
-    "setupOff": "Consejos de setup: apagados. Hacen falta datos de {{missing}}, y la app todavía no los recibe.",
-    "missing": {
-      "setup": "setup",
-      "tyre_temperatures": "temperatura de neumáticos",
-      "fuel": "combustible",
-      "track_conditions": "condiciones de pista"
+    "try": {
+      "brake_early": "Probá frenar 5 a 10 m más tarde por vez.",
+      "brake_late": "Probá frenar unos metros antes para llegar mejor al vértice.",
+      "brake_soft": "Probá pisar más fuerte al principio y soltar de a poco.",
+      "min_speed": "Probá soltar el freno antes y llevar más velocidad al vértice.",
+      "throttle_late": "Probá volver al acelerador antes, de a poco.",
+      "coasting": "Probá pasar del acelerador al freno sin tramo muerto.",
+      "exit_speed": "Probá una salida más abierta y acelerar antes.",
+      "gear": "Probá la marcha de la referencia."
     }
   },
   "safety": {
@@ -1882,7 +1919,29 @@
     "clone": "Crear temporada",
     "cloneName": "Nombre de la temporada nueva",
     "cloneHelp": "Copia los pilotos inscriptos, el reglamento actual y las pistas fijas (sin fecha). No copia resultados.",
-    "menu": "Acciones de la fecha {{number}}"
+    "menu": "Acciones de la fecha {{number}}",
+    "settings": "Fecha y condiciones",
+    "settingsTitle": "Fecha {{number}} · {{track}}",
+    "conditionsHelp": "Lo que ven los pilotos en el briefing. Dejá vacío lo que no anunciás.",
+    "weathers": {
+      "sol_01_clear": "Despejado",
+      "sol_02_few_clouds": "Pocas nubes",
+      "sol_03_scattered_clouds": "Nubes dispersas",
+      "sol_04_windy": "Ventoso",
+      "sol_05_broken_clouds": "Nublado parcial",
+      "sol_06_overcast": "Cubierto",
+      "sol_11_mist": "Neblina",
+      "sol_12_fog": "Niebla",
+      "sol_21_haze": "Bruma",
+      "sol_31_light_drizzle": "Llovizna leve",
+      "sol_32_drizzle": "Llovizna",
+      "sol_34_light_rain": "Lluvia leve",
+      "sol_35_rain": "Lluvia",
+      "sol_36_heavy_rain": "Lluvia fuerte",
+      "sol_41_light_thunderstorm": "Tormenta leve",
+      "sol_42_thunderstorm": "Tormenta"
+    },
+    "weatherKeep": "Sin cambio (el clima del preset)"
   },
   "protestExtras": {
     "addEvidence": "Agregar prueba",
@@ -2228,5 +2287,128 @@
     "sending": "Importando {{done}} de {{total}}…",
     "done": "Listo: {{cars}} autos y {{tracks}} pistas nuevas, con {{layouts}} trazados.",
     "noFiles": "El navegador no dio ningún archivo. Elegí la carpeta content otra vez."
+  },
+  "calendarOrder": {
+    "title": "Fechas de todo el calendario",
+    "help": "Arrastrá una fecha a su lugar, o usá las flechas. Elegí el día y la hora de cada una (hora de {{zone}}). Después, Guardar.",
+    "voted": "votada",
+    "date": "Día y hora de {{track}}",
+    "up": "Subir {{track}}",
+    "down": "Bajar {{track}}",
+    "saved": "Calendario guardado.",
+    "drag": "Arrastrá para cambiar el orden",
+    "moved": "Orden guardado."
+  },
+  "teams": {
+    "title": "Equipos",
+    "none": "Sin equipo",
+    "new": "+ Equipo nuevo…",
+    "newName": "Nombre del equipo",
+    "help": "Los equipos de la liga. El formulario de inscripción los lista. Sacar un equipo de la lista no cambia las inscripciones.",
+    "remove": "Sacar",
+    "empty": "Todavía no hay equipos."
+  },
+  "optionPicker": {
+    "title": "Opciones de la votación",
+    "helpTracks": "Tildá las pistas de la votación y destildá las que querés sacar. Las grises no pueden entrar: dice por qué.",
+    "helpClasses": "Tildá las clases de autos de la votación y destildá las que querés sacar.",
+    "search": "Buscar pista o trazado",
+    "all_one": "Elegir la {{count}} disponible",
+    "all_other": "Elegir las {{count}} disponibles",
+    "none": "Nada para mostrar.",
+    "save_one": "Guardar ({{count}} opción)",
+    "save_other": "Guardar ({{count}} opciones)",
+    "why": {
+      "track_excluded": "Excluida de esta votación",
+      "layout_is_fixed": "Ya es una fecha fija de la temporada",
+      "grid_too_small": "Tiene menos boxes que pilotos inscriptos"
+    }
+  },
+  "deletion": {
+    "title": "¿Borrar {{name}}?",
+    "confirm": "Borrar",
+    "noUndo": "No se puede deshacer.",
+    "typeName": "Para confirmar, escribí «{{name}}»",
+    "what": {
+      "league": "Se borra la liga con todos sus campeonatos, temporadas, fechas, resultados, votaciones y equipos. Los pilotos, las cuentas y el catálogo quedan.",
+      "championship": "Se borra el campeonato con sus temporadas, fechas, resultados, votaciones, miembros y colectores. Los pilotos y el catálogo quedan.",
+      "season": "Se borra la temporada con sus fechas, resultados, inscriptos, votaciones y reglamento.",
+      "round": "Se borra la fecha con sus resultados, archivos importados, vueltas y reporte.",
+      "entry": "Se borra la inscripción del piloto en esta temporada. Una inscripción con resultados queda.",
+      "ballot": "Se borra la votación con sus opciones y votos. Las fechas que ya agregó al calendario quedan.",
+      "driver": "Se borra el perfil del piloto. Un piloto inscripto en una temporada queda: primero sacá la inscripción.",
+      "user": "Se borra la cuenta. Su perfil de piloto queda, sin cuenta.",
+      "track": "Se borra la pista con sus trazados. Una pista que usa una fecha, un récord o una votación queda.",
+      "layout": "Se borra el trazado. Un trazado que usa una fecha, un récord o una votación queda.",
+      "car": "Se borra el auto. Un auto de una inscripción o de un récord queda.",
+      "car_class": "Se borra la clase de autos. Los autos quedan. Una clase que usa una votación queda."
+    },
+    "errors": {
+      "in_use": "No se puede borrar: está en uso.",
+      "entry_has_results": "No se puede borrar: la inscripción tiene resultados."
+    },
+    "uses": {
+      "round": "Fecha: {{value}}",
+      "ballot": "Votación: {{value}}",
+      "entry": "Inscripción: {{value}}",
+      "records": "Récords manuales: {{value}}",
+      "track_changes": "Cambios de pista: {{value}}",
+      "results": "Líneas de resultado: {{value}}",
+      "penalties": "Penalizaciones: {{value}}"
+    },
+    "menu": "Más opciones de {{name}}",
+    "delete": {
+      "league": "Borrar liga",
+      "championship": "Borrar campeonato",
+      "season": "Borrar temporada",
+      "round": "Borrar fecha",
+      "entry": "Sacar inscripción",
+      "ballot": "Borrar votación",
+      "driver": "Borrar piloto",
+      "user": "Borrar cuenta",
+      "track": "Borrar pista",
+      "layout": "Borrar trazado",
+      "car": "Borrar auto",
+      "car_class": "Borrar clase"
+    },
+    "options": "Opciones"
+  },
+  "telemetryTool": {
+    "sessions": {
+      "race": "Carrera",
+      "qualifying": "Clasificación",
+      "practice": "Práctica"
+    },
+    "lanes": {
+      "delta": "Delta",
+      "speed_kmh": "Velocidad",
+      "gas": "Acelerador",
+      "brake": "Freno",
+      "steer": "Volante",
+      "gear": "Marcha",
+      "rpm": "RPM"
+    },
+    "short": {
+      "gas": "Acel.",
+      "brake": "Freno",
+      "gear": "Marcha"
+    },
+    "lapShort": "V{{number}}",
+    "lap": "Vuelta",
+    "setReference": "Usar como referencia del delta",
+    "setReferenceFor": "Usar {{lap}} como referencia",
+    "pickHelp": "Tocá una vuelta para sumarla al gráfico (hasta {{count}}). REF marca la vuelta contra la que se mide el delta.",
+    "channels": "Datos en el gráfico",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "wholeLap": "Vuelta entera",
+    "controls": "Rueda del mouse: zoom · Arrastrar: elegir un tramo · Shift + arrastrar o la barra de abajo: mover · Doble clic: vuelta entera",
+    "pickOne": "Elegí una vuelta arriba.",
+    "loading": "Cargando las vueltas…",
+    "hoverHelp": "Pasá el mouse por el gráfico o la pista",
+    "map": "Mapa de la pista con el cursor del gráfico",
+    "noMap": "Sin posiciones del servidor, no hay mapa de la pista.",
+    "mapHelp": "En rojo: el tramo del gráfico. Pasá el mouse por la pista para mover el cursor. Clic: zoom a esa curva.",
+    "mapHelpCompare": "Cada tramo tiene el color de la vuelta más rápida ahí. El tramo del gráfico va resaltado. Clic: zoom a esa curva."
   }
 }

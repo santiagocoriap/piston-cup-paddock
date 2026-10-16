@@ -14,7 +14,8 @@ export function compose(args: string[], env: Record<string, string> = {}) {
   execFileSync('docker', ['compose', '--project-name', E2E_PROJECT, ...args], {
     cwd: root,
     stdio: 'inherit',
-    env: { ...process.env, WEB_PUBLISH_PORT: E2E_WEB_PORT, DB_PUBLISH_PORT: E2E_DB_PORT, ...env },
+    // AI_DISABLED: the test app never makes a paid AI call, even with a key in .env.
+    env: { ...process.env, WEB_PUBLISH_PORT: E2E_WEB_PORT, DB_PUBLISH_PORT: E2E_DB_PORT, AI_DISABLED: '1', ...env },
   })
 }
 

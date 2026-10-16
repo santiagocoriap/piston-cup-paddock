@@ -13,14 +13,15 @@ class Access(models.TextChoices):
 
 
 class TelemetrySharing(models.Model):
-    """Who sees the telemetry of a driver. The driver chooses each level."""
+    """Who sees the telemetry of a driver. Everybody sees everything at first, so the league can
+    compare laps with no setup. The driver can choose a lower level."""
 
     driver = models.OneToOneField(
         DriverProfile, on_delete=models.CASCADE, related_name="telemetry_sharing"
     )
-    teammates = models.CharField(max_length=4, choices=Access.choices, default=Access.LAPS)
-    drivers = models.CharField(max_length=4, choices=Access.choices, default=Access.NONE)
-    admins = models.CharField(max_length=4, choices=Access.choices, default=Access.LAPS)
+    teammates = models.CharField(max_length=4, choices=Access.choices, default=Access.FULL)
+    drivers = models.CharField(max_length=4, choices=Access.choices, default=Access.FULL)
+    admins = models.CharField(max_length=4, choices=Access.choices, default=Access.FULL)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -103,3 +104,37 @@ class ScriptCode(models.Model):
 
     def __str__(self):
         return f"Script code of {self.championship}"
+
+
+class EngineerNote(models.Model):
+    """A short coaching note that the AI writes from the numbers of the race engineer. The app
+    keeps it, so the same lap and reference never cost a second AI call."""
+
+    class State(models.TextChoices):
+        PENDING = "pending", _("Pending")
+        READY = "ready", _("Ready")
+        FAILED = "failed", _("Failed")
+
+    driver = models.ForeignKey(DriverProfile, on_delete=models.CASCADE, related_name="+")
+    round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name="engineer_notes")
+    lap = models.ForeignKey(TelemetryLap, on_delete=models.CASCADE, related_name="+")
+    # "own" for the best corners of the driver, or the ID of the reference lap.
+    reference = models.CharField(max_length=20)
+    language = models.CharField(max_length=5, choices=settings.LANGUAGES)
+    prompt_version = models.CharField(max_length=20)
+    model = models.CharField(max_length=100)
+    facts = models.JSONField()
+    status = models.CharField(max_length=10, choices=State.choices, default=State.PENDING)
+    text = models.TextField(blank=True)
+    error = models.TextField(blank=True)
+    requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    generated_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Engineer note for {self.driver} lap {self.lap_id}"

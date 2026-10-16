@@ -10,7 +10,7 @@ from ninja.files import UploadedFile
 from pydantic import AwareDatetime
 
 from apps.collectors.conditions import differences, server_conditions
-from apps.collectors.incident_api import accepted_race_incidents
+from apps.collectors.incident_api import night_incidents
 from apps.competition.models import ChampionshipMember, Round, Season, SeasonEntry
 from apps.competition.permissions import can, can_manage, can_view, capabilities
 from apps.dashboard.services import my_handicap
@@ -309,11 +309,12 @@ def _can_protest(user, round_: Round, result: RaceResult | None) -> bool:
 
 
 def _incident_counts(round_: Round) -> dict[str, int] | None:
-    incidents, _, has_events = accepted_race_incidents(round_)
+    """The incidents of each car in the race, in every start: a crash before a restart counts."""
+    incidents, _, has_events = night_incidents(round_, ("race",))
     if not has_events:
         return None
     counts: dict[str, int] = {}
-    for incident in incidents:
+    for _, incident in incidents:
         for car in incident.cars:
             counts[car] = counts.get(car, 0) + 1
     return counts

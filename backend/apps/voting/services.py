@@ -61,6 +61,7 @@ SETTINGS = (
     "min_prior_starts",
     "max_runoffs",
     "power_overrides",
+    "choice_overrides",
     "opens_at",
     "remind_hours_before",
     "min_participation_pct",
@@ -81,6 +82,7 @@ def _check_settings(ballot: Ballot) -> None:
     if ballot.method == Ballot.Method.SINGLE:
         ballot.selection_limit = 1
     _require(all(int(power) >= 0 for power in ballot.power_overrides.values()), "bad_power")
+    _require(all(1 <= int(n) <= 50 for n in ballot.choice_overrides.values()), "bad_choices")
     _require(ballot.min_participation_pct <= 100, "bad_participation")
     _require(ballot.low_participation_action in ("admin", "count"), "bad_participation")
     if ballot.opens_at and ballot.closes_at:
@@ -119,6 +121,48 @@ def _plain(value):
     return value.isoformat() if hasattr(value, "isoformat") else value
 
 
+def choice_limit(ballot: Ballot, user) -> int:
+    """The number of options that a user can choose. One for a single choice ballot."""
+    if ballot.method == Ballot.Method.SINGLE:
+        return 1
+    return int(ballot.choice_overrides.get(str(user.id), ballot.selection_limit))
+
+
+def layout_problem(ballot: Ballot, layout: TrackLayout, fixed: set[int], drivers: int) -> str:
+    """Why a layout cannot be an option of a track ballot, or "" when it can."""
+    if not ballot.season.allow_repeat_layouts and layout.id in fixed:
+        return "layout_is_fixed"
+    if layout.track_id in set(ballot.excluded_track_ids):
+        return "track_excluded"
+    if layout.pit_boxes is not None and layout.pit_boxes < drivers:
+        return "grid_too_small"
+    return ""
+
+
+def set_options(ballot: Ballot, user, ids: list[int]) -> Ballot:
+    """Make the catalog options of a draft ballot the given layouts (a track ballot) or car
+    classes (a car class ballot): add the new ones, remove the others. Options with a free label
+    stay. A layout that cannot be an option is not added."""
+    _require(ballot.status == Ballot.State.DRAFT, "ballot_not_draft")
+    wanted = set(ids)
+    field = "track_layout_id" if ballot.kind == Ballot.Kind.TRACK else "car_class_id"
+    current = {getattr(o, field): o for o in ballot.options.all() if getattr(o, field)}
+    with transaction.atomic():
+        for key, option in current.items():
+            if key not in wanted:
+                remove_option(option, user)
+        for key in sorted(wanted - set(current)):
+            try:
+                if ballot.kind == Ballot.Kind.TRACK:
+                    add_option(ballot, user, layout_id=key)
+                else:
+                    add_option(ballot, user, car_class_id=key)
+            except BallotError as error:
+                if error.code not in ("layout_is_fixed", "track_excluded", "grid_too_small"):
+                    raise
+    return ballot
+
+
 def add_option(
     ballot: Ballot,
     user,
@@ -138,11 +182,10 @@ def add_option(
         _require(layout_id is not None, "layout_required")
         layout = TrackLayout.objects.select_related("track").filter(pk=layout_id).first()
         _require(layout is not None, "layout_required")
-        repeats = ballot.season.allow_repeat_layouts
-        _require(repeats or layout.id not in fixed_layout_ids(ballot.season), "layout_is_fixed")
-        _require(layout.track_id not in set(ballot.excluded_track_ids), "track_excluded")
-        drivers = ballot.season.entries.count()
-        _require(layout.pit_boxes is None or layout.pit_boxes >= drivers, "grid_too_small")
+        problem = layout_problem(
+            ballot, layout, fixed_layout_ids(ballot.season), ballot.season.entries.count()
+        )
+        _require(not problem, problem)
         label = label or str(layout)
     _require(bool(label.strip()), "label_required")
     _require(not ballot.options.filter(label=label).exists(), "option_exists")
@@ -243,7 +286,7 @@ def cast_vote(ballot: Ballot, user, option_ids: list[int]) -> None:
     chosen = set(option_ids)
     _require(len(chosen) == len(option_ids), "duplicate_choice")
     _require(len(chosen) >= 1, "choice_required")
-    _require(len(chosen) <= ballot.selection_limit, "too_many_choices")
+    _require(len(chosen) <= choice_limit(ballot, user), "too_many_choices")
     options = list(ballot.options.filter(id__in=chosen))
     _require(len(options) == len(chosen), "option_not_in_ballot")
     already = voter.votes.exists()

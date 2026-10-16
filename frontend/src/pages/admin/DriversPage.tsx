@@ -9,11 +9,11 @@ import { Dialog } from '../../components/Dialog'
 import { EmptyState } from '../../components/EmptyState'
 import { Icon } from '../../components/Icon'
 import { Loading } from '../../components/Layout'
-import { RowMenu } from '../../components/RowMenu'
 import { errorMessage } from '../../lib/errors'
 import { initials } from '../../lib/initials'
 import { useLoad } from '../../lib/useLoad'
 import { Breadcrumbs } from '../../components/Breadcrumbs'
+import { DangerMenu } from '../../components/DangerMenu'
 
 type Driver = components['schemas']['DriverOut']
 type Account = components['schemas']['UserOut']
@@ -120,7 +120,9 @@ export function DriversPage() {
                       </td>
                       <td className="num">{driver.career_points}</td>
                       <td className="row-actions">
-                        <RowMenu
+                        <DangerMenu
+                          target={{ kind: 'driver', id: driver.id, name: driver.display_name }}
+                          onDeleted={drivers.reload}
                           label={t('drivers.actions', { name: driver.display_name })}
                           items={[
                             { label: t('drivers.linkAccount'), onSelect: () => setLinking(driver.id) },

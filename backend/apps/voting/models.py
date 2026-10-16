@@ -70,6 +70,9 @@ class Ballot(models.Model):
     min_prior_starts = models.PositiveSmallIntegerField(default=0)
     # Vote power exceptions: {user ID: power}. Everybody else has power 1.
     power_overrides = models.JSONField(default=dict)
+    # User ID to the number of options that the user can choose, when it is not the
+    # selection limit of the ballot. For example 4 in place of 3 for some drivers.
+    choice_overrides = models.JSONField(default=dict)
     # Runoffs
     parent = models.ForeignKey(
         "self", null=True, blank=True, on_delete=models.CASCADE, related_name="runoffs"

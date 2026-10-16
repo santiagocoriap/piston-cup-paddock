@@ -4,10 +4,10 @@ import { signIn, signOut } from './helpers'
 
 test('an admin signs in, stays signed in after a reload, and signs out', async ({ page }) => {
   await signIn(page)
-  await expect(page.getByRole('heading', { name: 'Campeonatos' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Campeonatos' })).toBeVisible()
 
   await page.reload()
-  await expect(page.getByRole('heading', { name: 'Campeonatos' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Campeonatos' })).toBeVisible()
 
   await signOut(page)
   await expect(page.getByRole('heading', { name: 'Iniciar sesión' })).toBeVisible()

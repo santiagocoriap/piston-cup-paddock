@@ -11,8 +11,11 @@ import { Loading } from '../components/Layout'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { BallotOptionPicker } from './BallotOptionPicker'
 import { useAdminView } from '../session'
 import { Breadcrumbs } from '../components/Breadcrumbs'
+import { DangerMenu } from '../components/DangerMenu'
+import { BallotSettingsForm } from './BallotSettingsForm'
 
 type Ballot = components['schemas']['BallotDetail']
 type Option = Ballot['options'][number]
@@ -59,6 +62,12 @@ export function BallotPage() {
       <RuleTiles ballot={data} />
 
       {data.can_vote ? <VoteGrid ballot={data} onVoted={ballot.reload} /> : <Results ballot={data} />}
+      {data.status === 'decided' && data.kind === 'track' && !data.parent && (
+        <p className="callout">
+          {t('voting.inCalendar')}{' '}
+          <Link to={`/seasons/${data.season_id}#calendar`}>{t('voting.toCalendar')}</Link>
+        </p>
+      )}
 
       {data.runoffs.length > 0 && (
         <section aria-labelledby="runoffs">
@@ -99,6 +108,7 @@ function useTimeLeft(iso: string | null | undefined) {
 
 function BallotHeader({ ballot, adminView, onChange }: { ballot: Ballot; adminView: boolean; onChange: () => void }) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const left = useTimeLeft(ballot.status === 'open' ? ballot.closes_at : null)
   const share = ballot.voter_count ? Math.round((ballot.voted_count / ballot.voter_count) * 100) : 0
   return (
@@ -109,6 +119,15 @@ function BallotHeader({ ballot, adminView, onChange }: { ballot: Ballot; adminVi
           <span>{t('voting.kindTitle', { kind: t(`voting.kind.${ballot.kind}`) })}</span>
         </p>
         <h1>{ballot.title}</h1>
+        {adminView && (
+          <div className="season-actions">
+            <DangerMenu
+              target={{ kind: 'ballot', id: ballot.id, name: ballot.title }}
+              onDeleted={() => navigate(`/seasons/${ballot.season_id}`)}
+              wide
+            />
+          </div>
+        )}
         {ballot.parent && (
           <p>
             <Link to={`/ballots/${ballot.parent.id}`}>{t('voting.parent', { title: ballot.parent.title })}</Link>
@@ -234,7 +253,8 @@ function VoteGrid({ ballot, onVoted }: { ballot: Ballot; onVoted: () => void }) 
   const [chosen, setChosen] = useState<number[]>(ballot.my_choices)
   const [message, setMessage] = useState<{ kind: 'error' | 'saved'; text: string } | null>(null)
   const [busy, setBusy] = useState(false)
-  const single = ballot.selection_limit === 1
+  const limit = ballot.my_choice_limit || ballot.selection_limit
+  const single = limit === 1
 
   function toggle(optionId: number) {
     setMessage(null)
@@ -269,10 +289,10 @@ function VoteGrid({ ballot, onVoted }: { ballot: Ballot; onVoted: () => void }) 
         </span>
       </div>
       <fieldset className="vote-grid">
-        <legend className="muted">{t(`voting.method.${ballot.method}`, { count: ballot.selection_limit })}</legend>
+        <legend className="muted">{t(`voting.method.${ballot.method}`, { count: limit })}</legend>
         {ballot.options.map((option) => {
           const checked = chosen.includes(option.id)
-          const full = !single && !checked && chosen.length >= ballot.selection_limit
+          const full = !single && !checked && chosen.length >= limit
           return (
             <label key={option.id} className={['vote-card', checked && 'checked', full && 'full'].filter(Boolean).join(' ')}>
               <input
@@ -293,6 +313,16 @@ function VoteGrid({ ballot, onVoted }: { ballot: Ballot; onVoted: () => void }) 
                 {option.votes !== null && option.votes !== undefined && (
                   <span className="muted">{t('voting.votes', { count: option.votes })}</span>
                 )}
+                {option.voter_pictures && option.voter_pictures.length > 0 && (
+                  <span className="vote-voters">
+                    <span className="avatar-stack" aria-hidden="true">
+                      {option.voter_pictures.slice(0, 5).map((person) => (
+                        <Avatar key={person.username} name={person.username} url={person.avatar_url} />
+                      ))}
+                    </span>
+                    <span className="muted">{option.voter_pictures.map((person) => person.username).join(', ')}</span>
+                  </span>
+                )}
               </span>
             </label>
           )
@@ -304,7 +334,7 @@ function VoteGrid({ ballot, onVoted }: { ballot: Ballot; onVoted: () => void }) 
             ? chosen.length > 0
               ? t('voting.oneChosen')
               : t('voting.chooseOne')
-            : t('voting.chosenOf', { count: chosen.length, limit: ballot.selection_limit })}
+            : t('voting.chosenOf', { count: chosen.length, limit })}
         </p>
         {message && (
           <p role={message.kind === 'error' ? 'alert' : 'status'} className={message.kind === 'error' ? 'error' : 'success'}>
@@ -376,6 +406,9 @@ function ResultBar({ option, share, leader, mine }: { option: Option; share: num
           ))}
           {option.voter_pictures.length > 5 && <span className="avatar more">+{option.voter_pictures.length - 5}</span>}
         </span>
+      )}
+      {option.voter_pictures && option.voter_pictures.length > 0 && (
+        <span className="result-voters muted">{option.voter_pictures.map((person) => person.username).join(', ')}</span>
       )}
       {option.votes !== null && option.votes !== undefined && (
         <span className="result-numbers">
@@ -474,7 +507,11 @@ function BallotAdmin({ ballot, onChange }: { ballot: Ballot; onChange: () => voi
 
   if (ballot.status === 'draft') {
     actions.push(
-      { id: 'add', label: t('voting.addOption'), content: (close) => <AddOptionForm ballot={ballot} onDone={() => { onChange(); close() }} /> },
+      { id: 'settings', label: t('voting.settings'), content: (close) => <BallotSettingsForm ballot={ballot} onDone={() => { onChange(); close() }} /> },
+      { id: 'options', label: t('optionPicker.title'), content: (close) => <BallotOptionPicker ballot={ballot} onDone={() => { onChange(); close() }} /> },
+      ...(ballot.kind === 'car_class'
+        ? [{ id: 'add', label: t('voting.addFreeOption'), content: (close: () => void) => <AddOptionForm ballot={ballot} onDone={() => { onChange(); close() }} /> }]
+        : []),
       { id: 'power', label: t('voting.setPower'), content: (close) => <PowerForm ballot={ballot} onDone={() => { onChange(); close() }} /> },
       { id: 'open', label: t('voting.open'), content: (close) => <OpenPanel ballot={ballot} onChange={onChange} onOpened={close} /> },
     )
@@ -676,6 +713,10 @@ function PowerForm({ ballot, onDone }: { ballot: Ballot; onDone: () => void }) {
               ...ballot.power_overrides,
               [String(form.get('user_id'))]: Number(form.get('power')),
             },
+            choice_overrides: {
+              ...ballot.choice_overrides,
+              [String(form.get('user_id'))]: Number(form.get('choices') || ballot.selection_limit),
+            },
           },
         })
         return error
@@ -706,9 +747,25 @@ function PowerForm({ ballot, onDone }: { ballot: Ballot; onDone: () => void }) {
         </label>
         <label>
           {t('voting.power')}
-          <input name="power" type="number" min={0} max={10} defaultValue={2} required />
+          <input name="power" type="number" min={0} max={10} defaultValue={1} required />
         </label>
+        {ballot.method === 'multiple' && (
+          <label>
+            {t('voting.choiceLimit')}
+            <input name="choices" type="number" min={1} max={50} defaultValue={ballot.selection_limit} required />
+          </label>
+        )}
       </div>
+      <p className="muted">{t('voting.powerHelp', { count: ballot.selection_limit })}</p>
+      {Object.keys(ballot.choice_overrides).length > 0 && (
+        <p className="muted">
+          {t('voting.choiceExceptions', {
+            list: Object.entries(ballot.choice_overrides)
+              .map(([id, n]) => `${users.data?.find((u) => u.id === Number(id))?.username ?? id}: ${n}`)
+              .join(', '),
+          })}
+        </p>
+      )}
     </ActionForm>
   )
 }
