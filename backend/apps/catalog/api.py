@@ -11,7 +11,7 @@ from ninja.files import UploadedFile
 from pydantic import field_validator
 
 from apps.audit.services import change, record
-from apps.common.api import conflict_on_duplicate, require
+from apps.common.api import conflict_on_duplicate, conflict_on_protected, require
 from apps.competition.permissions import manages_any_championship
 
 from .game_images import (
@@ -603,3 +603,69 @@ def remove_car_image(request, car_id: int, kind: str):
     car.save(update_fields=[kind])
     record(request.user, f"car.{kind}_removed", "car", car.id, params={"name": car.name})
     return car
+
+
+# Deleting
+# A track, layout, or car that a round, entry, ballot, or record uses stays (HTTP 409).
+
+
+def _delete_files(*fields) -> None:
+    """Remove the picture files after the database delete is saved."""
+    names = [(field.storage, field.name) for field in fields if field]
+    transaction.on_commit(lambda: [storage.delete(name) for storage, name in names])
+
+
+def _delete_layout(user, layout: TrackLayout) -> None:
+    record(
+        user,
+        "layout.deleted",
+        "track",
+        layout.track_id,
+        params={"track": layout.track.name, "name": layout.name},
+    )
+    files = (layout.outline, layout.preview)
+    layout.delete()
+    _delete_files(*files)
+
+
+@router.delete("/tracks/{track_id}", response={204: None})
+def delete_track(request, track_id: int):
+    require(manages_any_championship(request.user))
+    track = get_object_or_404(Track, pk=track_id)
+    with conflict_on_protected():
+        for layout in track.layouts.select_related("track"):
+            _delete_layout(request.user, layout)
+        record(request.user, "track.deleted", "track", track.id, params={"name": track.name})
+        track.delete()
+    return Status(204, None)
+
+
+@router.delete("/layouts/{layout_id}", response={204: None})
+def delete_layout(request, layout_id: int):
+    require(manages_any_championship(request.user))
+    layout = get_object_or_404(TrackLayout.objects.select_related("track"), pk=layout_id)
+    with conflict_on_protected():
+        _delete_layout(request.user, layout)
+    return Status(204, None)
+
+
+@router.delete("/cars/{car_id}", response={204: None})
+def delete_car(request, car_id: int):
+    require(manages_any_championship(request.user))
+    car = get_object_or_404(Car, pk=car_id)
+    with conflict_on_protected():
+        record(request.user, "car.deleted", "car", car.id, params={"name": car.name})
+        files = (car.preview, car.badge)
+        car.delete()
+        _delete_files(*files)
+    return Status(204, None)
+
+
+@router.delete("/classes/{class_id}", response={204: None})
+def delete_class(request, class_id: int):
+    require(manages_any_championship(request.user))
+    item = get_object_or_404(CarClass, pk=class_id)
+    with conflict_on_protected():
+        record(request.user, "class.deleted", "car_class", item.id, params={"name": item.name})
+        item.delete()
+    return Status(204, None)

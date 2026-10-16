@@ -75,6 +75,8 @@ type Props = {
   fields?: EditField[]
   base: string
   images?: { kind: ImageKind; set: boolean }[]
+  /** The question before a delete. Without it, the menu has no delete item. */
+  confirmDelete?: string
   onChange: () => void
 }
 
@@ -91,7 +93,7 @@ async function send(method: string, url: string, body?: FormData | object) {
 }
 
 /** The edit menu of a catalog item: change the name, and upload or remove each picture. */
-export function CatalogEdit({ name, country, fields, base, images = [], onChange }: Props) {
+export function CatalogEdit({ name, country, fields, base, images = [], confirmDelete, onChange }: Props) {
   const { t } = useTranslation()
   const [renaming, setRenaming] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -122,6 +124,14 @@ export function CatalogEdit({ name, country, fields, base, images = [], onChange
     else onChange()
   }
 
+  async function destroy() {
+    if (!confirmDelete || !window.confirm(confirmDelete)) return
+    setError(null)
+    const problem = await send('DELETE', base)
+    if (problem) setError(errorMessage(t, problem))
+    else onChange()
+  }
+
   const editLabel = t(fields ? 'catalogEdit.editFacts' : country === undefined ? 'catalogEdit.rename' : 'catalogEdit.editTrack')
   const editFields: EditField[] = fields ?? [
     { name: 'name', label: t('catalogEdit.name'), kind: 'text', value: name, required: true, max: 200 },
@@ -135,6 +145,7 @@ export function CatalogEdit({ name, country, fields, base, images = [], onChange
       { label: t(`catalogEdit.upload.${kind}`), onSelect: () => pick(kind) },
       ...(set ? [{ label: t(`catalogEdit.remove.${kind}`), onSelect: () => remove(kind) }] : []),
     ]),
+    ...(confirmDelete ? [{ label: t('common.delete'), onSelect: destroy }] : []),
   ]
 
   return (

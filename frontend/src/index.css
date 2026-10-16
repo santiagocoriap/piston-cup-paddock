@@ -2171,7 +2171,7 @@ label.switch {
 .league-tree li {
   position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
   gap: var(--space-3);
   align-items: center;
   min-height: 48px;
@@ -2224,6 +2224,15 @@ label.switch {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
+}
+
+/* The message of a refused delete takes its own row under the leaf. */
+.league-tree li > .error {
+  grid-column: 2 / -1;
+}
+
+.league-zone > button {
+  margin-left: auto;
 }
 
 .league-add {
@@ -2282,7 +2291,7 @@ button.add-row:hover {
   }
 
   .league-tree li {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
   }
 
   .league-tree li > .muted {
@@ -5363,6 +5372,15 @@ textarea:focus-visible {
 
 .entry-grid li > span {
   min-width: 0;
+}
+
+/* The delete button of an admin sits after the number. A refused delete shows under the card. */
+.entry-grid li:has(> button) {
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+}
+
+.entry-grid li > .error {
+  grid-column: 1 / -1;
 }
 
 /* A long name ends with "…". The full name shows on hover. */

@@ -63,7 +63,8 @@
     "cancel": "Cancel",
     "next": "Next",
     "back": "Back",
-    "stepOf": "Step {{current}} of {{total}}"
+    "stepOf": "Step {{current}} of {{total}}",
+    "delete": "Delete"
   },
   "championships": {
     "title": "Championships",
@@ -141,7 +142,8 @@
     "rename": "Change the name",
     "autoPublish": "Publish clean collector results automatically (they stay provisional)",
     "openSlots": "Open slots on the server",
-    "openSlotsHelp": "Extra cars after the league drivers, so a driver can change car. \"Send to server\" uses this number."
+    "openSlotsHelp": "Extra cars after the league drivers, so a driver can change car. \"Send to server\" uses this number.",
+    "removeMember": "Remove {{name}} from the championship"
   },
   "season": {
     "plannedRounds": "{{count}} planned rounds",
@@ -232,7 +234,8 @@
     "pickKept": "Pick the profile that stays.",
     "mergeConfirm": "I understand that the profile “{{name}}” is deleted and that this cannot be undone.",
     "merged": "“{{old}}” was merged into “{{kept}}”.",
-    "actionsColumn": "Actions"
+    "actionsColumn": "Actions",
+    "driverDeleted": "{{name}} was deleted."
   },
   "catalog": {
     "title": "Tracks and cars",
@@ -422,7 +425,11 @@
     "image_not_supported": "The picture must be a PNG or a JPEG.",
     "no_release": "The app does not have the collector program yet. Try again later.",
     "wrong_key": "The key is not for this collector.",
-    "unknown_preset": "The collector does not have that Content Manager preset."
+    "unknown_preset": "The collector does not have that Content Manager preset.",
+    "in_use": "Something still uses this item, so it cannot be deleted.",
+    "entry_in_use": "This driver has results or penalties in the season, so the entry cannot be removed.",
+    "role_in_use": "Members still have this role. Change their role first.",
+    "driver_in_use": "This driver is in a season. Merge the profile into another one instead."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -601,7 +608,20 @@
       "car.preview_set": "{{actor}} uploaded the photo of the car {{name}}.",
       "car.badge_set": "{{actor}} uploaded the logo of the car {{name}}.",
       "car.preview_removed": "{{actor}} removed the photo of the car {{name}}.",
-      "car.badge_removed": "{{actor}} removed the logo of the car {{name}}."
+      "car.badge_removed": "{{actor}} removed the logo of the car {{name}}.",
+      "league.deleted": "{{actor}} deleted the league {{name}}.",
+      "championship.deleted": "{{actor}} deleted the championship {{name}} of {{league}}.",
+      "season.deleted": "{{actor}} deleted the season {{season}} of {{championship}}.",
+      "entry.deleted": "{{actor}} removed {{driver}} (#{{number}}, {{car}}) from {{season}}.",
+      "round.deleted": "{{actor}} deleted round {{number}} ({{track}}) of {{season}}.",
+      "member.removed": "{{actor}} removed {{username}} ({{role}}) from the championship.",
+      "role.deleted": "{{actor}} deleted the role {{name}}.",
+      "track.deleted": "{{actor}} deleted the track {{name}}.",
+      "layout.deleted": "{{actor}} deleted the layout {{name}} of {{track}}.",
+      "car.deleted": "{{actor}} deleted the car {{name}}.",
+      "class.deleted": "{{actor}} deleted the class {{name}}.",
+      "driver.deleted": "{{actor}} deleted the driver {{driver}}.",
+      "ballot.deleted": "{{actor}} deleted the ballot {{ballot}} of {{season}}."
     },
     "fields": {
       "role": "Role",
@@ -2192,6 +2212,21 @@
     "presetDefault": "The collector preset",
     "presetHelp": "The collector writes to this preset and uses it from now on. Then start this preset in Content Manager."
   },
+  "delete": {
+    "league": "Delete the league {{name}} with its championships, seasons, rounds, and results? This cannot be undone.",
+    "championship": "Delete the championship {{name}} with its seasons, rounds, results, members, and collectors? This cannot be undone.",
+    "season": "Delete the season {{name}} with its rounds, results, and entries? This cannot be undone.",
+    "entry": "Remove {{name}} from this season?",
+    "round": "Delete round {{number}}? This cannot be undone.",
+    "member": "Remove {{name}} from this championship?",
+    "role": "Delete the role {{name}}?",
+    "track": "Delete the track {{name}} and its layouts?",
+    "layout": "Delete the layout {{name}}?",
+    "car": "Delete the car {{name}}?",
+    "class": "Delete the class {{name}}?",
+    "driver": "Delete the driver {{name}}? Their telemetry laps are deleted too.",
+    "ballot": "Delete the ballot {{name}} with its options and votes?"
+},
   "votes": {
     "help": "The votes where you can vote. The open ones come first.",
     "open": "Open",

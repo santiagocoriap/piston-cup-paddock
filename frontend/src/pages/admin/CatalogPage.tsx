@@ -386,6 +386,7 @@ function TrackCard({ track, onChange }: { track: Track; onChange: () => void }) 
           name={track.name}
           country={track.country}
           base={`/api/catalog/tracks/${track.id}`}
+          confirmDelete={t('delete.track', { name: track.name })}
           onChange={onChange}
         />
       </header>
@@ -432,6 +433,7 @@ function LayoutCard({ layout, onSaved }: { layout: Layout; onSaved: () => void }
               { kind: 'outline', set: layout.has_outline },
               { kind: 'preview', set: layout.has_preview },
             ]}
+            confirmDelete={t('delete.layout', { name: layout.name })}
             onChange={changed}
           />
         </div>
@@ -476,6 +478,7 @@ function CarCard({ car, classes, onChange }: { car: Car; classes: string[]; onCh
               { kind: 'preview', set: car.has_preview },
               { kind: 'badge', set: car.has_badge },
             ]}
+            confirmDelete={t('delete.car', { name: car.name })}
             onChange={changed}
           />
         </div>

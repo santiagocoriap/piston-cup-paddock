@@ -6,6 +6,7 @@ import type { components } from '../api/schema'
 import { ActionForm } from '../components/ActionForm'
 import { AdminActions, type AdminAction } from '../components/AdminActions'
 import { Avatar } from '../components/Avatar'
+import { DeleteButton } from '../components/DeleteButton'
 import { Icon, type IconName } from '../components/Icon'
 import { Loading } from '../components/Layout'
 import { errorMessage } from '../lib/errors'
@@ -99,6 +100,7 @@ function useTimeLeft(iso: string | null | undefined) {
 
 function BallotHeader({ ballot, adminView, onChange }: { ballot: Ballot; adminView: boolean; onChange: () => void }) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const left = useTimeLeft(ballot.status === 'open' ? ballot.closes_at : null)
   const share = ballot.voter_count ? Math.round((ballot.voted_count / ballot.voter_count) * 100) : 0
   return (
@@ -156,6 +158,14 @@ function BallotHeader({ ballot, adminView, onChange }: { ballot: Ballot; adminVi
           </div>
         )}
         {adminView && <BallotAdmin ballot={ballot} onChange={onChange} />}
+        {adminView && ballot.status !== 'decided' && (
+          <DeleteButton
+            label={t('common.delete')}
+            confirm={t('delete.ballot', { name: ballot.title })}
+            run={() => api.DELETE('/api/ballots/{ballot_id}', { params: { path: { ballot_id: ballot.id } } })}
+            onDone={() => navigate(`/seasons/${ballot.season_id}`)}
+          />
+        )}
       </div>
     </header>
   )

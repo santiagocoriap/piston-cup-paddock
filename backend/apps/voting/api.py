@@ -18,6 +18,7 @@ from .services import (
     close_ballot,
     create_ballot,
     decide_manually,
+    delete_ballot,
     open_ballot,
     remind,
     remove_option,
@@ -411,6 +412,14 @@ def update(request, ballot_id: int, payload: BallotSettingsIn):
     _manager(request.user, ballot)
     _run(lambda: update_ballot(ballot, request.user, _settings(payload)))
     return _detail(request.user, ballot)
+
+
+@router.delete("/ballots/{ballot_id}", response={204: None})
+def delete(request, ballot_id: int):
+    ballot = _ballot(request.user, ballot_id)
+    _manager(request.user, ballot)
+    _run(lambda: delete_ballot(ballot, request.user))
+    return Status(204, None)
 
 
 @router.post("/ballots/{ballot_id}/options", response=BallotDetail)

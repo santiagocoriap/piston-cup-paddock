@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../../api/client'
 import type { components } from '../../api/schema'
 import { ActionForm } from '../../components/ActionForm'
+import { DeleteButton } from '../../components/DeleteButton'
 
 type CarClass = components['schemas']['CarClassOut']
 type Car = components['schemas']['CarOut']
@@ -30,6 +31,12 @@ function ClassCard({ item, cars, onSaved }: { item: CarClass; cars: Car[]; onSav
       <button type="button" className="secondary small" onClick={() => setEditing((e) => !e)}>
         {t('classes.editCars')}
       </button>
+      <DeleteButton
+        label={t('common.delete')}
+        confirm={t('delete.class', { name: item.name })}
+        run={() => api.DELETE('/api/catalog/classes/{class_id}', { params: { path: { class_id: item.id } } })}
+        onDone={onSaved}
+      />
       {editing && (
         <ActionForm
           title={t('classes.carsOf', { name: item.name })}

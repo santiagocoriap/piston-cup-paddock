@@ -32,7 +32,9 @@ class AuditEntryOut(Schema):
 
     @staticmethod
     def resolve_championship_name(entry: AuditEntry) -> str | None:
-        return entry.championship.name if entry.championship else None
+        if entry.championship:
+            return entry.championship.name
+        return entry.championship_name or None
 
 
 @router.get("/audit", response=list[AuditEntryOut])

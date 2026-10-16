@@ -27,6 +27,17 @@ export function DriversPage() {
   const [linking, setLinking] = useState<number | null>(null)
   const [merging, setMerging] = useState<number | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
+  const [problem, setProblem] = useState<string | null>(null)
+
+  async function remove(driver: Driver) {
+    if (!window.confirm(t('delete.driver', { name: driver.display_name }))) return
+    setNotice(null)
+    setProblem(null)
+    const { error } = await api.DELETE('/api/drivers/{driver_id}', { params: { path: { driver_id: driver.id } } })
+    if (error) return setProblem(errorMessage(t, error))
+    setNotice(t('drivers.driverDeleted', { name: driver.display_name }))
+    drivers.reload()
+  }
 
   const addButton = (
     <button type="button" onClick={() => setAdding(true)}>
@@ -57,6 +68,11 @@ export function DriversPage() {
         <p role="status" className="notice-ok">
           <Icon name="check" small />
           {notice}
+        </p>
+      )}
+      {problem && (
+        <p role="alert" className="error">
+          {problem}
         </p>
       )}
       {!drivers.data ? (
@@ -125,6 +141,7 @@ export function DriversPage() {
                           items={[
                             { label: t('drivers.linkAccount'), onSelect: () => setLinking(driver.id) },
                             ...(list.length > 1 ? [{ label: t('drivers.mergeWith'), onSelect: () => setMerging(driver.id) }] : []),
+                            { label: t('common.delete'), onSelect: () => remove(driver) },
                           ]}
                         />
                       </td>

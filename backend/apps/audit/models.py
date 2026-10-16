@@ -19,6 +19,8 @@ class AuditEntry(models.Model):
     championship = models.ForeignKey(
         Championship, null=True, blank=True, on_delete=models.SET_NULL, related_name="audit"
     )
+    # The name when the entry was written. It stays after the championship is deleted.
+    championship_name = models.CharField(max_length=100, blank=True)
     target_type = models.CharField(max_length=30)
     target_id = models.PositiveBigIntegerField()
     params = models.JSONField(default=dict)

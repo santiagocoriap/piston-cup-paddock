@@ -12,7 +12,7 @@ from pydantic import AwareDatetime
 
 from apps.audit.services import change, record
 from apps.catalog.models import Car, TrackLayout
-from apps.common.api import conflict_on_duplicate, require
+from apps.common.api import conflict_on_duplicate, conflict_on_protected, require
 from apps.common.timezones import DEFAULT_EVENT_TIMEZONE, is_timezone
 from apps.identity.models import DriverProfile, User
 from apps.rules.models import RulesVersion
@@ -1027,3 +1027,155 @@ def draw_conditions(request, round_id: int, payload: DrawIn):
     except DrawError as error:
         raise HttpError(422, error.code) from error
     return list_draws(request, round_id)
+
+
+# Deleting
+# Every delete writes an audit entry first, with the name and the person. The audit entries
+# stay: they only lose the link to the deleted championship and keep its name.
+
+
+def _delete_season(user, season: Season) -> None:
+    championship = season.championship
+    record(
+        user,
+        "season.deleted",
+        "season",
+        season.id,
+        championship=championship,
+        params={"season": season.name, "championship": championship.name},
+    )
+    season.delete()
+
+
+def _delete_championship(user, championship: Championship) -> None:
+    for season in championship.seasons.select_related("championship"):
+        _delete_season(user, season)
+    record(
+        user,
+        "championship.deleted",
+        "championship",
+        championship.id,
+        championship=championship,
+        params={"name": championship.name, "league": championship.league.name},
+    )
+    championship.delete()
+
+
+@router.delete("/leagues/{league_id}", response={204: None})
+def delete_league(request, league_id: int):
+    """Delete a league with its championships, seasons, rounds, and results."""
+    require(is_league_admin(request.user))
+    league = get_object_or_404(League, pk=league_id)
+    with conflict_on_protected():
+        for championship in league.championships.select_related("league"):
+            _delete_championship(request.user, championship)
+        record(request.user, "league.deleted", "league", league.id, params={"name": league.name})
+        league.delete()
+    return Status(204, None)
+
+
+@router.delete("/championships/{championship_id}", response={204: None})
+def delete_championship(request, championship_id: int):
+    """Delete a championship with its seasons, rounds, results, members, and collectors."""
+    require(is_league_admin(request.user))
+    championship = _visible_championship(request.user, championship_id)
+    with conflict_on_protected():
+        _delete_championship(request.user, championship)
+    return Status(204, None)
+
+
+@router.delete("/seasons/{season_id}", response={204: None})
+def delete_season(request, season_id: int):
+    season = _visible_season(request.user, season_id)
+    require(can_manage(request.user, season.championship))
+    with conflict_on_protected():
+        _delete_season(request.user, season)
+    return Status(204, None)
+
+
+@router.delete("/entries/{entry_id}", response={204: None})
+def delete_entry(request, entry_id: int):
+    """Remove a driver from a season. An entry with results or penalties stays."""
+    entry = get_object_or_404(
+        SeasonEntry.objects.select_related("season__championship", "driver", "car"), pk=entry_id
+    )
+    season = entry.season
+    if not can_view(request.user, season.championship):
+        raise Http404
+    require(can_manage(request.user, season.championship))
+    with conflict_on_protected("entry_in_use"):
+        record(
+            request.user,
+            "entry.deleted",
+            "season",
+            season.id,
+            championship=season.championship,
+            params={
+                "season": season.name,
+                "driver": entry.driver.display_name,
+                "number": entry.number,
+                "car": entry.car.name,
+            },
+        )
+        entry.delete()
+    return Status(204, None)
+
+
+@router.delete("/rounds/{round_id}", response={204: None})
+def delete_round(request, round_id: int):
+    """Delete a round with no result. A round with a result can be cancelled instead."""
+    round_ = _managed_round(request.user, round_id)
+    if hasattr(round_, "result"):
+        raise HttpError(422, "round_has_result")
+    with conflict_on_protected():
+        record(
+            request.user,
+            "round.deleted",
+            "round",
+            round_.id,
+            championship=round_.season.championship,
+            params=_round_params(round_),
+        )
+        round_.delete()
+    return Status(204, None)
+
+
+@router.delete("/championships/{championship_id}/members/{user_id}", response={204: None})
+def delete_member(request, championship_id: int, user_id: int):
+    championship = _visible_championship(request.user, championship_id)
+    require(can_manage(request.user, championship))
+    member = get_object_or_404(
+        ChampionshipMember.objects.select_related("user", "custom_role"),
+        championship=championship,
+        user_id=user_id,
+    )
+    with transaction.atomic():
+        record(
+            request.user,
+            "member.removed",
+            "championship",
+            championship.id,
+            championship=championship,
+            params={"username": member.user.username, "role": _role_label(member)},
+        )
+        member.delete()
+    return Status(204, None)
+
+
+@router.delete("/roles/{role_id}", response={204: None})
+def delete_role(request, role_id: int):
+    """Delete a custom role. A role that still has members stays."""
+    role = get_object_or_404(ChampionshipRole.objects.select_related("championship"), pk=role_id)
+    championship = _visible_championship(request.user, role.championship_id)
+    require(can_manage(request.user, championship))
+    with conflict_on_protected("role_in_use"):
+        record(
+            request.user,
+            "role.deleted",
+            "championship",
+            championship.id,
+            championship=championship,
+            params={"name": role.name},
+        )
+        role.delete()
+    return Status(204, None)

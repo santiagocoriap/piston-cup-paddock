@@ -164,6 +164,14 @@ def remove_option(option: BallotOption, user) -> None:
         )
 
 
+def delete_ballot(ballot: Ballot, user) -> None:
+    """Delete a ballot with its options and votes. A decided ballot shaped the calendar: keep it."""
+    _require(ballot.status != Ballot.State.DECIDED, "ballot_decided")
+    with transaction.atomic():
+        _audit(user, "ballot.deleted", ballot)
+        ballot.delete()
+
+
 def _prior_starts(season: Season, user_ids: set[int]) -> dict[int, int]:
     """Races that each user started in the season, from the current result versions."""
     rows = (

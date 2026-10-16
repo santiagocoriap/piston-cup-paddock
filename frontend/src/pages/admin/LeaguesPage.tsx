@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import { api } from '../../api/client'
 import type { components } from '../../api/schema'
 import { ActionForm } from '../../components/ActionForm'
+import { DeleteButton } from '../../components/DeleteButton'
 import { Dialog } from '../../components/Dialog'
 import { EmptyState } from '../../components/EmptyState'
 import { Icon } from '../../components/Icon'
@@ -95,6 +96,12 @@ function LeagueCard({ league, onChange }: { league: League; onChange: () => void
       <p className="league-zone muted">
         <Icon name="clock" small />
         {t('leagues.timezone', { zone: league.timezone })}
+        <DeleteButton
+          label={t('common.delete')}
+          confirm={t('delete.league', { name: league.name })}
+          run={() => api.DELETE('/api/leagues/{league_id}', { params: { path: { league_id: league.id } } })}
+          onDone={onChange}
+        />
       </p>
       <div id={listId} hidden={!open}>
         {league.championships.length === 0 && <p className="muted league-none">{t('leagues.noChampionships')}</p>}
@@ -108,6 +115,15 @@ function LeagueCard({ league, onChange }: { league: League; onChange: () => void
                 {t('leagues.open')}
                 <Icon name="arrow" small />
               </Link>
+              <DeleteButton
+                compact
+                label={t('common.delete')}
+                confirm={t('delete.championship', { name: championship.name })}
+                run={() =>
+                  api.DELETE('/api/championships/{championship_id}', { params: { path: { championship_id: championship.id } } })
+                }
+                onDone={onChange}
+              />
             </li>
           ))}
         </ul>

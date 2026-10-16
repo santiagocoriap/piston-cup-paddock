@@ -252,7 +252,8 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete Track */
+        delete: operations["apps_catalog_api_delete_track"];
         options?: never;
         head?: never;
         /** Edit Track */
@@ -269,7 +270,8 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete Layout */
+        delete: operations["apps_catalog_api_delete_layout"];
         options?: never;
         head?: never;
         /** Edit Layout */
@@ -286,7 +288,8 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete Car */
+        delete: operations["apps_catalog_api_delete_car"];
         options?: never;
         head?: never;
         /** Edit Car */
@@ -427,6 +430,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/catalog/classes/{class_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Class */
+        delete: operations["apps_catalog_api_delete_class"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/drivers": {
         parameters: {
             query?: never;
@@ -505,6 +525,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/drivers/{driver_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Driver
+         * @description Delete a driver profile. A driver with season entries stays: merge or keep the profile.
+         */
+        delete: operations["apps_identity_drivers_api_delete_driver"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/leagues": {
         parameters: {
             query?: never;
@@ -568,7 +608,11 @@ export interface paths {
         get: operations["apps_competition_api_get_championship"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Championship
+         * @description Delete a championship with its seasons, rounds, results, members, and collectors.
+         */
+        delete: operations["apps_competition_api_delete_championship"];
         options?: never;
         head?: never;
         patch?: never;
@@ -641,7 +685,11 @@ export interface paths {
         /** Update Role */
         put: operations["apps_competition_api_update_role"];
         post?: never;
-        delete?: never;
+        /**
+         * Delete Role
+         * @description Delete a custom role. A role that still has members stays.
+         */
+        delete: operations["apps_competition_api_delete_role"];
         options?: never;
         head?: never;
         patch?: never;
@@ -675,7 +723,8 @@ export interface paths {
         get: operations["apps_competition_api_get_season"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete Season */
+        delete: operations["apps_competition_api_delete_season"];
         options?: never;
         head?: never;
         patch?: never;
@@ -899,6 +948,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/leagues/{league_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete League
+         * @description Delete a league with its championships, seasons, rounds, and results.
+         */
+        delete: operations["apps_competition_api_delete_league"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/entries/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Entry
+         * @description Remove a driver from a season. An entry with results or penalties stays.
+         */
+        delete: operations["apps_competition_api_delete_entry"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/rounds/{round_id}": {
         parameters: {
             query?: never;
@@ -910,7 +999,28 @@ export interface paths {
         get: operations["apps_results_api_get_round"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Round
+         * @description Delete a round with no result. A round with a result can be cancelled instead.
+         */
+        delete: operations["apps_competition_api_delete_round"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/championships/{championship_id}/members/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Member */
+        delete: operations["apps_competition_api_delete_member"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1516,7 +1626,8 @@ export interface paths {
         get: operations["apps_voting_api_get_ballot"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete */
+        delete: operations["apps_voting_api_delete"];
         options?: never;
         head?: never;
         /** Update */
@@ -7092,6 +7203,26 @@ export interface operations {
             };
         };
     };
+    apps_catalog_api_delete_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                track_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     apps_catalog_api_edit_track: {
         parameters: {
             query?: never;
@@ -7118,6 +7249,26 @@ export interface operations {
             };
         };
     };
+    apps_catalog_api_delete_layout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                layout_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     apps_catalog_api_edit_layout: {
         parameters: {
             query?: never;
@@ -7141,6 +7292,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["LayoutOut"];
                 };
+            };
+        };
+    };
+    apps_catalog_api_delete_car: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                car_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -7474,6 +7645,26 @@ export interface operations {
             };
         };
     };
+    apps_catalog_api_delete_class: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                class_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     apps_identity_drivers_api_list_drivers: {
         parameters: {
             query?: never;
@@ -7590,6 +7781,26 @@ export interface operations {
             };
         };
     };
+    apps_identity_drivers_api_delete_driver: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                driver_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     apps_competition_api_list_leagues: {
         parameters: {
             query?: never;
@@ -7699,6 +7910,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ChampionshipDetail"];
                 };
+            };
+        };
+    };
+    apps_competition_api_delete_championship: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -7850,6 +8081,26 @@ export interface operations {
             };
         };
     };
+    apps_competition_api_delete_role: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                role_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     apps_competition_api_create_season: {
         parameters: {
             query?: never;
@@ -7895,6 +8146,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["SeasonDetail"];
                 };
+            };
+        };
+    };
+    apps_competition_api_delete_season: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -8228,6 +8499,46 @@ export interface operations {
             };
         };
     };
+    apps_competition_api_delete_league: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_competition_api_delete_entry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     apps_results_api_get_round: {
         parameters: {
             query?: never;
@@ -8247,6 +8558,47 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["RoundDetail"];
                 };
+            };
+        };
+    };
+    apps_competition_api_delete_round: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_competition_api_delete_member: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -9184,6 +9536,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["BallotDetail"];
                 };
+            };
+        };
+    };
+    apps_voting_api_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

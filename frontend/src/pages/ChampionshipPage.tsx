@@ -8,6 +8,7 @@ import { AdminActions } from '../components/AdminActions'
 import { Dialog } from '../components/Dialog'
 import { Icon } from '../components/Icon'
 import { Loading } from '../components/Layout'
+import { DeleteButton } from '../components/DeleteButton'
 import { RowMenu } from '../components/RowMenu'
 import { Tabs } from '../components/Tabs'
 import { errorMessage } from '../lib/errors'
@@ -417,6 +418,9 @@ function Members({ championshipId }: { championshipId: number }) {
               <tr>
                 <th scope="col">{t('championship.user')}</th>
                 <th scope="col">{t('championship.role')}</th>
+                <th scope="col" className="row-actions">
+                  <span className="sr-only">{t('roundTools.actions')}</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -436,6 +440,19 @@ function Members({ championshipId }: { championshipId: number }) {
                     >
                       <RoleOptions roles={roles.data ?? []} />
                     </select>
+                  </td>
+                  <td className="row-actions">
+                    <DeleteButton
+                      compact
+                      label={t('championship.removeMember', { name: member.username })}
+                      confirm={t('delete.member', { name: member.username })}
+                      run={() =>
+                        api.DELETE('/api/championships/{championship_id}/members/{user_id}', {
+                          params: { path: { championship_id: championshipId, user_id: member.user_id } },
+                        })
+                      }
+                      onDone={members.reload}
+                    />
                   </td>
                 </tr>
               ))}
@@ -467,6 +484,14 @@ function Roles({ championshipId }: { championshipId: number }) {
   const [renaming, setRenaming] = useState<Role | null>(null)
   const [error, setError] = useState<string | null>(null)
   const chosen = (form: FormData): Capability[] => CAPABILITIES.filter((c) => form.get(c) === 'on')
+
+  async function destroy(role: Role) {
+    if (!window.confirm(t('delete.role', { name: role.name }))) return
+    setError(null)
+    const { error: apiError } = await api.DELETE('/api/roles/{role_id}', { params: { path: { role_id: role.id } } })
+    if (apiError) setError(errorMessage(t, apiError))
+    else roles.reload()
+  }
 
   async function update(role: Role, name: string, capabilities: string[]) {
     setError(null)
@@ -561,7 +586,10 @@ function Roles({ championshipId }: { championshipId: number }) {
                   <td className="row-actions">
                     <RowMenu
                       label={t('championship.roleMenu', { name: role.name })}
-                      items={[{ label: t('championship.rename'), onSelect: () => setRenaming(role) }]}
+                      items={[
+                        { label: t('championship.rename'), onSelect: () => setRenaming(role) },
+                        { label: t('common.delete'), onSelect: () => destroy(role) },
+                      ]}
                     />
                   </td>
                 </tr>

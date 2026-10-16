@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { ActionForm } from '../components/ActionForm'
 import { AdminActions } from '../components/AdminActions'
+import { DeleteButton } from '../components/DeleteButton'
 import { Icon } from '../components/Icon'
 import { RowMenu } from '../components/RowMenu'
 import { Loading } from '../components/Layout'
@@ -27,6 +28,7 @@ import { Avatar } from '../components/Avatar'
 export function SeasonPage() {
   const { t, i18n } = useTranslation()
   const seasonId = Number(useParams().seasonId)
+  const navigate = useNavigate()
   const path = { season_id: seasonId }
   const season = useLoad(() => api.GET('/api/seasons/{season_id}', { params: { path } }), [seasonId])
   const standings = useLoad(
@@ -102,6 +104,14 @@ export function SeasonPage() {
                     content: (close) => <SeasonSettingsForm season={data} onChange={season.reload} onDone={close} />,
                   },
                 ]}
+              />
+            )}
+            {adminView && (
+              <DeleteButton
+                label={t('common.delete')}
+                confirm={t('delete.season', { name: data.name })}
+                run={() => api.DELETE('/api/seasons/{season_id}', { params: { path } })}
+                onDone={() => navigate(`/championships/${data.championship_id}`)}
               />
             )}
           </div>
@@ -371,6 +381,13 @@ export function SeasonPage() {
                         {adminView && (
                           <td className="row-actions">
                             <RoundTools round={round} onChange={season.reload} />
+                            <DeleteButton
+                              compact
+                              label={t('common.delete')}
+                              confirm={t('delete.round', { number: round.number })}
+                              run={() => api.DELETE('/api/rounds/{round_id}', { params: { path: { round_id: round.id } } })}
+                              onDone={season.reload}
+                            />
                           </td>
                         )}
                       </tr>
@@ -427,6 +444,15 @@ export function SeasonPage() {
                       {entry.team && <span className="entry-team">{entry.team}</span>}
                     </span>
                     <span className="entry-number">{entry.number}</span>
+                    {adminView && (
+                      <DeleteButton
+                        compact
+                        label={t('common.delete')}
+                        confirm={t('delete.entry', { name: entry.driver_name })}
+                        run={() => api.DELETE('/api/entries/{entry_id}', { params: { path: { entry_id: entry.id } } })}
+                        onDone={season.reload}
+                      />
+                    )}
                   </li>
                 ))}
               </ul>

@@ -23,6 +23,9 @@ class Api:
     def put(self, path, data):
         return self.client.put(f"/api{path}", data, content_type="application/json")
 
+    def delete(self, path):
+        return self.client.delete(f"/api{path}")
+
 
 @pytest.fixture(autouse=True)
 def no_github(settings):

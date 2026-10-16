@@ -63,7 +63,8 @@
     "cancel": "Cancelar",
     "next": "Siguiente",
     "back": "Atrás",
-    "stepOf": "Paso {{current}} de {{total}}"
+    "stepOf": "Paso {{current}} de {{total}}",
+    "delete": "Eliminar"
   },
   "championships": {
     "title": "Campeonatos",
@@ -141,7 +142,8 @@
     "rename": "Cambiar el nombre",
     "autoPublish": "Publicar solos los resultados del colector cuando no tienen problemas (quedan provisionales)",
     "openSlots": "Lugares libres en el servidor",
-    "openSlotsHelp": "Autos extra después de los pilotos de la liga, para cambiar de auto. \"Enviar al servidor\" usa este número."
+    "openSlotsHelp": "Autos extra después de los pilotos de la liga, para cambiar de auto. \"Enviar al servidor\" usa este número.",
+    "removeMember": "Sacar a {{name}} del campeonato"
   },
   "season": {
     "plannedRounds": "{{count}} carreras previstas",
@@ -232,7 +234,8 @@
     "pickKept": "Elegí el perfil que queda.",
     "mergeConfirm": "Entiendo que el perfil «{{name}}» se borra y que esto no se puede deshacer.",
     "merged": "«{{old}}» se unió a «{{kept}}».",
-    "actionsColumn": "Acciones"
+    "actionsColumn": "Acciones",
+    "driverDeleted": "Se eliminó a {{name}}."
   },
   "catalog": {
     "title": "Pistas y autos",
@@ -422,7 +425,11 @@
     "image_not_supported": "La imagen tiene que ser PNG o JPEG.",
     "no_release": "La app todavía no tiene el programa del colector. Probá más tarde.",
     "wrong_key": "La clave no es de este colector.",
-    "unknown_preset": "El colector no tiene esa plantilla de Content Manager."
+    "unknown_preset": "El colector no tiene esa plantilla de Content Manager.",
+    "in_use": "Algo todavía usa este elemento, así que no se puede eliminar.",
+    "entry_in_use": "Este piloto tiene resultados o sanciones en la temporada, así que no se puede sacar.",
+    "role_in_use": "Todavía hay miembros con este rol. Cambiales el rol primero.",
+    "driver_in_use": "Este piloto está en una temporada. Mejor unificá el perfil con otro."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -601,7 +608,20 @@
       "car.preview_set": "{{actor}} subió la foto del auto {{name}}.",
       "car.badge_set": "{{actor}} subió el logo del auto {{name}}.",
       "car.preview_removed": "{{actor}} quitó la foto del auto {{name}}.",
-      "car.badge_removed": "{{actor}} quitó el logo del auto {{name}}."
+      "car.badge_removed": "{{actor}} quitó el logo del auto {{name}}.",
+      "league.deleted": "{{actor}} eliminó la liga {{name}}.",
+      "championship.deleted": "{{actor}} eliminó el campeonato {{name}} de {{league}}.",
+      "season.deleted": "{{actor}} eliminó la temporada {{season}} de {{championship}}.",
+      "entry.deleted": "{{actor}} sacó a {{driver}} (#{{number}}, {{car}}) de {{season}}.",
+      "round.deleted": "{{actor}} eliminó la fecha {{number}} ({{track}}) de {{season}}.",
+      "member.removed": "{{actor}} sacó a {{username}} ({{role}}) del campeonato.",
+      "role.deleted": "{{actor}} eliminó el rol {{name}}.",
+      "track.deleted": "{{actor}} eliminó la pista {{name}}.",
+      "layout.deleted": "{{actor}} eliminó el trazado {{name}} de {{track}}.",
+      "car.deleted": "{{actor}} eliminó el auto {{name}}.",
+      "class.deleted": "{{actor}} eliminó la clase {{name}}.",
+      "driver.deleted": "{{actor}} eliminó al piloto {{driver}}.",
+      "ballot.deleted": "{{actor}} eliminó la votación {{ballot}} de {{season}}."
     },
     "fields": {
       "role": "Rol",
@@ -2192,6 +2212,21 @@
     "presetDefault": "La del colector",
     "presetHelp": "El colector escribe en esta plantilla y la usa desde ahora. Después, iniciá esta plantilla en Content Manager."
   },
+  "delete": {
+    "league": "¿Eliminar la liga {{name}} con sus campeonatos, temporadas, fechas y resultados? No se puede deshacer.",
+    "championship": "¿Eliminar el campeonato {{name}} con sus temporadas, fechas, resultados, miembros y colectores? No se puede deshacer.",
+    "season": "¿Eliminar la temporada {{name}} con sus fechas, resultados e inscripciones? No se puede deshacer.",
+    "entry": "¿Sacar a {{name}} de esta temporada?",
+    "round": "¿Eliminar la fecha {{number}}? No se puede deshacer.",
+    "member": "¿Sacar a {{name}} de este campeonato?",
+    "role": "¿Eliminar el rol {{name}}?",
+    "track": "¿Eliminar la pista {{name}} y sus trazados?",
+    "layout": "¿Eliminar el trazado {{name}}?",
+    "car": "¿Eliminar el auto {{name}}?",
+    "class": "¿Eliminar la clase {{name}}?",
+    "driver": "¿Eliminar al piloto {{name}}? También se borran sus vueltas de telemetría.",
+    "ballot": "¿Eliminar la votación {{name}} con sus opciones y votos?"
+},
   "votes": {
     "help": "Las votaciones donde podés votar. Las abiertas van primero.",
     "open": "Abiertas",
