@@ -4,12 +4,12 @@ import { Link } from 'react-router'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { AdminActions } from '../components/AdminActions'
+import { Icon } from '../components/Icon'
 import { StepForm } from '../components/StepForm'
 import { localInputToIso } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
 
 type BallotIn = components['schemas']['BallotIn']
-type Track = components['schemas']['TrackOut']
 type SeasonRef = { id: number; name: string }
 
 /** The ballots of a season, and the admin button for a new ballot. */
@@ -23,7 +23,6 @@ export function BallotsSection({
   adminView: boolean
 }) {
   const { t } = useTranslation()
-  const tracks = useLoad(() => api.GET('/api/catalog/tracks'), [])
   const path = { season_id: seasonId }
   const ballots = useLoad(() => api.GET('/api/seasons/{season_id}/ballots', { params: { path } }), [seasonId])
   const championship = useLoad(
@@ -49,7 +48,6 @@ export function BallotsSection({
                 content: (close) => (
                   <NewBallotForm
                     seasonId={seasonId}
-                    tracks={tracks.data ?? []}
                     otherSeasons={otherSeasons}
                     onDone={() => {
                       ballots.reload()
@@ -63,15 +61,28 @@ export function BallotsSection({
         )}
       </div>
       {ballots.data && roots.length === 0 && <p>{t('voting.none')}</p>}
-      <ul className="list">
+      <ul className="ballot-cards">
         {roots.map((ballot) => (
           <li key={ballot.id}>
-            <Link to={`/ballots/${ballot.id}`}>{ballot.title}</Link>{' '}
-            <span className="badge">{t(`voting.kind.${ballot.kind}`)}</span>
-            <span className={`badge ballot-${ballot.status}`}>{t(`voting.status.${ballot.status}`)}</span>
-            {ballot.winners.length > 0 && (
-              <span className="muted"> · {t('voting.winners', { list: ballot.winners.join(', ') })}</span>
-            )}
+            <Link to={`/ballots/${ballot.id}`} className="ballot-card">
+              <span className="ballot-card-icon" aria-hidden="true">
+                <Icon name={ballot.kind === 'track' ? 'map' : 'layers'} />
+              </span>
+              <span className="ballot-card-text">
+                <b>{ballot.title}</b>
+                <span className="ballot-card-tags">
+                  <span className={`badge ballot-${ballot.status}`}>{t(`voting.status.${ballot.status}`)}</span>
+                  <span className="muted">{t(`voting.kind.${ballot.kind}`)}</span>
+                </span>
+                {ballot.winners.length > 0 && (
+                  <span className="muted">{t('voting.winners', { list: ballot.winners.join(', ') })}</span>
+                )}
+              </span>
+              <span className="ballot-card-go">
+                {t(ballot.status === 'open' ? 'voting.goVote' : 'voting.goSee')}
+                <Icon name="arrow" small />
+              </span>
+            </Link>
           </li>
         ))}
       </ul>
@@ -82,12 +93,10 @@ export function BallotsSection({
 /** The new ballot form in 3 steps: what is voted, who sees what and when, and the advanced options. */
 function NewBallotForm({
   seasonId,
-  tracks,
   otherSeasons,
   onDone,
 }: {
   seasonId: number
-  tracks: Track[]
   otherSeasons: SeasonRef[]
   onDone: () => void
 }) {
@@ -129,18 +138,6 @@ function NewBallotForm({
           </label>
         )}
       </div>
-      {kind === 'track' && tracks.length > 0 && (
-        <label>
-          {t('voting.excludedTracks')}
-          <select name="excluded_track_ids" multiple size={4}>
-            {tracks.map((track) => (
-              <option key={track.id} value={track.id}>
-                {track.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
     </>
   )
 
@@ -264,7 +261,6 @@ function NewBallotForm({
             min_participation_pct: Number(form.get('min_participation_pct') || 0),
             low_participation_action: form.get('low_participation_action') as 'admin' | 'count',
             show_voter_names: form.get('show_voter_names') === 'on',
-            excluded_track_ids: form.getAll('excluded_track_ids').map(Number),
             max_runoffs: runoffs ? Number(runoffs) : undefined,
             prior_season_id: form.get('prior_season_id') ? Number(form.get('prior_season_id')) : undefined,
             min_prior_starts: Number(form.get('min_prior_starts') || 0),

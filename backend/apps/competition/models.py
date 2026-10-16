@@ -15,6 +15,20 @@ class League(models.Model):
         return self.name
 
 
+class Team(models.Model):
+    """A team of a league. The entry form lists them, so a team name has one spelling."""
+
+    league = models.ForeignKey(League, on_delete=models.CASCADE, related_name="teams")
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        ordering = ["name"]
+        constraints = [models.UniqueConstraint(fields=["league", "name"], name="unique_team")]
+
+    def __str__(self):
+        return self.name
+
+
 class Championship(models.Model):
     league = models.ForeignKey(League, on_delete=models.PROTECT, related_name="championships")
     name = models.CharField(max_length=100)

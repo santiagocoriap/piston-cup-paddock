@@ -5,6 +5,7 @@ import type { components } from '../api/schema'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { fit, polyline, trackOutline, type Point } from '../lib/trackMap'
 import { TabEmpty } from './TabEmpty'
 
 type Incidents = components['schemas']['IncidentsOut']
@@ -113,20 +114,29 @@ export function IncidentsSection({ roundId }: { roundId: number }) {
           </select>
         </label>
       </div>
-      <IncidentMap incidents={shown} selected={selected} onSelect={setSelected} />
-      <ul className="list">
+      <IncidentMap roundId={roundId} incidents={shown} selected={selected} onSelect={setSelected} />
+      <ul className="incident-list">
         {shown.map((incident) => (
           <li key={incident.key}>
-            <button type="button" className="link-button" onClick={() => setSelected(incident.key)}>
-              {t('incidents.summary', {
-                attempt: incident.attempt,
-                lap: incident.lap ?? '—',
-                cars: incident.cars.join(' + '),
-                speed: Math.round(incident.max_speed),
-              })}
-            </button>{' '}
-            <span className="badge">{t(`incidents.kind.${incident.kind}`)}</span>
-            <span className="badge">{t(`incidents.outcome.${incident.review?.outcome ?? 'open'}`)}</span>
+            <button
+              type="button"
+              className={incident.key === selected ? 'incident-row on' : 'incident-row'}
+              onClick={() => setSelected(incident.key)}
+              aria-pressed={incident.key === selected}
+            >
+              <span className={`incident-dot ${incident.kind}`} aria-hidden="true" />
+              <span className="incident-text">
+                {t('incidents.summary', {
+                  attempt: incident.attempt,
+                  lap: incident.lap ?? '—',
+                  cars: incident.cars.join(' + '),
+                  speed: Math.round(incident.max_speed),
+                })}
+              </span>
+              {incident.attempt < data.last_start && <span className="badge">{t('incidents.beforeRestart')}</span>}
+              <span className="badge">{t(`incidents.kind.${incident.kind}`)}</span>
+              <span className="badge">{t(`incidents.outcome.${incident.review?.outcome ?? 'open'}`)}</span>
+            </button>
           </li>
         ))}
       </ul>
@@ -143,41 +153,61 @@ export function IncidentsSection({ roundId }: { roundId: number }) {
   )
 }
 
-/** A heatmap and markers at the world position of the first event. The track has no map
- *  yet, so the plot shows only the incident positions. */
-function IncidentMap({ incidents, selected, onSelect }: { incidents: Incident[]; selected: number | null; onSelect: (key: number) => void }) {
+/** A heatmap and markers at the world position of the first event, on a drawing of the track
+ *  from the recorded positions. */
+function IncidentMap({
+  roundId,
+  incidents,
+  selected,
+  onSelect,
+}: {
+  roundId: number
+  incidents: Incident[]
+  selected: number | null
+  onSelect: (key: number) => void
+}) {
   const { t } = useTranslation()
+  const replay = useLoad(
+    () => api.GET('/api/rounds/{round_id}/replay', { params: { path: { round_id: roundId } } }),
+    [roundId],
+  )
+  const map = useLoad(
+    () => api.GET('/api/rounds/{round_id}/track-map', { params: { path: { round_id: roundId } } }),
+    [roundId],
+  )
+  const outline = trackOutline(map.data, replay.data?.cars ?? [])
   const placed = incidents.filter((i) => i.x !== null && i.x !== undefined && i.z !== null && i.z !== undefined)
-  if (placed.length === 0) return <p className="muted">{t('incidents.noPositions')}</p>
-  const xs = placed.map((i) => i.x as number)
-  const zs = placed.map((i) => i.z as number)
-  const [minX, maxX, minZ, maxZ] = [Math.min(...xs), Math.max(...xs), Math.min(...zs), Math.max(...zs)]
-  const span = Math.max(maxX - minX, maxZ - minZ, 1)
+  if (placed.length === 0 && outline.length === 0) return <p className="muted">{t('incidents.noPositions')}</p>
+  const at = (i: Incident): Point => ({ x: i.x as number, z: i.z as number })
   const size = 400
-  const px = (x: number) => 20 + ((x - minX) / span) * (size - 40)
-  const pz = (z: number) => 20 + ((z - minZ) / span) * (size - 40)
+  const place = fit([...outline, ...placed.map(at)], size, 20)
   return (
     <figure className="incident-map">
       <svg viewBox={`0 0 ${size} ${size}`} role="img" aria-label={t('incidents.map')}>
-        {placed.map((i) => (
-          <circle key={`heat-${i.key}`} cx={px(i.x as number)} cy={pz(i.z as number)} r={24} className="heat" />
-        ))}
-        {placed.map((i) => (
-          <circle
-            key={i.key}
-            cx={px(i.x as number)}
-            cy={pz(i.z as number)}
-            r={i.key === selected ? 8 : 6}
-            className={`marker ${i.kind}`}
-            role="button"
-            tabIndex={0}
-            aria-label={i.cars.join(' + ')}
-            onClick={() => onSelect(i.key)}
-            onKeyDown={(e) => e.key === 'Enter' && onSelect(i.key)}
-          />
-        ))}
+        {outline.length > 0 && <polyline className="track-line" points={polyline(outline, place)} />}
+        {placed.map((i) => {
+          const [cx, cy] = place(at(i))
+          return <circle key={`heat-${i.key}`} cx={cx} cy={cy} r={24} className="heat" />
+        })}
+        {placed.map((i) => {
+          const [cx, cy] = place(at(i))
+          return (
+            <circle
+              key={i.key}
+              cx={cx}
+              cy={cy}
+              r={i.key === selected ? 8 : 6}
+              className={`marker ${i.kind}`}
+              role="button"
+              tabIndex={0}
+              aria-label={i.cars.join(' + ')}
+              onClick={() => onSelect(i.key)}
+              onKeyDown={(e) => e.key === 'Enter' && onSelect(i.key)}
+            />
+          )
+        })}
       </svg>
-      <figcaption className="muted">{t('incidents.mapHelp')}</figcaption>
+      <figcaption className="muted">{t(outline.length > 0 ? 'incidents.mapHelp' : 'incidents.mapHelpNoTrack')}</figcaption>
     </figure>
   )
 }

@@ -6,12 +6,12 @@ import { ActionForm } from '../../components/ActionForm'
 import { Dialog } from '../../components/Dialog'
 import { Icon } from '../../components/Icon'
 import { Loading } from '../../components/Layout'
-import { RowMenu } from '../../components/RowMenu'
 import { errorMessage } from '../../lib/errors'
 import { formatDateTime } from '../../lib/format'
 import { initials } from '../../lib/initials'
 import { useLoad } from '../../lib/useLoad'
 import { Breadcrumbs } from '../../components/Breadcrumbs'
+import { DangerMenu } from '../../components/DangerMenu'
 
 type LinkOut = components['schemas']['LinkOut']
 type Driver = components['schemas']['DriverOut']
@@ -147,7 +147,9 @@ export function AccountsPage() {
                     {account.last_login ? formatDateTime(account.last_login, i18n.language) : t('accounts.never')}
                   </td>
                   <td className="row-actions">
-                    <RowMenu
+                    <DangerMenu
+                      target={{ kind: 'user', id: account.id, name: account.username }}
+                      onDeleted={accounts.reload}
                       label={t('accounts.actions', { name: account.username })}
                       items={[
                         {

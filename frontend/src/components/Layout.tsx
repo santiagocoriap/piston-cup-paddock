@@ -150,7 +150,7 @@ export function Layout({ onSignOut }: { onSignOut: () => void }) {
           )}
           <span className="spacer" />
           <CommandMenu pages={pages} />
-          {me.can_admin && <ModeSwitch mode={mode} setMode={setMode} />}
+          {me.can_admin && <ModeSwitch mode={mode} setMode={setMode} steward={!me.is_admin && !me.can_manage} />}
           <NotificationBell />
           {/* On a phone the side menu is the bottom bar, so the account menu is here. */}
           <UserMenu onSignOut={onSignOut} placement="down" className="topbar-user" />
@@ -163,7 +163,8 @@ export function Layout({ onSignOut }: { onSignOut: () => void }) {
   )
 }
 
-function ModeSwitch({ mode, setMode }: { mode: Mode; setMode: (mode: Mode) => void }) {
+/** steward: a steward or a custom role, not an admin. The switch then says "Comisario". */
+function ModeSwitch({ mode, setMode, steward }: { mode: Mode; setMode: (mode: Mode) => void; steward: boolean }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -181,12 +182,12 @@ function ModeSwitch({ mode, setMode }: { mode: Mode; setMode: (mode: Mode) => vo
           key={option}
           type="button"
           aria-pressed={mode === option}
-          aria-label={t(`mode.${option}`)}
+          aria-label={t(option === 'admin' && steward ? 'mode.steward' : `mode.${option}`)}
           className={mode === option ? 'on' : ''}
           onClick={() => choose(option)}
         >
           <Icon name={option === 'driver' ? 'user' : 'shield'} small />
-          <span>{t(`mode.${option}Short`)}</span>
+          <span>{t(option === 'admin' && steward ? 'mode.stewardShort' : `mode.${option}Short`)}</span>
         </button>
       ))}
     </div>

@@ -51,8 +51,8 @@ test('an admin sets up a season without voting and enters a result', async ({ pa
   await expect(page.getByText(names.car)).toBeVisible()
 
   // Season
-  // The championships are on Inicio.
-  await navLink(page, 'Inicio').click()
+  // The championships have their own page.
+  await navLink(page, 'Campeonatos').click()
   await page.getByRole('link', { name: names.championship }).click()
   // The admin tools open on the "Temporadas" tab. The form opens in a dialog.
   await page.getByRole('button', { name: 'Nueva temporada' }).click()
@@ -78,12 +78,11 @@ test('an admin sets up a season without voting and enters a result', async ({ pa
   await expect(round).toContainText('Manual')
 
   await openAdminForm(page, 'entries', 'Inscribir piloto')
-  await submitForm(
-    page,
-    'Inscribir piloto',
-    { Número: '93', Equipo: 'Meyer Shank' },
-    { Piloto: names.driver, Auto: names.car },
-  )
+  // A new team: pick "+ Equipo nuevo…", then type its name. It becomes a team of the league.
+  const entryForm = page.getByRole('form', { name: 'Inscribir piloto', exact: true })
+  await entryForm.getByLabel('Equipo').selectOption({ label: '+ Equipo nuevo…' })
+  await entryForm.getByLabel('Nombre del equipo').fill('Meyer Shank')
+  await submitForm(page, 'Inscribir piloto', { Número: '93' }, { Piloto: names.driver, Auto: names.car })
   // The entries show as cards.
   await expect(page.locator('.entry-grid li').filter({ hasText: names.driver })).toContainText('Meyer Shank')
 

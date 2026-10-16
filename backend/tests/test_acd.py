@@ -40,7 +40,12 @@ def pack(files: dict[str, bytes], folder: str, fifth: int = 77, new_format: bool
 @pytest.mark.parametrize("fifth", [3, 77, 200])
 @pytest.mark.parametrize("new_format", [True, False])
 def test_reads_the_files(fifth, new_format):
-    data = pack({"tyres.ini": TYRES, "power.lut": b"0|0\r\n5000|300"}, "ks_ferrari_488_gt3", fifth, new_format)
+    data = pack(
+        {"tyres.ini": TYRES, "power.lut": b"0|0\r\n5000|300"},
+        "ks_ferrari_488_gt3",
+        fifth,
+        new_format,
+    )
     files = acd.read_acd(data, "ks_ferrari_488_gt3")
     assert files["tyres.ini"] == TYRES
     assert files["power.lut"] == b"0|0\r\n5000|300"
@@ -57,7 +62,9 @@ def test_a_wrong_folder_name_is_refused_and_not_guessed():
         acd.read_acd(data, "ks_mazda_miata")
 
 
-@pytest.mark.parametrize("data", [b"", b"\x01\x00", b"\xff" * 40, struct.pack("<ii", -1111, 1) + b"\x05\x00"])
+@pytest.mark.parametrize(
+    "data", [b"", b"\x01\x00", b"\xff" * 40, struct.pack("<ii", -1111, 1) + b"\x05\x00"]
+)
 def test_a_broken_archive_is_refused(data):
     with pytest.raises(acd.AcdError):
         acd.read_acd(data, "ks_ferrari_488_gt3")

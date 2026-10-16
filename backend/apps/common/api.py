@@ -1,7 +1,6 @@
 from contextlib import contextmanager
 
 from django.db import IntegrityError, transaction
-from django.db.models import ProtectedError
 from ninja import Schema
 from ninja.errors import HttpError
 
@@ -17,16 +16,6 @@ def conflict_on_duplicate(detail: str):
         with transaction.atomic():
             yield
     except IntegrityError as error:
-        raise HttpError(409, detail) from error
-
-
-@contextmanager
-def conflict_on_protected(detail: str = "in_use"):
-    """Turn a delete that a protected row blocks into HTTP 409. Nothing is deleted."""
-    try:
-        with transaction.atomic():
-            yield
-    except ProtectedError as error:
         raise HttpError(409, detail) from error
 
 

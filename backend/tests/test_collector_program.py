@@ -383,7 +383,9 @@ def preset(tmp_path):
 
 def test_the_skin_a_driver_chose_is_written_to_the_entry_list(preset):
     entries = [dict(entry) for entry in CONTENT["entries"]]
-    entries[0]["skin"] = "chosen_for_ana"  # The server has no skin list for this car: used as it is.
+    entries[0]["skin"] = (
+        "chosen_for_ana"  # The server has no skin list for this car: used as it is.
+    )
     entries[1]["skin"] = "B_Skin"  # The server has the folder b_skin: its own name is used.
     pc.write_setup(preset, {**CONTENT, "entries": entries})
     cars = pc.car_blocks((preset / "entry_list.ini").read_text(encoding="utf-8"))

@@ -5,16 +5,17 @@ import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { ActionForm } from '../components/ActionForm'
 import { AdminActions } from '../components/AdminActions'
-import { DeleteButton } from '../components/DeleteButton'
 import { Icon } from '../components/Icon'
 import { RowMenu } from '../components/RowMenu'
 import { Loading } from '../components/Layout'
 import { currentTimeZone, formatDateTime, localInputToIso } from '../lib/format'
+import { errorMessage } from '../lib/errors'
 import { useLoad } from '../lib/useLoad'
 import { medal } from '../lib/medal'
 import { useAdminView } from '../session'
 import { BallotsSection } from './BallotsSection'
 import { CalendarAdmin } from './CalendarAdmin'
+import { CalendarOrder } from './CalendarOrder'
 import { ReportSection } from './ReportSection'
 import { CloneSeasonForm, RoundTools } from './RoundTools'
 import { RulesSection } from './RulesSection'
@@ -24,12 +25,14 @@ import { HandicapsSection } from './HandicapsSection'
 import { ConditionsPoolForm } from './ConditionsDraw'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { Avatar } from '../components/Avatar'
+import { DangerMenu } from '../components/DangerMenu'
+import { useRowDrag } from '../lib/useRowDrag'
 import { EntrySkinPicker } from './EntrySkinPicker'
 
 export function SeasonPage() {
   const { t, i18n } = useTranslation()
-  const seasonId = Number(useParams().seasonId)
   const navigate = useNavigate()
+  const seasonId = Number(useParams().seasonId)
   const path = { season_id: seasonId }
   const season = useLoad(() => api.GET('/api/seasons/{season_id}', { params: { path } }), [seasonId])
   const standings = useLoad(
@@ -40,6 +43,20 @@ export function SeasonPage() {
   const data = season.data
   const adminView = useAdminView(data?.can_manage ?? false)
   const [active, choose] = useActiveSection(SECTIONS, data !== undefined)
+  const [orderError, setOrderError] = useState<string | null>(null)
+  const drag = useRowDrag(async (from, to) => {
+    if (!data) return
+    const ids = data.rounds.map((round) => round.id)
+    const [moved] = ids.splice(from, 1)
+    ids.splice(to, 0, moved)
+    setOrderError(null)
+    const { error } = await api.PUT('/api/seasons/{season_id}/round-order', {
+      params: { path },
+      body: { round_ids: ids },
+    })
+    if (error) setOrderError(errorMessage(t, error))
+    season.reload()
+  })
   if (!data) return <Loading failed={season.failed} />
   const now = Date.now()
   const upcoming = data.rounds.filter(
@@ -108,11 +125,10 @@ export function SeasonPage() {
               />
             )}
             {adminView && (
-              <DeleteButton
-                label={t('common.delete')}
-                confirm={t('delete.season', { name: data.name })}
-                run={() => api.DELETE('/api/seasons/{season_id}', { params: { path } })}
-                onDone={() => navigate(`/championships/${data.championship_id}`)}
+              <DangerMenu
+                target={{ kind: 'season', id: data.id, name: data.name }}
+                onDeleted={() => navigate(`/championships/${data.championship_id}`)}
+                wide
               />
             )}
           </div>
@@ -290,16 +306,16 @@ export function SeasonPage() {
                       id: 'fixed',
                       label: t('calendar.fixed'),
                       content: (close) => (
-                        <CalendarAdmin season={data} onChange={season.reload} only="fixed" onDone={close} />
+                        <CalendarAdmin season={data} onChange={season.reload} onDone={close} />
                       ),
                     },
                     ...(data.rounds.length > 0
                       ? [
                           {
-                            id: 'edit',
-                            label: t('calendar.edit'),
-                            content: (close: () => void) => (
-                              <CalendarAdmin season={data} onChange={season.reload} only="edit" onDone={close} />
+                            id: 'order',
+                            label: t('calendarOrder.title'),
+                            content: () => (
+                              <CalendarOrder seasonId={seasonId} rounds={data.rounds} onSaved={season.reload} />
                             ),
                           },
                         ]
@@ -341,15 +357,25 @@ export function SeasonPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.rounds.map((round) => (
+                    {data.rounds.map((round, index) => (
                       <tr
                         key={round.id}
-                        className={
-                          round.cancelled ? 'cancelled-round' : round.id === next?.id ? 'next-row' : undefined
-                        }
+                        className={[
+                          round.cancelled ? 'cancelled-round' : round.id === next?.id ? 'next-row' : '',
+                          drag.over === index && drag.from !== index ? 'drop-here' : '',
+                          drag.from === index ? 'dragging' : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ') || undefined}
+                        {...(adminView ? drag.rowProps(index) : {})}
                       >
                         <td className="pos">
                           <span className="round-status">
+                            {adminView && (
+                              <span className="order-grip" title={t('calendarOrder.drag')} aria-hidden="true">
+                                ⠿
+                              </span>
+                            )}
                             <span className={`round-dot ${roundStatus(round)}`} aria-hidden="true" />
                             {round.number}
                             <span className="sr-only">{t(`calendar.status.${roundStatus(round)}`)}</span>
@@ -382,13 +408,6 @@ export function SeasonPage() {
                         {adminView && (
                           <td className="row-actions">
                             <RoundTools round={round} onChange={season.reload} />
-                            <DeleteButton
-                              compact
-                              label={t('common.delete')}
-                              confirm={t('delete.round', { number: round.number })}
-                              run={() => api.DELETE('/api/rounds/{round_id}', { params: { path: { round_id: round.id } } })}
-                              onDone={season.reload}
-                            />
                           </td>
                         )}
                       </tr>
@@ -396,6 +415,11 @@ export function SeasonPage() {
                   </tbody>
                 </table>
               </div>
+            )}
+            {orderError && (
+              <p role="alert" className="error calendar-moved">
+                {orderError}
+              </p>
             )}
           </section>
 
@@ -424,7 +448,19 @@ export function SeasonPage() {
                     {
                       id: 'entry',
                       label: t('season.addEntry'),
-                      content: (close) => <AddEntryForm seasonId={seasonId} onChange={season.reload} onDone={close} />,
+                      content: (close) => (
+                        <AddEntryForm
+                          seasonId={seasonId}
+                          entered={data.entries.map((entry) => entry.driver_id)}
+                          onChange={season.reload}
+                          onDone={close}
+                        />
+                      ),
+                    },
+                    {
+                      id: 'teams',
+                      label: t('teams.title'),
+                      content: () => <TeamsPanel seasonId={seasonId} />,
                     },
                   ]}
                 />
@@ -447,12 +483,9 @@ export function SeasonPage() {
                     </span>
                     <span className="entry-number">{entry.number}</span>
                     {adminView && (
-                      <DeleteButton
-                        compact
-                        label={t('common.delete')}
-                        confirm={t('delete.entry', { name: entry.driver_name })}
-                        run={() => api.DELETE('/api/entries/{entry_id}', { params: { path: { entry_id: entry.id } } })}
-                        onDone={season.reload}
+                      <DangerMenu
+                        target={{ kind: 'entry', id: entry.id, name: entry.driver_name }}
+                        onDeleted={season.reload}
                       />
                     )}
                   </li>
@@ -627,11 +660,14 @@ function AddRoundForm({ seasonId, onChange, onDone }: FormProps) {
   )
 }
 
-function AddEntryForm({ seasonId, onChange, onDone }: FormProps) {
+function AddEntryForm({ seasonId, entered, onChange, onDone }: FormProps & { entered: number[] }) {
   const { t } = useTranslation()
   const path = { season_id: seasonId }
   const cars = useLoad(() => api.GET('/api/catalog/cars'), [])
   const drivers = useLoad(() => api.GET('/api/drivers'), [])
+  const teams = useLoad(() => api.GET('/api/seasons/{season_id}/teams', { params: { path } }), [seasonId])
+  // A team of the league, or a new name: the new name becomes a team of the league.
+  const [team, setTeam] = useState('')
   return (
     <ActionForm
       title={t('season.addEntry')}
@@ -644,10 +680,13 @@ function AddEntryForm({ seasonId, onChange, onDone }: FormProps) {
             driver_id: Number(form.get('driver_id')),
             car_id: Number(form.get('car_id')),
             number: Number(form.get('number')),
-            team: String(form.get('team') ?? ''),
+            team: team === NEW_TEAM ? String(form.get('team_new') ?? '') : team,
           },
         })
-        if (!error) onChange()
+        if (!error) {
+          onChange()
+          teams.reload()
+        }
         return error
       }}
     >
@@ -657,7 +696,7 @@ function AddEntryForm({ seasonId, onChange, onDone }: FormProps) {
           <option value="" disabled>
             {t('common.select')}
           </option>
-          {drivers.data?.map((driver) => (
+          {drivers.data?.filter((driver) => !entered.includes(driver.id)).map((driver) => (
             <option key={driver.id} value={driver.id}>
               {driver.display_name}
             </option>
@@ -683,7 +722,76 @@ function AddEntryForm({ seasonId, onChange, onDone }: FormProps) {
       </label>
       <label>
         {t('season.team')}
-        <input name="team" maxLength={100} />
+        <select value={team} onChange={(event) => setTeam(event.target.value)}>
+          <option value="">{t('teams.none')}</option>
+          {teams.data?.map((item) => (
+            <option key={item.id} value={item.name}>
+              {item.name}
+            </option>
+          ))}
+          <option value={NEW_TEAM}>{t('teams.new')}</option>
+        </select>
+      </label>
+      {team === NEW_TEAM && (
+        <label>
+          {t('teams.newName')}
+          <input name="team_new" maxLength={100} required autoFocus />
+        </label>
+      )}
+    </ActionForm>
+  )
+}
+
+const NEW_TEAM = '__new__'
+
+/** The teams of the league, for an admin: add one, or remove one from the list. */
+function TeamsPanel({ seasonId }: { seasonId: number }) {
+  const { t } = useTranslation()
+  const path = { season_id: seasonId }
+  const teams = useLoad(() => api.GET('/api/seasons/{season_id}/teams', { params: { path } }), [seasonId])
+  const [error, setError] = useState<string | null>(null)
+  return (
+    <ActionForm
+      title={t('teams.title')}
+      submitLabel={t('common.add')}
+      onSubmit={async (form) => {
+        const { error } = await api.POST('/api/seasons/{season_id}/teams', {
+          params: { path },
+          body: { name: String(form.get('name') ?? '') },
+        })
+        if (!error) teams.reload()
+        return error
+      }}
+    >
+      <p className="muted">{t('teams.help')}</p>
+      <ul className="team-list">
+        {teams.data?.map((item) => (
+          <li key={item.id}>
+            <span>{item.name}</span>
+            <button
+              type="button"
+              className="link-button"
+              onClick={async () => {
+                setError(null)
+                const { error } = await api.DELETE('/api/teams/{team_id}', { params: { path: { team_id: item.id } } })
+                if (error) setError(errorMessage(t, error))
+                else teams.reload()
+              }}
+            >
+              {t('teams.remove')}
+            </button>
+          </li>
+        ))}
+        {teams.data?.length === 0 && <li className="muted">{t('teams.empty')}</li>}
+      </ul>
+      {error && (
+        <p role="alert" className="error">
+          {error}
+        </p>
+      )}
+      <label>
+        {t('teams.newName')}
+        <input name="name" maxLength={100} required />
       </label>
     </ActionForm>
   )

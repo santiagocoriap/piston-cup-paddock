@@ -5,10 +5,11 @@ import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { ActionForm } from '../components/ActionForm'
 import { Dialog } from '../components/Dialog'
-import { RowMenu } from '../components/RowMenu'
 import { errorMessage } from '../lib/errors'
 import { useLoad } from '../lib/useLoad'
 import { drawConditions } from '../lib/drawConditions'
+import { DangerMenu } from '../components/DangerMenu'
+import { RoundSettingsForm } from './RoundSettingsForm'
 
 type RoundOut = components['schemas']['RoundOut']
 
@@ -17,6 +18,7 @@ type RoundOut = components['schemas']['RoundOut']
 export function RoundTools({ round, onChange }: { round: RoundOut; onChange: () => void }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
+  const [settings, setSettings] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const tracks = useLoad(() => (open ? api.GET('/api/catalog/tracks') : Promise.resolve({ data: undefined })), [open])
   const title = t('roundTools.replaceTitle', { number: round.number })
@@ -34,9 +36,12 @@ export function RoundTools({ round, onChange }: { round: RoundOut; onChange: () 
 
   return (
     <span className="round-tools">
-      <RowMenu
+      <DangerMenu
+        target={{ kind: 'round', id: round.id, name: `${t('season.roundLabel', { number: round.number })} · ${round.track_name}` }}
+        onDeleted={onChange}
         label={t('roundTools.menu', { number: round.number })}
         items={[
+          { label: t('roundTools.settings'), onSelect: () => setSettings(true) },
           { label: t(round.cancelled ? 'roundTools.restore' : 'roundTools.cancel'), onSelect: cancelOrRestore },
           { label: t('roundTools.replace'), onSelect: () => setOpen(true) },
           {
@@ -49,6 +54,9 @@ export function RoundTools({ round, onChange }: { round: RoundOut; onChange: () 
           },
         ]}
       />
+      <Dialog open={settings} title={t('roundTools.settings')} onClose={() => setSettings(false)}>
+        {settings && <RoundSettingsForm round={round} onChange={onChange} onDone={() => setSettings(false)} />}
+      </Dialog>
       <Dialog open={open} title={title} onClose={() => setOpen(false)}>
         {open && (
           <ActionForm

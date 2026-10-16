@@ -79,7 +79,7 @@ def add_events(admin, round_):
         )
 
 
-def test_season_ratings_from_the_accepted_start(api, night):
+def test_season_ratings_count_every_start(api, night):
     admin, round_ = night
     unknown = api(admin).get(f"/seasons/{round_.season.id}/safety").json()
     assert {d["status"] for d in unknown["drivers"]} == {"unknown"}
@@ -89,10 +89,11 @@ def test_season_ratings_from_the_accepted_start(api, night):
     assert data["rules_version"] == "safety-1"
     by_name = {d["driver_name"]: d for d in data["drivers"]}
     winner = by_name["Driver 01"]
-    assert winner["points"] == 2  # One car contact. The wall in the abandoned start is out.
-    assert winner["laps"] == 10
-    assert winner["rating"] == pytest.approx(3.00 + 0.10 - 0.10)
+    # One car contact, and the wall in the start before the restart: a crash still counts.
+    assert winner["points"] == 3
+    assert winner["laps"] == 14  # 10 race laps and 4 qualifying laps.
+    assert winner["rating"] == pytest.approx(3.00 + 0.14 - 0.15)
     assert winner["status"] == "provisional"
-    assert "Driver 01 + Driver 03" in winner["history"][0]["explanation"][0]
+    assert any("Driver 01 + Driver 03" in line for line in winner["history"][0]["explanation"])
     assert by_name["Driver 06"]["points"] == 0
     assert by_name["Driver 06"]["rating"] > 3.00

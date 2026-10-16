@@ -421,8 +421,8 @@ function TrackCard({ track, onChange }: { track: Track; onChange: () => void }) 
           name={track.name}
           country={track.country}
           base={`/api/catalog/tracks/${track.id}`}
-          confirmDelete={t('delete.track', { name: track.name })}
           onChange={onChange}
+          deleteTarget={{ kind: 'track', id: track.id, name: track.name }}
         />
       </header>
       {track.layouts.length === 0 ? (
@@ -464,11 +464,11 @@ function LayoutCard({ layout, onSaved }: { layout: Layout; onSaved: () => void }
             name={layout.name}
             fields={layoutFields(layout, t)}
             base={base}
+            deleteTarget={{ kind: 'layout', id: layout.id, name: layout.name }}
             images={[
               { kind: 'outline', set: layout.has_outline },
               { kind: 'preview', set: layout.has_preview },
             ]}
-            confirmDelete={t('delete.layout', { name: layout.name })}
             onChange={changed}
           />
         </div>
@@ -509,11 +509,11 @@ function CarCard({ car, classes, onChange }: { car: Car; classes: string[]; onCh
             name={car.name}
             fields={carFields(car, t)}
             base={base}
+            deleteTarget={{ kind: 'car', id: car.id, name: car.name }}
             images={[
               { kind: 'preview', set: car.has_preview },
               { kind: 'badge', set: car.has_badge },
             ]}
-            confirmDelete={t('delete.car', { name: car.name })}
             onChange={changed}
           />
         </div>

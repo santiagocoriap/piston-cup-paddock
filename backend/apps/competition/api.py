@@ -12,7 +12,7 @@ from pydantic import AwareDatetime
 
 from apps.audit.services import change, record
 from apps.catalog.models import Car, CarSkin, TrackLayout
-from apps.common.api import conflict_on_duplicate, conflict_on_protected, require
+from apps.common.api import conflict_on_duplicate, require
 from apps.common.timezones import DEFAULT_EVENT_TIMEZONE, is_timezone
 from apps.identity.models import DriverProfile, User
 from apps.rules.models import RulesVersion
@@ -29,6 +29,7 @@ from .models import (
     RoundTrackChange,
     Season,
     SeasonEntry,
+    Team,
 )
 from .permissions import can_manage, can_view, is_league_admin, visible_championships
 
@@ -246,6 +247,8 @@ class RoundOut(Schema):
     cancelled: bool
     cancel_reason: str
     track_changes: list[TrackChangeOut]
+    # The conditions that an admin announced: time_of_day, weather, temperatures, grip, notes.
+    announced_conditions: dict
 
 
 class SeasonDetail(SeasonSummary):
@@ -319,6 +322,7 @@ def _round_out(round_: Round) -> RoundOut:
         origin=round_.origin,
         cancelled=round_.cancelled_at is not None,
         cancel_reason=round_.cancel_reason,
+        announced_conditions=round_.announced_conditions or {},
         track_changes=[
             TrackChangeOut(
                 old_layout=str(c.old_layout),
@@ -634,12 +638,100 @@ def get_season(request, season_id: int):
     return _season_detail(request.user, season)
 
 
+class TeamOut(Schema):
+    id: int
+    name: str
+
+
+class TeamIn(Schema):
+    name: str = Field(min_length=1, max_length=100)
+
+
+def _team_for(season: Season, name: str) -> str:
+    """The team name as the league has it. A new name becomes a team of the league."""
+    name = " ".join(name.split())
+    if not name:
+        return ""
+    league = season.championship.league
+    team = league.teams.filter(name__iexact=name).first()
+    return team.name if team else Team.objects.create(league=league, name=name).name
+
+
+@router.get("/seasons/{season_id}/teams", response=list[TeamOut])
+def season_teams(request, season_id: int):
+    """The teams of the league of the season, for the entry form."""
+    season = _visible_season(request.user, season_id)
+    return season.championship.league.teams.all()
+
+
+@router.post("/seasons/{season_id}/teams", response={201: TeamOut})
+def create_team(request, season_id: int, payload: TeamIn):
+    season = _visible_season(request.user, season_id)
+    require(can_manage(request.user, season.championship))
+    name = _team_for(season, payload.name)
+    return Status(201, season.championship.league.teams.get(name=name))
+
+
+@router.delete("/teams/{team_id}", response={204: None})
+def delete_team(request, team_id: int):
+    """A team leaves the list. Entries keep their team name."""
+    team = get_object_or_404(Team.objects.select_related("league"), pk=team_id)
+    championships = team.league.championships.all()
+    require(any(can_manage(request.user, c) for c in championships))
+    team.delete()
+    return Status(204, None)
+
+
+class EntryPatchIn(Schema):
+    car_id: int | None = None
+    number: int | None = Field(None, ge=1, le=999)
+    team: str | None = Field(None, max_length=100)
+
+
+@router.patch("/entries/{entry_id}", response=EntryOut)
+def update_entry(request, entry_id: int, payload: EntryPatchIn):
+    entry = get_object_or_404(
+        SeasonEntry.objects.select_related("season__championship__league", "driver", "car"),
+        pk=entry_id,
+    )
+    season = entry.season
+    if not can_view(request.user, season.championship):
+        raise Http404
+    require(can_manage(request.user, season.championship))
+    changes = []
+    if payload.car_id is not None and payload.car_id != entry.car_id:
+        car = get_object_or_404(Car, pk=payload.car_id)
+        changes.append(change("car", entry.car.name, car.name))
+        entry.car = car
+    if payload.number is not None and payload.number != entry.number:
+        changes.append(change("number", entry.number, payload.number))
+        entry.number = payload.number
+    if payload.team is not None:
+        team = _team_for(season, payload.team)
+        if team != entry.team:
+            changes.append(change("team", entry.team, team))
+            entry.team = team
+    with conflict_on_duplicate("entry_exists"):
+        entry.save()
+        record(
+            request.user,
+            "entry.changed",
+            "season",
+            season.id,
+            championship=season.championship,
+            params={"season": season.name, "driver": entry.driver.display_name},
+            changes=changes,
+        )
+    return _entry_out(entry)
+
+
 @router.post("/seasons/{season_id}/entries", response={201: EntryOut})
 def create_entry(request, season_id: int, payload: EntryIn):
     season = _visible_season(request.user, season_id)
     require(can_manage(request.user, season.championship))
     driver = get_object_or_404(DriverProfile, pk=payload.driver_id)
     car = get_object_or_404(Car, pk=payload.car_id)
+    payload.team = _team_for(season, payload.team)
     with conflict_on_duplicate("entry_exists"):
         entry = SeasonEntry.objects.create(
             season=season, driver=driver, car=car, number=payload.number, team=payload.team
@@ -800,6 +892,49 @@ def update_round(request, round_id: int, payload: RoundPatchIn):
         )
     round_.refresh_from_db()
     return _round_out(round_)
+
+
+class RoundOrderIn(Schema):
+    round_ids: list[int] = Field(max_length=100)
+
+
+@router.put("/seasons/{season_id}/round-order", response=list[RoundOut])
+def order_rounds(request, season_id: int, payload: RoundOrderIn):
+    """A new calendar order (drag and drop): round N is the Nth ID of the list. The list has
+    every round of the season. The dates stay with their rounds."""
+    season = get_object_or_404(Season.objects.select_related("championship"), pk=season_id)
+    if not can_view(request.user, season.championship):
+        raise Http404
+    require(can_manage(request.user, season.championship))
+    rounds = {r.id: r for r in season.rounds.select_related("track_layout__track")}
+    if sorted(payload.round_ids) != sorted(rounds):
+        raise HttpError(422, "round_list_mismatch")
+    with transaction.atomic():
+        # Two steps, so no two rounds have the same number on the way.
+        for offset, round_id in enumerate(payload.round_ids, start=1):
+            Round.objects.filter(pk=round_id).update(number=1000 + offset)
+        for number, round_id in enumerate(payload.round_ids, start=1):
+            Round.objects.filter(pk=round_id).update(number=number)
+        record(
+            request.user,
+            "season.rounds_ordered",
+            "season",
+            season.id,
+            championship=season.championship,
+            params={"season": season.name},
+            changes=[
+                change(
+                    "order",
+                    ", ".join(
+                        str(rounds[i].track_layout)
+                        for i in sorted(rounds, key=lambda i: rounds[i].number)
+                    ),
+                    ", ".join(str(rounds[i].track_layout) for i in payload.round_ids),
+                )
+            ],
+        )
+    ordered = season.rounds.select_related("track_layout__track").order_by("number")
+    return [_round_out(r) for r in ordered]
 
 
 def _managed_round(user, round_id: int) -> Round:
@@ -1048,65 +1183,6 @@ def draw_conditions(request, round_id: int, payload: DrawIn):
 # stay: they only lose the link to the deleted championship and keep its name.
 
 
-def _delete_season(user, season: Season) -> None:
-    championship = season.championship
-    record(
-        user,
-        "season.deleted",
-        "season",
-        season.id,
-        championship=championship,
-        params={"season": season.name, "championship": championship.name},
-    )
-    season.delete()
-
-
-def _delete_championship(user, championship: Championship) -> None:
-    for season in championship.seasons.select_related("championship"):
-        _delete_season(user, season)
-    record(
-        user,
-        "championship.deleted",
-        "championship",
-        championship.id,
-        championship=championship,
-        params={"name": championship.name, "league": championship.league.name},
-    )
-    championship.delete()
-
-
-@router.delete("/leagues/{league_id}", response={204: None})
-def delete_league(request, league_id: int):
-    """Delete a league with its championships, seasons, rounds, and results."""
-    require(is_league_admin(request.user))
-    league = get_object_or_404(League, pk=league_id)
-    with conflict_on_protected():
-        for championship in league.championships.select_related("league"):
-            _delete_championship(request.user, championship)
-        record(request.user, "league.deleted", "league", league.id, params={"name": league.name})
-        league.delete()
-    return Status(204, None)
-
-
-@router.delete("/championships/{championship_id}", response={204: None})
-def delete_championship(request, championship_id: int):
-    """Delete a championship with its seasons, rounds, results, members, and collectors."""
-    require(is_league_admin(request.user))
-    championship = _visible_championship(request.user, championship_id)
-    with conflict_on_protected():
-        _delete_championship(request.user, championship)
-    return Status(204, None)
-
-
-@router.delete("/seasons/{season_id}", response={204: None})
-def delete_season(request, season_id: int):
-    season = _visible_season(request.user, season_id)
-    require(can_manage(request.user, season.championship))
-    with conflict_on_protected():
-        _delete_season(request.user, season)
-    return Status(204, None)
-
-
 class EntrySkinOut(Schema):
     id: int
     key: str
@@ -1168,93 +1244,3 @@ def set_entry_skin(request, entry_id: int, payload: SkinChoiceIn):
             changes=[change("skin", old, skin.key if skin else None)],
         )
     return _entry_out(entry, request.user)
-
-
-@router.delete("/entries/{entry_id}", response={204: None})
-def delete_entry(request, entry_id: int):
-    """Remove a driver from a season. An entry with results or penalties stays."""
-    entry = get_object_or_404(
-        SeasonEntry.objects.select_related("season__championship", "driver", "car"), pk=entry_id
-    )
-    season = entry.season
-    if not can_view(request.user, season.championship):
-        raise Http404
-    require(can_manage(request.user, season.championship))
-    with conflict_on_protected("entry_in_use"):
-        record(
-            request.user,
-            "entry.deleted",
-            "season",
-            season.id,
-            championship=season.championship,
-            params={
-                "season": season.name,
-                "driver": entry.driver.display_name,
-                "number": entry.number,
-                "car": entry.car.name,
-            },
-        )
-        entry.delete()
-    return Status(204, None)
-
-
-def delete_round(user, round_id: int) -> None:
-    """Delete a round with no result. A round with a result can be cancelled instead.
-
-    The address is DELETE /rounds/{round_id}. It is declared in apps/results/api.py, next to
-    GET /rounds/{round_id}: two routers with the same path do not share it, and the first one
-    answers 405 to the methods of the other."""
-    round_ = _managed_round(user, round_id)
-    if hasattr(round_, "result"):
-        raise HttpError(422, "round_has_result")
-    with conflict_on_protected():
-        record(
-            user,
-            "round.deleted",
-            "round",
-            round_.id,
-            championship=round_.season.championship,
-            params=_round_params(round_),
-        )
-        round_.delete()
-
-
-@router.delete("/championships/{championship_id}/members/{user_id}", response={204: None})
-def delete_member(request, championship_id: int, user_id: int):
-    championship = _visible_championship(request.user, championship_id)
-    require(can_manage(request.user, championship))
-    member = get_object_or_404(
-        ChampionshipMember.objects.select_related("user", "custom_role"),
-        championship=championship,
-        user_id=user_id,
-    )
-    with transaction.atomic():
-        record(
-            request.user,
-            "member.removed",
-            "championship",
-            championship.id,
-            championship=championship,
-            params={"username": member.user.username, "role": _role_label(member)},
-        )
-        member.delete()
-    return Status(204, None)
-
-
-@router.delete("/roles/{role_id}", response={204: None})
-def delete_role(request, role_id: int):
-    """Delete a custom role. A role that still has members stays."""
-    role = get_object_or_404(ChampionshipRole.objects.select_related("championship"), pk=role_id)
-    championship = _visible_championship(request.user, role.championship_id)
-    require(can_manage(request.user, championship))
-    with conflict_on_protected("role_in_use"):
-        record(
-            request.user,
-            "role.deleted",
-            "championship",
-            championship.id,
-            championship=championship,
-            params={"name": role.name},
-        )
-        role.delete()
-    return Status(204, None)

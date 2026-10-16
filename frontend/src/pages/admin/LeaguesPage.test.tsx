@@ -21,7 +21,7 @@ describe('LeaguesPage', () => {
     mockApi({ 'GET /api/leagues': () => json(200, [piston]) })
     renderPage(<LeaguesPage />, { path: '/admin/leagues', url: '/admin/leagues' })
     const card = await screen.findByRole('article', { name: 'Piston Cup' })
-    expect(within(card).getByRole('button', { name: /Piston Cup/ })).toHaveTextContent('2 campeonatos · 3 temporadas')
+    expect(within(card).getByRole('button', { name: /^Piston Cup/ })).toHaveTextContent('2 campeonatos · 3 temporadas')
     expect(within(card).getByText('Zona horaria: America/Argentina/Buenos_Aires')).toBeInTheDocument()
     const rows = within(card).getAllByRole('listitem')
     expect(rows.map((row) => row.textContent)).toEqual(['GT31 temporadaAbrir', 'LMDh2 temporadasAbrir'])
@@ -31,7 +31,7 @@ describe('LeaguesPage', () => {
   it('opens and closes a league', async () => {
     mockApi({ 'GET /api/leagues': () => json(200, [piston]) })
     renderPage(<LeaguesPage />, { path: '/admin/leagues', url: '/admin/leagues' })
-    const toggle = await screen.findByRole('button', { name: /Piston Cup/ })
+    const toggle = await screen.findByRole('button', { name: /^Piston Cup/ })
     expect(toggle).toHaveAttribute('aria-expanded', 'true')
     await userEvent.click(toggle)
     expect(toggle).toHaveAttribute('aria-expanded', 'false')

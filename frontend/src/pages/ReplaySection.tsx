@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { useLoad } from '../lib/useLoad'
+import { fit, polyline, trackOutline } from '../lib/trackMap'
 import { TabEmpty } from './TabEmpty'
 
 type Car = components['schemas']['CarTrackOut']
@@ -45,6 +46,10 @@ export function ReplaySection({ roundId }: { roundId: number }) {
       }),
     [roundId, attempt],
   )
+  const map = useLoad(
+    () => api.GET('/api/rounds/{round_id}/track-map', { params: { path: { round_id: roundId } } }),
+    [roundId],
+  )
   const [time, setTime] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(4)
@@ -86,13 +91,13 @@ export function ReplaySection({ roundId }: { roundId: number }) {
       />
     )
   }
-  const xs = data.cars.flatMap((c) => c.x)
-  const zs = data.cars.flatMap((c) => c.z)
-  const [minX, maxX, minZ, maxZ] = [Math.min(...xs), Math.max(...xs), Math.min(...zs), Math.max(...zs)]
-  const span = Math.max(maxX - minX, maxZ - minZ, 1)
+  const outline = trackOutline(map.data, data.cars)
   const size = 400
-  const px = (x: number) => 16 + ((x - minX) / span) * (size - 32)
-  const pz = (z: number) => 16 + ((z - minZ) / span) * (size - 32)
+  const place = fit(
+    [...outline, ...data.cars.flatMap((car) => car.x.map((x, i) => ({ x, z: car.z[i] })))],
+    size,
+    16,
+  )
   const now = data.cars.map((car, index) => ({ car, color: COLORS[index % COLORS.length], at: positionAt(car, time) }))
   const missing = now.filter((item) => !item.at)
 
@@ -121,18 +126,12 @@ export function ReplaySection({ roundId }: { roundId: number }) {
       )}
       <figure className="incident-map">
         <svg viewBox={`0 0 ${size} ${size}`} role="img" aria-label={t('replay.map')}>
-          {data.cars.map((car, index) => (
-            <polyline
-              key={`trail-${car.key}`}
-              points={car.x.map((x, i) => `${px(x)},${pz(car.z[i])}`).join(' ')}
-              fill="none"
-              stroke={COLORS[index % COLORS.length]}
-              strokeOpacity={0.12}
-            />
-          ))}
-          {now.map(({ car, color, at }) =>
-            at ? <circle key={car.key} cx={px(at.x)} cy={pz(at.z)} r={6} fill={color} stroke="#0a0a0a" /> : null,
-          )}
+          <polyline className="track-line" points={polyline(outline, place)} />
+          {now.map(({ car, color, at }) => {
+            if (!at) return null
+            const [cx, cy] = place(at)
+            return <circle key={car.key} cx={cx} cy={cy} r={7} fill={color} stroke="#0a0a0a" strokeWidth={2} />
+          })}
         </svg>
       </figure>
       <div className="replay-controls">

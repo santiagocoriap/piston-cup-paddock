@@ -3,7 +3,7 @@ from ninja import Field, Router, Schema, Status
 from ninja.errors import HttpError
 
 from apps.audit.services import change, record
-from apps.common.api import conflict_on_duplicate, conflict_on_protected, require
+from apps.common.api import conflict_on_duplicate, require
 from apps.competition.permissions import is_league_admin, manages_any_championship
 
 from .merge import MergeError, merge
@@ -109,20 +109,3 @@ def merge_driver(request, driver_id: int, payload: MergeIn):
         return merge(old, kept, request.user, payload.reason)
     except MergeError as error:
         raise HttpError(422, error.code) from error
-
-
-@router.delete("/drivers/{driver_id}", response={204: None})
-def delete_driver(request, driver_id: int):
-    """Delete a driver profile. A driver with season entries stays: merge or keep the profile."""
-    require(manages_any_championship(request.user))
-    profile = get_object_or_404(DriverProfile, pk=driver_id)
-    with conflict_on_protected("driver_in_use"):
-        record(
-            request.user,
-            "driver.deleted",
-            "driver",
-            profile.id,
-            params={"driver": profile.display_name},
-        )
-        profile.delete()
-    return Status(204, None)

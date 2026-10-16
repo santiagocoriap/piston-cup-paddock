@@ -132,6 +132,14 @@ def test_no_api_key_fails_the_report_but_not_the_results(api, champ_admin, raced
     assert api(champ_admin).get(f"/rounds/{raced.id}").json()["result"]
 
 
+def test_ai_disabled_makes_no_call_even_with_a_key(api, champ_admin, raced, ai, settings):
+    settings.AI_DISABLED = True
+    request(api, champ_admin, raced)
+    report = generate(RaceReport.objects.get().id)
+    assert (report.status, report.error) == ("failed", "ai_not_configured")
+    assert ai.calls == []
+
+
 def test_provider_error_fails_only_the_report(api, champ_admin, raced, ai):
     ai.error = TimeoutError("slow")
     request(api, champ_admin, raced)

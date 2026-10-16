@@ -49,7 +49,8 @@ def _value(text: str) -> int | float | str:
         text = first
     if NUMBER.match(text):
         number = float(text)
-        return int(number) if number.is_integer() and "." not in text and "e" not in text.lower() else round(number, 6)
+        whole = number.is_integer() and "." not in text and "e" not in text.lower()
+        return int(number) if whole else round(number, 6)
     return text[:200]
 
 

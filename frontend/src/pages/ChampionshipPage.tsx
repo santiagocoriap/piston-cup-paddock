@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { ActionForm } from '../components/ActionForm'
@@ -8,19 +8,19 @@ import { AdminActions } from '../components/AdminActions'
 import { Dialog } from '../components/Dialog'
 import { Icon } from '../components/Icon'
 import { Loading } from '../components/Layout'
-import { DeleteButton } from '../components/DeleteButton'
 import { RowMenu } from '../components/RowMenu'
 import { Tabs } from '../components/Tabs'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { panelId, tabId } from '../lib/tabs'
 import { useLoad } from '../lib/useLoad'
-import { useAdminView } from '../session'
+import { useAdminView, useMe } from '../session'
 import { CollectorsSection } from './CollectorsSection'
 import { DriverScriptCard } from './DriverScriptCard'
 import { HealthSection } from './HealthSection'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { Avatar } from '../components/Avatar'
+import { DangerMenu } from '../components/DangerMenu'
 
 type Detail = components['schemas']['ChampionshipDetail']
 type Progress = components['schemas']['LatestSeasonOut']
@@ -40,6 +40,8 @@ export function ChampionshipPage() {
     [championshipId],
   )
   const [tab, setTab] = useState<AdminTab>('seasons')
+  const me = useMe()
+  const navigate = useNavigate()
 
   const data = championship.data
   const adminView = useAdminView(data?.can_manage ?? false)
@@ -54,6 +56,15 @@ export function ChampionshipPage() {
         <div>
           <p className="eyebrow">{data.league_name}</p>
           <h1 className="season-title">{data.name}</h1>
+          {adminView && me.is_admin && (
+            <div className="season-actions">
+              <DangerMenu
+                target={{ kind: 'championship', id: data.id, name: data.name }}
+                onDeleted={() => navigate('/championships')}
+                wide
+              />
+            </div>
+          )}
         </div>
         {latest && (
           <dl className="season-stats">
@@ -101,6 +112,7 @@ export function ChampionshipPage() {
             progress={progress.get(season.id)}
             latest={season.id === latest?.season_id}
             adminView={adminView}
+            onDeleted={championship.reload}
           />
         ))}
       </ul>
@@ -150,11 +162,13 @@ function SeasonCard({
   progress,
   latest,
   adminView,
+  onDeleted,
 }: {
   season: Season
   progress?: Progress
   latest: boolean
   adminView: boolean
+  onDeleted: () => void
 }) {
   const { t, i18n } = useTranslation()
   const done = progress?.done ?? 0
@@ -173,6 +187,7 @@ function SeasonCard({
           <p className="muted">{t('season.plannedRounds', { count: season.planned_round_count })}</p>
         </div>
         {latest && <span className="badge">{t('championship.latest')}</span>}
+        {adminView && <DangerMenu target={{ kind: 'season', id: season.id, name: season.name }} onDeleted={onDeleted} />}
       </div>
       <div className="season-progress">
         <span>{t('championship.progress', { done, total })}</span>
@@ -391,7 +406,9 @@ function Members({ championshipId }: { championshipId: number }) {
                       <option value="" disabled>
                         {t('common.select')}
                       </option>
-                      {users.data?.map((user) => (
+                      {users.data
+                        ?.filter((user) => !members.data?.some((member) => member.user_id === user.id))
+                        .map((user) => (
                         <option key={user.id} value={user.id}>
                           {user.username}
                         </option>
@@ -418,9 +435,6 @@ function Members({ championshipId }: { championshipId: number }) {
               <tr>
                 <th scope="col">{t('championship.user')}</th>
                 <th scope="col">{t('championship.role')}</th>
-                <th scope="col" className="row-actions">
-                  <span className="sr-only">{t('roundTools.actions')}</span>
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -440,19 +454,6 @@ function Members({ championshipId }: { championshipId: number }) {
                     >
                       <RoleOptions roles={roles.data ?? []} />
                     </select>
-                  </td>
-                  <td className="row-actions">
-                    <DeleteButton
-                      compact
-                      label={t('championship.removeMember', { name: member.username })}
-                      confirm={t('delete.member', { name: member.username })}
-                      run={() =>
-                        api.DELETE('/api/championships/{championship_id}/members/{user_id}', {
-                          params: { path: { championship_id: championshipId, user_id: member.user_id } },
-                        })
-                      }
-                      onDone={members.reload}
-                    />
                   </td>
                 </tr>
               ))}
@@ -484,14 +485,6 @@ function Roles({ championshipId }: { championshipId: number }) {
   const [renaming, setRenaming] = useState<Role | null>(null)
   const [error, setError] = useState<string | null>(null)
   const chosen = (form: FormData): Capability[] => CAPABILITIES.filter((c) => form.get(c) === 'on')
-
-  async function destroy(role: Role) {
-    if (!window.confirm(t('delete.role', { name: role.name }))) return
-    setError(null)
-    const { error: apiError } = await api.DELETE('/api/roles/{role_id}', { params: { path: { role_id: role.id } } })
-    if (apiError) setError(errorMessage(t, apiError))
-    else roles.reload()
-  }
 
   async function update(role: Role, name: string, capabilities: string[]) {
     setError(null)
@@ -586,10 +579,7 @@ function Roles({ championshipId }: { championshipId: number }) {
                   <td className="row-actions">
                     <RowMenu
                       label={t('championship.roleMenu', { name: role.name })}
-                      items={[
-                        { label: t('championship.rename'), onSelect: () => setRenaming(role) },
-                        { label: t('common.delete'), onSelect: () => destroy(role) },
-                      ]}
+                      items={[{ label: t('championship.rename'), onSelect: () => setRenaming(role) }]}
                     />
                   </td>
                 </tr>

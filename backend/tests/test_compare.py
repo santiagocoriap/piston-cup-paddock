@@ -94,7 +94,7 @@ def test_chosen_laps_and_telemetry_delta(api, night):
         )
 
     data = api(admin).get(f"/rounds/{round_.id}/compare?a={best.id}&b={other.id}").json()
-    assert (data["a"]["telemetry"], data["b"]["telemetry"]) == ("laps", "laps")
+    assert (data["a"]["telemetry"], data["b"]["telemetry"]) == ("full", "full")
     assert data["delta"]["delta_ms"][-1] == 10000
     assert data["speed_a"]["speed_kmh"][0] == 200
     assert "no_telemetry" not in data["gaps"]

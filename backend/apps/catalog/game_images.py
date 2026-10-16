@@ -369,7 +369,8 @@ def import_game_images(
         if badge:
             _put(car.badge, "badge.png", badge)
         if preview and not _put_thumbnail(car.preview, "preview", preview):
-            _put(car.preview, "preview.jpg", preview)  # Not readable as a picture: keep it as it is.
+            # Not readable as a picture: keep it as it is.
+            _put(car.preview, "preview.jpg", preview)
         fill_empty(car, car_facts(info))
         if info or source.read(f"{base}/ui/dlc_ui_car.json", MAX_JSON_BYTES):
             car.source, car.source_url = _source_of(car, info, base, source)

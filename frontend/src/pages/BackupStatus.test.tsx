@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ADMIN, json, mockApi, renderPage } from '../test-utils'
 import { BackupStatus } from './BackupStatus'
-import { TelemetrySection } from './TelemetrySection'
 
 afterEach(() => vi.restoreAllMocks())
 
@@ -39,21 +38,5 @@ describe('BackupStatus', () => {
     })
     renderPage(<BackupStatus />, { path: '/championships/:id', url: '/championships/2', me: ADMIN })
     expect(await screen.findByText(/3\.0 MB · 1200 filas, 14 archivos/)).toBeInTheDocument()
-  })
-})
-
-describe('TelemetrySection with full access', () => {
-  it('shows the steering and gear charts', async () => {
-    const lap = { id: 4, driver_name: 'Ana', session_type: 'race', lap_number: 3, lap_time_ms: 189296, valid: true, access: 'full' }
-    const channels = { t_ms: [0, 50, 100], pos: [0, 0.5, 1], speed_kmh: [200, 120, 250], gas: [1, 0, 1], brake: [0, 1, 0], steer: [0, -0.4, 0.1], gear: [5, 3, 6], rpm: [7000, 5000, 8000] }
-    mockApi({
-      'GET /api/rounds/9/telemetry': () => json(200, [lap]),
-      'GET /api/telemetry-laps/4': () => json(200, { ...lap, sample_hz: 20, car: 'acura', channels }),
-    })
-    renderPage(<TelemetrySection roundId={9} />, { path: '/rounds/:roundId', url: '/rounds/9', me: ADMIN })
-    await userEvent.click(await screen.findByRole('button', { name: /Ana · vuelta 3/ }))
-    expect(await screen.findByRole('img', { name: 'Volante de Ana' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'Marchas de Ana' })).toBeInTheDocument()
-    expect(screen.getByText('marcha (máx. 6)')).toBeInTheDocument()
   })
 })

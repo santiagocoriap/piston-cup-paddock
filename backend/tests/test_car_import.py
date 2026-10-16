@@ -46,7 +46,9 @@ def car_files(key="ks_ferrari_488_gt3", **extra) -> dict[str, bytes]:
     return {
         f"cars/{key}/ui/ui_car.json": ui(name="Ferrari 488 GT3", brand="Ferrari", **extra),
         f"cars/{key}/data.acd": pack({"tyres.ini": TYRES}, key),
-        f"cars/{key}/skins/00_rosso_scuderia/ui_skin.json": ui(skinname="Rosso Scuderia", number="0"),
+        f"cars/{key}/skins/00_rosso_scuderia/ui_skin.json": ui(
+            skinname="Rosso Scuderia", number="0"
+        ),
         f"cars/{key}/skins/00_rosso_scuderia/preview.jpg": picture(),
         f"cars/{key}/skins/01_racing 483/ui_skin.json": ui(skinname="Racing 483", priority=2),
     }
@@ -139,7 +141,11 @@ def test_the_game_class_makes_a_class_once_and_an_admin_edit_stays(api, champ_ad
 def test_a_note_after_a_tyre_number_does_not_break_the_list(api, champ_admin):
     messy = TYRES.replace(b"WIDTH=0.3", b"WIDTH=0.3\t  (/129)")
     assert messy != TYRES
-    send(api, champ_admin, {"cars/mod_car/ui/ui_car.json": ui(name="Mod"), "cars/mod_car/data/tyres.ini": messy})
+    send(
+        api,
+        champ_admin,
+        {"cars/mod_car/ui/ui_car.json": ui(name="Mod"), "cars/mod_car/data/tyres.ini": messy},
+    )
     listed = api(champ_admin).get("/catalog/cars").json()[0]
     assert listed["tyres"][0]["front"]["width"] == 0.3
     # Data saved by the older parser still holds the text.

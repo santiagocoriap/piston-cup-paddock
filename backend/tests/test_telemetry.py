@@ -58,17 +58,31 @@ def uploaded(people):
     return users, round_, None, {"id": lap.id}
 
 
-def test_owner_sees_everything_and_rival_sees_nothing_by_default(api, uploaded):
+def test_the_league_sees_everything_by_default(api, uploaded):
     users, round_, _, first = uploaded
     detail = api(users["owner"]).get(f"/telemetry-laps/{first['id']}").json()
     assert detail["access"] == "full" and "gas" in detail["channels"]
+    rival = api(users["rival"])
+    assert [lap["access"] for lap in rival.get(f"/rounds/{round_.id}/telemetry").json()] == ["full"]
+    assert "brake" in rival.get(f"/telemetry-laps/{first['id']}").json()["channels"]
+    # A person outside the championship still sees nothing.
+    assert api(users["outsider"]).get(f"/telemetry-laps/{first['id']}").status_code == 404
+
+
+def test_a_driver_can_hide_the_telemetry_from_rivals(api, uploaded):
+    users, round_, _, first = uploaded
+    api(users["owner"]).put(
+        "/me/telemetry/sharing", {"teammates": "laps", "drivers": "none", "admins": "laps"}
+    )
     assert api(users["rival"]).get(f"/rounds/{round_.id}/telemetry").json() == []
     assert api(users["rival"]).get(f"/telemetry-laps/{first['id']}").status_code == 404
-    assert api(users["outsider"]).get(f"/telemetry-laps/{first['id']}").status_code == 404
 
 
 def test_teammate_gets_what_the_owner_shares(api, uploaded):
     users, _, _, first = uploaded
+    api(users["owner"]).put(
+        "/me/telemetry/sharing", {"teammates": "laps", "drivers": "none", "admins": "laps"}
+    )
     detail = api(users["mate"]).get(f"/telemetry-laps/{first['id']}").json()
     assert detail["access"] == "laps"
     assert set(detail["channels"]) == {"t_ms", "pos", "speed_kmh"}
@@ -94,6 +108,10 @@ def test_other_drivers_get_the_level_that_the_driver_chooses(api, uploaded):
 def test_admin_access_follows_the_admin_setting(api, champ_admin, uploaded):
     users, _, _, first = uploaded
     admin = api(champ_admin)
+    assert admin.get(f"/telemetry-laps/{first['id']}").json()["access"] == "full"
+    api(users["owner"]).put(
+        "/me/telemetry/sharing", {"teammates": "laps", "drivers": "none", "admins": "laps"}
+    )
     assert admin.get(f"/telemetry-laps/{first['id']}").json()["access"] == "laps"
     api(users["owner"]).put(
         "/me/telemetry/sharing", {"teammates": "laps", "drivers": "none", "admins": "full"}
@@ -109,4 +127,4 @@ def test_status_for_the_driver(api, uploaded):
     users, _, _, _ = uploaded
     data = api(users["owner"]).get("/me/telemetry").json()
     assert data["laps"] == 1
-    assert data["sharing"] == {"teammates": "laps", "drivers": "none", "admins": "laps"}
+    assert data["sharing"] == {"teammates": "full", "drivers": "full", "admins": "full"}

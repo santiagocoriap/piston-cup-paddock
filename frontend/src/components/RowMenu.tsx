@@ -1,8 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { Icon } from './Icon'
 
-// An item runs onSelect, or it is a link to a file to download (href).
-export type MenuItem = { label: string; onSelect?: () => void; href?: string }
+// An item runs onSelect, or it is a link to a file to download (href). A danger item (a
+// delete) is red, after a line, at the end of the menu.
+export type MenuItem = { label: string; onSelect?: () => void; href?: string; danger?: boolean }
 
 /** A "more" button that opens a short list of row actions. The list is fixed to the screen,
  * so a table that scrolls cannot clip it. */
@@ -72,8 +73,8 @@ export function RowMenu({
       </button>
       {place && (
         <ul ref={list} className="row-menu-list" style={{ top: place.top, right: place.right }}>
-          {items.map((item) => (
-            <li key={item.label}>
+          {[...items.filter((item) => !item.danger), ...items.filter((item) => item.danger)].map((item) => (
+            <li key={item.label} className={item.danger ? 'danger' : undefined}>
               {item.href ? (
                 <a className="row-menu-link" href={item.href} download onClick={() => setPlace(null)}>
                   {item.label}
