@@ -14,6 +14,7 @@ import { panelId, tabId } from '../../lib/tabs'
 import { useLoad } from '../../lib/useLoad'
 import { CarClassesSection } from './CarClassesSection'
 import { CatalogEdit, MissingImage } from './CatalogEdit'
+import { CarDetails, SourceBadge } from './CarDetails'
 import { CarSheet, CarStats, LayoutSheet, LayoutStats } from './CatalogFacts'
 import { carFields, layoutFields } from './catalogFields'
 import { GameImagesSection } from './GameImagesSection'
@@ -28,6 +29,7 @@ const TABS = ['tracks', 'cars', 'classes', 'images'] as const
 type Tab = (typeof TABS)[number]
 type Creating = 'track' | 'car' | 'class' | null
 type ImageFilter = '' | 'with' | 'without'
+type CarFilters = { query: string; carClass: string; image: ImageFilter; source: string; tag: string }
 
 const has = (text: string | null | undefined, needle: string) => (text ?? '').toLowerCase().includes(needle)
 
@@ -46,13 +48,15 @@ function trackMatches(track: Track, query: string, image: ImageFilter, country: 
   return text && picture && inCountry
 }
 
-/** A car matches by its name or its brand, its class ("none" for no class), and its photo. */
-function carMatches(car: Car, classIds: number[], query: string, carClass: string, image: ImageFilter): boolean {
-  const needle = query.trim().toLowerCase()
+/** A car matches by its name or its brand, its class ("none" for no class), its photo, where it
+ * comes from, and a tag. */
+function carMatches(car: Car, classIds: number[], filters: CarFilters): boolean {
+  const needle = filters.query.trim().toLowerCase()
   const text = !needle || has(car.name, needle) || has(car.brand, needle)
+  const { carClass, image, source, tag } = filters
   const inClass = carClass === '' || (carClass === 'none' ? classIds.length === 0 : classIds.includes(Number(carClass)))
   const picture = image === '' || (image === 'with') === car.has_preview
-  return text && inClass && picture
+  return text && inClass && picture && (source === '' || car.source === source) && (tag === '' || (car.tags ?? []).includes(tag))
 }
 
 export function CatalogPage() {
@@ -65,6 +69,8 @@ export function CatalogPage() {
   const [carQuery, setCarQuery] = useState('')
   const [carClass, setCarClass] = useState('')
   const [carImage, setCarImage] = useState<ImageFilter>('')
+  const [carSource, setCarSource] = useState('')
+  const [carTag, setCarTag] = useState('')
   const cars = useLoad(() => api.GET('/api/catalog/cars'), [])
   const classes = useLoad(() => api.GET('/api/catalog/classes'), [])
   const [params, setParams] = useSearchParams()
@@ -83,11 +89,13 @@ export function CatalogPage() {
     carMatches(
       car,
       classesOf(car.id).map((item) => item.id),
-      carQuery,
-      carClass,
-      carImage,
+      { query: carQuery, carClass, image: carImage, source: carSource, tag: carTag },
     ),
   )
+  // The tags that the cars have, the most common first, for the tag filter.
+  const tagCounts = new Map<string, number>()
+  for (const car of cars.data) for (const tag of new Set(car.tags ?? [])) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1)
+  const carTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
 
   const layouts = tracks.data.flatMap((track) => track.layouts)
   const counts: Record<Tab, number> = {
@@ -210,7 +218,32 @@ export function CatalogPage() {
                 image={carImage}
                 onImage={setCarImage}
                 count={t('catalogFilter.carCount', { count: shownCars.length })}
-              />
+              >
+                <label className="catalog-select-filter">
+                  <span className="sr-only">{t('carDetail.sourceLabel')}</span>
+                  <select value={carSource} onChange={(e) => setCarSource(e.target.value)}>
+                    <option value="">{t('carDetail.allSources')}</option>
+                    {(['base', 'dlc', 'mod'] as const).map((source) => (
+                      <option key={source} value={source}>
+                        {t(`carDetail.source.${source}`)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {carTags.length > 0 && (
+                  <label className="catalog-select-filter">
+                    <span className="sr-only">{t('carDetail.tagLabel')}</span>
+                    <select value={carTag} onChange={(e) => setCarTag(e.target.value)}>
+                      <option value="">{t('carDetail.allTags')}</option>
+                      {carTags.map(([tag, count]) => (
+                        <option key={tag} value={tag}>
+                          {tag} ({count})
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+              </FilterBar>
               {classes.data.length > 0 && (
                 <div className="kind-chips" role="group" aria-label={t('catalogFilter.classLabel')}>
                   {[
@@ -236,6 +269,8 @@ export function CatalogPage() {
                     setCarQuery('')
                     setCarClass('')
                     setCarImage('')
+                    setCarSource('')
+                    setCarTag('')
                   }}
                 />
               ) : (
@@ -483,6 +518,7 @@ function CarCard({ car, classes, onChange }: { car: Car; classes: string[]; onCh
           />
         </div>
         <p className="car-classes">
+          <SourceBadge car={car} />
           {classes.length > 0 ? (
             classes.map((name) => (
               <span key={name} className="badge">
@@ -498,6 +534,7 @@ function CarCard({ car, classes, onChange }: { car: Car; classes: string[]; onCh
         )}
         <CarStats car={car} />
         <CarSheet car={car} />
+        <CarDetails car={car} />
       </div>
     </li>
   )

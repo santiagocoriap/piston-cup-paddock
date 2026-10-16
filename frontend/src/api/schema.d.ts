@@ -411,6 +411,44 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/catalog/skins/{skin_id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Skin Preview */
+        get: operations["apps_catalog_api_skin_preview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/cars/{car_id}/data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Car Data
+         * @description All the numbers of the data folder of a car (see car_data.py). It is large, so the car
+         *     list does not carry it.
+         */
+        get: operations["apps_catalog_api_car_data"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/catalog/cars/{car_id}/images/{kind}": {
         parameters: {
             query?: never;
@@ -968,6 +1006,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/entries/{entry_id}/skins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Entry Skins
+         * @description The skins that the driver of the entry can choose: the skins of the car of the entry.
+         */
+        get: operations["apps_competition_api_entry_skins"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/entries/{entry_id}/skin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Entry Skin
+         * @description Choose the skin of an entry (null: let the server pick). The driver can do it once the
+         *     entry exists, and a manager can do it for any driver.
+         */
+        put: operations["apps_competition_api_set_entry_skin"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/entries/{entry_id}": {
         parameters: {
             query?: never;
@@ -988,27 +1067,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/rounds/{round_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Round */
-        get: operations["apps_results_api_get_round"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete Round
-         * @description Delete a round with no result. A round with a result can be cancelled instead.
-         */
-        delete: operations["apps_competition_api_delete_round"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/championships/{championship_id}/members/{user_id}": {
         parameters: {
             query?: never;
@@ -1021,6 +1079,27 @@ export interface paths {
         post?: never;
         /** Delete Member */
         delete: operations["apps_competition_api_delete_member"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Round */
+        get: operations["apps_results_api_get_round"];
+        put?: never;
+        post?: never;
+        /**
+         * Remove Round
+         * @description Delete a round with no result (see delete_round in apps/competition/api.py).
+         */
+        delete: operations["apps_results_api_remove_round"];
         options?: never;
         head?: never;
         patch?: never;
@@ -3021,6 +3100,61 @@ export interface components {
             power_curve: number[][];
             /** Torque Curve */
             torque_curve: number[][];
+            /** Source */
+            source: string;
+            /** Source Url */
+            source_url: string;
+            /** Has Data */
+            has_data: boolean;
+            /** Data Error */
+            data_error: string;
+            /** Skins */
+            skins: components["schemas"]["SkinOut"][];
+            /** Tyres */
+            tyres: components["schemas"]["TyreOut"][];
+        };
+        /** SkinOut */
+        SkinOut: {
+            /** Id */
+            id: number;
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** Driver Name */
+            driver_name: string;
+            /** Team */
+            team: string;
+            /** Number */
+            number: string;
+            /** Has Preview */
+            has_preview: boolean;
+        };
+        /** TyreOut */
+        TyreOut: {
+            /** Index */
+            index: number;
+            /** Name */
+            name: string;
+            /** Short Name */
+            short_name: string;
+            front: components["schemas"]["TyreSideOut"];
+            rear: components["schemas"]["TyreSideOut"];
+        };
+        /** TyreSideOut */
+        TyreSideOut: {
+            /** Width */
+            width?: number | null;
+            /** Radius */
+            radius?: number | null;
+            /** Rim Radius */
+            rim_radius?: number | null;
+            /** Pressure Ideal */
+            pressure_ideal?: number | null;
+            /** Pressure Static */
+            pressure_static?: number | null;
+            /** Wear Curve */
+            wear_curve?: string | null;
         };
         /** CarIn */
         CarIn: {
@@ -3457,6 +3591,23 @@ export interface components {
             number: number;
             /** Team */
             team: string;
+            /** Skin Id */
+            skin_id?: number | null;
+            /**
+             * Skin Name
+             * @default
+             */
+            skin_name?: string;
+            /**
+             * Skin Has Preview
+             * @default false
+             */
+            skin_has_preview?: boolean;
+            /**
+             * Mine
+             * @default false
+             */
+            mine?: boolean;
         };
         /** RoundOut */
         RoundOut: {
@@ -3675,6 +3826,26 @@ export interface components {
              * @default
              */
             reason?: string;
+        };
+        /** EntrySkinOut */
+        EntrySkinOut: {
+            /** Id */
+            id: number;
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** Team */
+            team: string;
+            /** Number */
+            number: string;
+            /** Has Preview */
+            has_preview: boolean;
+        };
+        /** SkinChoiceIn */
+        SkinChoiceIn: {
+            /** Skin Id */
+            skin_id: number | null;
         };
         /** BriefingOut */
         BriefingOut: {
@@ -7568,6 +7739,46 @@ export interface operations {
             };
         };
     };
+    apps_catalog_api_skin_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                skin_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_catalog_api_car_data: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                car_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     apps_catalog_api_car_image: {
         parameters: {
             query?: never;
@@ -8519,12 +8730,81 @@ export interface operations {
             };
         };
     };
+    apps_competition_api_entry_skins: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntrySkinOut"][];
+                };
+            };
+        };
+    };
+    apps_competition_api_set_entry_skin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkinChoiceIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntryOut"];
+                };
+            };
+        };
+    };
     apps_competition_api_delete_entry: {
         parameters: {
             query?: never;
             header?: never;
             path: {
                 entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_competition_api_delete_member: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+                user_id: number;
             };
             cookie?: never;
         };
@@ -8561,33 +8841,12 @@ export interface operations {
             };
         };
     };
-    apps_competition_api_delete_round: {
+    apps_results_api_remove_round: {
         parameters: {
             query?: never;
             header?: never;
             path: {
                 round_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    apps_competition_api_delete_member: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                championship_id: number;
-                user_id: number;
             };
             cookie?: never;
         };

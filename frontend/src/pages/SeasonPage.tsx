@@ -24,6 +24,7 @@ import { HandicapsSection } from './HandicapsSection'
 import { ConditionsPoolForm } from './ConditionsDraw'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { Avatar } from '../components/Avatar'
+import { EntrySkinPicker } from './EntrySkinPicker'
 
 export function SeasonPage() {
   const { t, i18n } = useTranslation()
@@ -442,6 +443,7 @@ export function SeasonPage() {
                         {entry.car_name}
                       </span>
                       {entry.team && <span className="entry-team">{entry.team}</span>}
+                      <EntrySkinPicker entry={entry} canChange={entry.mine || adminView} onChanged={season.reload} />
                     </span>
                     <span className="entry-number">{entry.number}</span>
                     {adminView && (

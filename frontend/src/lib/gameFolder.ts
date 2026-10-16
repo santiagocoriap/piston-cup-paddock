@@ -35,6 +35,12 @@ async function file(dir: DirHandle, name: string): Promise<File | null> {
   }
 }
 
+async function fileEntries(dir: DirHandle): Promise<FileHandle[]> {
+  const found: FileHandle[] = []
+  for await (const entry of dir.values()) if (entry.kind === 'file') found.push(entry)
+  return found
+}
+
 async function folders(dir: DirHandle): Promise<DirHandle[]> {
   const found: DirHandle[] = []
   for await (const entry of dir.values()) if (entry.kind === 'directory') found.push(entry)
@@ -166,12 +172,36 @@ export async function scanTracks(content: DirHandle, onCount?: (n: number) => vo
   return tracks
 }
 
-async function bytes(dir: DirHandle, name: string): Promise<Uint8Array | null> {
+async function bytes(dir: DirHandle, name: string, limit = 5 * 1024 * 1024): Promise<Uint8Array | null> {
   const found = await file(dir, name)
-  return found && found.size <= 5 * 1024 * 1024 ? new Uint8Array(await found.arrayBuffer()) : null
+  return found && found.size <= limit ? new Uint8Array(await found.arrayBuffer()) : null
 }
 
-/** A ZIP with the files of the chosen cars and tracks, for POST /api/catalog/game-import. */
+const SKIN_SIDE = 640
+/** The largest skin picture that is sent as it is, when the browser cannot make it smaller. */
+const SKIN_AS_IS = 400 * 1024
+const DATA_FILE = /\.(ini|lut|rto)$/i
+
+/** A skin preview is 1920x1080 and a car can have 30 of them. The server keeps only a small
+ * picture, so the browser makes it small before it sends it. */
+export async function shrinkPicture(data: Uint8Array): Promise<Uint8Array | null> {
+  try {
+    const bitmap = await createImageBitmap(new Blob([data as Uint8Array<ArrayBuffer>]))
+    const scale = Math.min(1, SKIN_SIDE / Math.max(bitmap.width, bitmap.height))
+    const canvas = new OffscreenCanvas(Math.round(bitmap.width * scale), Math.round(bitmap.height * scale))
+    canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+    bitmap.close()
+    const blob = await canvas.convertToBlob({ type: 'image/jpeg', quality: 0.82 })
+    return new Uint8Array(await blob.arrayBuffer())
+  } catch {
+    // No canvas in this browser: send a small picture as it is, and skip a large one.
+    return data.length <= SKIN_AS_IS ? data : null
+  }
+}
+
+/** A ZIP with the files of the chosen cars and tracks, for POST /api/catalog/game-import.
+ * A car sends its data (data.acd, or the loose files of an unpacked data folder), the file that
+ * marks a DLC car, and for each skin its name file and a small picture. */
 export async function packSelection(cars: GameCar[], tracks: GameTrack[]): Promise<Blob> {
   const files: Record<string, Uint8Array> = {}
   const put = (path: string, data: Uint8Array | null) => {
@@ -181,15 +211,28 @@ export async function packSelection(cars: GameCar[], tracks: GameTrack[]): Promi
     const ui = await child(car.dir, 'ui')
     if (ui) {
       put(`cars/${car.key}/ui/ui_car.json`, await bytes(ui, 'ui_car.json'))
+      put(`cars/${car.key}/ui/dlc_ui_car.json`, await bytes(ui, 'dlc_ui_car.json'))
       put(`cars/${car.key}/ui/badge.png`, await bytes(ui, 'badge.png'))
     }
-    // The preview of the first skin that has one.
+    const data = await child(car.dir, 'data')
+    if (data) {
+      for (const entry of await fileEntries(data)) {
+        if (DATA_FILE.test(entry.name)) put(`cars/${car.key}/data/${entry.name}`, await bytes(data, entry.name, 2 * 1024 * 1024))
+      }
+    } else {
+      put(`cars/${car.key}/data.acd`, await bytes(car.dir, 'data.acd', 20 * 1024 * 1024))
+    }
+    // Every skin: its names and a small picture. The first picture is also the car picture.
     const skins = await child(car.dir, 'skins')
+    let first = true
     for (const skin of skins ? await folders(skins) : []) {
-      const preview = await bytes(skin, 'preview.jpg')
-      if (preview) {
-        put(`cars/${car.key}/preview.jpg`, preview)
-        break
+      put(`cars/${car.key}/skins/${skin.name}/ui_skin.json`, await bytes(skin, 'ui_skin.json'))
+      const raw = await bytes(skin, 'preview.jpg')
+      const small = raw ? await shrinkPicture(raw) : null
+      put(`cars/${car.key}/skins/${skin.name}/preview.jpg`, small)
+      if (small && first) {
+        put(`cars/${car.key}/preview.jpg`, small)
+        first = false
       }
     }
   }

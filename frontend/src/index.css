@@ -9164,3 +9164,21 @@ label.setting-number input {
     display: none;
   }
 }
+
+/* Car details: skins, tyres, and the data folder. */
+.badge.source-dlc { background: color-mix(in srgb, var(--accent, #c8102e) 18%, transparent); }
+.badge.source-mod { background: color-mix(in srgb, currentColor 8%, transparent); }
+.car-skins { list-style: none; margin: 0.5rem 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 0.5rem; }
+.car-skins li { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.85rem; }
+.car-skins img, .car-skin-blank { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; background: color-mix(in srgb, currentColor 8%, transparent); }
+.car-tyres { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 0.5rem 0; }
+.car-tyres th, .car-tyres td { text-align: left; padding: 0.25rem 0.5rem; border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent); }
+.car-data-file { margin-left: 0.75rem; }
+.car-data-file h4 { margin: 0.5rem 0 0.15rem; }
+
+/* The skin of a season entry, and the skin picker. */
+.entry-skin { font-size: 0.8rem; }
+.skin-choices { border: 0; padding: 0; margin: 0.75rem 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: 0.6rem; }
+.skin-choice { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.85rem; cursor: pointer; }
+.skin-choice img, .skin-choice-blank { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; background: color-mix(in srgb, currentColor 8%, transparent); }
+.skin-choice:has(input:checked) img, .skin-choice:has(input:checked) .skin-choice-blank { outline: 2px solid currentColor; }

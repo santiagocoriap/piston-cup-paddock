@@ -2226,7 +2226,7 @@
     "class": "Delete the class {{name}}?",
     "driver": "Delete the driver {{name}}? Their telemetry laps are deleted too.",
     "ballot": "Delete the ballot {{name}} with its options and votes?"
-},
+  },
   "votes": {
     "help": "The votes where you can vote. The open ones come first.",
     "open": "Open",
@@ -2263,5 +2263,39 @@
     "sending": "Importing {{done}} of {{total}}…",
     "done": "Done: {{cars}} new cars and {{tracks}} new tracks, with {{layouts}} layouts.",
     "noFiles": "The browser gave no files. Pick the content folder again."
+  },
+  "carDetail": {
+    "source": {
+      "base": "Base game",
+      "dlc": "DLC",
+      "mod": "Mod"
+    },
+    "sourceLabel": "Source",
+    "allSources": "All sources",
+    "tagLabel": "Tag",
+    "allTags": "All tags",
+    "skins_one": "{{count}} skin",
+    "skins_other": "{{count}} skins",
+    "noSkins": "No skins imported",
+    "tyres_one": "{{count}} tyre compound",
+    "tyres_other": "{{count}} tyre compounds",
+    "compound": "Compound",
+    "front": "Front",
+    "rear": "Rear",
+    "pressure": "Ideal pressure",
+    "allData": "All car data",
+    "loadFailed": "The data could not be loaded.",
+    "curves": "Curves ({{count}})",
+    "points_one": "{{count}} point",
+    "points_other": "{{count}} points",
+    "dataError": "The data of this car could not be read (data.acd file)."
+  },
+  "entrySkin": {
+    "label": "Skin",
+    "auto": "Automatic",
+    "current": "Skin: {{name}}",
+    "choose": "Choose skin",
+    "title": "Skin for {{car}}",
+    "help": "Choose the skin you will race with. With \"Automatic\" the server picks one."
   }
 }

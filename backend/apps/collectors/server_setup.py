@@ -93,7 +93,7 @@ def build(round_: Round, base_url: str, open_slots: int | None = None) -> dict:
     values = assigned_values(round_)
     entries = []
     warnings = []
-    for entry in round_.season.entries.select_related("driver", "car").order_by("number"):
+    for entry in round_.season.entries.select_related("driver", "car", "skin").order_by("number"):
         ballast, restrictor = values.get(entry.id, (0, 0))
         guid = entry.driver.steam_guid or ""
         if not STEAM_ID.match(guid):
@@ -106,6 +106,7 @@ def build(round_: Round, base_url: str, open_slots: int | None = None) -> dict:
                 "team": _clean(entry.team),
                 "guid": guid,
                 "model": _key(entry.car.key),
+                "skin": entry.skin.key if entry.skin else "",
                 "ballast_kg": ballast,
                 "restrictor_pct": restrictor,
             }

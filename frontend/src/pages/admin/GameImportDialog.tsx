@@ -20,7 +20,7 @@ type Picker = (options: { mode: 'read' }) => Promise<DirHandle>
 type Result = { new_tracks: string[]; new_layouts: string[]; new_cars: string[] }
 
 // The app sends the chosen items in parts, so one request stays small.
-const BATCH = 20
+const BATCH = 10
 
 /** "Importar desde el juego": pick the assettocorsa folder, tick the cars and the tracks, and
  * the app adds them with their pictures and data. The browser reads the folder: the app on the

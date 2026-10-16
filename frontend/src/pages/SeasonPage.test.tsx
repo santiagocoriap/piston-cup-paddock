@@ -52,6 +52,30 @@ const show = (me = undefined as typeof DRIVER | undefined) =>
   renderPage(<SeasonPage />, { path: '/seasons/:seasonId', url: '/seasons/5', me })
 
 describe('SeasonPage', () => {
+  it('lets the driver of an entry choose the skin, and nobody else', async () => {
+    const mine = { ...season(false).entries[0], mine: true }
+    const body = { ...season(false), entries: [mine, { ...mine, id: 2, driver_name: 'Rival', mine: false, number: 94 }] }
+    const calls = mockApi({
+      ...standings,
+      ...catalog,
+      'GET /api/seasons/5': () => json(200, body),
+      'GET /api/entries/1/skins': () =>
+        json(200, [
+          { id: 10, key: '00_red', name: 'Rosso', team: '', number: '', has_preview: true },
+          { id: 11, key: '01_blue', name: 'Azul', team: '', number: '', has_preview: false },
+        ]),
+      'PUT /api/entries/1/skin': () => json(200, { ...mine, skin_id: 11, skin_name: 'Azul' }),
+    })
+    show(DRIVER)
+    const buttons = await screen.findAllByRole('button', { name: 'Elegir skin' })
+    expect(buttons).toHaveLength(1) // The entry of the rival has no button.
+    await userEvent.click(buttons[0])
+    await userEvent.click(await screen.findByRole('radio', { name: 'Azul' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Guardar' }))
+    await vi.waitFor(() => expect(calls.some((c) => c.key === 'PUT /api/entries/1/skin')).toBe(true))
+    expect(calls.find((c) => c.key === 'PUT /api/entries/1/skin')?.body).toEqual({ skin_id: 11 })
+  })
+
   it('shows the calendar with the manual origin and the entries', async () => {
     mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
     show(DRIVER)

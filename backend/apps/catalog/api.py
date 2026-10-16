@@ -25,7 +25,8 @@ from .game_images import (
     save_image,
 )
 from .game_import import import_from_game
-from .models import Car, CarClass, CarClassMembership, Track, TrackLayout
+from .car_data import tyre_compounds
+from .models import Car, CarClass, CarClassMembership, CarSkin, Track, TrackLayout
 
 router = Router(tags=["catalog"])
 
@@ -182,6 +183,37 @@ def _apply(item, payload: Schema) -> list[dict]:
     return changes
 
 
+class SkinOut(Schema):
+    id: int
+    key: str
+    name: str
+    driver_name: str
+    team: str
+    number: str
+    has_preview: bool
+
+    @staticmethod
+    def resolve_has_preview(obj) -> bool:
+        return bool(obj.preview)
+
+
+class TyreSideOut(Schema):
+    width: float | None = None
+    radius: float | None = None
+    rim_radius: float | None = None
+    pressure_ideal: float | None = None
+    pressure_static: float | None = None
+    wear_curve: str | None = None
+
+
+class TyreOut(Schema):
+    index: int
+    name: str
+    short_name: str
+    front: TyreSideOut
+    rear: TyreSideOut
+
+
 class CarOut(Schema):
     id: int
     key: str
@@ -206,6 +238,12 @@ class CarOut(Schema):
     tags: list[str]
     power_curve: list[list[float]]
     torque_curve: list[list[float]]
+    source: str
+    source_url: str
+    has_data: bool
+    data_error: str
+    skins: list[SkinOut]
+    tyres: list[TyreOut]
 
     @staticmethod
     def resolve_has_preview(obj) -> bool:
@@ -214,6 +252,18 @@ class CarOut(Schema):
     @staticmethod
     def resolve_has_badge(obj) -> bool:
         return bool(obj.badge)
+
+    @staticmethod
+    def resolve_has_data(obj) -> bool:
+        return bool(obj.data)
+
+    @staticmethod
+    def resolve_skins(obj) -> list:
+        return list(obj.skins.all())
+
+    @staticmethod
+    def resolve_tyres(obj) -> list[dict]:
+        return tyre_compounds(obj.data)
 
 
 @router.get("/tracks", response=list[TrackOut])
@@ -248,7 +298,7 @@ def create_layout(request, track_id: int, payload: LayoutIn):
 
 @router.get("/cars", response=list[CarOut])
 def list_cars(request):
-    return Car.objects.all()
+    return Car.objects.prefetch_related("skins")
 
 
 @router.post("/cars", response={201: CarOut})
@@ -509,8 +559,14 @@ def _image_response(field_file):
     if not field_file:
         raise Http404
     handle = field_file.open("rb")
-    # A picture from the game files or from an admin can be a PNG or a JPEG.
-    content_type = "image/png" if handle.read(8).startswith(PNG) else "image/jpeg"
+    # A picture from the game files or from an admin can be a PNG, a JPEG, or a WebP.
+    head = handle.read(12)
+    if head.startswith(PNG):
+        content_type = "image/png"
+    elif head[:4] == b"RIFF" and head[8:12] == b"WEBP":
+        content_type = "image/webp"
+    else:
+        content_type = "image/jpeg"
     handle.seek(0)
     response = FileResponse(handle, content_type=content_type)
     response["X-Content-Type-Options"] = "nosniff"
@@ -525,6 +581,18 @@ def layout_image(request, layout_id: int, kind: str):
     if kind not in LAYOUT_IMAGES:
         raise Http404
     return _image_response(getattr(layout, kind))
+
+
+@router.get("/skins/{skin_id}/preview")
+def skin_preview(request, skin_id: int):
+    return _image_response(get_object_or_404(CarSkin, pk=skin_id).preview)
+
+
+@router.get("/cars/{car_id}/data")
+def car_data(request, car_id: int):
+    """All the numbers of the data folder of a car (see car_data.py). It is large, so the car
+    list does not carry it."""
+    return get_object_or_404(Car, pk=car_id).data
 
 
 @router.get("/cars/{car_id}/images/{kind}")
@@ -655,7 +723,7 @@ def delete_car(request, car_id: int):
     car = get_object_or_404(Car, pk=car_id)
     with conflict_on_protected():
         record(request.user, "car.deleted", "car", car.id, params={"name": car.name})
-        files = (car.preview, car.badge)
+        files = (car.preview, car.badge, *(skin.preview for skin in car.skins.all()))
         car.delete()
         _delete_files(*files)
     return Status(204, None)

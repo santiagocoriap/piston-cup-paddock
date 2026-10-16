@@ -59,7 +59,7 @@ from pathlib import Path
 
 log = logging.getLogger("paddock_collector")
 
-VERSION = "1.7.0"
+VERSION = "1.8.0"
 UPDATE_SECONDS = 24 * 3600
 SHORTCUT_NAME = "Iniciar Paddock.lnk"
 # Only one collector runs on a PC: the second one cannot take this local port, and it stops.
@@ -1336,6 +1336,19 @@ def first_skin(content_dir: Path, model: str) -> str:
     return names[0] if names else ""
 
 
+def chosen_skin(content_dir: Path, model: str, wanted: str) -> str:
+    """The skin that the driver chose, as the folder name of this server (the case can differ).
+    Empty when the server has the car's skins and none is this one. When the server has no skin
+    list for the car, the choice is used as it is."""
+    wanted = wanted.strip()
+    if not wanted:
+        return ""
+    names = car_skins(content_dir, model)
+    if not names:
+        return wanted
+    return next((name for name in names if name.lower() == wanted.lower()), "")
+
+
 def entry_list(
     old_text: str, entries: list[dict], content_dir: Path, open_slots: int = 10
 ) -> tuple[str, list[str]]:
@@ -1352,13 +1365,14 @@ def entry_list(
     for entry in entries:
         model = safe_name(entry["model"])
         guid = str(entry.get("guid") or "")
+        skin = chosen_skin(content_dir, model, str(entry.get("skin") or ""))
         cars.append(
             {
                 "DRIVERNAME": ini_value(entry["name"]),
                 "TEAM": ini_value(entry.get("team", "")),
                 "GUID": guid if STEAM_ID.match(guid) else "",
                 "MODEL": model,
-                "SKIN": skins.get(model.lower()) or first_skin(content_dir, model),
+                "SKIN": skin or skins.get(model.lower()) or first_skin(content_dir, model),
                 "BALLAST": str(int(entry.get("ballast_kg", 0))),
                 "SPECTATOR_MODE": "0",
                 "RESTRICTOR": str(int(entry.get("restrictor_pct", 0))),

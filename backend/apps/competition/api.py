@@ -11,7 +11,7 @@ from ninja.errors import HttpError
 from pydantic import AwareDatetime
 
 from apps.audit.services import change, record
-from apps.catalog.models import Car, TrackLayout
+from apps.catalog.models import Car, CarSkin, TrackLayout
 from apps.common.api import conflict_on_duplicate, conflict_on_protected, require
 from apps.common.timezones import DEFAULT_EVENT_TIMEZONE, is_timezone
 from apps.identity.models import DriverProfile, User
@@ -198,6 +198,15 @@ class EntryOut(Schema):
     car_name: str
     number: int
     team: str
+    skin_id: int | None = None
+    skin_name: str = ""
+    skin_has_preview: bool = False
+    # True for the entry of the user who asks: that driver can choose the skin.
+    mine: bool = False
+
+
+class SkinChoiceIn(Schema):
+    skin_id: int | None
 
 
 class RoundIn(Schema):
@@ -281,8 +290,13 @@ def _visible_season(user, season_id: int) -> Season:
     return season
 
 
-def _entry_out(entry: SeasonEntry) -> EntryOut:
+def _entry_out(entry: SeasonEntry, user=None) -> EntryOut:
+    skin = entry.skin
     return EntryOut(
+        skin_id=entry.skin_id,
+        skin_name=(skin.name or skin.key) if skin else "",
+        skin_has_preview=bool(skin and skin.preview),
+        mine=bool(user and entry.driver.user_id == user.id),
         id=entry.id,
         driver_id=entry.driver_id,
         driver_name=entry.driver.display_name,
@@ -332,7 +346,7 @@ def _season_summary(season: Season) -> SeasonSummary:
 
 
 def _season_detail(user, season: Season) -> SeasonDetail:
-    entries = season.entries.select_related("driver__user", "car")
+    entries = season.entries.select_related("driver__user", "car", "skin")
     rounds = season.rounds.select_related("track_layout__track")
     return SeasonDetail(
         id=season.id,
@@ -345,7 +359,7 @@ def _season_detail(user, season: Season) -> SeasonDetail:
         championship_id=season.championship_id,
         championship_name=season.championship.name,
         can_manage=can_manage(user, season.championship),
-        entries=[_entry_out(e) for e in entries],
+        entries=[_entry_out(e, user) for e in entries],
         rounds=[_round_out(r) for r in rounds],
     )
 
@@ -644,7 +658,7 @@ def create_entry(request, season_id: int, payload: EntryIn):
             },
             changes=[change("number", None, entry.number), change("team", None, entry.team)],
         )
-    return Status(201, _entry_out(entry))
+    return Status(201, _entry_out(entry, request.user))
 
 
 @router.post("/seasons/{season_id}/rounds", response={201: RoundOut})
@@ -1093,6 +1107,69 @@ def delete_season(request, season_id: int):
     return Status(204, None)
 
 
+class EntrySkinOut(Schema):
+    id: int
+    key: str
+    name: str
+    team: str
+    number: str
+    has_preview: bool
+
+    @staticmethod
+    def resolve_has_preview(obj) -> bool:
+        return bool(obj.preview)
+
+
+def _own_entry(user, entry_id: int) -> SeasonEntry:
+    """An entry that the user can see, and can change the skin of: the driver of the entry, or
+    a manager of the championship."""
+    entry = get_object_or_404(
+        SeasonEntry.objects.select_related("season__championship", "driver__user", "car", "skin"),
+        pk=entry_id,
+    )
+    if not can_view(user, entry.season.championship):
+        raise Http404
+    require(entry.driver.user_id == user.id or can_manage(user, entry.season.championship))
+    return entry
+
+
+@router.get("/entries/{entry_id}/skins", response=list[EntrySkinOut])
+def entry_skins(request, entry_id: int):
+    """The skins that the driver of the entry can choose: the skins of the car of the entry."""
+    return _own_entry(request.user, entry_id).car.skins.all()
+
+
+@router.put("/entries/{entry_id}/skin", response=EntryOut)
+def set_entry_skin(request, entry_id: int, payload: SkinChoiceIn):
+    """Choose the skin of an entry (null: let the server pick). The driver can do it once the
+    entry exists, and a manager can do it for any driver."""
+    entry = _own_entry(request.user, entry_id)
+    skin = None
+    if payload.skin_id is not None:
+        skin = get_object_or_404(CarSkin, pk=payload.skin_id)
+        if skin.car_id != entry.car_id:
+            raise HttpError(422, "skin_not_of_car")
+    if skin != entry.skin:
+        old = entry.skin.key if entry.skin else None
+        entry.skin = skin
+        entry.save(update_fields=["skin"])
+        season = entry.season
+        record(
+            request.user,
+            "entry.skin_changed",
+            "season",
+            season.id,
+            championship=season.championship,
+            params={
+                "season": season.name,
+                "driver": entry.driver.display_name,
+                "car": entry.car.name,
+            },
+            changes=[change("skin", old, skin.key if skin else None)],
+        )
+    return _entry_out(entry, request.user)
+
+
 @router.delete("/entries/{entry_id}", response={204: None})
 def delete_entry(request, entry_id: int):
     """Remove a driver from a season. An entry with results or penalties stays."""
@@ -1121,15 +1198,18 @@ def delete_entry(request, entry_id: int):
     return Status(204, None)
 
 
-@router.delete("/rounds/{round_id}", response={204: None})
-def delete_round(request, round_id: int):
-    """Delete a round with no result. A round with a result can be cancelled instead."""
-    round_ = _managed_round(request.user, round_id)
+def delete_round(user, round_id: int) -> None:
+    """Delete a round with no result. A round with a result can be cancelled instead.
+
+    The address is DELETE /rounds/{round_id}. It is declared in apps/results/api.py, next to
+    GET /rounds/{round_id}: two routers with the same path do not share it, and the first one
+    answers 405 to the methods of the other."""
+    round_ = _managed_round(user, round_id)
     if hasattr(round_, "result"):
         raise HttpError(422, "round_has_result")
     with conflict_on_protected():
         record(
-            request.user,
+            user,
             "round.deleted",
             "round",
             round_.id,
@@ -1137,7 +1217,6 @@ def delete_round(request, round_id: int):
             params=_round_params(round_),
         )
         round_.delete()
-    return Status(204, None)
 
 
 @router.delete("/championships/{championship_id}/members/{user_id}", response={204: None})

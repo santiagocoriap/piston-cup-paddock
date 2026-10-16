@@ -64,12 +64,46 @@ describe('gameFolder', () => {
     const files = unzipSync(new Uint8Array(await zip.arrayBuffer()))
     expect(Object.keys(files).sort()).toEqual([
       'cars/bmw_m3_e30/preview.jpg',
+      'cars/bmw_m3_e30/skins/red/preview.jpg',
       'cars/bmw_m3_e30/ui/badge.png',
       'cars/bmw_m3_e30/ui/ui_car.json',
       'tracks/magione/ui/preview.png',
       'tracks/magione/ui/ui_track.json',
     ])
     expect(strFromU8(files['tracks/magione/ui/preview.png'])).toBe('p')
+  })
+
+  it('packs the data, the DLC marker, and every skin of a car', async () => {
+    const dlc = folder('assettocorsa', {
+      content: {
+        cars: {
+          ks_ferrari_488_gt3: {
+            'data.acd': 'acd',
+            ui: { 'ui_car.json': '{"name": "Ferrari 488 GT3"}', 'dlc_ui_car.json': '{"url": "http://store.steampowered.com/app/1"}' },
+            skins: { '00 red': { 'ui_skin.json': '{"skinname": "Red"}', 'preview.jpg': 'a' }, blue: { 'ui_skin.json': '{}' } },
+          },
+          trr_unpacked: {
+            data: { 'tyres.ini': '[FRONT]', 'power.lut': '0|0', 'car.kn5': 'no' },
+            ui: { 'ui_car.json': '{"name": "Unpacked"}' },
+          },
+        },
+      },
+    })
+    const content = (await contentFolder(dlc))!
+    const zip = await packSelection(await scanCars(content), [])
+    const files = unzipSync(new Uint8Array(await zip.arrayBuffer()))
+    expect(Object.keys(files).sort()).toEqual([
+      'cars/ks_ferrari_488_gt3/data.acd',
+      'cars/ks_ferrari_488_gt3/preview.jpg',
+      'cars/ks_ferrari_488_gt3/skins/00 red/preview.jpg',
+      'cars/ks_ferrari_488_gt3/skins/00 red/ui_skin.json',
+      'cars/ks_ferrari_488_gt3/skins/blue/ui_skin.json',
+      'cars/ks_ferrari_488_gt3/ui/dlc_ui_car.json',
+      'cars/ks_ferrari_488_gt3/ui/ui_car.json',
+      'cars/trr_unpacked/data/power.lut',
+      'cars/trr_unpacked/data/tyres.ini',
+      'cars/trr_unpacked/ui/ui_car.json',
+    ])
   })
 
   it('reads loose JSON and shared names', () => {

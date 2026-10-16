@@ -2226,7 +2226,7 @@
     "class": "¿Eliminar la clase {{name}}?",
     "driver": "¿Eliminar al piloto {{name}}? También se borran sus vueltas de telemetría.",
     "ballot": "¿Eliminar la votación {{name}} con sus opciones y votos?"
-},
+  },
   "votes": {
     "help": "Las votaciones donde podés votar. Las abiertas van primero.",
     "open": "Abiertas",
@@ -2263,5 +2263,39 @@
     "sending": "Importando {{done}} de {{total}}…",
     "done": "Listo: {{cars}} autos y {{tracks}} pistas nuevas, con {{layouts}} trazados.",
     "noFiles": "El navegador no dio ningún archivo. Elegí la carpeta content otra vez."
+  },
+  "carDetail": {
+    "source": {
+      "base": "Juego base",
+      "dlc": "DLC",
+      "mod": "Mod"
+    },
+    "sourceLabel": "Origen",
+    "allSources": "Todos los orígenes",
+    "tagLabel": "Etiqueta",
+    "allTags": "Todas las etiquetas",
+    "skins_one": "{{count}} skin",
+    "skins_other": "{{count}} skins",
+    "noSkins": "Sin skins importados",
+    "tyres_one": "{{count}} compuesto de neumático",
+    "tyres_other": "{{count}} compuestos de neumáticos",
+    "compound": "Compuesto",
+    "front": "Delantero",
+    "rear": "Trasero",
+    "pressure": "Presión ideal",
+    "allData": "Todos los datos del auto",
+    "loadFailed": "No se pudieron cargar los datos.",
+    "curves": "Curvas ({{count}})",
+    "points_one": "{{count}} punto",
+    "points_other": "{{count}} puntos",
+    "dataError": "No se pudieron leer los datos del auto (archivo data.acd)."
+  },
+  "entrySkin": {
+    "label": "Skin",
+    "auto": "Automático",
+    "current": "Skin: {{name}}",
+    "choose": "Elegir skin",
+    "title": "Skin de {{car}}",
+    "help": "Elige la skin con la que vas a correr. Con «Automático» el servidor elige una."
   }
 }

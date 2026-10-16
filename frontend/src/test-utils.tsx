@@ -18,6 +18,7 @@ export function carOf(fields: Partial<Car> & Pick<Car, 'id' | 'key' | 'name'>): 
     has_preview: false, has_badge: false, brand: '', author: '', game_class: '', country: '', year: null,
     power_hp: null, torque_nm: null, weight_kg: null, top_speed_kmh: null, acceleration: '', power_to_weight: '',
     specs_text: {}, version: '', url: '', description: '', tags: [], power_curve: [], torque_curve: [],
+    source: 'mod', source_url: '', has_data: false, data_error: '', skins: [], tyres: [],
     ...fields,
   }
 }

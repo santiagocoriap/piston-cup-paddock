@@ -381,6 +381,23 @@ def preset(tmp_path):
     return folder
 
 
+def test_the_skin_a_driver_chose_is_written_to_the_entry_list(preset):
+    entries = [dict(entry) for entry in CONTENT["entries"]]
+    entries[0]["skin"] = "chosen_for_ana"  # The server has no skin list for this car: used as it is.
+    entries[1]["skin"] = "B_Skin"  # The server has the folder b_skin: its own name is used.
+    pc.write_setup(preset, {**CONTENT, "entries": entries})
+    cars = pc.car_blocks((preset / "entry_list.ini").read_text(encoding="utf-8"))
+    assert [c["SKIN"] for c in cars[:2]] == ["chosen_for_ana", "b_skin"]
+
+
+def test_a_chosen_skin_that_the_server_does_not_have_is_replaced(preset):
+    entries = [dict(entry) for entry in CONTENT["entries"]]
+    entries[1]["skin"] = "not_on_this_server"
+    pc.write_setup(preset, {**CONTENT, "entries": entries})
+    cars = pc.car_blocks((preset / "entry_list.ini").read_text(encoding="utf-8"))
+    assert cars[1]["SKIN"] == "a_skin"  # The first skin of the car, as with no choice.
+
+
 def test_the_setup_goes_into_the_preset_and_keeps_the_rest(preset):
     backup = pc.write_setup(preset, CONTENT)
 

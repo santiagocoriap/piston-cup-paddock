@@ -1206,6 +1206,67 @@
         ]
       }
     },
+    "/api/catalog/skins/{skin_id}/preview": {
+      "get": {
+        "operationId": "apps_catalog_api_skin_preview",
+        "summary": "Skin Preview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "skin_id",
+            "schema": {
+              "title": "Skin Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/cars/{car_id}/data": {
+      "get": {
+        "operationId": "apps_catalog_api_car_data",
+        "summary": "Car Data",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "car_id",
+            "schema": {
+              "title": "Car Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "All the numbers of the data folder of a car (see car_data.py). It is large, so the car\nlist does not carry it.",
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/catalog/cars/{car_id}/images/{kind}": {
       "get": {
         "operationId": "apps_catalog_api_car_image",
@@ -2859,6 +2920,96 @@
         ]
       }
     },
+    "/api/entries/{entry_id}/skins": {
+      "get": {
+        "operationId": "apps_competition_api_entry_skins",
+        "summary": "Entry Skins",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entry_id",
+            "schema": {
+              "title": "Entry Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EntrySkinOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "The skins that the driver of the entry can choose: the skins of the car of the entry.",
+        "tags": [
+          "competition"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/entries/{entry_id}/skin": {
+      "put": {
+        "operationId": "apps_competition_api_set_entry_skin",
+        "summary": "Set Entry Skin",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entry_id",
+            "schema": {
+              "title": "Entry Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntryOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Choose the skin of an entry (null: let the server pick). The driver can do it once the\nentry exists, and a manager can do it for any driver.",
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkinChoiceIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/entries/{entry_id}": {
       "delete": {
         "operationId": "apps_competition_api_delete_entry",
@@ -2882,72 +3033,6 @@
         "description": "Remove a driver from a season. An entry with results or penalties stays.",
         "tags": [
           "competition"
-        ],
-        "security": [
-          {
-            "SessionAuth": []
-          }
-        ]
-      }
-    },
-    "/api/rounds/{round_id}": {
-      "delete": {
-        "operationId": "apps_competition_api_delete_round",
-        "summary": "Delete Round",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "round_id",
-            "schema": {
-              "title": "Round Id",
-              "type": "integer"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
-          }
-        },
-        "description": "Delete a round with no result. A round with a result can be cancelled instead.",
-        "tags": [
-          "competition"
-        ],
-        "security": [
-          {
-            "SessionAuth": []
-          }
-        ]
-      },
-      "get": {
-        "operationId": "apps_results_api_get_round",
-        "summary": "Get Round",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "round_id",
-            "schema": {
-              "title": "Round Id",
-              "type": "integer"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RoundDetail"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "results"
         ],
         "security": [
           {
@@ -2987,6 +3072,72 @@
         },
         "tags": [
           "competition"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}": {
+      "get": {
+        "operationId": "apps_results_api_get_round",
+        "summary": "Get Round",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "results"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "apps_results_api_remove_round",
+        "summary": "Remove Round",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "description": "Delete a round with no result (see delete_round in apps/competition/api.py).",
+        "tags": [
+          "results"
         ],
         "security": [
           {
@@ -8317,6 +8468,36 @@
             },
             "title": "Torque Curve",
             "type": "array"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "has_data": {
+            "title": "Has Data",
+            "type": "boolean"
+          },
+          "data_error": {
+            "title": "Data Error",
+            "type": "string"
+          },
+          "skins": {
+            "items": {
+              "$ref": "#/components/schemas/SkinOut"
+            },
+            "title": "Skins",
+            "type": "array"
+          },
+          "tyres": {
+            "items": {
+              "$ref": "#/components/schemas/TyreOut"
+            },
+            "title": "Tyres",
+            "type": "array"
           }
         },
         "required": [
@@ -8342,9 +8523,161 @@
           "description",
           "tags",
           "power_curve",
-          "torque_curve"
+          "torque_curve",
+          "source",
+          "source_url",
+          "has_data",
+          "data_error",
+          "skins",
+          "tyres"
         ],
         "title": "CarOut",
+        "type": "object"
+      },
+      "SkinOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "team": {
+            "title": "Team",
+            "type": "string"
+          },
+          "number": {
+            "title": "Number",
+            "type": "string"
+          },
+          "has_preview": {
+            "title": "Has Preview",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "name",
+          "driver_name",
+          "team",
+          "number",
+          "has_preview"
+        ],
+        "title": "SkinOut",
+        "type": "object"
+      },
+      "TyreOut": {
+        "properties": {
+          "index": {
+            "title": "Index",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "short_name": {
+            "title": "Short Name",
+            "type": "string"
+          },
+          "front": {
+            "$ref": "#/components/schemas/TyreSideOut"
+          },
+          "rear": {
+            "$ref": "#/components/schemas/TyreSideOut"
+          }
+        },
+        "required": [
+          "index",
+          "name",
+          "short_name",
+          "front",
+          "rear"
+        ],
+        "title": "TyreOut",
+        "type": "object"
+      },
+      "TyreSideOut": {
+        "properties": {
+          "width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width"
+          },
+          "radius": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radius"
+          },
+          "rim_radius": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rim Radius"
+          },
+          "pressure_ideal": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pressure Ideal"
+          },
+          "pressure_static": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pressure Static"
+          },
+          "wear_curve": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wear Curve"
+          }
+        },
+        "title": "TyreSideOut",
         "type": "object"
       },
       "CarIn": {
@@ -9834,6 +10167,32 @@
           "team": {
             "title": "Team",
             "type": "string"
+          },
+          "skin_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skin Id"
+          },
+          "skin_name": {
+            "default": "",
+            "title": "Skin Name",
+            "type": "string"
+          },
+          "skin_has_preview": {
+            "default": false,
+            "title": "Skin Has Preview",
+            "type": "boolean"
+          },
+          "mine": {
+            "default": false,
+            "title": "Mine",
+            "type": "boolean"
           }
         },
         "required": [
@@ -10521,6 +10880,64 @@
           }
         },
         "title": "DrawIn",
+        "type": "object"
+      },
+      "EntrySkinOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "team": {
+            "title": "Team",
+            "type": "string"
+          },
+          "number": {
+            "title": "Number",
+            "type": "string"
+          },
+          "has_preview": {
+            "title": "Has Preview",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "name",
+          "team",
+          "number",
+          "has_preview"
+        ],
+        "title": "EntrySkinOut",
+        "type": "object"
+      },
+      "SkinChoiceIn": {
+        "properties": {
+          "skin_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skin Id"
+          }
+        },
+        "required": [
+          "skin_id"
+        ],
+        "title": "SkinChoiceIn",
         "type": "object"
       },
       "BriefingOut": {

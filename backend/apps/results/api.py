@@ -5,12 +5,14 @@ from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from ninja import Field, File, Form, Router, Schema
+from ninja import Status as Reply
 from ninja.errors import HttpError
 from ninja.files import UploadedFile
 from pydantic import AwareDatetime
 
 from apps.collectors.conditions import differences, server_conditions
 from apps.collectors.incident_api import accepted_race_incidents
+from apps.competition.api import delete_round
 from apps.competition.models import ChampionshipMember, Round, Season, SeasonEntry
 from apps.competition.permissions import can, can_manage, can_view, capabilities
 from apps.dashboard.services import my_handicap
@@ -513,6 +515,13 @@ def _run(action):
 @router.get("/rounds/{round_id}", response=RoundDetail)
 def get_round(request, round_id: int):
     return _round_detail(request.user, _visible_round(request.user, round_id))
+
+
+@router.delete("/rounds/{round_id}", response={204: None})
+def remove_round(request, round_id: int):
+    """Delete a round with no result (see delete_round in apps/competition/api.py)."""
+    delete_round(request.user, round_id)
+    return Reply(204, None)
 
 
 @router.get("/rounds/{round_id}/result/versions/{number}", response=list[LineOut])

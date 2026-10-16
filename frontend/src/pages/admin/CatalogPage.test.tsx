@@ -1,7 +1,7 @@
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { json, mockApi, renderPage } from '../../test-utils'
+import { carOf, json, mockApi, renderPage } from '../../test-utils'
 import { CatalogPage } from './CatalogPage'
 
 afterEach(() => vi.restoreAllMocks())
@@ -14,7 +14,7 @@ const tracks = [
   { id: 1, key: 'ks_highlands', name: 'Highlands', country: 'Escocia', layouts: [layout(10, 'Long', 'layout_long', true), layout(11, 'Short', 'layout_short')] },
   { id: 2, key: 'magione', name: 'Magione', country: 'Italia', layouts: [] },
 ]
-const cars = [{ id: 1, key: 'acura', name: 'Acura', has_preview: false, has_badge: false, brand: 'Acura', author: '' }]
+const cars = [carOf({ id: 1, key: 'acura', name: 'Acura', brand: 'Acura' })]
 
 function routes(extra = {}) {
   return {
@@ -43,11 +43,36 @@ describe('CatalogPage', () => {
     await vi.waitFor(() => expect(calls.some((c) => c.key === 'PATCH /api/catalog/tracks/2')).toBe(true))
   })
 
+  it('filters the cars by source and tag, and shows the skins and the tyres of a car', async () => {
+    const tyre = { index: 0, name: 'Slick Soft', short_name: 'S', front: { width: 0.3, radius: 0.34, pressure_ideal: 26 }, rear: { width: 0.31, radius: 0.355 } }
+    mockApi(
+      routes({
+        'GET /api/catalog/cars': () =>
+          json(200, [
+            carOf({ id: 1, key: 'ks_ferrari', name: 'Ferrari 488', source: 'dlc', tags: ['gt3', 'italy'], tyres: [tyre], skins: [{ id: 7, key: '00_red', name: 'Rosso', driver_name: '', team: '', number: '', has_preview: true }] }),
+            carOf({ id: 2, key: 'trr_bmw', name: 'BMW M4', source: 'mod', tags: ['gt3'] }),
+            carOf({ id: 3, key: 'ks_miata', name: 'Miata', source: 'base', tags: ['street'] }),
+          ]),
+      }),
+    )
+    renderPage(<CatalogPage />, { path: '/admin/catalog', url: '/admin/catalog?tab=cars' })
+    await userEvent.selectOptions(await screen.findByRole('combobox', { name: 'Origen' }), 'dlc')
+    expect(screen.getByText('1 auto')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Ferrari 488' })).toBeInTheDocument()
+    expect(screen.getByText('1 skin')).toBeInTheDocument()
+    expect(screen.getByText('1 compuesto de neumático')).toBeInTheDocument()
+    expect(screen.getByRole('row', { name: /Slick Soft/ })).toHaveTextContent('300 mm / R340')
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Origen' }), '')
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Etiqueta' }), 'gt3')
+    expect(screen.getByText('2 autos')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Miata' })).not.toBeInTheDocument()
+  })
+
   it('filters the tracks by name and the cars by class and photo', async () => {
     mockApi(
       routes({
         'GET /api/catalog/cars': () =>
-          json(200, [...cars, { id: 2, key: 'bmw', name: 'BMW M4', has_preview: true, has_badge: false, brand: 'BMW', author: '' }]),
+          json(200, [...cars, carOf({ id: 2, key: 'bmw', name: 'BMW M4', has_preview: true, brand: 'BMW' })]),
         'GET /api/catalog/classes': () => json(200, [{ id: 5, name: 'GT3', car_ids: [2], history: [] }]),
       }),
     )

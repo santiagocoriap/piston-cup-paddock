@@ -108,6 +108,11 @@ class SeasonEntry(models.Model):
     car = models.ForeignKey(Car, on_delete=models.PROTECT, related_name="entries")
     number = models.PositiveSmallIntegerField()
     team = models.CharField(max_length=100, blank=True)
+    # The skin that the driver chose for the car. Empty: the server picks one. The skin must be
+    # a skin of the car of the entry (the API checks it).
+    skin = models.ForeignKey(
+        "catalog.CarSkin", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
 
     class Meta:
         ordering = ["number"]
