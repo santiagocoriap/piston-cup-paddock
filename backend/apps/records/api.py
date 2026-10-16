@@ -61,6 +61,7 @@ class BoardOut(Schema):
     record_ms: int | None
     holders: list[RecordLapOut]
     history: list[HistoryOut]
+    ranking: list[RecordLapOut]
 
 
 class LayoutOption(Schema):
@@ -205,6 +206,7 @@ def get_records(
                     HistoryOut(kind=h.kind, lap=_lap_out(request.user, h.lap, details))
                     for h in b.history
                 ],
+                ranking=[_lap_out(request.user, r, details) for r in b.ranking],
             )
             for b in selected
         ],

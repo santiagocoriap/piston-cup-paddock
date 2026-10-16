@@ -27,8 +27,8 @@ const data = {
 }
 
 const rounds = [
-  { id: 1, number: 1, track_layout_id: 1, track_name: 'Highlands', layout_name: 'Long', scheduled_at: '2026-10-11T00:00:00Z', origin: 'manual', cancelled: false, cancel_reason: '', track_changes: [] },
-  { id: 3, number: 3, track_layout_id: 1, track_name: 'Spa', layout_name: 'GP', scheduled_at: '2026-10-25T00:00:00Z', origin: 'manual', cancelled: false, cancel_reason: '', track_changes: [] },
+  { id: 1, number: 1, track_layout_id: 1, track_name: 'Highlands', layout_name: 'Long', scheduled_at: '2026-10-11T00:00:00Z', origin: 'manual', cancelled: false, cancel_reason: '', track_changes: [], announced_conditions: {} },
+  { id: 3, number: 3, track_layout_id: 1, track_name: 'Spa', layout_name: 'GP', scheduled_at: '2026-10-25T00:00:00Z', origin: 'manual', cancelled: false, cancel_reason: '', track_changes: [], announced_conditions: {} },
 ]
 
 function show(adminView: boolean, extra = {}) {
@@ -62,6 +62,7 @@ describe('HandicapsSection', () => {
 
   it('sends a manual adjustment with a reason', async () => {
     const calls = show(true, { 'POST /api/seasons/5/handicaps/adjustments': () => json(200, data) })
+    await userEvent.click(await screen.findByRole('button', { name: 'Ajustar lastre y restrictor' }))
     const form = await screen.findByRole('form', { name: 'Ajustar lastre y restrictor' })
     await userEvent.selectOptions(within(form).getByLabelText('Piloto'), '1')
     await userEvent.type(within(form).getByLabelText('Lastre (kg)'), '5')
@@ -72,5 +73,7 @@ describe('HandicapsSection', () => {
     expect(body).toEqual({
       entry_id: 1, round_id: 3, ballast_kg: 5, restrictor_pct: 0, mode: 'temporary', reason: 'Problema con el auto',
     })
+    // The dialog closes after the save.
+    await vi.waitFor(() => expect(screen.queryByRole('form', { name: 'Ajustar lastre y restrictor' })).not.toBeInTheDocument())
   })
 })

@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { api, type Me } from './api/client'
 import { Layout } from './components/Layout'
-import { Logo } from './components/Logo'
+import { AuthShell } from './components/AuthShell'
+import { Icon } from './components/Icon'
+import { PasswordField } from './components/PasswordField'
 import { AccountPage } from './pages/AccountPage'
 import { AccountsPage } from './pages/admin/AccountsPage'
 import { AuditPage } from './pages/admin/AuditPage'
@@ -12,9 +14,10 @@ import { DriversPage } from './pages/admin/DriversPage'
 import { LeaguesPage } from './pages/admin/LeaguesPage'
 import { BallotPage } from './pages/BallotPage'
 import { ChampionshipPage } from './pages/ChampionshipPage'
-import { ChampionshipsPage } from './pages/ChampionshipsPage'
+import { ChampionshipsPage, HomePage } from './pages/ChampionshipsPage'
 import { InvitePage } from './pages/InvitePage'
 import { RecordsPage } from './pages/RecordsPage'
+import { VotesPage } from './pages/VotesPage'
 import { RoundPage } from './pages/RoundPage'
 import { SeasonPage } from './pages/SeasonPage'
 import { useMode } from './session'
@@ -49,32 +52,26 @@ export default function App() {
 
   if (onInvite) {
     return (
-      <div className="shell narrow">
-        <header className="brand" aria-label={t('app.name')}>
-          <Logo size={48} />
-        </header>
+      <AuthShell>
         <InvitePage
           onSignedIn={() => {
             setOnInvite(false)
             void loadSession()
           }}
         />
-      </div>
+      </AuthShell>
     )
   }
 
   if (session.status !== 'signed-in') {
     return (
-      <div className="shell narrow">
-        <header className="brand" aria-label={t('app.name')}>
-          <Logo size={48} />
-        </header>
+      <AuthShell>
         {session.status === 'loading' ? (
-          <p>{t('app.loading')}</p>
+          <p className="muted">{t('app.loading')}</p>
         ) : (
           <LoginForm onSignedIn={(me) => setSession({ status: 'signed-in', me })} />
         )}
-      </div>
+      </AuthShell>
     )
   }
 
@@ -102,12 +99,14 @@ function AppRoutes({
   return (
     <Routes>
       <Route element={<Layout onSignOut={onSignOut} />}>
-        <Route index element={<ChampionshipsPage />} />
+        <Route index element={<HomePage />} />
+        <Route path="championships" element={<ChampionshipsPage />} />
         <Route path="championships/:championshipId" element={<ChampionshipPage />} />
         <Route path="seasons/:seasonId" element={<SeasonPage />} />
         <Route path="rounds/:roundId" element={<RoundPage />} />
         <Route path="drivers/:driverId" element={<DriverProfilePage />} />
         <Route path="records" element={<RecordsPage />} />
+        <Route path="votes" element={<VotesPage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="ballots/:ballotId" element={<BallotPage />} />
         {adminPages && <Route path="admin/leagues" element={<LeaguesPage />} />}
@@ -124,37 +123,55 @@ function AppRoutes({
 function LoginForm({ onSignedIn }: { onSignedIn: (me: Me) => void }) {
   const { t } = useTranslation()
   const [error, setError] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
+    setBusy(true)
     const form = new FormData(event.currentTarget)
     await api.GET('/api/auth/csrf')
     const { data, response } = await api.POST('/api/auth/login', {
       body: { username: String(form.get('username')), password: String(form.get('password')) },
     })
+    setBusy(false)
     if (data && 'username' in data) onSignedIn(data)
     else if (response.status === 429) setError(t('login.tooMany'))
     else setError(response.status === 401 ? t('login.invalid') : t('login.error'))
   }
 
   return (
-    <form className="card" onSubmit={submit}>
-      <h1>{t('login.title')}</h1>
-      <label>
-        {t('login.username')}
-        <input name="username" autoComplete="username" required />
-      </label>
-      <label>
-        {t('login.password')}
-        <input name="password" type="password" autoComplete="current-password" required />
-      </label>
+    <form className="auth-form" onSubmit={submit} aria-labelledby="login-title">
+      <header>
+        <h1 id="login-title">{t('login.title')}</h1>
+        <p className="muted">{t('login.help')}</p>
+      </header>
+      <div className="field">
+        <label htmlFor="login-username">{t('login.username')}</label>
+        <span className="input-icon">
+          <Icon name="user" small />
+          <input
+            id="login-username"
+            name="username"
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
+            required
+          />
+        </span>
+      </div>
+      <PasswordField label={t('login.password')} name="password" autoComplete="current-password" required />
       {error && (
-        <p role="alert" className="error">
+        <p role="alert" className="auth-error">
+          <Icon name="alert" small />
           {error}
         </p>
       )}
-      <button type="submit">{t('login.submit')}</button>
+      <button type="submit" className="auth-submit" disabled={busy}>
+        {busy && <span className="spinner" aria-hidden="true" />}
+        {t('login.submit')}
+      </button>
+      <p className="muted auth-foot">{t('login.noAccount')}</p>
     </form>
   )
 }

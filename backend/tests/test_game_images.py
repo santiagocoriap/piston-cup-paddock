@@ -56,6 +56,9 @@ def test_folder_import_copies_maps_pictures_and_game_text(layout, magione, car, 
     layout.refresh_from_db()
     assert layout.outline.read() == PNG
     assert (layout.length_m, layout.country) == (12191, "Sco\ttland")
+    # The track gets the country of its layout.
+    layout.track.refresh_from_db()
+    assert layout.track.country == "Sco\ttland"
     magione.refresh_from_db()
     assert magione.outline and not magione.preview
     car.refresh_from_db()

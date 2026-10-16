@@ -52,12 +52,14 @@ export function Briefing({ round }: { round: RoundDetail }) {
                     {String((conditions as Record<string, unknown>)[key])}
                     {unit}
                   </dd>
-                  <DrawHistory roundId={round.id} />
-        </div>
+                </div>
               ))}
             </dl>
           )}
+          <DrawHistory roundId={round.id} />
         </div>
+
+        {round.briefing.server_conditions && <ServerConditions round={round} />}
 
         {(round.briefing.restart_guidance || round.briefing.first_lap_cutoff) && (
           <div className="card">
@@ -99,3 +101,46 @@ export function Briefing({ round }: { round: RoundDetail }) {
     </section>
   )
 }
+
+/** A weather name of AC, such as "3_clear" or "sol_05_broken_clouds", in words. */
+function weatherName(t: (key: string, options?: Record<string, unknown>) => string, id: string | null | undefined) {
+  if (!id) return null
+  const key = id.replace(/^(sol_)?\d+_/, '')
+  return t(`briefing.weathers.${key}`, { defaultValue: key.replaceAll('_', ' ') })
+}
+
+/** What the server used, from the collector, next to the announced conditions. */
+function ServerConditions({ round }: { round: RoundDetail }) {
+  const { t } = useTranslation()
+  const real = round.briefing.server_conditions!
+  const differ = round.briefing.conditions_differ ?? []
+  const rows: [string, string | null, string][] = [
+    ['weather', weatherName(t, real.weather), ''],
+    ['air_temp', real.air_temp_c != null ? `${real.air_temp_c} °C` : null, 'airTemp'],
+    ['track_temp', real.track_temp_c != null ? `${real.track_temp_c} °C` : null, 'trackTemp'],
+    ['time_of_day', real.time_of_day ?? null, 'timeOfDay'],
+    ['grip', real.grip_pct != null ? `${real.grip_pct} %` : null, 'grip'],
+  ]
+  return (
+    <div className="card">
+      <h3>{t('briefing.serverConditions')}</h3>
+      <p className="muted">{t('briefing.serverFrom', { session: t(`imports.session.${real.session_type}`) })}</p>
+      <dl className="lap-details">
+        {rows
+          .filter(([, value]) => value !== null)
+          .map(([key, value, label]) => (
+            <div key={key} className={differ.includes(key) ? 'contents differ' : 'contents'}>
+              <dt>{t(`briefing.${label || 'weather'}`)}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+      </dl>
+      {differ.length > 0 && (
+        <p className="warning" role="status">
+          {t('briefing.differ', { list: differ.map((key) => t(`briefing.differNames.${key}`)).join(', ') })}
+        </p>
+      )}
+    </div>
+  )
+}
+

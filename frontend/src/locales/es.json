@@ -11,7 +11,9 @@
     "submit": "Entrar",
     "invalid": "Usuario o contraseña incorrectos.",
     "error": "No se pudo iniciar sesión. Intentá de nuevo.",
-    "tooMany": "Demasiados intentos con contraseña incorrecta. Esperá 15 minutos y probá de nuevo."
+    "tooMany": "Demasiados intentos con contraseña incorrecta. Esperá 15 minutos y probá de nuevo.",
+    "help": "Entrá con el usuario que te dio un admin de la liga.",
+    "noAccount": "¿No tenés cuenta? Pedile un link de invitación a un admin."
   },
   "nav": {
     "championships": "Campeonatos",
@@ -24,7 +26,31 @@
     "records": "Récords",
     "home": "Inicio",
     "account": "Mi cuenta",
-    "accounts": "Cuentas"
+    "accounts": "Cuentas",
+    "breadcrumbs": "Ruta de navegación",
+    "collapseSide": "Achicar el menú",
+    "expandSide": "Agrandar el menú",
+    "pendingCount_one": "{{count}} pendiente",
+    "pendingCount_other": "{{count}} pendientes",
+    "userMenu": "Menú de {{name}}",
+    "themeDay": "Tema de día",
+    "themeNight": "Tema de noche",
+    "roleLeagueAdmin": "Admin de la liga",
+    "roleAdmin": "Admin de campeonato",
+    "roleDriver": "Piloto",
+    "search": "Buscar",
+    "searchPlaceholder": "Buscar páginas, pilotos, campeonatos o fechas",
+    "searchShortcut": "Ctrl K",
+    "searchEmpty": "Nada coincide con «{{query}}».",
+    "searchHint": "Escribí al menos 2 letras para buscar pilotos, campeonatos y fechas.",
+    "searchGroups": {
+      "pages": "Páginas",
+      "championship": "Campeonatos",
+      "season": "Temporadas",
+      "round": "Fechas",
+      "driver": "Pilotos"
+    },
+    "votes": "Votaciones"
   },
   "common": {
     "create": "Crear",
@@ -32,12 +58,26 @@
     "save": "Guardar",
     "name": "Nombre",
     "key": "Carpeta en AC",
-    "select": "Elegí una opción"
+    "select": "Elegí una opción",
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "next": "Siguiente",
+    "back": "Atrás",
+    "stepOf": "Paso {{current}} de {{total}}"
   },
   "championships": {
     "title": "Campeonatos",
     "empty": "Todavía no participás en ningún campeonato.",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "open": "Abrir campeonato",
+    "moreSeasons_one": "{{count}} temporada más",
+    "moreSeasons_other": "{{count}} temporadas más",
+    "progress": "{{done}} de {{total}} fechas",
+    "next": "Próxima: Fecha {{number}} · {{track}}",
+    "noNext": "No hay más fechas en el calendario.",
+    "leader": "Líder: {{name}}",
+    "noDate": "Sin fecha",
+    "help": "Los campeonatos donde corrés o sos admin. Abrí uno para ver sus temporadas, fechas y miembros."
   },
   "championship": {
     "seasons": "Temporadas",
@@ -73,7 +113,35 @@
       "reports": "Generar reportes con IA",
       "records": "Invalidar vueltas de récords"
     },
-    "provisionalReports": "Escribir un reporte provisional al aplicar el archivo de carrera (antes de aprobar)"
+    "provisionalReports": "Escribir un reporte provisional al aplicar el archivo de carrera (antes de aprobar)",
+    "latest": "Más reciente",
+    "openSeason": "Abrir temporada",
+    "protestWindow_one": "Protestas: {{count}} minuto después del resultado provisional",
+    "protestWindow_other": "Protestas: {{count}} minutos después del resultado provisional",
+    "current": "Temporada actual",
+    "progress": "{{done}} de {{total}} fechas",
+    "adminTabs": {
+      "seasons": "Temporadas",
+      "members": "Miembros",
+      "roles": "Roles",
+      "health": "Salud",
+      "collectors": "Colectores"
+    },
+    "addMember": "Agregar miembro",
+    "roleOf": "Rol de {{name}}",
+    "capabilityShort": {
+      "results": "Resultados",
+      "penalties": "Sanciones",
+      "restarts": "Reinicios",
+      "reports": "Reportes",
+      "records": "Récords"
+    },
+    "roleCapability": "{{capability}} para {{role}}",
+    "roleMenu": "Acciones del rol {{name}}",
+    "rename": "Cambiar el nombre",
+    "autoPublish": "Publicar solos los resultados del colector cuando no tienen problemas (quedan provisionales)",
+    "openSlots": "Lugares libres en el servidor",
+    "openSlotsHelp": "Autos extra después de los pilotos de la liga, para cambiar de auto. \"Enviar al servidor\" usa este número."
   },
   "season": {
     "plannedRounds": "{{count}} carreras previstas",
@@ -99,14 +167,30 @@
     "addEntry": "Inscribir piloto",
     "protestWindow": "Plazo de protestas (minutos)",
     "settings": "Configuración de la temporada",
-    "provisionalNote": "Las celdas en cursiva son resultados provisionales."
+    "provisionalNote": "Las celdas en cursiva son resultados provisionales.",
+    "download": "Descargar",
+    "downloads": {
+      "calendar": "Calendario (.ics)",
+      "csv": "{{name}} (CSV)"
+    },
+    "roundLabel": "Fecha {{number}}"
   },
   "leagues": {
     "title": "Ligas",
     "empty": "Todavía no hay ligas.",
     "newLeague": "Nueva liga",
     "newChampionship": "Nuevo campeonato",
-    "league": "Liga"
+    "help": "Cada liga agrupa campeonatos. Cada campeonato tiene sus temporadas.",
+    "emptyText": "Una liga agrupa los campeonatos. Creá la primera para empezar.",
+    "championshipCount_one": "{{count}} campeonato",
+    "championshipCount_other": "{{count}} campeonatos",
+    "seasonCount_one": "{{count}} temporada",
+    "seasonCount_other": "{{count}} temporadas",
+    "noChampionships": "Esta liga todavía no tiene campeonatos.",
+    "open": "Abrir",
+    "timezone": "Zona horaria: {{zone}}",
+    "championshipName": "Nombre del campeonato",
+    "created": "Campeonato «{{name}}» creado."
   },
   "drivers": {
     "title": "Pilotos",
@@ -116,7 +200,6 @@
     "steamGuid": "Steam GUID (17 dígitos, opcional)",
     "account": "Cuenta",
     "noAccount": "Sin cuenta",
-    "link": "Vincular",
     "careerPoints": "Puntos de carrera",
     "merge": "Unir dos perfiles",
     "mergeButton": "Unir",
@@ -124,7 +207,32 @@
     "mergeOld": "Perfil que se borra",
     "mergeInto": "Perfil que queda",
     "mergeReason": "Motivo",
-    "confirmMerge": "Esto no se puede deshacer. ¿Seguro?"
+    "help": "Los perfiles de los pilotos. Un perfil puede tener una cuenta para entrar a la app.",
+    "search": "Buscar piloto",
+    "searchPlaceholder": "Nombre, Steam GUID o cuenta",
+    "count_one": "{{count}} piloto",
+    "count_other": "{{count}} pilotos",
+    "noMatch": "Ningún piloto coincide con «{{query}}».",
+    "emptyText": "Agregá el primer piloto. La cuenta se puede vincular después.",
+    "actions": "Acciones de {{name}}",
+    "linkAccount": "Vincular cuenta",
+    "linkTitle": "Vincular cuenta: {{name}}",
+    "linkHelp": "Elegí la cuenta de la app de este piloto. Una cuenta va con un solo piloto.",
+    "accountSearch": "Cuenta",
+    "noOptions": "Ninguna cuenta coincide.",
+    "takenBy": "Vinculada a {{name}}",
+    "saved": "Cuenta guardada.",
+    "mergeWith": "Unir con…",
+    "swap": "Invertir",
+    "seasons": "Temporadas",
+    "records": "Récords",
+    "none": "Ninguna",
+    "deleted": "Se borra",
+    "kept": "Queda",
+    "pickKept": "Elegí el perfil que queda.",
+    "mergeConfirm": "Entiendo que el perfil «{{name}}» se borra y que esto no se puede deshacer.",
+    "merged": "«{{old}}» se unió a «{{kept}}».",
+    "actionsColumn": "Acciones"
   },
   "catalog": {
     "title": "Pistas y autos",
@@ -155,8 +263,33 @@
       "done": "Listo: {{layouts}} trazados y {{cars}} autos con imágenes.",
       "missing_one": "{{count}} sin archivos en el ZIP",
       "missing_other": "{{count}} sin archivos en el ZIP",
-      "author": "autor: {{author}}"
-    }
+      "author": "autor: {{author}}",
+      "step1Title": "Bajar la lista",
+      "step2Title": "Correr el script",
+      "step3Title": "Subir el ZIP",
+      "stepDone": "Hecho",
+      "copy": "Copiar el comando",
+      "copied": "Copiado",
+      "dropHere": "Arrastrá el ZIP acá o hacé clic para elegirlo.",
+      "wrongType": "El archivo tiene que ser un .zip.",
+      "chosen": "{{name}} · {{size}}"
+    },
+    "noImage": "Sin imagen todavía",
+    "pitBoxes_one": "{{count}} box",
+    "pitBoxes_other": "{{count}} boxes",
+    "help": "Las pistas, los autos y las clases de autos que usa la liga.",
+    "sections": "Secciones del catálogo",
+    "tabImages": "Imágenes",
+    "missingImages_one": "{{count}} sin imagen",
+    "missingImages_other": "{{count}} sin imagen",
+    "layoutCount_one": "{{count}} trazado",
+    "layoutCount_other": "{{count}} trazados",
+    "noLayouts": "Esta pista todavía no tiene trazados.",
+    "tracksEmptyText": "Agregá la primera pista. Después agregás sus trazados.",
+    "carsEmptyText": "Agregá el primer auto con su carpeta en AC.",
+    "newLayoutFor": "Nuevo trazado: {{name}}",
+    "layoutCreated": "Trazado «{{name}}» creado.",
+    "noClass": "Sin clase"
   },
   "errors": {
     "generic": "Algo salió mal. Intentá de nuevo.",
@@ -284,7 +417,14 @@
     "pool_empty": "El pool de condiciones de la temporada está vacío.",
     "backup_running": "Ya hay un backup en curso.",
     "bad_zip": "El archivo no es un ZIP válido.",
-    "too_many_files": "El ZIP tiene demasiados archivos. Usá la lista de la liga."
+    "too_many_files": "El ZIP tiene demasiados archivos. Usá la lista de la liga.",
+    "image_too_large": "La imagen pesa más de 5 MB.",
+    "image_not_supported": "La imagen tiene que ser PNG o JPEG.",
+    "no_release": "La app todavía no tiene el programa del colector. Probá más tarde.",
+    "wrong_key": "La clave no es de este colector.",
+    "unknown_preset": "El colector no tiene esa plantilla de Content Manager.",
+    "delete_self": "No podés borrar tu propia cuenta.",
+    "last_admin": "Es el último admin de la liga: no se puede borrar."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -347,7 +487,11 @@
     "minutesLeft_one": "Cierre de protestas · queda {{count}} minuto",
     "minutesLeft_other": "Cierre de protestas · quedan {{count}} minutos",
     "windowClosed": "Plazo de protestas cerrado",
-    "protestLink": "Presentar una protesta"
+    "protestLink": "Presentar una protesta",
+    "winner": "Ganó {{name}}",
+    "podium": "Podio",
+    "pointsShort_one": "{{count}} pt",
+    "pointsShort_other": "{{count}} pts"
   },
   "mode": {
     "label": "Modo",
@@ -356,7 +500,10 @@
     "driverShort": "Piloto",
     "adminShort": "Admin",
     "bannerTag": "MODO ADMINISTRACIÓN",
-    "bannerText": "Los cambios afectan a toda la liga y quedan en el historial."
+    "bannerText": "Los cambios afectan a toda la liga y quedan en el historial.",
+    "bannerShort": "Modo admin",
+    "steward": "Modo comisario",
+    "stewardShort": "Comisario"
   },
   "audit": {
     "title": "Historial de cambios",
@@ -447,7 +594,18 @@
       "round.conditions_redrawn": "{{actor}} volvió a sortear las condiciones de la fecha {{number}} ({{track}}).",
       "season.conditions_pool": "{{actor}} cambió el pool de condiciones de {{season}}.",
       "backup.started": "{{actor}} empezó un backup.",
-      "catalog.game_images": "{{actor}} importó imágenes del juego: {{layouts}} trazados y {{cars}} autos."
+      "catalog.game_images": "{{actor}} importó imágenes del juego: {{layouts}} trazados y {{cars}} autos.",
+      "track.renamed": "{{actor}} editó la pista {{name}}.",
+      "layout.renamed": "{{actor}} cambió el nombre del trazado a {{name}}.",
+      "car.renamed": "{{actor}} cambió el nombre del auto a {{name}}.",
+      "layout.outline_set": "{{actor}} subió el mapa de {{name}}.",
+      "layout.preview_set": "{{actor}} subió la foto de {{name}}.",
+      "layout.outline_removed": "{{actor}} quitó el mapa de {{name}}.",
+      "layout.preview_removed": "{{actor}} quitó la foto de {{name}}.",
+      "car.preview_set": "{{actor}} subió la foto del auto {{name}}.",
+      "car.badge_set": "{{actor}} subió el logo del auto {{name}}.",
+      "car.preview_removed": "{{actor}} quitó la foto del auto {{name}}.",
+      "car.badge_removed": "{{actor}} quitó el logo del auto {{name}}."
     },
     "fields": {
       "role": "Rol",
@@ -479,7 +637,29 @@
       "driver": "Piloto"
     },
     "none": "—",
-    "pts": "{{count}} pts"
+    "pts": "{{count}} pts",
+    "help": "Cada cambio de un admin queda acá: quién lo hizo, cuándo y por qué.",
+    "search": "Buscar en el historial",
+    "searchPlaceholder": "Persona, cambio o motivo",
+    "kindLabel": "Tipo de cambio",
+    "kinds": {
+      "all": "Todo",
+      "results": "Resultados",
+      "penalties": "Sanciones",
+      "season": "Temporadas",
+      "people": "Pilotos y cuentas",
+      "catalog": "Catálogo",
+      "reports": "Reportes"
+    },
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "more_one": "{{count}} más como este",
+    "more_other": "{{count}} más como este",
+    "count_one": "{{count}} cambio",
+    "count_other": "{{count}} cambios",
+    "noMatch": "Ningún cambio coincide con estos filtros.",
+    "limitNote": "Se ven los últimos {{count}} cambios.",
+    "open": "Abrir"
   },
   "restarts": {
     "title": "Largadas y reinicios",
@@ -540,7 +720,12 @@
     "suggested": "Sugerencia (primer choque del colector): {{names}}. Un admin confirma.",
     "incidents_one": "{{count}} incidente en esa largada",
     "incidents_other": "{{count}} incidentes en esa largada",
-    "incidentLine": "{{seconds}} s después de largar · vuelta {{lap}} · {{cars}}"
+    "incidentLine": "{{seconds}} s después de largar · vuelta {{lap}} · {{cars}}",
+    "timeline": "Largadas",
+    "groupCount_one": "×{{count}}",
+    "groupCount_other": "×{{count}}",
+    "showEach": "Ver uno por uno",
+    "hideEach": "Ocultar"
   },
   "review": {
     "status": {
@@ -655,7 +840,22 @@
     "apply": "Aplicar el archivo",
     "applied": "Archivo aplicado.",
     "qualifyingNote": "Un archivo de clasificación o práctica guarda las vueltas, pero no cambia el resultado de carrera.",
-    "handicapDiffers": "Asignado {{assignedKg}} kg y {{assignedPct}} %, el archivo dice {{fileKg}} kg y {{filePct}} %."
+    "handicapDiffers": "Asignado {{assignedKg}} kg y {{assignedPct}} %, el archivo dice {{fileKg}} kg y {{filePct}} %.",
+    "auto": {
+      "applied": "Publicado por el colector",
+      "blocked": "Espera a un admin"
+    },
+    "byCollector": "colector",
+    "autoReasons": {
+      "unmatched_drivers": "Hay pilotos del archivo sin inscripción.",
+      "result_exists": "La fecha ya tiene resultado: un admin decide si lo cambia."
+    },
+    "dnfNote": {
+      "disconnected": "{{name}} se desconectó antes del final: probable abandono.",
+      "fewer_laps": "{{name}} hizo menos vueltas que el ganador: revisá si abandonó."
+    },
+    "markDnf": "Marcar DNF",
+    "dnfMarked": "Marcado DNF"
   },
   "handicaps": {
     "title": "Lastre y restrictor",
@@ -688,7 +888,7 @@
   "records": {
     "title": "Récords de pista",
     "help": "Solo cuentan vueltas de resultados oficiales: la clasificación y la largada aceptada de la carrera.",
-    "empty": "Todavía no hay récords. Aparecen cuando una fecha importada tiene resultado oficial.",
+    "empty": "Aparecen cuando una fecha importada tiene resultado oficial.",
     "layout": "Pista",
     "all": "Todas las pistas",
     "category": {
@@ -741,7 +941,25 @@
     "time": "Tiempo (m:ss.mmm)",
     "manualSourceLabel": "Fuente (captura, video, archivo viejo)",
     "carClass": "Clase",
-    "noClass": "Sin clase"
+    "noClass": "Sin clase",
+    "emptyTitle": "Todavía no hay récords",
+    "noMatch": "Ningún récord con estos filtros",
+    "noMatchHelp": "Probá con otra pista, otro auto u otra temporada.",
+    "clearFilters": "Limpiar filtros",
+    "activeFilters": "Filtros activos",
+    "removeFilter": "Quitar el filtro {{name}}",
+    "sessionAll": "Ambas",
+    "sessionShort": {
+      "qualifying": "Clasificación",
+      "race": "Carrera"
+    },
+    "add": "Agregar récord",
+    "ranking": "Mejores vueltas",
+    "position": "Pos.",
+    "gap": "Diferencia",
+    "details": "Detalles del récord",
+    "lapTime": "Tiempo",
+    "holderLabel": "En manos de"
   },
   "voting": {
     "title": "Votaciones",
@@ -799,7 +1017,7 @@
     "label": "Nombre de la clase",
     "remove": "Quitar",
     "power": "Valor del voto",
-    "setPower": "Cambiar el valor de un voto",
+    "setPower": "Votos por usuario",
     "user": "Usuario",
     "open": "Abrir la votación",
     "openHelp": "Al abrir, la lista de votantes queda fija.",
@@ -821,7 +1039,6 @@
       "runoff": "por desempate",
       "admin": "elegida por un admin"
     },
-    "votes": "{{count}} votos",
     "multipleShort": "Varias opciones por piloto",
     "noPrior": "Sin requisito",
     "opensLabel": "Abre automáticamente (opcional)",
@@ -837,13 +1054,46 @@
     },
     "minParticipationRule": "Tiene que votar al menos el {{pct}} % de los votantes.",
     "lowParticipationHappened": "Votaron muy pocos: la votación cerró sin ganador. Un admin decide.",
-    "excludedTracks": "Pistas que no se pueden votar",
     "showVoterNames": "Mostrar quién votó (no qué votó)",
     "votedNames": "Ya votaron: {{names}}",
     "remindNow": "Recordar ahora a quien no votó",
     "reminded": "Recordatorio enviado.",
     "carClass": "Clase",
-    "freeLabel": "Texto libre (abajo)"
+    "freeLabel": "Texto libre (abajo)",
+    "steps": {
+      "what": "Qué se vota",
+      "who": "Quién ve qué y cuándo",
+      "advanced": "Opciones avanzadas"
+    },
+    "runoffOpen": "Hay un desempate abierto",
+    "goRunoff": "Votar el desempate",
+    "kindTitle": "Votación de {{kind}}",
+    "participationLabel": "Participación",
+    "closesInLabel": "Cierra en",
+    "closesIn": "Cierra en {{days}} días, {{hours}} horas y {{minutes}} minutos",
+    "rules": "Reglas",
+    "yourVote": "Tu voto",
+    "oneChosen": "Elegiste 1 opción",
+    "chooseOne": "Elegí 1 opción",
+    "chosenOf": "{{count}} de {{limit}} elegidas",
+    "results": "Resultados",
+    "options": "Opciones",
+    "state": "Estado",
+    "tieHelp": "Abrí un desempate o elegí a mano desde Administrar.",
+    "remindHelp": "Se avisa a quien todavía no votó.",
+    "sendReminder": "Enviar recordatorio",
+    "votes_one": "{{count}} voto",
+    "votes_other": "{{count}} votos",
+    "addFreeOption": "Agregar opción libre",
+    "choiceLimit": "Opciones que puede elegir",
+    "powerHelp": "Valor del voto: cuántas veces cuenta cada elección. Opciones que puede elegir: cuántas puede tildar (la votación tiene {{count}}).",
+    "choiceExceptions": "Opciones con otro límite: {{list}}",
+    "inCalendar": "Las pistas ganadoras ya están en el calendario de la temporada.",
+    "toCalendar": "Ordenarlas y ponerles fecha",
+    "settings": "Ajustes de la votación",
+    "goVote": "Votar",
+    "goSee": "Ver",
+    "settingsSaved": "Ajustes guardados."
   },
   "calendar": {
     "fixed": "Reservar pista fija",
@@ -851,11 +1101,9 @@
     "position": "Posición (opcional)",
     "date": "Día y hora (opcional)",
     "noDate": "Sin fecha",
-    "edit": "Cambiar posición o fecha",
     "round": "Fecha",
     "votedSlots": "{{count}} fechas libres para votar",
     "allowRepeats": "Una pista fija también puede ser candidata en la votación",
-    "conditions": "Condiciones anunciadas (opcional)",
     "timesNote": "Horarios en {{zone}}.",
     "download": "Descargar calendario (.ics)",
     "addRound": "Agregar esta fecha a mi calendario",
@@ -863,7 +1111,15 @@
     "feedHelp": "Suscribite a esta dirección desde Google Calendar o el calendario del teléfono. Se actualiza solo con las fechas de tus campeonatos. No la compartas.",
     "feedAddress": "Dirección del calendario",
     "newAddress": "Crear una dirección nueva",
-    "confirmNew": "La dirección anterior deja de funcionar. ¿Seguro?"
+    "confirmNew": "La dirección anterior deja de funcionar. ¿Seguro?",
+    "status": {
+      "done": "Corrida",
+      "next": "Próxima",
+      "later": "Por correr",
+      "cancelled": "Cancelada"
+    },
+    "copy": "Copiar",
+    "copied": "Copiada"
   },
   "dashboard": {
     "title": "Mi paddock",
@@ -914,13 +1170,11 @@
     "todo": {
       "title": "Qué tenés que hacer",
       "none": "No tenés nada pendiente.",
-      "attend": "Confirmá si vas a {{track}}",
-      "answer": "Responder",
       "vote": "Votá: {{title}}",
       "runoff": "Segunda vuelta: {{title}}",
       "voteDetail": "Votación abierta",
       "voteAction": "Votar",
-      "report": "Reporte nuevo: R{{round}} · {{track}}",
+      "report": "Reporte nuevo: Fecha {{round}} · {{track}}",
       "read": "Leer",
       "voted": "Ya votaste: {{title}}",
       "closes": "Cierra {{date}}",
@@ -930,9 +1184,37 @@
     "changed": "Antes {{previous}} {{unit}} · {{change}} {{unit}}",
     "noConditions": "A confirmar",
     "noWeather": "Sin dato de clima",
-    "air": "aire {{value}} °C",
-    "track": "pista {{value}} °C",
-    "outlineAlt": "Mapa del trazado {{track}} · {{layout}}"
+    "air": "aire {{value}} °C",
+    "track": "pista {{value}} °C",
+    "outlineAlt": "Mapa del trazado {{track}} · {{layout}}",
+    "noProfileTitle": "Todavía no corrés con esta cuenta",
+    "noSeasonsTitle": "Todavía no tenés una temporada",
+    "noProfileAdmin": "Elegí tu perfil de piloto para ver tus carreras acá.",
+    "pickProfile": "Elegí tu perfil",
+    "pickProfileTitle": "Vincular mi cuenta",
+    "profileLabel": "Perfil de piloto",
+    "noFreeProfiles": "No hay perfiles sin cuenta. Creá uno en Pilotos.",
+    "noProfileMatch": "Ningún perfil coincide.",
+    "notRacing": "No corro en esta liga",
+    "linked": "Tu cuenta quedó vinculada a {{name}}.",
+    "live": "En curso",
+    "liveLink": "Ver la fecha",
+    "trend": "Posición por fecha",
+    "nearby": "Los pilotos cerca tuyo",
+    "you": "Vos",
+    "points_one": "{{count}} pt",
+    "points_other": "{{count}} pts",
+    "trendScale": "P{{position}}",
+    "pitBoxes_one": "{{count}} box",
+    "pitBoxes_other": "{{count}} boxes",
+    "trackFacts": "Datos de la pista",
+    "firstLapCutoff": "Corte de la primera vuelta",
+    "lastRace": "Última fecha",
+    "waitingNext": "Esperando la próxima fecha",
+    "yourResult": "Tu resultado",
+    "standingNow": "Vas P{{rank}} de {{entries}} en el campeonato",
+    "readReport": "Leer reporte",
+    "seeResults": "Ver resultados"
   },
   "briefing": {
     "title": "Briefing",
@@ -955,7 +1237,31 @@
     "notEntered": "No estás inscripto en esta temporada.",
     "eventTime": "Hora del evento: {{time}} ({{zone}})",
     "restartGuidance": "Reinicios en la primera vuelta",
-    "cutoff": "Límite"
+    "cutoff": "Límite",
+    "serverConditions": "En el servidor",
+    "serverFrom": "Lo que usó el servidor en la {{session}}, según el colector.",
+    "differ": "No coincide con lo anunciado: {{list}}.",
+    "differNames": {
+      "air_temp": "temperatura del aire",
+      "track_temp": "temperatura de pista",
+      "time_of_day": "hora",
+      "grip": "grip"
+    },
+    "weathers": {
+      "clear": "Despejado",
+      "mid_clear": "Casi despejado",
+      "light_clouds": "Algunas nubes",
+      "mid_clouds": "Nublado",
+      "heavy_clouds": "Muy nublado",
+      "light_fog": "Neblina",
+      "heavy_fog": "Niebla",
+      "broken_clouds": "Nubes sueltas",
+      "overcast": "Cubierto",
+      "light_rain": "Lluvia leve",
+      "rain": "Lluvia",
+      "heavy_rain": "Lluvia fuerte",
+      "thunderstorm": "Tormenta"
+    }
   },
   "account": {
     "title": "Mi cuenta",
@@ -963,7 +1269,14 @@
     "timezone": "Zona horaria",
     "browserZone": "La del navegador ({{zone}})",
     "timezoneHelp": "Los horarios de las carreras se muestran en esta zona. Si la zona del evento es distinta, también ves la hora del evento.",
-    "saved": "Cambios guardados."
+    "saved": "Cambios guardados.",
+    "preferences": "Idioma y horario",
+    "addPhoto": "Subir foto",
+    "changePhoto": "Cambiar foto",
+    "removePhoto": "Quitar foto",
+    "photoSaved": "Foto guardada.",
+    "photoRemoved": "Foto quitada.",
+    "photoHelp": "PNG, JPEG o WebP. Se recorta en un cuadrado."
   },
   "exports": {
     "title": "Exportar (CSV)",
@@ -994,7 +1307,21 @@
     "openLink": "Tiene un link sin usar",
     "lastLogin": "Último ingreso",
     "never": "Nunca",
-    "championships": "Campeonatos"
+    "championships": "Campeonatos",
+    "search": "Buscar cuenta",
+    "searchPlaceholder": "Usuario, piloto o campeonato",
+    "count_one": "{{count}} cuenta",
+    "count_other": "{{count}} cuentas",
+    "noMatch": "Ninguna cuenta coincide con «{{query}}».",
+    "actions": "Acciones de {{name}}",
+    "actionsColumn": "Acciones",
+    "inviteLink": "Nuevo link de invitación",
+    "resetLink": "Nuevo link para cambiar la contraseña",
+    "linkHelp": "Copiá el link y mandalo por el chat de la liga. Sirve una sola vez.",
+    "linkTitle": "Link listo",
+    "done": "Listo",
+    "pendingShort": "Esperando contraseña",
+    "roleHint": "Elegí un campeonato para darle un rol."
   },
   "invite": {
     "title": "Elegí tu contraseña",
@@ -1005,14 +1332,26 @@
     "submit": "Guardar y entrar",
     "checking": "Revisando el link…",
     "invalid": "Este link no sirve: ya se usó o venció. Pedile uno nuevo a un admin.",
-    "rules": "Al menos 8 caracteres, y no solo números."
+    "rules": "Al menos 8 caracteres, y no solo números.",
+    "rulesTitle": "La contraseña",
+    "checks": {
+      "length": "8 caracteres o más",
+      "notDigits": "No solo números",
+      "match": "Las dos contraseñas coinciden"
+    },
+    "invalidTitle": "Link no válido",
+    "toLogin": "Ir a iniciar sesión",
+    "badgeInvite": "Invitación",
+    "badgeReset": "Contraseña nueva"
   },
   "password": {
     "title": "Cambiar contraseña",
     "current": "Contraseña actual",
     "new": "Contraseña nueva",
     "again": "Repetí la contraseña nueva",
-    "saved": "Contraseña cambiada."
+    "saved": "Contraseña cambiada.",
+    "help": "Usá al menos 8 caracteres. Tu sesión sigue abierta después del cambio.",
+    "save": "Cambiar contraseña"
   },
   "penaltyLogs": {
     "title": "Importar logs de Real Penalty",
@@ -1077,7 +1416,10 @@
     },
     "facts": "Datos usados",
     "outdated": "Este reporte está desactualizado: el resultado cambió después.",
-    "regenerate": "Actualizar reporte"
+    "regenerate": "Actualizar reporte",
+    "byline": "Por la redacción del Paddock",
+    "readAll": "Leer la crónica completa",
+    "kicker": "Crónica · Fecha {{number}}"
   },
   "laps": {
     "title": "Vueltas",
@@ -1128,7 +1470,8 @@
     },
     "tyre": "Neumático",
     "incident": "Incidente",
-    "contact": "contacto"
+    "contact": "contacto",
+    "howItWorks": "Cómo se calculan"
   },
   "title": {
     "title": "Pelea por el título",
@@ -1150,7 +1493,14 @@
     "limits": {
       "rules_changed": "Las reglas cambiaron durante la temporada. Las fechas que quedan usan las reglas actuales.",
       "provisional_results": "Algunos resultados son provisionales. El cálculo puede cambiar."
-    }
+    },
+    "now": "Puntos ahora",
+    "max": "Máximo posible",
+    "line": "{{name}} es campeón con {{points}} pts",
+    "ownShort": "Depende de sí mismo",
+    "helpShort": "Necesita ayuda",
+    "barLabel": "{{name}}: {{points}} pts ahora, máximo posible {{best}}",
+    "empty": "Aparece después de la primera carrera con resultado. Muestra quién todavía puede ganar el campeonato y cuántos puntos necesita el líder."
   },
   "seasonReport": {
     "title": "Reporte de la temporada",
@@ -1158,7 +1508,8 @@
       "finished": "terminada",
       "in_progress": "en curso"
     },
-    "meta": "Temporada {{status}}, solo fechas oficiales · {{date}} · {{language}}"
+    "meta": "Temporada {{status}}, solo fechas oficiales · {{date}} · {{language}}",
+    "kicker": "Resumen de la temporada"
   },
   "collectors": {
     "title": "Colectores",
@@ -1192,21 +1543,17 @@
       "not_readable": "formato desconocido"
     },
     "chooseRound": "Fecha para {{name}}",
-    "assign": "Asignar"
+    "assign": "Asignar",
+    "download": "Descargar colector",
+    "downloadHelp": "Un zip con el programa para Windows y un collector.ini con esta clave. Copialo a la PC del servidor y seguí LEEME.txt. ¿Ya tenés el colector? No hace falta el zip: copiá la clave, hacé clic en el ícono de Paddock, después en «Configurar…», y pegala.",
+    "copy": "Copiar clave",
+    "copied": "Copiada"
   },
   "telemetry": {
     "title": "Telemetría",
-    "help": "El colector de piloto es opcional. Graba velocidad, posición y pedales en cada vuelta. Los resultados funcionan sin él. Instrucciones en collector/README.md.",
-    "noKey": "Todavía no tenés clave.",
-    "neverSeen": "El colector nunca se conectó.",
-    "lastSeen": "Colector visto {{date}}",
+    "help": "El script de Paddock manda tus vueltas desde el servidor de la liga, con velocidad, posición y pedales. No instalás nada. Acá elegís quién las ve.",
     "laps_one": "{{count}} vuelta grabada",
     "laps_other": "{{count}} vueltas grabadas",
-    "makeKey": "Crear clave",
-    "newKey": "Crear clave nueva",
-    "replaceKey": "La clave anterior deja de funcionar. ¿Seguro?",
-    "keyOnce": "Copiá la clave ahora. La app no la muestra otra vez.",
-    "key": "Clave de telemetría",
     "sharing": "Quién ve tu telemetría",
     "teammates": "Compañeros de equipo",
     "drivers": "Otros pilotos",
@@ -1216,7 +1563,7 @@
       "laps": "Tiempos y velocidad",
       "full": "Todo, con pedales y volante"
     },
-    "protected": "Los otros pilotos nunca ven tus pedales, tu volante ni tu setup.",
+    "protected": "Elegí «Todo» solo si querés que cualquier piloto vea tus pedales y tu volante. Tu setup nunca se muestra.",
     "saved": "Guardado.",
     "roundTitle": "Telemetría de pilotos",
     "access": {
@@ -1230,7 +1577,8 @@
     "steerChart": "Volante de {{name}}",
     "gearChart": "Marchas de {{name}}",
     "steer": "volante: la línea del medio es el volante derecho",
-    "gear": "marcha (máx. {{max}})"
+    "gear": "marcha (máx. {{max}})",
+    "lastLap": "última {{date}}"
   },
   "compare": {
     "title": "Comparar vueltas",
@@ -1274,9 +1622,10 @@
     "noCollectors": "No hay colectores. Las fechas se cargan a mano.",
     "status": {
       "running": "funciona",
-      "stopped": "detenido",
+      "stopped": "detenido en horario de carrera",
       "never": "nunca se conectó",
-      "revoked": "desactivado"
+      "revoked": "desactivado",
+      "off": "apagado (normal fuera de la carrera)"
     },
     "lastSeen": "visto {{date}}",
     "lastFile": "último archivo {{date}}",
@@ -1301,7 +1650,14 @@
       "report": "Reporte",
       "job": "Tarea del worker"
     },
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "detail": "Ver detalle",
+    "version": "versión {{version}}",
+    "noVersion": "versión desconocida",
+    "updates": "se actualiza a {{version}} al arrancar",
+    "queued_one": "{{count}} archivo esperando para mandar",
+    "queued_other": "{{count}} archivos esperando para mandar",
+    "lastError": "Último error ({{date}}): {{error}}"
   },
   "incidents": {
     "title": "Incidentes",
@@ -1325,52 +1681,77 @@
     "all": "Todos",
     "summary": "Largada {{attempt}} · vuelta {{lap}} · {{cars}} · {{speed}} km/h",
     "map": "Mapa de incidentes",
-    "mapHelp": "Cada punto es un incidente, en su posición en la pista. Las zonas rojas muestran dónde hay muchos. Esta pista todavía no tiene el dibujo del circuito.",
+    "mapHelp": "Cada punto es un incidente, en su posición en la pista. Las zonas rojas muestran dónde hay muchos. La línea blanca es la pista, según las posiciones grabadas.",
     "noPositions": "Los incidentes no tienen posición.",
     "detail": "Eventos del incidente",
     "review": "Revisar incidente",
     "note": "Nota",
     "saveReview": "Guardar revisión",
-    "lap": "Vuelta"
+    "lap": "Vuelta",
+    "mapHelpNoTrack": "Cada punto es un incidente, en su posición en la pista. Las zonas rojas muestran dónde hay muchos. Sin posiciones grabadas, el mapa no dibuja la pista.",
+    "beforeRestart": "Antes del reinicio"
   },
   "engineer": {
     "title": "Ingeniero de carrera",
-    "reference": "Referencia: {{driver}}, vuelta {{lap}} ({{time}}), la vuelta más rápida que podés ver.",
-    "referenceOwn": "Referencia: tu mejor vuelta, la {{lap}} ({{time}}). Nadie más comparte una vuelta más rápida.",
-    "lapsUsed_one": "Se compara {{count}} vuelta tuya.",
-    "lapsUsed_other": "Se comparan {{count}} vueltas tuyas.",
-    "length": "largo de vuelta medido: {{meters}} m",
-    "notEnough": "Hacen falta al menos dos vueltas tuyas con telemetría y una referencia.",
-    "caution": "Esto muestra dónde perdés tiempo frente a la referencia, no por qué. Solo compara velocidad, porque los otros pilotos no comparten sus pedales. Un consejo aparece solo si la diferencia se repite.",
-    "noAdvice": "En las {{zones}} frenadas no hay una diferencia que se repita.",
-    "evidence": "Datos de tus vueltas",
-    "test": "Probá",
-    "kind": {
-      "brake_later": {
-        "title": "Frenada {{zone}} (al {{position}} % de la vuelta)",
-        "finding": "Empezás a frenar en promedio {{difference}} m antes que la referencia, en {{showing}} de {{total}} vueltas.",
-        "unit": "m antes",
-        "test": "frená 10 m más tarde durante 3 vueltas y mirá si baja el tiempo del sector. Si te pasás de la curva, volvé al punto anterior."
-      },
-      "carry_speed": {
-        "title": "Curva {{zone}} (al {{position}} % de la vuelta)",
-        "finding": "Tu velocidad mínima es {{difference}} km/h más baja que la referencia ({{reference}} km/h), en {{showing}} de {{total}} vueltas.",
-        "unit": "km/h",
-        "test": "soltá el freno un poco antes y llevá más velocidad al vértice durante 3 vueltas. Compará la velocidad de salida."
-      },
-      "consistent_exit": {
-        "title": "Salida {{zone}} (al {{position}} % de la vuelta)",
-        "finding": "Tu velocidad de salida cambia mucho de vuelta a vuelta (desvío {{difference}} km/h). La referencia sale a {{reference}} km/h.",
-        "unit": "km/h",
-        "test": "elegí un punto fijo para acelerar a fondo y repetilo 5 vueltas. Una salida pareja suele valer más que una salida rápida de vez en cuando."
-      }
+    "driver": "Piloto",
+    "yourLap": "Tu vuelta",
+    "compareWith": "Comparar con",
+    "ownLap": "Tu vuelta {{number}} · {{time}}",
+    "ownBest": "Tus mejores curvas",
+    "reference": "Referencia: {{name}}",
+    "gap": "Diferencia",
+    "ideal": "Tu vuelta ideal",
+    "idealGain": "{{seconds}} s menos, con tu mejor tiempo en cada curva",
+    "noPedals": "Esta vuelta no tiene pedales: el ingeniero solo compara velocidad.",
+    "noLaps": "Hacen falta vueltas válidas con telemetría en esta sesión. Una vuelta con un corte no cuenta.",
+    "whereToGain": "Dónde ganar tiempo",
+    "nothingToGain": "En ninguna curva perdés más de 0.04 s frente a la referencia.",
+    "corner": "Curva {{number}}",
+    "cornerShort": "Curva",
+    "noCause": "La diferencia no tiene una sola causa clara: está repartida en toda la curva. Miralo en la telemetría.",
+    "openTelemetry": "Ver en la telemetría",
+    "openTelemetryFor": "Ver la curva {{number}} en la telemetría",
+    "allCorners": "Todas las curvas",
+    "time": "Tiempo",
+    "brake": "Frenada",
+    "minSpeed": "Mínima",
+    "throttle": "Fondo",
+    "exit": "Salida",
+    "gear": "Marcha",
+    "tableHelp": "Tiempo: lo que ganás (−) o perdés (+) en la curva y en la recta que sigue. Frenada y Fondo: metros desde la línea de largada donde empezás a frenar y donde volvés a acelerar a fondo, con la diferencia entre paréntesis (− es antes). Mínima y Salida: tu velocidad y la diferencia con la referencia. Marcha: la tuya / la de la referencia.",
+    "consistency": "Consistencia",
+    "spreadText": "entre {{best}} s y {{worst}} s según la vuelta (desvío {{spread}} s)",
+    "spreadBrake": "Tu punto de frenada cambia unos {{meters}} m de vuelta a vuelta.",
+    "spreadMin": "Tu velocidad mínima cambia unos {{kmh}} km/h de vuelta a vuelta.",
+    "caution": "El ingeniero mide diferencias, no errores. Probá un cambio por vez durante algunas vueltas y mirá el tiempo de esa curva.",
+    "map": "Mapa de la pista con las curvas numeradas",
+    "mapHelp": "Rojo: perdés tiempo. Verde: ganás. Tocá un número para ver la curva en la tabla.",
+    "pin": "Curva {{number}}: {{loss}}",
+    "noteTitle": "Resumen del ingeniero (IA)",
+    "noteWriting": "El ingeniero está escribiendo…",
+    "noteFailed": "No se pudo escribir el resumen. Probá de nuevo más tarde.",
+    "noAi": "La IA no está configurada en esta app.",
+    "askNote": "Pedir el resumen",
+    "noteHelp": "Claude escribe un resumen corto con estos números. Cuesta unos centavos de dólar y se guarda para esta vuelta y esta referencia.",
+    "cause": {
+      "brake_early": "Empezás a frenar {{difference}} m antes que la referencia.",
+      "brake_late": "Frenás {{difference}} m más tarde y llegás más lento al vértice.",
+      "brake_soft": "Frenás más suave: {{yours}} % de pedal contra {{reference}} %.",
+      "min_speed": "Tu velocidad mínima es {{yours}} km/h, la de la referencia {{reference}} km/h.",
+      "throttle_late": "Volvés a fondo {{difference}} m más tarde.",
+      "coasting": "Vas {{yours}} m sin pedales, la referencia {{reference}} m.",
+      "exit_speed": "Salís a {{yours}} km/h, la referencia a {{reference}} km/h.",
+      "gear": "Usás la marcha {{yours}} en el vértice, la referencia la {{reference}}."
     },
-    "setupOff": "Consejos de setup: apagados. Hacen falta datos de {{missing}}, y la app todavía no los recibe.",
-    "missing": {
-      "setup": "setup",
-      "tyre_temperatures": "temperatura de neumáticos",
-      "fuel": "combustible",
-      "track_conditions": "condiciones de pista"
+    "try": {
+      "brake_early": "Probá frenar 5 a 10 m más tarde por vez.",
+      "brake_late": "Probá frenar unos metros antes para llegar mejor al vértice.",
+      "brake_soft": "Probá pisar más fuerte al principio y soltar de a poco.",
+      "min_speed": "Probá soltar el freno antes y llevar más velocidad al vértice.",
+      "throttle_late": "Probá volver al acelerador antes, de a poco.",
+      "coasting": "Probá pasar del acelerador al freno sin tramo muerto.",
+      "exit_speed": "Probá una salida más abierta y acelerar antes.",
+      "gear": "Probá la marcha de la referencia."
     }
   },
   "safety": {
@@ -1387,7 +1768,8 @@
     },
     "history": "Cambios de {{name}}",
     "unknownRound": "sin eventos del colector: sin cambio (no cuenta como carrera limpia).",
-    "change": "{{laps}} vueltas {{up}}, {{points}} puntos {{down}} = {{total}} → {{after}}"
+    "change": "{{laps}} vueltas {{up}}, {{points}} puntos {{down}} = {{total}} → {{after}}",
+    "howItWorks": "Cómo se calcula"
   },
   "replay": {
     "title": "Repetición de posiciones",
@@ -1458,7 +1840,32 @@
     },
     "adjustPoints": "Puntos (negativo para restar)",
     "reason": "Motivo",
-    "adjustments": "Ajustes"
+    "adjustments": "Ajustes",
+    "badges": "Logros",
+    "badge": {
+      "win": "Primera victoria",
+      "podium": "Primer podio",
+      "pole": "Primera pole",
+      "fastest_lap": "Vuelta rápida",
+      "starts": "10 largadas",
+      "record": "Récord de pista"
+    },
+    "badgeCount_one": "{{count}} vez",
+    "badgeCount_other": "{{count}} veces",
+    "badgeGoal": "{{count}} de {{goal}}",
+    "recent": "Últimos resultados · {{season}}",
+    "place": "P{{rank}} de {{entries}} · {{points}} pts",
+    "winsCount_one": "{{count}} victoria",
+    "winsCount_other": "{{count}} victorias",
+    "podiumsCount_one": "{{count}} podio",
+    "podiumsCount_other": "{{count}} podios",
+    "startsCount_one": "{{count}} largada",
+    "startsCount_other": "{{count}} largadas",
+    "perStartValue": "{{value}} pts por largada",
+    "levelLabel": "Nivel {{level}}: {{points}} de {{next}} puntos de carrera",
+    "levelWord": "NIVEL",
+    "pointsOf": "{{points}} / {{next}} puntos de carrera",
+    "officialOnly": "Solo cuentan los resultados oficiales."
   },
   "attendance": {
     "title": "¿Venís?",
@@ -1488,8 +1895,13 @@
       "report.ready.season": "Reporte nuevo de la temporada {{season}}",
       "ballot.reminder": "Recordatorio: todavía no votaste en {{ballot}}",
       "protest.appealed": "Nueva apelación en R{{number}} · {{track}}",
-      "protest.appeal_decided": "Tu apelación de R{{number}} tiene decisión"
-    }
+      "protest.appeal_decided": "Tu apelación de R{{number}} tiene decisión",
+      "import.blocked": "Archivo para revisar: {{championship}} R{{number}} · {{track}}",
+      "collector.no_results": "Sin resultados: {{championship}} R{{number}} · {{track}}. El colector no mandó el archivo de carrera."
+    },
+    "all": "Todas",
+    "unread": "Sin leer",
+    "noneUnread": "No hay nada sin leer."
   },
   "roundTools": {
     "actions": "Acciones",
@@ -1506,7 +1918,30 @@
     "cloneTitle": "Copiar a una temporada nueva",
     "clone": "Crear temporada",
     "cloneName": "Nombre de la temporada nueva",
-    "cloneHelp": "Copia los pilotos inscriptos, el reglamento actual y las pistas fijas (sin fecha). No copia resultados."
+    "cloneHelp": "Copia los pilotos inscriptos, el reglamento actual y las pistas fijas (sin fecha). No copia resultados.",
+    "menu": "Acciones de la fecha {{number}}",
+    "settings": "Fecha y condiciones",
+    "settingsTitle": "Fecha {{number}} · {{track}}",
+    "conditionsHelp": "Lo que ven los pilotos en el briefing. Dejá vacío lo que no anunciás.",
+    "weathers": {
+      "sol_01_clear": "Despejado",
+      "sol_02_few_clouds": "Pocas nubes",
+      "sol_03_scattered_clouds": "Nubes dispersas",
+      "sol_04_windy": "Ventoso",
+      "sol_05_broken_clouds": "Nublado parcial",
+      "sol_06_overcast": "Cubierto",
+      "sol_11_mist": "Neblina",
+      "sol_12_fog": "Niebla",
+      "sol_21_haze": "Bruma",
+      "sol_31_light_drizzle": "Llovizna leve",
+      "sol_32_drizzle": "Llovizna",
+      "sol_34_light_rain": "Lluvia leve",
+      "sol_35_rain": "Lluvia",
+      "sol_36_heavy_rain": "Lluvia fuerte",
+      "sol_41_light_thunderstorm": "Tormenta leve",
+      "sol_42_thunderstorm": "Tormenta"
+    },
+    "weatherKeep": "Sin cambio (el clima del preset)"
   },
   "protestExtras": {
     "addEvidence": "Agregar prueba",
@@ -1536,7 +1971,8 @@
     "cars": "Autos",
     "reason": "Motivo del cambio",
     "history": "Historial",
-    "today": "hoy"
+    "today": "hoy",
+    "emptyText": "Una clase agrupa autos parecidos, por ejemplo LMDh o GT3."
   },
   "draw": {
     "button": "Sortear condiciones",
@@ -1566,5 +2002,462 @@
     "lastOk": "Último backup correcto: {{date}}",
     "start": "Hacer backup ahora",
     "refresh": "Actualizar"
+  },
+  "home": {
+    "pending": {
+      "title": "Pendiente",
+      "none": "Nada pendiente.",
+      "more": "y {{count}} más",
+      "open": "Abrir",
+      "results_one": "{{count}} resultado para aprobar",
+      "results_other": "{{count}} resultados para aprobar",
+      "protests_one": "{{count}} protesta para decidir",
+      "protests_other": "{{count}} protestas para decidir",
+      "ballots_closed_one": "{{count}} votación para decidir",
+      "ballots_closed_other": "{{count}} votaciones para decidir",
+      "ballots_open_one": "{{count}} votación abierta",
+      "ballots_open_other": "{{count}} votaciones abiertas",
+      "accounts_one": "{{count}} cuenta esperando contraseña",
+      "accounts_other": "{{count}} cuentas esperando contraseña",
+      "images_one": "{{count}} pista o auto sin imagen",
+      "images_other": "{{count}} pistas o autos sin imagen",
+      "imports_one": "{{count}} archivo del colector para revisar",
+      "imports_other": "{{count}} archivos del colector para revisar"
+    }
+  },
+  "seasonNav": {
+    "label": "Secciones de la temporada",
+    "title": "Pelea por el título",
+    "safety": "Seguridad",
+    "handicaps": "Lastre",
+    "ballots": "Votaciones",
+    "rules": "Reglamento",
+    "report": "Reporte"
+  },
+  "seasonStats": {
+    "rounds": "Fechas corridas",
+    "drivers": "Pilotos",
+    "leader": "Líder",
+    "next": "Próxima fecha"
+  },
+  "seasonAdmin": {
+    "manage": "Administrar"
+  },
+  "rulesCard": {
+    "points": "Puntos por puesto",
+    "pole": "Pole",
+    "fastest": "Vuelta rápida",
+    "ballast": "Lastre",
+    "restrictor": "Restrictor",
+    "steps": "{{steps}} · máx. {{cap}}"
+  },
+  "tabEmpty": {
+    "noCollector": "Sin datos del colector",
+    "incidents": "El colector del servidor no mandó eventos para esta fecha. Los incidentes aparecen cuando el colector corre durante la carrera.",
+    "noPositions": "Sin posiciones para la repetición",
+    "replay": "La repetición usa las posiciones que manda el colector del servidor. Esta fecha no tiene posiciones.",
+    "noTelemetry": "Sin vueltas de telemetría",
+    "telemetry": "Las vueltas aparecen cuando un piloto sube la telemetría de esta fecha desde su colector.",
+    "noProfile": "Necesitás un perfil de piloto",
+    "engineerProfile": "El ingeniero usa tus vueltas de telemetría. Elegí tu perfil de piloto en Inicio.",
+    "goHome": "Ir a Inicio",
+    "noOwnLaps": "Sin vueltas tuyas",
+    "engineerLaps": "El ingeniero da consejos cuando subís la telemetría de esta fecha.",
+    "noLaps": "Sin vueltas",
+    "laps": "Las vueltas aparecen cuando un admin sube el archivo de resultados del servidor."
+  },
+  "fileDrop": {
+    "choose": "Elegí un archivo",
+    "orDrop": "o arrastralo acá"
+  },
+  "catalogEdit": {
+    "menu": "Acciones de {{name}}",
+    "rename": "Cambiar el nombre",
+    "name": "Nombre",
+    "file": "Imagen para {{name}}",
+    "upload": {
+      "outline": "Subir el mapa",
+      "preview": "Subir la foto",
+      "badge": "Subir el logo"
+    },
+    "remove": {
+      "outline": "Quitar el mapa",
+      "preview": "Quitar la foto",
+      "badge": "Quitar el logo"
+    },
+    "confirmRemove": "¿Quitar esta imagen?",
+    "help": "PNG o JPEG, hasta 5 MB.",
+    "editTrack": "Editar el nombre y el país",
+    "country": "País",
+    "editFacts": "Editar los datos"
+  },
+  "catalogFilter": {
+    "search": "Buscar",
+    "trackPlaceholder": "Buscar pista, trazado o país",
+    "carPlaceholder": "Buscar auto o marca",
+    "image": "Imagen",
+    "images": {
+      "all": "Todas las imágenes",
+      "with": "Con imagen",
+      "without": "Sin imagen"
+    },
+    "classLabel": "Clase",
+    "allClasses": "Todas las clases",
+    "trackCount_one": "{{count}} pista",
+    "trackCount_other": "{{count}} pistas",
+    "carCount_one": "{{count}} auto",
+    "carCount_other": "{{count}} autos",
+    "noMatch": "Ningún resultado con estos filtros.",
+    "clear": "Quitar los filtros",
+    "country": "País",
+    "allCountries": "Todos los países",
+    "noCountry": "Sin país"
+  },
+  "facts": {
+    "length": "Largo",
+    "width": "Ancho",
+    "pitBoxes": "Boxes",
+    "direction": "Sentido",
+    "directions": {
+      "clockwise": "Horario",
+      "anticlockwise": "Antihorario"
+    },
+    "power": "Potencia",
+    "torque": "Torque",
+    "weight": "Peso",
+    "topSpeed": "Velocidad máxima",
+    "sheet": "Ficha técnica",
+    "place": "Lugar",
+    "position": "Coordenadas",
+    "year": "Año",
+    "author": "Autor del mod",
+    "version": "Versión",
+    "url": "Sitio web",
+    "brand": "Marca",
+    "country": "País",
+    "city": "Ciudad",
+    "gameClass": "Clase del mod",
+    "acceleration": "Aceleración",
+    "powerToWeight": "Peso por potencia",
+    "tags": "Etiquetas (separadas por coma)",
+    "description": "Descripción",
+    "lengthM": "Largo (m)",
+    "widthM": "Ancho (m)",
+    "latitude": "Latitud",
+    "longitude": "Longitud",
+    "powerHp": "Potencia (hp)",
+    "torqueNm": "Torque (Nm)",
+    "weightKg": "Peso (kg)",
+    "topSpeedKmh": "Velocidad máxima (km/h)"
+  },
+  "strategy": {
+    "title": "Estrategia y neumáticos",
+    "noPitData": "Sin logs de Real Penalty, solo un cambio de neumático marca una parada.",
+    "driver": "Stints de {{name}}",
+    "stops_one": "{{count}} parada",
+    "stops_other": "{{count}} paradas",
+    "stint_one": "Stint {{number}}: {{tyre}}, vuelta {{first}} ({{count}} vuelta)",
+    "stint_other": "Stint {{number}}: {{tyre}}, vueltas {{first}} a {{last}} ({{count}} vueltas)",
+    "best": "mejor {{time}}",
+    "average": "promedio {{time}}",
+    "laps_one": "{{count}} vuelta",
+    "laps_other": "{{count}} vueltas",
+    "table": "Detalle de los stints",
+    "stintColumn": "Stint",
+    "tyre": "Neumático",
+    "lapsColumn": "Vueltas",
+    "bestColumn": "Mejor vuelta",
+    "averageColumn": "Promedio"
+  },
+  "stats": {
+    "title": "Estadísticas",
+    "results": "Resultados",
+    "totals": "Totales",
+    "mistakes": "Errores e incidentes",
+    "starts": "Largadas",
+    "wins": "Victorias",
+    "podiums": "Podios",
+    "top5": "Top 5",
+    "poles": "Poles",
+    "fastestLaps": "Vueltas rápidas",
+    "bestFinish": "Mejor puesto",
+    "averageFinish": "Puesto promedio",
+    "points": "Puntos",
+    "laps": "Vueltas",
+    "records": "Récords",
+    "winRate": "Victorias por largada",
+    "dnfs": "Abandonos",
+    "dsqs": "Descalificado",
+    "penalties": "Sanciones",
+    "incidentPoints": "Puntos de incidente",
+    "restartsCaused": "Reinicios causados",
+    "note": "Cuentan los resultados oficiales y provisionales de las temporadas que podés ver. Los puntos de incidente vienen del colector."
+  },
+  "auth": {
+    "tagline": "La liga, de la largada a la bandera a cuadros.",
+    "features": {
+      "results": "Resultados, tiempos y récords de cada fecha",
+      "penalties": "Sanciones, protestas y seguridad",
+      "votes": "Votaciones de pistas y autos"
+    },
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "capsLock": "Bloq Mayús está activado."
+  },
+  "driverScript": {
+    "title": "Script para los pilotos",
+    "help": "Con este texto en el servidor, AC manda las vueltas de cada piloto a la app. Los pilotos no instalan nada y no abren nada: el script corre dentro del juego mientras están en el servidor.",
+    "step1": "En Content Manager, abrí el preset del servidor de la liga.",
+    "step2": "Pegá este texto en las opciones extra de CSP, abajo de lo que ya hay.",
+    "step3": "Guardá y reiniciá el servidor. Desde la fase 4, el colector del servidor lo hace solo.",
+    "section": "Texto para las opciones de CSP",
+    "copy": "Copiar texto",
+    "newCode": "Hacer un código nuevo",
+    "confirmNew": "El código viejo sigue andando 6 horas. Después hay que pegar el texto nuevo en el servidor. ¿Seguir?",
+    "codeDate": "Código creado el {{date}}."
+  },
+  "serverPush": {
+    "title": "Enviar al servidor",
+    "help": "El colector del servidor escribe esto en el preset de Content Manager: los pilotos con su lastre y restrictor, la pista, las condiciones anunciadas y el script de Paddock con un código nuevo. Lo escribe solo con el servidor apagado y guarda una copia de los archivos viejos. Después, iniciá el servidor en Content Manager.",
+    "noCollector": "El campeonato no tiene colector. Hacé una clave en Colectores.",
+    "track": "Pista: {{track}} · {{layout}}",
+    "driver": "Piloto",
+    "car": "Auto",
+    "ballast": "Lastre",
+    "restrictor": "Restrictor",
+    "guid": "Steam ID",
+    "noGuid": "Sin Steam ID",
+    "send": "Enviar al servidor",
+    "warnings": {
+      "no_guid": "{{name}} no tiene Steam ID: su lugar no queda reservado.",
+      "weather_kept": "El clima anunciado no es un nombre de clima de AC: el servidor mantiene su clima."
+    },
+    "status": {
+      "pending": "Enviado el {{date}}. Espera al colector.",
+      "waiting": "El colector espera que el servidor esté apagado.",
+      "done": "Escrito en el servidor el {{date}}. Iniciá el servidor en Content Manager.",
+      "failed": "No se pudo escribir el {{date}}.",
+      "cancelled": "Reemplazado por un envío más nuevo."
+    },
+    "errors": {
+      "server_running": "el servidor está encendido",
+      "writing_disabled": "el colector tiene la escritura apagada: write_server_config = false",
+      "unknown_preset": "el colector no tiene esa plantilla",
+      "content_manager_open": "Content Manager está abierto. Cerralo: al abrirlo otra vez, lee los archivos nuevos"
+    },
+    "openSlots": "Lugares libres",
+    "openSlotsHelp": "Vacío: {{count}}, el número del campeonato. Otro número cuenta solo para este envío.",
+    "preset": "Plantilla de Content Manager",
+    "presetDefault": "La del colector",
+    "presetHelp": "El colector escribe en esta plantilla y la usa desde ahora. Después, iniciá esta plantilla en Content Manager."
+  },
+  "delete": {
+    "league": "¿Eliminar la liga {{name}} con sus campeonatos, temporadas, fechas y resultados? No se puede deshacer.",
+    "championship": "¿Eliminar el campeonato {{name}} con sus temporadas, fechas, resultados, miembros y colectores? No se puede deshacer.",
+    "season": "¿Eliminar la temporada {{name}} con sus fechas, resultados e inscripciones? No se puede deshacer.",
+    "entry": "¿Sacar a {{name}} de esta temporada?",
+    "round": "¿Eliminar la fecha {{number}}? No se puede deshacer.",
+    "member": "¿Sacar a {{name}} de este campeonato?",
+    "role": "¿Eliminar el rol {{name}}?",
+    "track": "¿Eliminar la pista {{name}} y sus trazados?",
+    "layout": "¿Eliminar el trazado {{name}}?",
+    "car": "¿Eliminar el auto {{name}}?",
+    "class": "¿Eliminar la clase {{name}}?",
+    "driver": "¿Eliminar al piloto {{name}}? También se borran sus vueltas de telemetría.",
+    "ballot": "¿Eliminar la votación {{name}} con sus opciones y votos?"
+  },
+  "votes": {
+    "help": "Las votaciones donde podés votar. Las abiertas van primero.",
+    "open": "Abiertas",
+    "done": "Terminadas",
+    "vote": "Votar",
+    "voted": "Ya votaste",
+    "closes": "cierra {{date}}",
+    "emptyTitle": "No hay votaciones",
+    "emptyText": "Cuando un admin abra una votación donde podés votar, aparece acá y te llega un aviso."
+  },
+  "gameImport": {
+    "button": "Importar desde el juego",
+    "title": "Importar desde el juego",
+    "help": "Elegí la carpeta content de Assetto Corsa (adentro de assettocorsa). El navegador lee los autos y las pistas en tu PC: no sube nada todavía. Después elegís cuáles agregar, y la app los crea con imágenes y datos. En Firefox, el navegador pregunta si querés subir los archivos: aceptá. Solo lee la lista.",
+    "pick": "Elegir la carpeta content",
+    "pickAgain": "Elegir otra carpeta",
+    "wrongFolder": "Esa carpeta no tiene cars ni tracks. Elegí la carpeta assettocorsa o su carpeta content.",
+    "reading": "Leyendo la carpeta…",
+    "found_one": "{{count}} encontrado",
+    "found_other": "{{count}} encontrados",
+    "cars_one": "{{count}} auto",
+    "cars_other": "{{count}} autos",
+    "tracks_one": "{{count}} pista",
+    "tracks_other": "{{count}} pistas",
+    "layouts_one": "{{count}} trazado",
+    "layouts_other": "{{count}} trazados",
+    "search": "Buscar por nombre o carpeta",
+    "onlyNew": "Solo los que no están en el catálogo",
+    "allShown": "Elegir los {{count}} de la lista",
+    "inCatalog": "Ya está",
+    "none": "Nada para mostrar.",
+    "import_one": "Importar {{count}}",
+    "import_other": "Importar {{count}}",
+    "sending": "Importando {{done}} de {{total}}…",
+    "done": "Listo: {{cars}} autos y {{tracks}} pistas nuevas, con {{layouts}} trazados.",
+    "noFiles": "El navegador no dio ningún archivo. Elegí la carpeta content otra vez."
+  },
+  "calendarOrder": {
+    "title": "Fechas de todo el calendario",
+    "help": "Arrastrá una fecha a su lugar, o usá las flechas. Elegí el día y la hora de cada una (hora de {{zone}}). Después, Guardar.",
+    "voted": "votada",
+    "date": "Día y hora de {{track}}",
+    "up": "Subir {{track}}",
+    "down": "Bajar {{track}}",
+    "saved": "Calendario guardado.",
+    "drag": "Arrastrá para cambiar el orden",
+    "moved": "Orden guardado."
+  },
+  "teams": {
+    "title": "Equipos",
+    "none": "Sin equipo",
+    "new": "+ Equipo nuevo…",
+    "newName": "Nombre del equipo",
+    "help": "Los equipos de la liga. El formulario de inscripción los lista. Sacar un equipo de la lista no cambia las inscripciones.",
+    "remove": "Sacar",
+    "empty": "Todavía no hay equipos."
+  },
+  "optionPicker": {
+    "title": "Opciones de la votación",
+    "helpTracks": "Tildá las pistas de la votación y destildá las que querés sacar. Las grises no pueden entrar: dice por qué.",
+    "helpClasses": "Tildá las clases de autos de la votación y destildá las que querés sacar.",
+    "search": "Buscar pista o trazado",
+    "all_one": "Elegir la {{count}} disponible",
+    "all_other": "Elegir las {{count}} disponibles",
+    "none": "Nada para mostrar.",
+    "save_one": "Guardar ({{count}} opción)",
+    "save_other": "Guardar ({{count}} opciones)",
+    "why": {
+      "track_excluded": "Excluida de esta votación",
+      "layout_is_fixed": "Ya es una fecha fija de la temporada",
+      "grid_too_small": "Tiene menos boxes que pilotos inscriptos"
+    }
+  },
+  "deletion": {
+    "title": "¿Borrar {{name}}?",
+    "confirm": "Borrar",
+    "noUndo": "No se puede deshacer.",
+    "typeName": "Para confirmar, escribí «{{name}}»",
+    "what": {
+      "league": "Se borra la liga con todos sus campeonatos, temporadas, fechas, resultados, votaciones y equipos. Los pilotos, las cuentas y el catálogo quedan.",
+      "championship": "Se borra el campeonato con sus temporadas, fechas, resultados, votaciones, miembros y colectores. Los pilotos y el catálogo quedan.",
+      "season": "Se borra la temporada con sus fechas, resultados, inscriptos, votaciones y reglamento.",
+      "round": "Se borra la fecha con sus resultados, archivos importados, vueltas y reporte.",
+      "entry": "Se borra la inscripción del piloto en esta temporada. Una inscripción con resultados queda.",
+      "ballot": "Se borra la votación con sus opciones y votos. Las fechas que ya agregó al calendario quedan.",
+      "driver": "Se borra el perfil del piloto. Un piloto inscripto en una temporada queda: primero sacá la inscripción.",
+      "user": "Se borra la cuenta. Su perfil de piloto queda, sin cuenta.",
+      "track": "Se borra la pista con sus trazados. Una pista que usa una fecha, un récord o una votación queda.",
+      "layout": "Se borra el trazado. Un trazado que usa una fecha, un récord o una votación queda.",
+      "car": "Se borra el auto. Un auto de una inscripción o de un récord queda.",
+      "car_class": "Se borra la clase de autos. Los autos quedan. Una clase que usa una votación queda."
+    },
+    "errors": {
+      "in_use": "No se puede borrar: está en uso.",
+      "entry_has_results": "No se puede borrar: la inscripción tiene resultados."
+    },
+    "uses": {
+      "round": "Fecha: {{value}}",
+      "ballot": "Votación: {{value}}",
+      "entry": "Inscripción: {{value}}",
+      "records": "Récords manuales: {{value}}",
+      "track_changes": "Cambios de pista: {{value}}",
+      "results": "Líneas de resultado: {{value}}",
+      "penalties": "Penalizaciones: {{value}}"
+    },
+    "menu": "Más opciones de {{name}}",
+    "delete": {
+      "league": "Borrar liga",
+      "championship": "Borrar campeonato",
+      "season": "Borrar temporada",
+      "round": "Borrar fecha",
+      "entry": "Sacar inscripción",
+      "ballot": "Borrar votación",
+      "driver": "Borrar piloto",
+      "user": "Borrar cuenta",
+      "track": "Borrar pista",
+      "layout": "Borrar trazado",
+      "car": "Borrar auto",
+      "car_class": "Borrar clase"
+    },
+    "options": "Opciones"
+  },
+  "telemetryTool": {
+    "sessions": {
+      "race": "Carrera",
+      "qualifying": "Clasificación",
+      "practice": "Práctica"
+    },
+    "lanes": {
+      "delta": "Delta",
+      "speed_kmh": "Velocidad",
+      "gas": "Acelerador",
+      "brake": "Freno",
+      "steer": "Volante",
+      "gear": "Marcha",
+      "rpm": "RPM"
+    },
+    "short": {
+      "gas": "Acel.",
+      "brake": "Freno",
+      "gear": "Marcha"
+    },
+    "lapShort": "V{{number}}",
+    "lap": "Vuelta",
+    "setReference": "Usar como referencia del delta",
+    "setReferenceFor": "Usar {{lap}} como referencia",
+    "pickHelp": "Tocá una vuelta para sumarla al gráfico (hasta {{count}}). REF marca la vuelta contra la que se mide el delta.",
+    "channels": "Datos en el gráfico",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "wholeLap": "Vuelta entera",
+    "controls": "Rueda del mouse: zoom · Arrastrar: elegir un tramo · Shift + arrastrar o la barra de abajo: mover · Doble clic: vuelta entera",
+    "pickOne": "Elegí una vuelta arriba.",
+    "loading": "Cargando las vueltas…",
+    "hoverHelp": "Pasá el mouse por el gráfico o la pista",
+    "map": "Mapa de la pista con el cursor del gráfico",
+    "noMap": "Sin posiciones del servidor, no hay mapa de la pista.",
+    "mapHelp": "En rojo: el tramo del gráfico. Pasá el mouse por la pista para mover el cursor. Clic: zoom a esa curva.",
+    "mapHelpCompare": "Cada tramo tiene el color de la vuelta más rápida ahí. El tramo del gráfico va resaltado. Clic: zoom a esa curva."
+  },
+  "carDetail": {
+    "source": {
+      "base": "Juego base",
+      "dlc": "DLC",
+      "mod": "Mod"
+    },
+    "sourceLabel": "Origen",
+    "allSources": "Todos los orígenes",
+    "tagLabel": "Etiqueta",
+    "allTags": "Todas las etiquetas",
+    "skins_one": "{{count}} skin",
+    "skins_other": "{{count}} skins",
+    "noSkins": "Sin skins importados",
+    "tyres_one": "{{count}} compuesto de neumático",
+    "tyres_other": "{{count}} compuestos de neumáticos",
+    "compound": "Compuesto",
+    "front": "Delantero",
+    "rear": "Trasero",
+    "pressure": "Presión ideal",
+    "allData": "Todos los datos del auto",
+    "loadFailed": "No se pudieron cargar los datos.",
+    "curves": "Curvas ({{count}})",
+    "points_one": "{{count}} punto",
+    "points_other": "{{count}} puntos",
+    "dataError": "No se pudieron leer los datos del auto (archivo data.acd)."
+  },
+  "entrySkin": {
+    "label": "Skin",
+    "auto": "Automático",
+    "current": "Skin: {{name}}",
+    "choose": "Elegir skin",
+    "title": "Skin de {{car}}",
+    "help": "Elige la skin con la que vas a correr. Con «Automático» el servidor elige una."
   }
 }

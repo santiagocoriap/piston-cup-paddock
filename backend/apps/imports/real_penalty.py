@@ -58,6 +58,8 @@ class PenaltyLog:
     penalties: list[LogPenalty] = field(default_factory=list)
     invalid_laps: list[InvalidLap] = field(default_factory=list)
     cuts: dict[str, int] = field(default_factory=dict)
+    # Each cut warning as (GUID, lap). The lap is the lap that the driver was on.
+    cut_laps: list[tuple[str, int]] = field(default_factory=list)
     pits: list[PitEvent] = field(default_factory=list)
 
     @property
@@ -163,6 +165,9 @@ def parse(text: str) -> PenaltyLog:
             log.pits.append(PitEvent(kind, guid, _int(values.get("lap") or values.get("Lap")), at))
         elif event in ("Cutting", "Cutting Warning") and guid:
             log.cuts[guid] = log.cuts.get(guid, 0) + 1
+            lap = _int(values.get("Lap") or values.get("lap"))
+            if lap is not None:
+                log.cut_laps.append((guid, lap))
 
     session = SESSION_TYPES.get(header.get("Type", ""))
     if session is None:

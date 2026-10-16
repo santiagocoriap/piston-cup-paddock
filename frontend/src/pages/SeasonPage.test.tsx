@@ -52,6 +52,30 @@ const show = (me = undefined as typeof DRIVER | undefined) =>
   renderPage(<SeasonPage />, { path: '/seasons/:seasonId', url: '/seasons/5', me })
 
 describe('SeasonPage', () => {
+  it('lets the driver of an entry choose the skin, and nobody else', async () => {
+    const mine = { ...season(false).entries[0], mine: true }
+    const body = { ...season(false), entries: [mine, { ...mine, id: 2, driver_name: 'Rival', mine: false, number: 94 }] }
+    const calls = mockApi({
+      ...standings,
+      ...catalog,
+      'GET /api/seasons/5': () => json(200, body),
+      'GET /api/entries/1/skins': () =>
+        json(200, [
+          { id: 10, key: '00_red', name: 'Rosso', team: '', number: '', has_preview: true },
+          { id: 11, key: '01_blue', name: 'Azul', team: '', number: '', has_preview: false },
+        ]),
+      'PUT /api/entries/1/skin': () => json(200, { ...mine, skin_id: 11, skin_name: 'Azul' }),
+    })
+    show(DRIVER)
+    const buttons = await screen.findAllByRole('button', { name: 'Elegir skin' })
+    expect(buttons).toHaveLength(1) // The entry of the rival has no button.
+    await userEvent.click(buttons[0])
+    await userEvent.click(await screen.findByRole('radio', { name: 'Azul' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Guardar' }))
+    await vi.waitFor(() => expect(calls.some((c) => c.key === 'PUT /api/entries/1/skin')).toBe(true))
+    expect(calls.find((c) => c.key === 'PUT /api/entries/1/skin')?.body).toEqual({ skin_id: 11 })
+  })
+
   it('shows the calendar with the manual origin and the entries', async () => {
     mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
     show(DRIVER)
@@ -88,14 +112,42 @@ describe('SeasonPage', () => {
     mockApi({ 'GET /api/seasons/5': () => json(200, season(true)), ...standings })
     renderPage(<SeasonPage />, { path: '/seasons/:seasonId', url: '/seasons/5', mode: 'driver' })
     await screen.findAllByRole('table')
-    expect(screen.queryByRole('form', { name: 'Agregar fecha' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Administrar' })).not.toBeInTheDocument()
   })
 
   it('hides the forms from a driver', async () => {
     mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
     show(DRIVER)
     await screen.findAllByRole('table')
-    expect(screen.queryByRole('form', { name: 'Agregar fecha' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Administrar' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Inscribir piloto' })).not.toBeInTheDocument()
+  })
+
+  it('puts the calendar and the 3 exports in one download menu', async () => {
+    mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
+    show(DRIVER)
+    await userEvent.click(await screen.findByRole('button', { name: 'Descargar' }))
+    expect(screen.getByRole('link', { name: 'Calendario (.ics)' })).toHaveAttribute('href', '/api/seasons/5/calendar.ics')
+    expect(screen.getByRole('link', { name: 'Reinicios (CSV)' })).toHaveAttribute(
+      'href',
+      '/api/seasons/5/export/restarts.csv',
+    )
+  })
+
+  it('highlights the clicked section, also the second one of a row', async () => {
+    mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
+    show(DRIVER)
+    const nav = await screen.findByRole('navigation', { name: 'Secciones de la temporada' })
+    await userEvent.click(within(nav).getByRole('link', { name: 'Seguridad' }))
+    expect(within(nav).getByRole('link', { name: 'Seguridad' })).toHaveAttribute('aria-current', 'location')
+    expect(within(nav).getByRole('link', { name: 'Pelea por el título' })).not.toHaveAttribute('aria-current')
+  })
+
+  it('marks the next round with a status for screen readers', async () => {
+    mockApi({ 'GET /api/seasons/5': () => json(200, season(false)), ...standings })
+    show(DRIVER)
+    const link = await screen.findByRole('link', { name: 'Highlands · Long' })
+    expect(link.closest('tr')).toHaveTextContent('Próxima')
   })
 
   it('sends a new round with the timezone of the browser', async () => {
@@ -106,6 +158,9 @@ describe('SeasonPage', () => {
       ...catalog,
     })
     show()
+    const calendar = (await screen.findByRole('heading', { name: 'Calendario' })).closest('section')!
+    await userEvent.click(within(calendar).getByRole('button', { name: 'Administrar' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Agregar fecha' }))
     const form = await screen.findByRole('form', { name: 'Agregar fecha' })
     await within(form).findByRole('option', { name: 'Highlands · Long' }) // Wait for the list.
     await userEvent.selectOptions(await within(form).findByLabelText('Pista y trazado'), '4')
@@ -127,12 +182,16 @@ describe('SeasonPage', () => {
       ...standings,
       'POST /api/seasons/5/entries': () => json(409, { detail: 'entry_exists' }),
       ...catalog,
-      'GET /api/drivers': () => json(200, [{ id: 3, display_name: 'Bing', steam_guid: null, user_id: null, username: null }]),
+      'GET /api/drivers': () => json(200, [{ id: 99, display_name: 'Bing', steam_guid: null, user_id: null, username: null }]),
+      'GET /api/seasons/5/teams': () => json(200, [{ id: 1, name: 'Rojo' }]),
     })
     show()
+    const entries = (await screen.findByRole('heading', { name: 'Pilotos inscriptos' })).closest('section')!
+    await userEvent.click(within(entries).getByRole('button', { name: 'Administrar' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Inscribir piloto' }))
     const form = await screen.findByRole('form', { name: 'Inscribir piloto' })
     await within(form).findByRole('option', { name: 'Bing' }) // Wait for the list.
-    await userEvent.selectOptions(await within(form).findByLabelText('Piloto'), '3')
+    await userEvent.selectOptions(await within(form).findByLabelText('Piloto'), '99')
     await userEvent.selectOptions(await within(form).findByLabelText('Auto'), '2')
     await userEvent.type(within(form).getByLabelText('Número'), '93')
     await userEvent.click(within(form).getByRole('button', { name: 'Agregar' }))

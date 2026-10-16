@@ -9,6 +9,7 @@ from apps.handicaps.models import UsedHandicap
 from apps.handicaps.services import season_handicaps
 from apps.reports.services import latest_ready, read_ids
 from apps.results.services import season_standings
+from apps.rules.models import RulesVersion
 
 
 @dataclass
@@ -49,6 +50,43 @@ class NextRound:
     track_outline_url: str | None = None
     track_preview_url: str | None = None
     car_image_url: str | None = None
+    # The maximum ballast and restrictor of the season rules, for the scale bars.
+    ballast_cap: int = 45
+    restrictor_cap: int = 5
+    # Facts of the layout, for the race card. Empty until the game files or an admin give them.
+    track_country: str = ""
+    track_length_m: int | None = None
+    track_direction: str = ""
+    pit_boxes: int | None = None
+    first_lap_cutoff: str = ""
+    restart_guidance: str = ""
+
+
+@dataclass
+class LastRound:
+    """The last race of the driver, for the banner when no race is next."""
+
+    round_id: int
+    round_number: int
+    track_name: str
+    layout_name: str
+    scheduled_at: datetime | None
+    event_timezone: str
+    status: str
+    position: int | None
+    points: int
+    has_report: bool
+    track_preview_url: str | None = None
+    track_country: str = ""
+    track_length_m: int | None = None
+
+
+@dataclass
+class Nearby:
+    rank: int
+    name: str
+    points: int
+    me: bool
 
 
 @dataclass
@@ -66,6 +104,12 @@ class SeasonCard:
     recent: list[RecentResult] = field(default_factory=list)
     next_round: NextRound | None = None
     new_reports: list[NewReport] = field(default_factory=list)
+    # Every result of the driver in round order, for the trend line.
+    history: list[RecentResult] = field(default_factory=list)
+    # The driver above, the driver, and the driver below in the standings.
+    nearby: list[Nearby] = field(default_factory=list)
+    # The last race of the driver. The page shows it when no race is next.
+    last_round: LastRound | None = None
 
 
 def driver_dashboard(user) -> list[SeasonCard]:
@@ -85,7 +129,7 @@ def driver_dashboard(user) -> list[SeasonCard]:
             continue
         rounds = {r.id: r for r in season.rounds.select_related("track_layout__track")}
         by_number = {r.number: r for r in rounds.values()}
-        recent = [
+        history = [
             RecentResult(
                 round_id=by_number[score.round_number].id,
                 round_number=score.round_number,
@@ -94,9 +138,20 @@ def driver_dashboard(user) -> list[SeasonCard]:
                 position=score.position,
                 points=score.points,
             )
-            for score in reversed(row.rounds)
+            for score in row.rounds
             if score.status is not None
-        ][:3]
+        ]
+        recent = list(reversed(history))[:3]
+        index = table.index(row)
+        around = table[max(0, index - 1) : index + 2]
+        names = dict(
+            SeasonEntry.objects.filter(id__in=[r.entry_id for r in around]).values_list(
+                "id", "driver__display_name"
+            )
+        )
+        nearby = [
+            Nearby(r.rank, names[r.entry_id], r.points, r.entry_id == entry.id) for r in around
+        ]
         card = SeasonCard(
             season_id=season.id,
             season_name=season.name,
@@ -109,6 +164,8 @@ def driver_dashboard(user) -> list[SeasonCard]:
             wins=row.wins,
             leader_points=table[0].points if table else 0,
             recent=recent,
+            history=history,
+            nearby=nearby,
         )
         reports = latest_ready(rounds.keys())
         read = read_ids(user, reports.values())
@@ -119,7 +176,26 @@ def driver_dashboard(user) -> list[SeasonCard]:
             for r in sorted(reports.values(), key=lambda r: -rounds[r.round_id].number)
             if r.id not in read
         ]
+        if history:
+            last = history[-1]
+            layout = rounds[last.round_id].track_layout
+            card.last_round = LastRound(
+                round_id=last.round_id,
+                round_number=last.round_number,
+                track_name=last.track_name,
+                layout_name=layout.name,
+                scheduled_at=rounds[last.round_id].scheduled_at,
+                event_timezone=season.championship.league.timezone,
+                status=last.status,
+                position=last.position,
+                points=last.points,
+                has_report=last.round_id in reports,
+                track_preview_url=layout.image_url("preview"),
+                track_country=layout.track.country or layout.country,
+                track_length_m=layout.length_m,
+            )
         handicaps = season_handicaps(season)
+        rules = RulesVersion.current_for(season)
         if handicaps.next_round_id:
             next_round = rounds[handicaps.next_round_id]
             mine = next(e for e in handicaps.entries if e.entry_id == entry.id)
@@ -140,6 +216,15 @@ def driver_dashboard(user) -> list[SeasonCard]:
                 track_outline_url=next_round.track_layout.image_url("outline"),
                 track_preview_url=next_round.track_layout.image_url("preview"),
                 car_image_url=entry.car.image_url("preview"),
+                ballast_cap=rules.ballast_cap,
+                restrictor_cap=rules.restrictor_cap,
+                track_country=next_round.track_layout.track.country
+                or next_round.track_layout.country,
+                track_length_m=next_round.track_layout.length_m,
+                track_direction=next_round.track_layout.direction,
+                pit_boxes=next_round.track_layout.pit_boxes,
+                first_lap_cutoff=next_round.track_layout.first_lap_cutoff,
+                restart_guidance=next_round.track_layout.restart_guidance,
             )
             if mine.rounds:
                 last = mine.rounds[-1]

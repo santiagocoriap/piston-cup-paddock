@@ -21,8 +21,10 @@ describe('RulesSection', () => {
       'POST /api/seasons/4/rules': () => json(200, { can_edit: true, versions: [{ ...version, number: 2 }, version] }),
     })
     renderPage(<RulesSection seasonId={4} adminView />, { path: '/seasons/:seasonId', url: '/seasons/4' })
-    expect(await screen.findByText(/Versión 1: puntos 25-18-15/)).toBeInTheDocument()
+    expect(await screen.findByText('Puntos por puesto')).toBeInTheDocument()
+    expect(screen.getByRole('list')).toHaveTextContent('P125P218P315')
 
+    await userEvent.click(screen.getByRole('button', { name: 'Cambiar el reglamento' }))
     const points = screen.getByLabelText('Puntos por posición (separados por coma)')
     await userEvent.clear(points)
     await userEvent.type(points, '10, 8, 6')
@@ -39,7 +41,7 @@ describe('RulesSection', () => {
   it('shows only the rules to a driver', async () => {
     mockApi({ 'GET /api/seasons/4/rules': () => json(200, { can_edit: false, versions: [version] }) })
     renderPage(<RulesSection seasonId={4} adminView={false} />, { path: '/seasons/:seasonId', url: '/seasons/4' })
-    expect(await screen.findByText(/Versión 1: puntos/)).toBeInTheDocument()
-    expect(screen.queryByRole('form', { name: 'Cambiar el reglamento' })).not.toBeInTheDocument()
+    expect(await screen.findByText('10/10/5/3 kg · máx. 45 kg')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Cambiar el reglamento' })).not.toBeInTheDocument()
   })
 })

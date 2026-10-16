@@ -1,10 +1,12 @@
 from datetime import timedelta
 
 import pytest
+from django.core.files.base import ContentFile
 from django.utils import timezone
 
 from apps.catalog.models import Track, TrackLayout
-from apps.competition.models import ChampionshipMember, Round
+from apps.competition.models import ChampionshipMember, Round, SeasonEntry
+from apps.identity.models import DriverProfile
 from apps.voting.models import Ballot, Vote
 
 
@@ -377,3 +379,124 @@ def test_ballot_list_shows_the_deadline_and_whether_i_voted(api, admin, season, 
     assert summary(voters[0])["voted"] is True
     assert summary(voters[1])["voted"] is False
     assert summary(voters[0])["closes_at"].startswith(closes.strftime("%Y-%m-%dT%H:%M"))
+
+
+def test_options_and_voters_carry_their_pictures(
+    api, admin, season, layouts, voters, settings, tmp_path
+):
+    settings.MEDIA_ROOT = tmp_path / "media"
+    png = b"\x89PNG\r\n\x1a\n"
+    layouts[0].preview.save("preview.png", ContentFile(png), save=True)
+    voters[0].avatar.save("me.png", ContentFile(png), save=True)
+    detail = ballot(admin, season, method="single", selection_limit=1)
+    for layout in layouts[:2]:
+        detail = add(admin, detail["id"], layout)
+    detail = admin.post(f"/ballots/{detail['id']}/open").json()
+    by_layout = {o["track_layout_id"]: o["id"] for o in detail["options"]}
+    spa, monza = by_layout[layouts[0].id], by_layout[layouts[1].id]
+    api(voters[0]).put(f"/ballots/{detail['id']}/vote", {"option_ids": [spa]})
+
+    detail = admin.get(f"/ballots/{detail['id']}").json()
+    options = {o["id"]: o for o in detail["options"]}
+    assert options[spa]["image_url"] == f"/api/catalog/layouts/{layouts[0].id}/images/preview"
+    assert options[monza]["image_url"] is None
+    assert options[spa]["voter_pictures"] == [
+        {"username": "v1", "avatar_url": voters[0].avatar_url()}
+    ]
+    v1 = next(v for v in detail["voters"] if v["username"] == "v1")
+    assert (v1["voted"], v1["avatar_url"]) == (True, voters[0].avatar_url())
+
+
+def test_an_admin_who_races_can_vote_and_sees_my_ballots(
+    api, admin, champ_admin, season, layouts, voters, car
+):
+    driver = DriverProfile.objects.create(display_name="Admin driver", user=champ_admin)
+    SeasonEntry.objects.create(season=season, driver=driver, car=car, number=7)
+    detail = ballot(admin, season)
+    for layout in layouts[:3]:
+        detail = add(admin, detail["id"], layout)
+    detail = admin.post(f"/ballots/{detail['id']}/open").json()
+    choice = {"option_ids": [detail["options"][0]["id"]]}
+    assert admin.put(f"/ballots/{detail['id']}/vote", choice).status_code == 200
+
+    mine = api(voters[1]).get("/me/ballots").json()
+    assert [(row["id"], row["voted"], row["status"]) for row in mine] == [
+        (detail["id"], False, "open")
+    ]
+    assert mine[0]["season"] == season.name
+    assert admin.get("/me/ballots").json()[0]["voted"] is True
+
+
+def test_candidates_show_the_state_and_the_option_list_is_set_at_once(
+    api, admin, season, layouts, voters
+):
+    detail = ballot(admin, season, excluded_track_ids=[layouts[1].track_id])
+    rows = {
+        row["id"]: row["status"] for row in admin.get(f"/ballots/{detail['id']}/candidates").json()
+    }
+    assert rows[layouts[0].id] == "ok"
+    assert rows[layouts[1].id] == "track_excluded"
+    # Add three at once, with one that cannot go in: it stays out.
+    ids = [layouts[0].id, layouts[1].id, layouts[2].id, layouts[3].id]
+    detail = admin.client.put(
+        f"/api/ballots/{detail['id']}/options", {"ids": ids}, content_type="application/json"
+    ).json()
+    assert sorted(o["track_layout_id"] for o in detail["options"]) == sorted(
+        [layouts[0].id, layouts[2].id, layouts[3].id]
+    )
+    # Remove one by leaving it out.
+    detail = admin.client.put(
+        f"/api/ballots/{detail['id']}/options",
+        {"ids": [layouts[0].id, layouts[2].id]},
+        content_type="application/json",
+    ).json()
+    assert len(detail["options"]) == 2
+    rows = {
+        row["id"]: row["status"] for row in admin.get(f"/ballots/{detail['id']}/candidates").json()
+    }
+    assert rows[layouts[0].id] == "added"
+    assert api(voters[0]).get(f"/ballots/{detail['id']}/candidates").status_code == 403
+
+
+def test_a_user_can_choose_more_options(api, admin, season, layouts, voters):
+    detail = ballot(admin, season, selection_limit=2)
+    admin.client.put(
+        f"/api/ballots/{detail['id']}/options",
+        {"ids": [layout.id for layout in layouts[:5]]},
+        content_type="application/json",
+    )
+    detail = admin.client.patch(
+        f"/api/ballots/{detail['id']}",
+        {"choice_overrides": {str(voters[0].id): 4}},
+        content_type="application/json",
+    ).json()
+    detail = admin.post(f"/ballots/{detail['id']}/open").json()
+    four = [o["id"] for o in detail["options"][:4]]
+    assert api(voters[0]).get(f"/ballots/{detail['id']}").json()["my_choice_limit"] == 4
+    assert (
+        api(voters[0]).put(f"/ballots/{detail['id']}/vote", {"option_ids": four}).status_code == 200
+    )
+    refused = api(voters[1]).put(f"/ballots/{detail['id']}/vote", {"option_ids": four})
+    assert refused.json()["detail"] == "too_many_choices"
+
+
+def test_the_admin_orders_the_calendar(api, admin, season, layouts, voters):
+    ids = []
+    for number, layout in enumerate(layouts[:3], start=1):
+        ids.append(Round.objects.create(season=season, number=number, track_layout=layout).id)
+    rows = admin.client.put(
+        f"/api/seasons/{season.id}/round-order",
+        {"round_ids": [ids[2], ids[0], ids[1]]},
+        content_type="application/json",
+    ).json()
+    assert [(row["id"], row["number"]) for row in rows] == [(ids[2], 1), (ids[0], 2), (ids[1], 3)]
+    wrong = admin.client.put(
+        f"/api/seasons/{season.id}/round-order",
+        {"round_ids": ids[:2]},
+        content_type="application/json",
+    )
+    assert wrong.status_code == 422
+    driver = api(voters[0]).client.put(
+        f"/api/seasons/{season.id}/round-order", {"round_ids": ids}, content_type="application/json"
+    )
+    assert driver.status_code == 403

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { ActionForm } from '../components/ActionForm'
+import { Icon } from '../components/Icon'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
@@ -19,7 +20,7 @@ export function CollectorsSection({ championshipId }: { championshipId: number }
     [championshipId],
   )
   const [override, setOverride] = useState<Collectors | null>(null)
-  const [newKey, setNewKey] = useState<{ name: string; key: string } | null>(null)
+  const [newKey, setNewKey] = useState<NewKey | null>(null)
   const data = override ?? load.data
   if (!data) return null
 
@@ -52,14 +53,7 @@ export function CollectorsSection({ championshipId }: { championshipId: number }
           </li>
         ))}
       </ul>
-      {newKey && (
-        <div className="link-box" role="status">
-          <p>
-            <strong>{t('collectors.keyFor', { name: newKey.name })}</strong> {t('collectors.keyOnce')}
-          </p>
-          <input readOnly value={newKey.key} onFocus={(e) => e.target.select()} aria-label={t('collectors.key')} />
-        </div>
-      )}
+      {newKey && <KeyBox newKey={newKey} />}
       <ActionForm
         title={t('collectors.create')}
         submitLabel={t('collectors.createButton')}
@@ -69,7 +63,7 @@ export function CollectorsSection({ championshipId }: { championshipId: number }
             body: { name: String(form.get('name')) },
           })
           if (created) {
-            setNewKey({ name: created.name, key: created.key })
+            setNewKey({ id: created.id, name: created.name, key: created.key })
             setOverride(null)
             load.reload()
           }
@@ -90,6 +84,72 @@ export function CollectorsSection({ championshipId }: { championshipId: number }
             ))}
           </ul>
         </>
+      )}
+    </div>
+  )
+}
+
+type NewKey = { id: number; name: string; key: string }
+
+/** The new key, one time only, and "Descargar colector": a zip with the Windows program and a
+ * collector.ini with this key. The app keeps only a hash of the key, so the zip is possible now
+ * only. */
+function KeyBox({ newKey }: { newKey: NewKey }) {
+  const { t } = useTranslation()
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  async function copy() {
+    await navigator.clipboard?.writeText(newKey.key)
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 2000)
+  }
+
+  async function download() {
+    setError(null)
+    setBusy(true)
+    const { data, error } = await api.POST('/api/collectors/{collector_id}/package', {
+      params: { path: { collector_id: newKey.id } },
+      body: { key: newKey.key },
+      parseAs: 'blob',
+    })
+    setBusy(false)
+    if (!data) {
+      setError(errorMessage(t, error))
+      return
+    }
+    const url = URL.createObjectURL(data)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'paddock-collector.zip'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <div className="link-box" role="status">
+      <p>
+        <strong>{t('collectors.keyFor', { name: newKey.name })}</strong> {t('collectors.keyOnce')}
+      </p>
+      <span className="copy-field">
+        <input readOnly value={newKey.key} onFocus={(e) => e.target.select()} aria-label={t('collectors.key')} />
+        <button type="button" className="secondary" onClick={copy}>
+          <Icon name={copied ? 'check' : 'copy'} small />
+          {copied ? t('collectors.copied') : t('collectors.copy')}
+        </button>
+      </span>
+      <div className="key-download">
+        <button type="button" onClick={download} disabled={busy}>
+          {busy && <span className="spinner" aria-hidden="true" />}
+          {t('collectors.download')}
+        </button>
+        <small className="muted">{t('collectors.downloadHelp')}</small>
+      </div>
+      {error && (
+        <p role="alert" className="error">
+          {error}
+        </p>
       )}
     </div>
   )

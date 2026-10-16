@@ -92,6 +92,62 @@
         ]
       }
     },
+    "/api/objects/{kind}/{object_id}": {
+      "delete": {
+        "operationId": "apps_core_deletion_api_delete_object",
+        "summary": "Delete Object",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "kind",
+            "schema": {
+              "title": "Kind",
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "object_id",
+            "schema": {
+              "title": "Object Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletedOut"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InUseOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "deletion"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/auth/csrf": {
       "get": {
         "operationId": "apps_identity_api_csrf",
@@ -256,6 +312,111 @@
           },
           "required": true
         },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/auth/me/avatar": {
+      "post": {
+        "operationId": "apps_identity_api_upload_avatar",
+        "summary": "Upload Avatar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          }
+        },
+        "description": "Set the picture of the signed-in user. Only a PNG or a JPEG of at most 2 MB.",
+        "tags": [
+          "auth"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "format": "binary",
+                    "title": "File",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "file"
+                ],
+                "title": "FileParams",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "apps_identity_api_remove_avatar",
+        "summary": "Remove Avatar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/auth/avatars/{user_id}": {
+      "get": {
+        "operationId": "apps_identity_api_avatar",
+        "summary": "Avatar",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "title": "User Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "The picture of a user. Every signed-in user can see it, like the names.",
+        "tags": [
+          "auth"
+        ],
         "security": [
           {
             "SessionAuth": []
@@ -489,6 +650,147 @@
         ]
       }
     },
+    "/api/catalog/tracks/{track_id}": {
+      "patch": {
+        "operationId": "apps_catalog_api_edit_track",
+        "summary": "Edit Track",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "track_id",
+            "schema": {
+              "title": "Track Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackEditIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/layouts/{layout_id}": {
+      "patch": {
+        "operationId": "apps_catalog_api_edit_layout",
+        "summary": "Edit Layout",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layout_id",
+            "schema": {
+              "title": "Layout Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LayoutOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LayoutEditIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/cars/{car_id}": {
+      "patch": {
+        "operationId": "apps_catalog_api_edit_car",
+        "summary": "Edit Car",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "car_id",
+            "schema": {
+              "title": "Car Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CarEditIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/catalog/classes": {
       "get": {
         "operationId": "apps_catalog_api_list_classes",
@@ -679,6 +981,55 @@
         ]
       }
     },
+    "/api/catalog/game-import": {
+      "post": {
+        "operationId": "apps_catalog_api_game_import",
+        "summary": "Game Import",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameImportOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "\"Importar desde el juego\": the browser sends the files of the chosen cars and tracks.\nThe app adds the ones that are new, with their pictures and data.",
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "format": "binary",
+                    "title": "File",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "file"
+                ],
+                "title": "FileParams",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/catalog/layouts/{layout_id}/images/{kind}": {
       "get": {
         "operationId": "apps_catalog_api_layout_image",
@@ -716,6 +1067,176 @@
             "SessionAuth": []
           }
         ]
+      },
+      "post": {
+        "operationId": "apps_catalog_api_upload_layout_image",
+        "summary": "Upload Layout Image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layout_id",
+            "schema": {
+              "title": "Layout Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "kind",
+            "schema": {
+              "title": "Kind",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LayoutOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "format": "binary",
+                    "title": "File",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "file"
+                ],
+                "title": "FileParams",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "apps_catalog_api_remove_layout_image",
+        "summary": "Remove Layout Image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layout_id",
+            "schema": {
+              "title": "Layout Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "kind",
+            "schema": {
+              "title": "Kind",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LayoutOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/skins/{skin_id}/preview": {
+      "get": {
+        "operationId": "apps_catalog_api_skin_preview",
+        "summary": "Skin Preview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "skin_id",
+            "schema": {
+              "title": "Skin Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/cars/{car_id}/data": {
+      "get": {
+        "operationId": "apps_catalog_api_car_data",
+        "summary": "Car Data",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "car_id",
+            "schema": {
+              "title": "Car Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "All the numbers of the data folder of a car (see car_data.py). It is large, so the car\nlist does not carry it.",
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
       }
     },
     "/api/catalog/cars/{car_id}/images/{kind}": {
@@ -745,6 +1266,115 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_catalog_api_upload_car_image",
+        "summary": "Upload Car Image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "car_id",
+            "schema": {
+              "title": "Car Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "kind",
+            "schema": {
+              "title": "Kind",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "format": "binary",
+                    "title": "File",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "file"
+                ],
+                "title": "FileParams",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "apps_catalog_api_remove_car_image",
+        "summary": "Remove Car Image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "car_id",
+            "schema": {
+              "title": "Car Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "kind",
+            "schema": {
+              "title": "Kind",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarOut"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -1483,6 +2113,171 @@
         ]
       }
     },
+    "/api/seasons/{season_id}/teams": {
+      "get": {
+        "operationId": "apps_competition_api_season_teams",
+        "summary": "Season Teams",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TeamOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "The teams of the league of the season, for the entry form.",
+        "tags": [
+          "competition"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "apps_competition_api_create_team",
+        "summary": "Create Team",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeamIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/teams/{team_id}": {
+      "delete": {
+        "operationId": "apps_competition_api_delete_team",
+        "summary": "Delete Team",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "team_id",
+            "schema": {
+              "title": "Team Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "description": "A team leaves the list. Entries keep their team name.",
+        "tags": [
+          "competition"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/entries/{entry_id}": {
+      "patch": {
+        "operationId": "apps_competition_api_update_entry",
+        "summary": "Update Entry",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entry_id",
+            "schema": {
+              "title": "Entry Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntryOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntryPatchIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/seasons/{season_id}/entries": {
       "post": {
         "operationId": "apps_competition_api_create_entry",
@@ -1708,6 +2503,58 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/RoundPatchIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seasons/{season_id}/round-order": {
+      "put": {
+        "operationId": "apps_competition_api_order_rounds",
+        "summary": "Order Rounds",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RoundOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "A new calendar order (drag and drop): round N is the Nth ID of the list. The list has\nevery round of the season. The dates stay with their rounds.",
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoundOrderIn"
               }
             }
           },
@@ -2084,6 +2931,96 @@
         ]
       }
     },
+    "/api/entries/{entry_id}/skins": {
+      "get": {
+        "operationId": "apps_competition_api_entry_skins",
+        "summary": "Entry Skins",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entry_id",
+            "schema": {
+              "title": "Entry Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EntrySkinOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "The skins that the driver of the entry can choose: the skins of the car of the entry.",
+        "tags": [
+          "competition"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/entries/{entry_id}/skin": {
+      "put": {
+        "operationId": "apps_competition_api_set_entry_skin",
+        "summary": "Set Entry Skin",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entry_id",
+            "schema": {
+              "title": "Entry Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntryOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Choose the skin of an entry (null: let the server pick). The driver can do it once the\nentry exists, and a manager can do it for any driver.",
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkinChoiceIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/rounds/{round_id}": {
       "get": {
         "operationId": "apps_results_api_get_round",
@@ -2162,6 +3099,53 @@
           }
         },
         "description": "The lines of an old version. Old versions stay for the history.",
+        "tags": [
+          "results"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/result/lines/{entry_id}/dnf": {
+      "post": {
+        "operationId": "apps_results_api_put_line_dnf",
+        "summary": "Put Line Dnf",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "entry_id",
+            "schema": {
+              "title": "Entry Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "Mark one driver as DNF with one click. The result gets a new version.",
         "tags": [
           "results"
         ],
@@ -3704,6 +4688,38 @@
         ]
       }
     },
+    "/api/me/ballots": {
+      "get": {
+        "operationId": "apps_voting_api_my_ballots",
+        "summary": "My Ballots",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MyBallotOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "The ballots where the user is a voter: the open ones first, then the latest closed.",
+        "tags": [
+          "voting"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/seasons/{season_id}/ballots": {
       "get": {
         "operationId": "apps_voting_api_list_ballots",
@@ -3872,7 +4888,94 @@
         ]
       }
     },
+    "/api/ballots/{ballot_id}/candidates": {
+      "get": {
+        "operationId": "apps_voting_api_candidates",
+        "summary": "Candidates",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CandidateOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "Every layout or car class of the catalog, with its state for this ballot.",
+        "tags": [
+          "voting"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/ballots/{ballot_id}/options": {
+      "put": {
+        "operationId": "apps_voting_api_put_options",
+        "summary": "Put Options",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "voting"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetOptionsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
       "post": {
         "operationId": "apps_voting_api_create_option",
         "summary": "Create Option",
@@ -4218,6 +5321,81 @@
         ]
       }
     },
+    "/api/search": {
+      "get": {
+        "operationId": "apps_dashboard_api_search_all",
+        "summary": "Search All",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "default": "",
+              "title": "Q",
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchHitOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "The search box in the header. It needs two letters or more.",
+        "tags": [
+          "dashboard"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/pending": {
+      "get": {
+        "operationId": "apps_dashboard_api_pending_list",
+        "summary": "Pending List",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PendingOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "What waits for this admin. A user who manages nothing gets an empty list.",
+        "tags": [
+          "dashboard"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/dashboard": {
       "get": {
         "operationId": "apps_dashboard_api_dashboard",
@@ -4322,6 +5500,44 @@
           },
           "required": true
         },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/tab-counts": {
+      "get": {
+        "operationId": "apps_dashboard_api_round_tab_counts",
+        "summary": "Round Tab Counts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TabCountsOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "How much data each tab of the round page has.",
+        "tags": [
+          "dashboard"
+        ],
         "security": [
           {
             "SessionAuth": []
@@ -5038,6 +6254,85 @@
         ]
       }
     },
+    "/api/collector/status": {
+      "post": {
+        "operationId": "apps_collectors_api_collector_status",
+        "summary": "Collector Status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "The health of the collector, every 5 minutes: the files that wait, the last error, and\nthe Content Manager presets.",
+        "tags": [
+          "collectors"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "CollectorAuth": []
+          }
+        ]
+      }
+    },
+    "/api/collector/version": {
+      "get": {
+        "operationId": "apps_collectors_api_collector_version",
+        "summary": "Collector Version",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectorVersionOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "collectors"
+        ],
+        "security": [
+          {
+            "CollectorAuth": []
+          }
+        ]
+      }
+    },
+    "/api/collector/download": {
+      "get": {
+        "operationId": "apps_collectors_api_collector_download",
+        "summary": "Collector Download",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "The newest program, for the update of a collector.",
+        "tags": [
+          "collectors"
+        ],
+        "security": [
+          {
+            "CollectorAuth": []
+          }
+        ]
+      }
+    },
     "/api/championships/{championship_id}/collectors": {
       "get": {
         "operationId": "apps_collectors_api_list_collectors",
@@ -5108,6 +6403,47 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CollectorIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/collectors/{collector_id}/package": {
+      "post": {
+        "operationId": "apps_collectors_api_collector_package",
+        "summary": "Collector Package",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "collector_id",
+            "schema": {
+              "title": "Collector Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "\"Descargar colector\": a zip with the program and a collector.ini with this key. The app\nkeeps only a hash of the key, so the admin sends the key back (it shows one time only).",
+        "tags": [
+          "collectors"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PackageIn"
               }
             }
           },
@@ -5204,70 +6540,6 @@
         ]
       }
     },
-    "/api/telemetry/status": {
-      "get": {
-        "operationId": "apps_telemetry_api_collector_status",
-        "summary": "Collector Status",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CollectorStatusOut"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "telemetry"
-        ],
-        "security": [
-          {
-            "DriverAuth": []
-          }
-        ]
-      }
-    },
-    "/api/telemetry/laps": {
-      "post": {
-        "operationId": "apps_telemetry_api_upload_lap",
-        "summary": "Upload Lap",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LapReceivedOut"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "telemetry"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LapIn"
-              }
-            }
-          },
-          "required": true
-        },
-        "security": [
-          {
-            "DriverAuth": []
-          }
-        ]
-      }
-    },
     "/api/me/telemetry": {
       "get": {
         "operationId": "apps_telemetry_api_my_telemetry",
@@ -5280,33 +6552,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MyTelemetryOut"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "telemetry"
-        ],
-        "security": [
-          {
-            "SessionAuth": []
-          }
-        ]
-      }
-    },
-    "/api/me/telemetry/key": {
-      "post": {
-        "operationId": "apps_telemetry_api_new_key",
-        "summary": "New Key",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/KeyOut"
                 }
               }
             }
@@ -5437,6 +6682,44 @@
         ]
       }
     },
+    "/api/rounds/{round_id}/track-map": {
+      "get": {
+        "operationId": "apps_telemetry_api_round_track_map",
+        "summary": "Round Track Map",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackMapOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "The track drawing of the round, from the collector positions, for the telemetry map.",
+        "tags": [
+          "telemetry"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/rounds/{round_id}/engineer": {
       "get": {
         "operationId": "apps_telemetry_api_engineer",
@@ -5465,6 +6748,54 @@
               "type": "string"
             },
             "required": false
+          },
+          {
+            "in": "query",
+            "name": "driver",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Driver"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "lap",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lap"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "reference",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Reference"
+            },
+            "required": false
           }
         ],
         "responses": {
@@ -5479,9 +6810,58 @@
             }
           }
         },
+        "description": "Where the driver loses time in each corner, and why, against a reference lap.",
         "tags": [
           "telemetry"
         ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/engineer/note": {
+      "post": {
+        "operationId": "apps_telemetry_api_engineer_note",
+        "summary": "Engineer Note",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Ask the AI for a coaching note from the numbers of the engineer.",
+        "tags": [
+          "telemetry"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoteIn"
+              }
+            }
+          },
+          "required": true
+        },
         "security": [
           {
             "SessionAuth": []
@@ -6223,6 +7603,311 @@
           }
         ]
       }
+    },
+    "/api/script/laps": {
+      "post": {
+        "operationId": "apps_telemetry_script_api_script_lap",
+        "summary": "Script Lap",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScriptLapOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "paddock script"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScriptLapIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "ScriptAuth": []
+          }
+        ]
+      }
+    },
+    "/api/script/now": {
+      "get": {
+        "operationId": "apps_telemetry_script_api_script_now",
+        "summary": "Script Now",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NowOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "paddock script"
+        ],
+        "security": [
+          {
+            "ScriptAuth": []
+          }
+        ]
+      }
+    },
+    "/api/championships/{championship_id}/script": {
+      "get": {
+        "operationId": "apps_telemetry_script_api_script_setup",
+        "summary": "Script Setup",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "championship_id",
+            "schema": {
+              "title": "Championship Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScriptSetupOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "paddock script"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/championships/{championship_id}/script/code": {
+      "post": {
+        "operationId": "apps_telemetry_script_api_script_new_code",
+        "summary": "Script New Code",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "championship_id",
+            "schema": {
+              "title": "Championship Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScriptSetupOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "paddock script"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/server-setup": {
+      "get": {
+        "operationId": "apps_collectors_server_setup_api_server_setup_preview",
+        "summary": "Server Setup Preview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetupOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "What \"Enviar al servidor\" would write, and the state of the last push.",
+        "tags": [
+          "server setup"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/server-push": {
+      "post": {
+        "operationId": "apps_collectors_server_setup_api_server_push",
+        "summary": "Server Push",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetupOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "server setup"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/PushIn"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "required": false
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/collector/commands": {
+      "get": {
+        "operationId": "apps_collectors_server_setup_api_collector_command",
+        "summary": "Collector Command",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommandOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "The push that waits for the collector, or nothing.",
+        "tags": [
+          "server setup"
+        ],
+        "security": [
+          {
+            "CollectorAuth": []
+          }
+        ]
+      }
+    },
+    "/api/collector/commands/{push_id}": {
+      "post": {
+        "operationId": "apps_collectors_server_setup_api_collector_report",
+        "summary": "Collector Report",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "push_id",
+            "schema": {
+              "title": "Push Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "server setup"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommandReportIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "CollectorAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -6367,6 +8052,40 @@
         "title": "BackupStatusOut",
         "type": "object"
       },
+      "DeletedOut": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "DeletedOut",
+        "type": "object"
+      },
+      "InUseOut": {
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "uses": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Uses",
+            "type": "array"
+          }
+        },
+        "required": [
+          "detail",
+          "uses"
+        ],
+        "title": "InUseOut",
+        "type": "object"
+      },
       "Me": {
         "properties": {
           "id": {
@@ -6396,6 +8115,17 @@
           "can_manage": {
             "title": "Can Manage",
             "type": "boolean"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
           }
         },
         "required": [
@@ -6532,6 +8262,81 @@
           "country": {
             "title": "Country",
             "type": "string"
+          },
+          "city": {
+            "title": "City",
+            "type": "string"
+          },
+          "width_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width M"
+          },
+          "direction": {
+            "title": "Direction",
+            "type": "string"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "author": {
+            "title": "Author",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
           }
         },
         "required": [
@@ -6544,7 +8349,18 @@
           "has_outline",
           "has_preview",
           "length_m",
-          "country"
+          "country",
+          "city",
+          "width_m",
+          "direction",
+          "latitude",
+          "longitude",
+          "year",
+          "author",
+          "version",
+          "url",
+          "description",
+          "tags"
         ],
         "title": "LayoutOut",
         "type": "object"
@@ -6563,6 +8379,10 @@
             "title": "Name",
             "type": "string"
           },
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
           "layouts": {
             "items": {
               "$ref": "#/components/schemas/LayoutOut"
@@ -6575,6 +8395,7 @@
           "id",
           "key",
           "name",
+          "country",
           "layouts"
         ],
         "title": "TrackOut",
@@ -6592,6 +8413,12 @@
             "maxLength": 200,
             "minLength": 1,
             "title": "Name",
+            "type": "string"
+          },
+          "country": {
+            "default": "",
+            "maxLength": 100,
+            "title": "Country",
             "type": "string"
           }
         },
@@ -6664,6 +8491,153 @@
           "author": {
             "title": "Author",
             "type": "string"
+          },
+          "game_class": {
+            "title": "Game Class",
+            "type": "string"
+          },
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "power_hp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Hp"
+          },
+          "torque_nm": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Torque Nm"
+          },
+          "weight_kg": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Kg"
+          },
+          "top_speed_kmh": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top Speed Kmh"
+          },
+          "acceleration": {
+            "title": "Acceleration",
+            "type": "string"
+          },
+          "power_to_weight": {
+            "title": "Power To Weight",
+            "type": "string"
+          },
+          "specs_text": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Specs Text",
+            "type": "object"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "power_curve": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Power Curve",
+            "type": "array"
+          },
+          "torque_curve": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Torque Curve",
+            "type": "array"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "has_data": {
+            "title": "Has Data",
+            "type": "boolean"
+          },
+          "data_error": {
+            "title": "Data Error",
+            "type": "string"
+          },
+          "skins": {
+            "items": {
+              "$ref": "#/components/schemas/SkinOut"
+            },
+            "title": "Skins",
+            "type": "array"
+          },
+          "tyres": {
+            "items": {
+              "$ref": "#/components/schemas/TyreOut"
+            },
+            "title": "Tyres",
+            "type": "array"
           }
         },
         "required": [
@@ -6673,9 +8647,177 @@
           "has_preview",
           "has_badge",
           "brand",
-          "author"
+          "author",
+          "game_class",
+          "country",
+          "year",
+          "power_hp",
+          "torque_nm",
+          "weight_kg",
+          "top_speed_kmh",
+          "acceleration",
+          "power_to_weight",
+          "specs_text",
+          "version",
+          "url",
+          "description",
+          "tags",
+          "power_curve",
+          "torque_curve",
+          "source",
+          "source_url",
+          "has_data",
+          "data_error",
+          "skins",
+          "tyres"
         ],
         "title": "CarOut",
+        "type": "object"
+      },
+      "SkinOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "team": {
+            "title": "Team",
+            "type": "string"
+          },
+          "number": {
+            "title": "Number",
+            "type": "string"
+          },
+          "has_preview": {
+            "title": "Has Preview",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "name",
+          "driver_name",
+          "team",
+          "number",
+          "has_preview"
+        ],
+        "title": "SkinOut",
+        "type": "object"
+      },
+      "TyreOut": {
+        "properties": {
+          "index": {
+            "title": "Index",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "short_name": {
+            "title": "Short Name",
+            "type": "string"
+          },
+          "front": {
+            "$ref": "#/components/schemas/TyreSideOut"
+          },
+          "rear": {
+            "$ref": "#/components/schemas/TyreSideOut"
+          }
+        },
+        "required": [
+          "index",
+          "name",
+          "short_name",
+          "front",
+          "rear"
+        ],
+        "title": "TyreOut",
+        "type": "object"
+      },
+      "TyreSideOut": {
+        "properties": {
+          "width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width"
+          },
+          "radius": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radius"
+          },
+          "rim_radius": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rim Radius"
+          },
+          "pressure_ideal": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pressure Ideal"
+          },
+          "pressure_static": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pressure Static"
+          },
+          "wear_curve": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wear Curve"
+          }
+        },
+        "title": "TyreSideOut",
         "type": "object"
       },
       "CarIn": {
@@ -6729,6 +8871,444 @@
           }
         },
         "title": "GuidanceIn",
+        "type": "object"
+      },
+      "TrackEditIn": {
+        "properties": {
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "TrackEditIn",
+        "type": "object"
+      },
+      "LayoutEditIn": {
+        "description": "The fields to change. A field that the request leaves out keeps its value.",
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "length_m": {
+            "anyOf": [
+              {
+                "maximum": 100000,
+                "minimum": 100,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Length M"
+          },
+          "width_m": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width M"
+          },
+          "pit_boxes": {
+            "anyOf": [
+              {
+                "maximum": 200,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pit Boxes"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "direction": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                  "clockwise",
+                  "anticlockwise"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direction"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "maximum": 90,
+                "minimum": -90,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "maximum": 180,
+                "minimum": -180,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 2100,
+                "minimum": 1880,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "maxLength": 50,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "maxLength": 50,
+                  "type": "string"
+                },
+                "maxItems": 30,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "title": "LayoutEditIn",
+        "type": "object"
+      },
+      "CarEditIn": {
+        "description": "The fields to change. A field that the request leaves out keeps its value.",
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "brand": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand"
+          },
+          "game_class": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Game Class"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 2100,
+                "minimum": 1880,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "power_hp": {
+            "anyOf": [
+              {
+                "maximum": 5000,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Hp"
+          },
+          "torque_nm": {
+            "anyOf": [
+              {
+                "maximum": 10000,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Torque Nm"
+          },
+          "weight_kg": {
+            "anyOf": [
+              {
+                "maximum": 20000,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Kg"
+          },
+          "top_speed_kmh": {
+            "anyOf": [
+              {
+                "maximum": 1500,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top Speed Kmh"
+          },
+          "acceleration": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acceleration"
+          },
+          "power_to_weight": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power To Weight"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "maxLength": 50,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "maxLength": 50,
+                  "type": "string"
+                },
+                "maxItems": 30,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "title": "CarEditIn",
         "type": "object"
       },
       "CarClassOut": {
@@ -6926,6 +9506,54 @@
         "title": "GameImagesReportOut",
         "type": "object"
       },
+      "GameImportOut": {
+        "properties": {
+          "new_tracks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "New Tracks",
+            "type": "array"
+          },
+          "new_layouts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "New Layouts",
+            "type": "array"
+          },
+          "new_cars": {
+            "items": {
+              "type": "string"
+            },
+            "title": "New Cars",
+            "type": "array"
+          },
+          "layouts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Layouts",
+            "type": "array"
+          },
+          "cars": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Cars",
+            "type": "array"
+          }
+        },
+        "required": [
+          "new_tracks",
+          "new_layouts",
+          "new_cars",
+          "layouts",
+          "cars"
+        ],
+        "title": "GameImportOut",
+        "type": "object"
+      },
       "DriverOut": {
         "properties": {
           "id": {
@@ -7070,6 +9698,29 @@
         "title": "MergeIn",
         "type": "object"
       },
+      "LeagueChampionshipOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "season_count": {
+            "title": "Season Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "season_count"
+        ],
+        "title": "LeagueChampionshipOut",
+        "type": "object"
+      },
       "LeagueOut": {
         "properties": {
           "id": {
@@ -7083,12 +9734,20 @@
           "timezone": {
             "title": "Timezone",
             "type": "string"
+          },
+          "championships": {
+            "items": {
+              "$ref": "#/components/schemas/LeagueChampionshipOut"
+            },
+            "title": "Championships",
+            "type": "array"
           }
         },
         "required": [
           "id",
           "name",
-          "timezone"
+          "timezone",
+          "championships"
         ],
         "title": "LeagueOut",
         "type": "object"
@@ -7139,6 +9798,14 @@
           "provisional_reports": {
             "title": "Provisional Reports",
             "type": "boolean"
+          },
+          "auto_publish_results": {
+            "title": "Auto Publish Results",
+            "type": "boolean"
+          },
+          "open_slots": {
+            "title": "Open Slots",
+            "type": "integer"
           }
         },
         "required": [
@@ -7147,7 +9814,9 @@
           "league_id",
           "league_name",
           "can_manage",
-          "provisional_reports"
+          "provisional_reports",
+          "auto_publish_results",
+          "open_slots"
         ],
         "title": "ChampionshipOut",
         "type": "object"
@@ -7193,11 +9862,36 @@
             "title": "Provisional Reports",
             "type": "boolean"
           },
+          "auto_publish_results": {
+            "title": "Auto Publish Results",
+            "type": "boolean"
+          },
+          "open_slots": {
+            "title": "Open Slots",
+            "type": "integer"
+          },
           "seasons": {
             "items": {
               "$ref": "#/components/schemas/SeasonSummary"
             },
             "title": "Seasons",
+            "type": "array"
+          },
+          "latest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LatestSeasonOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "progress": {
+            "items": {
+              "$ref": "#/components/schemas/LatestSeasonOut"
+            },
+            "title": "Progress",
             "type": "array"
           }
         },
@@ -7208,9 +9902,105 @@
           "league_name",
           "can_manage",
           "provisional_reports",
-          "seasons"
+          "auto_publish_results",
+          "open_slots",
+          "seasons",
+          "latest",
+          "progress"
         ],
         "title": "ChampionshipDetail",
+        "type": "object"
+      },
+      "LatestSeasonOut": {
+        "properties": {
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "done": {
+            "title": "Done",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "next_round": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NextRoundBrief"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "leader": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leader"
+          }
+        },
+        "required": [
+          "season_id",
+          "name",
+          "done",
+          "total",
+          "next_round",
+          "leader"
+        ],
+        "title": "LatestSeasonOut",
+        "type": "object"
+      },
+      "NextRoundBrief": {
+        "properties": {
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "track_name": {
+            "title": "Track Name",
+            "type": "string"
+          },
+          "layout_name": {
+            "title": "Layout Name",
+            "type": "string"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
+          }
+        },
+        "required": [
+          "round_id",
+          "number",
+          "track_name",
+          "layout_name",
+          "scheduled_at"
+        ],
+        "title": "NextRoundBrief",
         "type": "object"
       },
       "SeasonSummary": {
@@ -7260,6 +10050,17 @@
           "username": {
             "title": "Username",
             "type": "string"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
           },
           "role": {
             "title": "Role",
@@ -7335,15 +10136,44 @@
         "type": "string"
       },
       "ChampionshipSettingsIn": {
+        "description": "A missing setting keeps its value.",
         "properties": {
           "provisional_reports": {
-            "title": "Provisional Reports",
-            "type": "boolean"
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provisional Reports"
+          },
+          "auto_publish_results": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auto Publish Results"
+          },
+          "open_slots": {
+            "anyOf": [
+              {
+                "maximum": 40,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Open Slots"
           }
         },
-        "required": [
-          "provisional_reports"
-        ],
         "title": "ChampionshipSettingsIn",
         "type": "object"
       },
@@ -7451,6 +10281,17 @@
             "title": "Driver Name",
             "type": "string"
           },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          },
           "car_id": {
             "title": "Car Id",
             "type": "integer"
@@ -7466,6 +10307,32 @@
           "team": {
             "title": "Team",
             "type": "string"
+          },
+          "skin_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skin Id"
+          },
+          "skin_name": {
+            "default": "",
+            "title": "Skin Name",
+            "type": "string"
+          },
+          "skin_has_preview": {
+            "default": false,
+            "title": "Skin Has Preview",
+            "type": "boolean"
+          },
+          "mine": {
+            "default": false,
+            "title": "Mine",
+            "type": "boolean"
           }
         },
         "required": [
@@ -7532,6 +10399,11 @@
             },
             "title": "Track Changes",
             "type": "array"
+          },
+          "announced_conditions": {
+            "additionalProperties": true,
+            "title": "Announced Conditions",
+            "type": "object"
           }
         },
         "required": [
@@ -7544,7 +10416,8 @@
           "origin",
           "cancelled",
           "cancel_reason",
-          "track_changes"
+          "track_changes",
+          "announced_conditions"
         ],
         "title": "RoundOut",
         "type": "object"
@@ -7662,6 +10535,81 @@
           "changed_at"
         ],
         "title": "TrackChangeOut",
+        "type": "object"
+      },
+      "TeamOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "TeamOut",
+        "type": "object"
+      },
+      "TeamIn": {
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "TeamIn",
+        "type": "object"
+      },
+      "EntryPatchIn": {
+        "properties": {
+          "car_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Car Id"
+          },
+          "number": {
+            "anyOf": [
+              {
+                "maximum": 999,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Number"
+          },
+          "team": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Team"
+          }
+        },
+        "title": "EntryPatchIn",
         "type": "object"
       },
       "EntryIn": {
@@ -7890,6 +10838,23 @@
           }
         },
         "title": "RoundPatchIn",
+        "type": "object"
+      },
+      "RoundOrderIn": {
+        "properties": {
+          "round_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 100,
+            "title": "Round Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "round_ids"
+        ],
+        "title": "RoundOrderIn",
         "type": "object"
       },
       "ReasonIn": {
@@ -8155,12 +11120,88 @@
         "title": "DrawIn",
         "type": "object"
       },
+      "EntrySkinOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "team": {
+            "title": "Team",
+            "type": "string"
+          },
+          "number": {
+            "title": "Number",
+            "type": "string"
+          },
+          "has_preview": {
+            "title": "Has Preview",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "name",
+          "team",
+          "number",
+          "has_preview"
+        ],
+        "title": "EntrySkinOut",
+        "type": "object"
+      },
+      "SkinChoiceIn": {
+        "properties": {
+          "skin_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skin Id"
+          }
+        },
+        "required": [
+          "skin_id"
+        ],
+        "title": "SkinChoiceIn",
+        "type": "object"
+      },
       "BriefingOut": {
         "properties": {
           "announced_conditions": {
             "additionalProperties": true,
             "title": "Announced Conditions",
             "type": "object"
+          },
+          "server_conditions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ServerConditionsOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conditions_differ": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Conditions Differ",
+            "type": "array"
           },
           "protest_window_minutes": {
             "title": "Protest Window Minutes",
@@ -8349,6 +11390,17 @@
           "driver_name": {
             "title": "Driver Name",
             "type": "string"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
           },
           "laps": {
             "anyOf": [
@@ -8702,6 +11754,10 @@
             "title": "Season Name",
             "type": "string"
           },
+          "championship_id": {
+            "title": "Championship Id",
+            "type": "integer"
+          },
           "championship_name": {
             "title": "Championship Name",
             "type": "string"
@@ -8890,6 +11946,7 @@
           "number",
           "season_id",
           "season_name",
+          "championship_id",
           "championship_name",
           "track_name",
           "layout_name",
@@ -8947,6 +12004,85 @@
           "fastest_lap_bonus"
         ],
         "title": "RulesOut",
+        "type": "object"
+      },
+      "ServerConditionsOut": {
+        "properties": {
+          "session_type": {
+            "title": "Session Type",
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "weather": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weather"
+          },
+          "air_temp_c": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Air Temp C"
+          },
+          "track_temp_c": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Temp C"
+          },
+          "time_of_day": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Of Day"
+          },
+          "grip_pct": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grip Pct"
+          }
+        },
+        "required": [
+          "session_type",
+          "started_at",
+          "weather",
+          "air_temp_c",
+          "track_temp_c",
+          "time_of_day",
+          "grip_pct"
+        ],
+        "title": "ServerConditionsOut",
         "type": "object"
       },
       "Status": {
@@ -10137,6 +13273,27 @@
                 "type": "null"
               }
             ]
+          },
+          "auto_status": {
+            "default": "",
+            "title": "Auto Status",
+            "type": "string"
+          },
+          "auto_reasons": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Auto Reasons",
+            "type": "array"
+          },
+          "review_flags": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ReviewFlagOut"
+            },
+            "title": "Review Flags",
+            "type": "array"
           }
         },
         "required": [
@@ -10331,6 +13488,24 @@
           "warnings"
         ],
         "title": "PreviewOut",
+        "type": "object"
+      },
+      "ReviewFlagOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entry_id",
+          "code"
+        ],
+        "title": "ReviewFlagOut",
         "type": "object"
       },
       "GuidLinkIn": {
@@ -10755,6 +13930,13 @@
             },
             "title": "Laps",
             "type": "array"
+          },
+          "stints": {
+            "items": {
+              "$ref": "#/components/schemas/StintOut"
+            },
+            "title": "Stints",
+            "type": "array"
           }
         },
         "required": [
@@ -10767,7 +13949,8 @@
           "clean_average",
           "theoretical_ms",
           "best_sectors_ms",
-          "laps"
+          "laps",
+          "stints"
         ],
         "title": "DriverLapsOut",
         "type": "object"
@@ -10907,6 +14090,68 @@
           "drivers"
         ],
         "title": "RoundLapsOut",
+        "type": "object"
+      },
+      "StintOut": {
+        "properties": {
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "first_lap": {
+            "title": "First Lap",
+            "type": "integer"
+          },
+          "last_lap": {
+            "title": "Last Lap",
+            "type": "integer"
+          },
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          },
+          "tyre": {
+            "title": "Tyre",
+            "type": "string"
+          },
+          "best_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Ms"
+          },
+          "average_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Ms"
+          },
+          "ends_in_pit": {
+            "title": "Ends In Pit",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "number",
+          "first_lap",
+          "last_lap",
+          "laps",
+          "tyre",
+          "best_ms",
+          "average_ms",
+          "ends_in_pit"
+        ],
+        "title": "StintOut",
         "type": "object"
       },
       "CompareLapOut": {
@@ -11507,6 +14752,13 @@
             },
             "title": "History",
             "type": "array"
+          },
+          "ranking": {
+            "items": {
+              "$ref": "#/components/schemas/RecordLapOut"
+            },
+            "title": "Ranking",
+            "type": "array"
           }
         },
         "required": [
@@ -11518,7 +14770,8 @@
           "category",
           "record_ms",
           "holders",
-          "history"
+          "history",
+          "ranking"
         ],
         "title": "BoardOut",
         "type": "object"
@@ -11840,6 +15093,89 @@
         "title": "ManualRecordIn",
         "type": "object"
       },
+      "MyBallotOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
+          "winners": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Winners",
+            "type": "array"
+          },
+          "closes_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closes At"
+          },
+          "voted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voted"
+          },
+          "championship": {
+            "title": "Championship",
+            "type": "string"
+          },
+          "season": {
+            "title": "Season",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "status",
+          "parent_id",
+          "winners",
+          "closes_at",
+          "voted",
+          "championship",
+          "season"
+        ],
+        "title": "MyBallotOut",
+        "type": "object"
+      },
       "BallotSummary": {
         "properties": {
           "id": {
@@ -11926,6 +15262,10 @@
           "season_name": {
             "title": "Season Name",
             "type": "string"
+          },
+          "championship_id": {
+            "title": "Championship Id",
+            "type": "integer"
           },
           "championship_name": {
             "title": "Championship Name",
@@ -12025,6 +15365,17 @@
             },
             "title": "Power Overrides",
             "type": "object"
+          },
+          "choice_overrides": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Choice Overrides",
+            "type": "object"
+          },
+          "my_choice_limit": {
+            "title": "My Choice Limit",
+            "type": "integer"
           },
           "closed_early": {
             "title": "Closed Early",
@@ -12187,6 +15538,7 @@
           "id",
           "season_id",
           "season_name",
+          "championship_id",
           "championship_name",
           "kind",
           "title",
@@ -12204,6 +15556,8 @@
           "max_runoffs",
           "power_exceptions",
           "power_overrides",
+          "choice_overrides",
+          "my_choice_limit",
           "closed_early",
           "close_reason",
           "opens_at",
@@ -12319,6 +15673,31 @@
               }
             ],
             "title": "Voters"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          },
+          "voter_pictures": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PersonOut"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voter Pictures"
           }
         },
         "required": [
@@ -12331,6 +15710,31 @@
           "voters"
         ],
         "title": "OptionOut",
+        "type": "object"
+      },
+      "PersonOut": {
+        "properties": {
+          "username": {
+            "title": "Username",
+            "type": "string"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          }
+        },
+        "required": [
+          "username",
+          "avatar_url"
+        ],
+        "title": "PersonOut",
         "type": "object"
       },
       "TieOut": {
@@ -12367,6 +15771,17 @@
           "voted": {
             "title": "Voted",
             "type": "boolean"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
           }
         },
         "required": [
@@ -12528,6 +15943,20 @@
               }
             ],
             "title": "Power Overrides"
+          },
+          "choice_overrides": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Choice Overrides"
           },
           "opens_at": {
             "anyOf": [
@@ -12807,6 +16236,20 @@
             ],
             "title": "Power Overrides"
           },
+          "choice_overrides": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Choice Overrides"
+          },
           "opens_at": {
             "anyOf": [
               {
@@ -12887,6 +16330,62 @@
           }
         },
         "title": "BallotSettingsIn",
+        "type": "object"
+      },
+      "CandidateOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "group": {
+            "title": "Group",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "group",
+          "label",
+          "status"
+        ],
+        "title": "CandidateOut",
+        "type": "object"
+      },
+      "SetOptionsIn": {
+        "properties": {
+          "ids": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 500,
+            "title": "Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ids"
+        ],
+        "title": "SetOptionsIn",
         "type": "object"
       },
       "OptionIn": {
@@ -12973,6 +16472,114 @@
         "title": "DecideIn",
         "type": "object"
       },
+      "SearchHitOut": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Number"
+          }
+        },
+        "required": [
+          "kind",
+          "label",
+          "detail",
+          "path",
+          "number"
+        ],
+        "title": "SearchHitOut",
+        "type": "object"
+      },
+      "PendingItemOut": {
+        "properties": {
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "championship": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Championship"
+          },
+          "number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Number"
+          }
+        },
+        "required": [
+          "path",
+          "name",
+          "championship",
+          "number"
+        ],
+        "title": "PendingItemOut",
+        "type": "object"
+      },
+      "PendingOut": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PendingItemOut"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "kind",
+          "count",
+          "items"
+        ],
+        "title": "PendingOut",
+        "type": "object"
+      },
       "ConditionsOut": {
         "properties": {
           "time_of_day": {
@@ -13053,6 +16660,136 @@
           "seasons"
         ],
         "title": "DashboardOut",
+        "type": "object"
+      },
+      "LastRoundOut": {
+        "properties": {
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "round_number": {
+            "title": "Round Number",
+            "type": "integer"
+          },
+          "track_name": {
+            "title": "Track Name",
+            "type": "string"
+          },
+          "layout_name": {
+            "title": "Layout Name",
+            "type": "string"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
+          },
+          "event_timezone": {
+            "title": "Event Timezone",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "has_report": {
+            "title": "Has Report",
+            "type": "boolean"
+          },
+          "track_preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Preview Url"
+          },
+          "track_country": {
+            "title": "Track Country",
+            "type": "string"
+          },
+          "track_length_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Length M"
+          }
+        },
+        "required": [
+          "round_id",
+          "round_number",
+          "track_name",
+          "layout_name",
+          "scheduled_at",
+          "event_timezone",
+          "status",
+          "position",
+          "points",
+          "has_report",
+          "track_preview_url",
+          "track_country",
+          "track_length_m"
+        ],
+        "title": "LastRoundOut",
+        "type": "object"
+      },
+      "NearbyOut": {
+        "properties": {
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "me": {
+            "title": "Me",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "rank",
+          "name",
+          "points",
+          "me"
+        ],
+        "title": "NearbyOut",
         "type": "object"
       },
       "NewReportOut": {
@@ -13199,6 +16936,52 @@
               }
             ],
             "title": "Car Image Url"
+          },
+          "ballast_cap": {
+            "title": "Ballast Cap",
+            "type": "integer"
+          },
+          "restrictor_cap": {
+            "title": "Restrictor Cap",
+            "type": "integer"
+          },
+          "track_country": {
+            "title": "Track Country",
+            "type": "string"
+          },
+          "track_length_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Length M"
+          },
+          "track_direction": {
+            "title": "Track Direction",
+            "type": "string"
+          },
+          "pit_boxes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pit Boxes"
+          },
+          "first_lap_cutoff": {
+            "title": "First Lap Cutoff",
+            "type": "string"
+          },
+          "restart_guidance": {
+            "title": "Restart Guidance",
+            "type": "string"
           }
         },
         "required": [
@@ -13217,7 +17000,15 @@
           "conditions",
           "track_outline_url",
           "track_preview_url",
-          "car_image_url"
+          "car_image_url",
+          "ballast_cap",
+          "restrictor_cap",
+          "track_country",
+          "track_length_m",
+          "track_direction",
+          "pit_boxes",
+          "first_lap_cutoff",
+          "restart_guidance"
         ],
         "title": "NextRoundOut",
         "type": "object"
@@ -13332,6 +17123,30 @@
             },
             "title": "New Reports",
             "type": "array"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/RecentOut"
+            },
+            "title": "History",
+            "type": "array"
+          },
+          "nearby": {
+            "items": {
+              "$ref": "#/components/schemas/NearbyOut"
+            },
+            "title": "Nearby",
+            "type": "array"
+          },
+          "last_round": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LastRoundOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -13347,9 +17162,40 @@
           "leader_points",
           "recent",
           "next_round",
-          "new_reports"
+          "new_reports",
+          "history",
+          "nearby",
+          "last_round"
         ],
         "title": "SeasonCardOut",
+        "type": "object"
+      },
+      "AchievementOut": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "goal": {
+            "title": "Goal",
+            "type": "integer"
+          },
+          "achieved": {
+            "title": "Achieved",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "key",
+          "count",
+          "goal",
+          "achieved"
+        ],
+        "title": "AchievementOut",
         "type": "object"
       },
       "AdjustmentOut": {
@@ -13439,6 +17285,17 @@
             "title": "Display Name",
             "type": "string"
           },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          },
           "can_adjust": {
             "title": "Can Adjust",
             "type": "boolean"
@@ -13473,6 +17330,16 @@
             },
             "title": "Restarts Caused",
             "type": "array"
+          },
+          "achievements": {
+            "items": {
+              "$ref": "#/components/schemas/AchievementOut"
+            },
+            "title": "Achievements",
+            "type": "array"
+          },
+          "stats": {
+            "$ref": "#/components/schemas/StatsOut"
           }
         },
         "required": [
@@ -13483,7 +17350,9 @@
           "seasons",
           "safety",
           "records",
-          "restarts_caused"
+          "restarts_caused",
+          "achievements",
+          "stats"
         ],
         "title": "ProfileOut",
         "type": "object"
@@ -13624,6 +17493,25 @@
           "starts": {
             "title": "Starts",
             "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "car_name": {
+            "title": "Car Name",
+            "type": "string"
+          },
+          "team": {
+            "title": "Team",
+            "type": "string"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/RecentOut"
+            },
+            "title": "History",
+            "type": "array"
           }
         },
         "required": [
@@ -13635,9 +17523,127 @@
           "points",
           "wins",
           "podiums",
-          "starts"
+          "starts",
+          "number",
+          "car_name",
+          "team",
+          "history"
         ],
         "title": "ProfileSeasonOut",
+        "type": "object"
+      },
+      "StatsOut": {
+        "properties": {
+          "starts": {
+            "title": "Starts",
+            "type": "integer"
+          },
+          "wins": {
+            "title": "Wins",
+            "type": "integer"
+          },
+          "podiums": {
+            "title": "Podiums",
+            "type": "integer"
+          },
+          "top5": {
+            "title": "Top5",
+            "type": "integer"
+          },
+          "poles": {
+            "title": "Poles",
+            "type": "integer"
+          },
+          "fastest_laps": {
+            "title": "Fastest Laps",
+            "type": "integer"
+          },
+          "best_finish": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Finish"
+          },
+          "average_finish": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Finish"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          },
+          "records": {
+            "title": "Records",
+            "type": "integer"
+          },
+          "win_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Win Rate"
+          },
+          "dnfs": {
+            "title": "Dnfs",
+            "type": "integer"
+          },
+          "dsqs": {
+            "title": "Dsqs",
+            "type": "integer"
+          },
+          "penalties": {
+            "title": "Penalties",
+            "type": "integer"
+          },
+          "incident_points": {
+            "title": "Incident Points",
+            "type": "integer"
+          },
+          "restarts_caused": {
+            "title": "Restarts Caused",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "starts",
+          "wins",
+          "podiums",
+          "top5",
+          "poles",
+          "fastest_laps",
+          "best_finish",
+          "average_finish",
+          "points",
+          "laps",
+          "records",
+          "win_rate",
+          "dnfs",
+          "dsqs",
+          "penalties",
+          "incident_points",
+          "restarts_caused"
+        ],
+        "title": "StatsOut",
         "type": "object"
       },
       "AdjustIn": {
@@ -13669,6 +17675,44 @@
           "reason"
         ],
         "title": "AdjustIn",
+        "type": "object"
+      },
+      "TabCountsOut": {
+        "properties": {
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          },
+          "incidents": {
+            "title": "Incidents",
+            "type": "integer"
+          },
+          "replay": {
+            "title": "Replay",
+            "type": "integer"
+          },
+          "restarts": {
+            "title": "Restarts",
+            "type": "integer"
+          },
+          "telemetry": {
+            "title": "Telemetry",
+            "type": "integer"
+          },
+          "reports": {
+            "title": "Reports",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "laps",
+          "incidents",
+          "replay",
+          "restarts",
+          "telemetry",
+          "reports"
+        ],
+        "title": "TabCountsOut",
         "type": "object"
       },
       "AccountOut": {
@@ -14218,6 +18262,83 @@
         "title": "EventsIn",
         "type": "object"
       },
+      "StatusIn": {
+        "properties": {
+          "queued_files": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Queued Files",
+            "type": "integer"
+          },
+          "last_error": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Last Error",
+            "type": "string"
+          },
+          "last_error_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error At"
+          },
+          "presets": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "maxItems": 50,
+            "title": "Presets",
+            "type": "array"
+          },
+          "current": {
+            "default": "",
+            "maxLength": 100,
+            "title": "Current",
+            "type": "string"
+          }
+        },
+        "title": "StatusIn",
+        "type": "object"
+      },
+      "CollectorVersionOut": {
+        "properties": {
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
+          }
+        },
+        "required": [
+          "version",
+          "sha256"
+        ],
+        "title": "CollectorVersionOut",
+        "type": "object"
+      },
       "CollectorFileOut": {
         "properties": {
           "id": {
@@ -14494,6 +18615,21 @@
         "title": "CollectorIn",
         "type": "object"
       },
+      "PackageIn": {
+        "properties": {
+          "key": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key"
+        ],
+        "title": "PackageIn",
+        "type": "object"
+      },
       "AssignIn": {
         "properties": {
           "round_id": {
@@ -14507,143 +18643,11 @@
         "title": "AssignIn",
         "type": "object"
       },
-      "CollectorStatusOut": {
-        "properties": {
-          "driver": {
-            "title": "Driver",
-            "type": "string"
-          },
-          "laps": {
-            "title": "Laps",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "driver",
-          "laps"
-        ],
-        "title": "CollectorStatusOut",
-        "type": "object"
-      },
-      "LapReceivedOut": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "integer"
-          },
-          "is_new": {
-            "title": "Is New",
-            "type": "boolean"
-          },
-          "round_id": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Round Id"
-          }
-        },
-        "required": [
-          "id",
-          "is_new",
-          "round_id"
-        ],
-        "title": "LapReceivedOut",
-        "type": "object"
-      },
-      "LapIn": {
-        "properties": {
-          "track": {
-            "maxLength": 200,
-            "title": "Track",
-            "type": "string"
-          },
-          "car": {
-            "maxLength": 100,
-            "title": "Car",
-            "type": "string"
-          },
-          "session_type": {
-            "default": "",
-            "maxLength": 12,
-            "title": "Session Type",
-            "type": "string"
-          },
-          "lap_number": {
-            "maximum": 999,
-            "minimum": 0,
-            "title": "Lap Number",
-            "type": "integer"
-          },
-          "lap_time_ms": {
-            "minimum": 0,
-            "title": "Lap Time Ms",
-            "type": "integer"
-          },
-          "valid": {
-            "default": true,
-            "title": "Valid",
-            "type": "boolean"
-          },
-          "recorded_at": {
-            "format": "date-time",
-            "title": "Recorded At",
-            "type": "string"
-          },
-          "sample_hz": {
-            "maximum": 100,
-            "minimum": 1,
-            "title": "Sample Hz",
-            "type": "integer"
-          },
-          "channels": {
-            "additionalProperties": {
-              "items": {
-                "type": "number"
-              },
-              "type": "array"
-            },
-            "title": "Channels",
-            "type": "object"
-          }
-        },
-        "required": [
-          "track",
-          "car",
-          "lap_number",
-          "lap_time_ms",
-          "recorded_at",
-          "sample_hz",
-          "channels"
-        ],
-        "title": "LapIn",
-        "type": "object"
-      },
       "MyTelemetryOut": {
         "properties": {
           "has_driver": {
             "title": "Has Driver",
             "type": "boolean"
-          },
-          "has_key": {
-            "title": "Has Key",
-            "type": "boolean"
-          },
-          "last_seen_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Last Seen At"
           },
           "laps": {
             "title": "Laps",
@@ -14674,8 +18678,6 @@
         },
         "required": [
           "has_driver",
-          "has_key",
-          "last_seen_at",
           "laps",
           "last_lap_at",
           "sharing"
@@ -14697,7 +18699,8 @@
           "drivers": {
             "enum": [
               "none",
-              "laps"
+              "laps",
+              "full"
             ],
             "title": "Drivers",
             "type": "string"
@@ -14720,19 +18723,6 @@
         "title": "SharingOut",
         "type": "object"
       },
-      "KeyOut": {
-        "properties": {
-          "key": {
-            "title": "Key",
-            "type": "string"
-          }
-        },
-        "required": [
-          "key"
-        ],
-        "title": "KeyOut",
-        "type": "object"
-      },
       "SharingIn": {
         "properties": {
           "teammates": {
@@ -14747,7 +18737,8 @@
           "drivers": {
             "enum": [
               "none",
-              "laps"
+              "laps",
+              "full"
             ],
             "title": "Drivers",
             "type": "string"
@@ -14799,6 +18790,17 @@
           "access": {
             "title": "Access",
             "type": "string"
+          },
+          "attempt_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attempt Number"
           }
         },
         "required": [
@@ -14843,6 +18845,17 @@
             "title": "Access",
             "type": "string"
           },
+          "attempt_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attempt Number"
+          },
           "sample_hz": {
             "title": "Sample Hz",
             "type": "integer"
@@ -14877,55 +18890,155 @@
         "title": "LapDetailOut",
         "type": "object"
       },
-      "AdviceOut": {
+      "TrackMapOut": {
+        "properties": {
+          "length_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Length M"
+          },
+          "spline": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Spline",
+            "type": "array"
+          },
+          "x": {
+            "items": {
+              "type": "number"
+            },
+            "title": "X",
+            "type": "array"
+          },
+          "z": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Z",
+            "type": "array"
+          }
+        },
+        "required": [
+          "length_m",
+          "spline",
+          "x",
+          "z"
+        ],
+        "title": "TrackMapOut",
+        "type": "object"
+      },
+      "CauseOut": {
         "properties": {
           "kind": {
             "title": "Kind",
             "type": "string"
           },
-          "zone": {
-            "title": "Zone",
-            "type": "integer"
-          },
-          "position": {
-            "title": "Position",
+          "yours": {
+            "title": "Yours",
             "type": "number"
           },
-          "reference_value": {
-            "title": "Reference Value",
+          "reference": {
+            "title": "Reference",
             "type": "number"
-          },
-          "lap_values": {
-            "items": {
-              "type": "number"
-            },
-            "title": "Lap Values",
-            "type": "array"
           },
           "difference": {
             "title": "Difference",
             "type": "number"
-          },
-          "laps_showing": {
-            "title": "Laps Showing",
-            "type": "integer"
-          },
-          "laps_total": {
-            "title": "Laps Total",
-            "type": "integer"
           }
         },
         "required": [
           "kind",
-          "zone",
-          "position",
-          "reference_value",
-          "lap_values",
-          "difference",
-          "laps_showing",
-          "laps_total"
+          "yours",
+          "reference",
+          "difference"
         ],
-        "title": "AdviceOut",
+        "title": "CauseOut",
+        "type": "object"
+      },
+      "CornerOut": {
+        "properties": {
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "start": {
+            "title": "Start",
+            "type": "number"
+          },
+          "apex": {
+            "title": "Apex",
+            "type": "number"
+          },
+          "end": {
+            "title": "End",
+            "type": "number"
+          },
+          "loss_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Loss S"
+          },
+          "reference_lap_id": {
+            "title": "Reference Lap Id",
+            "type": "integer"
+          },
+          "yours": {
+            "$ref": "#/components/schemas/MetricsOut"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/MetricsOut"
+          },
+          "causes": {
+            "items": {
+              "$ref": "#/components/schemas/CauseOut"
+            },
+            "title": "Causes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "number",
+          "start",
+          "apex",
+          "end",
+          "loss_s",
+          "reference_lap_id",
+          "yours",
+          "reference",
+          "causes"
+        ],
+        "title": "CornerOut",
+        "type": "object"
+      },
+      "DriverOptionOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "DriverOptionOut",
         "type": "object"
       },
       "EngineerLapOut": {
@@ -14945,24 +19058,57 @@
           "lap_time_ms": {
             "title": "Lap Time Ms",
             "type": "integer"
-          },
-          "own": {
-            "title": "Own",
-            "type": "boolean"
           }
         },
         "required": [
           "id",
           "driver_name",
           "lap_number",
-          "lap_time_ms",
-          "own"
+          "lap_time_ms"
         ],
         "title": "EngineerLapOut",
         "type": "object"
       },
       "EngineerOut": {
         "properties": {
+          "driver": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DriverOptionOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "drivers": {
+            "items": {
+              "$ref": "#/components/schemas/DriverOptionOut"
+            },
+            "title": "Drivers",
+            "type": "array"
+          },
+          "session": {
+            "title": "Session",
+            "type": "string"
+          },
+          "laps": {
+            "items": {
+              "$ref": "#/components/schemas/EngineerLapOut"
+            },
+            "title": "Laps",
+            "type": "array"
+          },
+          "lap": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EngineerLapOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "reference": {
             "anyOf": [
               {
@@ -14973,14 +19119,29 @@
               }
             ]
           },
-          "laps": {
+          "reference_options": {
             "items": {
               "$ref": "#/components/schemas/EngineerLapOut"
             },
-            "title": "Laps",
+            "title": "Reference Options",
             "type": "array"
           },
-          "lap_length_m": {
+          "length_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Length M"
+          },
+          "has_pedals": {
+            "title": "Has Pedals",
+            "type": "boolean"
+          },
+          "ideal_s": {
             "anyOf": [
               {
                 "type": "number"
@@ -14989,25 +19150,35 @@
                 "type": "null"
               }
             ],
-            "title": "Lap Length M"
+            "title": "Ideal S"
           },
-          "zones": {
-            "title": "Zones",
-            "type": "integer"
-          },
-          "advice": {
+          "corners": {
             "items": {
-              "$ref": "#/components/schemas/AdviceOut"
+              "$ref": "#/components/schemas/CornerOut"
             },
-            "title": "Advice",
+            "title": "Corners",
             "type": "array"
           },
-          "setup_missing": {
+          "spread": {
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/SpreadOut"
             },
-            "title": "Setup Missing",
+            "title": "Spread",
             "type": "array"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoteOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ai_available": {
+            "title": "Ai Available",
+            "type": "boolean"
           },
           "gaps": {
             "items": {
@@ -15018,15 +19189,283 @@
           }
         },
         "required": [
-          "reference",
+          "driver",
+          "drivers",
+          "session",
           "laps",
-          "lap_length_m",
-          "zones",
-          "advice",
-          "setup_missing",
+          "lap",
+          "reference",
+          "reference_options",
+          "length_m",
+          "has_pedals",
+          "ideal_s",
+          "corners",
+          "spread",
+          "note",
+          "ai_available",
           "gaps"
         ],
         "title": "EngineerOut",
+        "type": "object"
+      },
+      "MetricsOut": {
+        "properties": {
+          "time_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time S"
+          },
+          "brake_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brake M"
+          },
+          "brake_peak": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brake Peak"
+          },
+          "min_kmh": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Kmh"
+          },
+          "apex_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Apex M"
+          },
+          "throttle_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Throttle M"
+          },
+          "coast_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coast M"
+          },
+          "exit_kmh": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exit Kmh"
+          },
+          "gear": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gear"
+          }
+        },
+        "required": [
+          "time_s",
+          "brake_m",
+          "brake_peak",
+          "min_kmh",
+          "apex_m",
+          "throttle_m",
+          "coast_m",
+          "exit_kmh",
+          "gear"
+        ],
+        "title": "MetricsOut",
+        "type": "object"
+      },
+      "NoteOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "error": {
+            "title": "Error",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "text",
+          "error",
+          "created_at"
+        ],
+        "title": "NoteOut",
+        "type": "object"
+      },
+      "SpreadOut": {
+        "properties": {
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "time_s": {
+            "title": "Time S",
+            "type": "number"
+          },
+          "brake_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brake M"
+          },
+          "min_kmh": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Kmh"
+          },
+          "best_s": {
+            "title": "Best S",
+            "type": "number"
+          },
+          "worst_s": {
+            "title": "Worst S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "number",
+          "time_s",
+          "brake_m",
+          "min_kmh",
+          "best_s",
+          "worst_s"
+        ],
+        "title": "SpreadOut",
+        "type": "object"
+      },
+      "NoteIn": {
+        "properties": {
+          "session": {
+            "default": "race",
+            "enum": [
+              "race",
+              "qualifying",
+              "practice"
+            ],
+            "title": "Session",
+            "type": "string"
+          },
+          "driver": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver"
+          },
+          "lap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          },
+          "language": {
+            "default": "es",
+            "enum": [
+              "es",
+              "en"
+            ],
+            "title": "Language",
+            "type": "string"
+          }
+        },
+        "title": "NoteIn",
         "type": "object"
       },
       "CollectorHealthOut": {
@@ -15078,6 +19517,34 @@
               }
             ],
             "title": "Last Event At"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "latest_version": {
+            "title": "Latest Version",
+            "type": "string"
+          },
+          "queued_files": {
+            "title": "Queued Files",
+            "type": "integer"
+          },
+          "last_error": {
+            "title": "Last Error",
+            "type": "string"
+          },
+          "last_error_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error At"
           }
         },
         "required": [
@@ -15086,7 +19553,12 @@
           "status",
           "last_seen_at",
           "last_file_at",
-          "last_event_at"
+          "last_event_at",
+          "version",
+          "latest_version",
+          "queued_files",
+          "last_error",
+          "last_error_at"
         ],
         "title": "CollectorHealthOut",
         "type": "object"
@@ -15387,6 +19859,10 @@
             "title": "Can Review",
             "type": "boolean"
           },
+          "last_start": {
+            "title": "Last Start",
+            "type": "integer"
+          },
           "incidents": {
             "items": {
               "$ref": "#/components/schemas/IncidentOut"
@@ -15400,6 +19876,7 @@
           "gap_seconds",
           "has_events",
           "can_review",
+          "last_start",
           "incidents"
         ],
         "title": "IncidentsOut",
@@ -16277,6 +20754,446 @@
         },
         "title": "ReadIn",
         "type": "object"
+      },
+      "ScriptLapOut": {
+        "properties": {
+          "state": {
+            "title": "State",
+            "type": "string"
+          },
+          "lap_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap Number"
+          },
+          "cuts": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cuts"
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "title": "ScriptLapOut",
+        "type": "object"
+      },
+      "ScriptLapIn": {
+        "properties": {
+          "steam_id": {
+            "title": "Steam Id",
+            "type": "string"
+          },
+          "track": {
+            "title": "Track",
+            "type": "string"
+          },
+          "layout": {
+            "default": "",
+            "title": "Layout",
+            "type": "string"
+          },
+          "car": {
+            "title": "Car",
+            "type": "string"
+          },
+          "lap_number": {
+            "title": "Lap Number",
+            "type": "integer"
+          },
+          "lap_time_ms": {
+            "title": "Lap Time Ms",
+            "type": "integer"
+          },
+          "valid": {
+            "default": true,
+            "title": "Valid",
+            "type": "boolean"
+          },
+          "cuts": {
+            "default": 0,
+            "title": "Cuts",
+            "type": "integer"
+          },
+          "ended_at": {
+            "title": "Ended At",
+            "type": "integer"
+          },
+          "sent_at": {
+            "title": "Sent At",
+            "type": "integer"
+          },
+          "samples": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Samples",
+            "type": "array"
+          }
+        },
+        "required": [
+          "steam_id",
+          "track",
+          "car",
+          "lap_number",
+          "lap_time_ms",
+          "ended_at",
+          "sent_at",
+          "samples"
+        ],
+        "title": "ScriptLapIn",
+        "type": "object"
+      },
+      "NowOut": {
+        "properties": {
+          "session_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Type"
+          },
+          "round_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Round Number"
+          },
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "title": "NowOut",
+        "type": "object"
+      },
+      "ScriptSetupOut": {
+        "properties": {
+          "script_url": {
+            "title": "Script Url",
+            "type": "string"
+          },
+          "race_code": {
+            "title": "Race Code",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "csp_section": {
+            "title": "Csp Section",
+            "type": "string"
+          }
+        },
+        "required": [
+          "script_url",
+          "race_code",
+          "created_at",
+          "csp_section"
+        ],
+        "title": "ScriptSetupOut",
+        "type": "object"
+      },
+      "PresetOut": {
+        "properties": {
+          "folder": {
+            "title": "Folder",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "folder",
+          "name"
+        ],
+        "title": "PresetOut",
+        "type": "object"
+      },
+      "PushEntryOut": {
+        "properties": {
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "team": {
+            "title": "Team",
+            "type": "string"
+          },
+          "guid": {
+            "title": "Guid",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "ballast_kg": {
+            "title": "Ballast Kg",
+            "type": "integer"
+          },
+          "restrictor_pct": {
+            "title": "Restrictor Pct",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "number",
+          "name",
+          "team",
+          "guid",
+          "model",
+          "ballast_kg",
+          "restrictor_pct"
+        ],
+        "title": "PushEntryOut",
+        "type": "object"
+      },
+      "PushOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "error": {
+            "title": "Error",
+            "type": "string"
+          },
+          "requested_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested By"
+          },
+          "requested_at": {
+            "format": "date-time",
+            "title": "Requested At",
+            "type": "string"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "collector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collector"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "error",
+          "requested_by",
+          "requested_at",
+          "finished_at",
+          "collector"
+        ],
+        "title": "PushOut",
+        "type": "object"
+      },
+      "SetupOut": {
+        "properties": {
+          "track": {
+            "additionalProperties": true,
+            "title": "Track",
+            "type": "object"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/PushEntryOut"
+            },
+            "title": "Entries",
+            "type": "array"
+          },
+          "conditions": {
+            "additionalProperties": true,
+            "title": "Conditions",
+            "type": "object"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          },
+          "open_slots": {
+            "title": "Open Slots",
+            "type": "integer"
+          },
+          "presets": {
+            "items": {
+              "$ref": "#/components/schemas/PresetOut"
+            },
+            "title": "Presets",
+            "type": "array"
+          },
+          "preset": {
+            "title": "Preset",
+            "type": "string"
+          },
+          "latest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PushOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "has_collector": {
+            "title": "Has Collector",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "track",
+          "entries",
+          "conditions",
+          "warnings",
+          "open_slots",
+          "presets",
+          "preset",
+          "latest",
+          "has_collector"
+        ],
+        "title": "SetupOut",
+        "type": "object"
+      },
+      "PushIn": {
+        "properties": {
+          "open_slots": {
+            "anyOf": [
+              {
+                "maximum": 40,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Open Slots"
+          },
+          "preset": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preset"
+          }
+        },
+        "title": "PushIn",
+        "type": "object"
+      },
+      "CommandOut": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          }
+        },
+        "title": "CommandOut",
+        "type": "object"
+      },
+      "CommandReportIn": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "error": {
+            "default": "",
+            "title": "Error",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "CommandReportIn",
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -16289,9 +21206,10 @@
         "type": "http",
         "scheme": "bearer"
       },
-      "DriverAuth": {
-        "type": "http",
-        "scheme": "bearer"
+      "ScriptAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Paddock-Code"
       }
     }
   },

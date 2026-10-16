@@ -29,6 +29,7 @@ describe('InvitePage', () => {
     mockApi({ 'POST /api/auth/invite/check': () => json(422, { detail: 'link_not_valid' }) })
     render(<InvitePage onSignedIn={vi.fn()} />)
     expect(await screen.findByRole('alert')).toHaveTextContent('ya se usó o venció')
+    expect(screen.getByRole('link', { name: 'Ir a iniciar sesión' })).toHaveAttribute('href', '/')
   })
 
   it('shows the password rules from the server', async () => {
@@ -36,13 +37,19 @@ describe('InvitePage', () => {
       'POST /api/auth/invite/check': () => json(200, { username: 'bing', purpose: 'reset' }),
       'GET /api/auth/csrf': () => new Response(null, { status: 204 }),
       'POST /api/auth/invite/accept': () =>
-        json(422, { detail: 'weak_password', messages: ['This password is entirely numeric.'] }),
+        json(422, { detail: 'weak_password', messages: ['This password is too common.'] }),
     })
     render(<InvitePage onSignedIn={vi.fn()} />)
     expect(await screen.findByText(/Elegí una contraseña nueva/)).toBeInTheDocument()
+    const save = screen.getByRole('button', { name: 'Guardar y entrar' })
     await userEvent.type(screen.getByLabelText('Contraseña'), '12345678')
     await userEvent.type(screen.getByLabelText('Repetí la contraseña'), '12345678')
-    await userEvent.click(screen.getByRole('button', { name: 'Guardar y entrar' }))
-    expect(await screen.findByRole('alert')).toHaveTextContent('entirely numeric')
+    expect(save).toBeDisabled() // Only numbers: the page stops it before the server.
+    await userEvent.clear(screen.getByLabelText('Contraseña'))
+    await userEvent.clear(screen.getByLabelText('Repetí la contraseña'))
+    await userEvent.type(screen.getByLabelText('Contraseña'), 'password1')
+    await userEvent.type(screen.getByLabelText('Repetí la contraseña'), 'password1')
+    await userEvent.click(save)
+    expect(await screen.findByRole('alert')).toHaveTextContent('too common')
   })
 })

@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { ActionForm } from '../components/ActionForm'
+import { AdminActions } from '../components/AdminActions'
+import { Dialog } from '../components/Dialog'
 import { useLoad } from '../lib/useLoad'
 
 type Entry = components['schemas']['EntryOption']
@@ -26,6 +28,33 @@ const RESPONSIBILITIES: NonNullable<RestartIn['responsibility']>[] = [
 ]
 const REVIEWS: NonNullable<RestartIn['review_status']>[] = ['pending', 'confirmed', 'disputed']
 
+/** The text that makes 2 restarts look the same in the table. The explanation shows only as a
+ * tooltip, so it does not count. A restart with a responsible driver or incidents never joins a group. */
+function sameKey(restart: RestartOut): string | null {
+  if (restart.responsible.length > 0 || (restart.incidents?.length ?? 0) > 0) return null
+  if (restart.suggested && restart.suggested.length > 0) return null
+  return [
+    restart.lap,
+    restart.reason,
+    restart.location,
+    restart.responsibility,
+    restart.review_status,
+    restart.requested_by,
+  ].join('|')
+}
+
+/** Next restarts with the same values go into one group. */
+function groupRestarts(restarts: RestartOut[]): RestartOut[][] {
+  const groups: RestartOut[][] = []
+  for (const restart of restarts) {
+    const last = groups[groups.length - 1]
+    const key = sameKey(restart)
+    if (last && key !== null && sameKey(last[0]) === key) last.push(restart)
+    else groups.push([restart])
+  }
+  return groups
+}
+
 function optionalNumber(value: FormDataEntryValue | null): number | null {
   return value === null || value === '' ? null : Number(value)
 }
@@ -48,9 +77,77 @@ export function RestartsSection({
 
   if (!data.data) return null
   const { attempts, restarts, summary } = data.data
+  const recordForm = (close: () => void) => (
+    <ActionForm
+      title={t('restarts.record')}
+      submitLabel={t('restarts.record')}
+      onDone={close}
+      onSubmit={async (form) => {
+        const { error } = await api.POST('/api/rounds/{round_id}/restarts', {
+          params: { path },
+          body: {
+            lap: optionalNumber(form.get('lap')),
+            elapsed_seconds: optionalNumber(form.get('elapsed_seconds')),
+            location: String(form.get('location') ?? ''),
+            reason: form.get('reason') as RestartIn['reason'],
+            explanation: String(form.get('explanation') ?? ''),
+            requested_by_id: optionalNumber(form.get('requested_by_id')),
+            executed_by_id: optionalNumber(form.get('executed_by_id')),
+            responsibility: form.get('responsibility') as RestartIn['responsibility'],
+            driver_entry_ids: form.getAll('driver_entry_ids').map(Number),
+            review_status: form.get('review_status') as RestartIn['review_status'],
+          },
+        })
+        if (!error) data.reload()
+        return error
+      }}
+    >
+      <div className="field-row">
+        <label>
+          {t('restarts.lap')}
+          <input name="lap" type="number" min={0} />
+        </label>
+        <label>
+          {t('restarts.elapsed')}
+          <input name="elapsed_seconds" type="number" min={0} />
+        </label>
+      </div>
+      <label>
+        {t('restarts.location')}
+        <input name="location" maxLength={200} />
+      </label>
+      <label>
+        {t('restarts.reason')}
+        <select name="reason" defaultValue="first_lap_crash">
+          {REASONS.map((reason) => (
+            <option key={reason} value={reason}>
+              {t(`restarts.reasons.${reason}`)}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        {t('restarts.explanation')}
+        <textarea name="explanation" rows={2} maxLength={2000} />
+      </label>
+      <div className="field-row">
+        <DriverSelect name="requested_by_id" label={t('restarts.requestedBy')} entries={entries} />
+        <DriverSelect name="executed_by_id" label={t('restarts.executedBy')} entries={entries} />
+      </div>
+      <ResponsibilityFields entries={entries} />
+    </ActionForm>
+  )
+
   return (
     <>
-      <h2>{t('restarts.title')}</h2>
+      <div className="section-head">
+        <h2>{t('restarts.title')}</h2>
+        {adminView && (
+          <AdminActions
+            actions={[{ id: 'record', label: t('restarts.record'), content: (close) => recordForm(close) }]}
+          />
+        )}
+      </div>
       {summary.total === 0 ? (
         <p>{t('restarts.none')}</p>
       ) : (
@@ -59,14 +156,22 @@ export function RestartsSection({
         </p>
       )}
       {attempts.length > 0 && (
-        <ol className="attempts">
-          {attempts.map((attempt) => (
-            <li key={attempt.number} className={`attempt ${attempt.status}`}>
-              {t('restarts.attempt', { number: attempt.number })}:{' '}
-              {t(`restarts.attemptStatus.${attempt.status}`)}
-            </li>
-          ))}
-        </ol>
+        <div className="start-timeline">
+          <ol aria-label={t('restarts.timeline')}>
+            {attempts.map((attempt) => {
+              const text = `${t('restarts.attempt', { number: attempt.number })}: ${t(`restarts.attemptStatus.${attempt.status}`)}`
+              return (
+                <li key={attempt.number} className={`start-dot ${attempt.status}`} title={text} aria-label={text}>
+                  <span aria-hidden="true">{attempt.number}</span>
+                </li>
+              )
+            })}
+          </ol>
+          <p className="start-current">
+            {t('restarts.attempt', { number: attempts[attempts.length - 1].number })}:{' '}
+            {t(`restarts.attemptStatus.${attempts[attempts.length - 1].status}`)}
+          </p>
+        </div>
       )}
 
       {restarts.length > 0 && (
@@ -84,15 +189,25 @@ export function RestartsSection({
               </tr>
             </thead>
             <tbody>
-              {restarts.map((restart) => (
-                <RestartRow
-                  key={restart.id}
-                  restart={restart}
-                  entries={entries}
-                  adminView={adminView}
-                  onSaved={data.reload}
-                />
-              ))}
+              {groupRestarts(restarts).map((group) =>
+                group.length === 1 ? (
+                  <RestartRow
+                    key={group[0].id}
+                    restart={group[0]}
+                    entries={entries}
+                    adminView={adminView}
+                    onSaved={data.reload}
+                  />
+                ) : (
+                  <RestartGroup
+                    key={group[0].id}
+                    group={group}
+                    entries={entries}
+                    adminView={adminView}
+                    onSaved={data.reload}
+                  />
+                ),
+              )}
             </tbody>
           </table>
         </div>
@@ -129,67 +244,6 @@ export function RestartsSection({
         </div>
       )}
 
-      {adminView && (
-        <div className="forms">
-          <ActionForm
-            title={t('restarts.record')}
-            submitLabel={t('restarts.record')}
-            onSubmit={async (form) => {
-              const { error } = await api.POST('/api/rounds/{round_id}/restarts', {
-                params: { path },
-                body: {
-                  lap: optionalNumber(form.get('lap')),
-                  elapsed_seconds: optionalNumber(form.get('elapsed_seconds')),
-                  location: String(form.get('location') ?? ''),
-                  reason: form.get('reason') as RestartIn['reason'],
-                  explanation: String(form.get('explanation') ?? ''),
-                  requested_by_id: optionalNumber(form.get('requested_by_id')),
-                  executed_by_id: optionalNumber(form.get('executed_by_id')),
-                  responsibility: form.get('responsibility') as RestartIn['responsibility'],
-                  driver_entry_ids: form.getAll('driver_entry_ids').map(Number),
-                  review_status: form.get('review_status') as RestartIn['review_status'],
-                },
-              })
-              if (!error) data.reload()
-              return error
-            }}
-          >
-            <div className="field-row">
-              <label>
-                {t('restarts.lap')}
-                <input name="lap" type="number" min={0} />
-              </label>
-              <label>
-                {t('restarts.elapsed')}
-                <input name="elapsed_seconds" type="number" min={0} />
-              </label>
-            </div>
-            <label>
-              {t('restarts.location')}
-              <input name="location" maxLength={200} />
-            </label>
-            <label>
-              {t('restarts.reason')}
-              <select name="reason" defaultValue="first_lap_crash">
-                {REASONS.map((reason) => (
-                  <option key={reason} value={reason}>
-                    {t(`restarts.reasons.${reason}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              {t('restarts.explanation')}
-              <textarea name="explanation" rows={2} maxLength={2000} />
-            </label>
-            <div className="field-row">
-              <DriverSelect name="requested_by_id" label={t('restarts.requestedBy')} entries={entries} />
-              <DriverSelect name="executed_by_id" label={t('restarts.executedBy')} entries={entries} />
-            </div>
-            <ResponsibilityFields entries={entries} />
-          </ActionForm>
-        </div>
-      )}
     </>
   )
 }
@@ -327,40 +381,83 @@ function RestartRow({
               {t('restarts.edit')}
             </button>
           )}
+          <Dialog open={editing} title={t('restarts.edit')} onClose={() => setEditing(false)}>
+            {editing && (
+              <ActionForm
+                title={`${t('restarts.edit')} · ${t('restarts.attempt', { number: restart.abandoned_attempt })}`}
+                submitLabel={t('restarts.save')}
+                onDone={() => setEditing(false)}
+                onSubmit={async (form) => {
+                  const { error } = await api.PUT('/api/restarts/{restart_id}/responsibility', {
+                    params: { path: { restart_id: restart.id } },
+                    body: {
+                      responsibility: form.get('responsibility') as ResponsibilityIn['responsibility'],
+                      driver_entry_ids: form.getAll('driver_entry_ids').map(Number),
+                      review_status: form.get('review_status') as ResponsibilityIn['review_status'],
+                      reason: String(form.get('reason') ?? ''),
+                    },
+                  })
+                  if (!error) onSaved()
+                  return error
+                }}
+              >
+                <ResponsibilityFields entries={entries} initial={restart} />
+                <label>
+                  {t('restarts.changeReason')}
+                  <input name="reason" maxLength={500} />
+                </label>
+              </ActionForm>
+            )}
+          </Dialog>
         </td>
       </tr>
-      {editing && (
-        <tr>
-          <td colSpan={7}>
-            <ActionForm
-              title={`${t('restarts.edit')} · ${t('restarts.attempt', { number: restart.abandoned_attempt })}`}
-              submitLabel={t('restarts.save')}
-              onSubmit={async (form) => {
-                const { error } = await api.PUT('/api/restarts/{restart_id}/responsibility', {
-                  params: { path: { restart_id: restart.id } },
-                  body: {
-                    responsibility: form.get('responsibility') as ResponsibilityIn['responsibility'],
-                    driver_entry_ids: form.getAll('driver_entry_ids').map(Number),
-                    review_status: form.get('review_status') as ResponsibilityIn['review_status'],
-                    reason: String(form.get('reason') ?? ''),
-                  },
-                })
-                if (!error) {
-                  setEditing(false)
-                  onSaved()
-                }
-                return error
-              }}
-            >
-              <ResponsibilityFields entries={entries} initial={restart} />
-              <label>
-                {t('restarts.changeReason')}
-                <input name="reason" maxLength={500} />
-              </label>
-            </ActionForm>
-          </td>
-        </tr>
-      )}
+    </>
+  )
+}
+
+/** Restarts with the same values in one row. "Ver uno por uno" shows each restart. */
+function RestartGroup({
+  group,
+  entries,
+  adminView,
+  onSaved,
+}: {
+  group: RestartOut[]
+  entries: Entry[]
+  adminView: boolean
+  onSaved: () => void
+}) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const first = group[0]
+  const last = group[group.length - 1]
+  return (
+    <>
+      <tr className="restart-group">
+        <td>
+          {first.abandoned_attempt} → {last.replacement_attempt ?? '—'}
+          <span className="badge">{t('restarts.groupCount', { count: group.length })}</span>
+        </td>
+        <td>{first.lap ?? '—'}</td>
+        <td>{t(`restarts.reasons.${first.reason}`)}</td>
+        <td>{first.location || '—'}</td>
+        <td>{t(`restarts.responsibilities.${first.responsibility}`)}</td>
+        <td>
+          <span className={`badge review-${first.review_status}`}>
+            {t(`restarts.reviews.${first.review_status}`)}
+          </span>
+        </td>
+        <td>
+          {first.requested_by ?? '—'}
+          <button type="button" className="secondary small" aria-expanded={open} onClick={() => setOpen(!open)}>
+            {t(open ? 'restarts.hideEach' : 'restarts.showEach')}
+          </button>
+        </td>
+      </tr>
+      {open &&
+        group.map((restart) => (
+          <RestartRow key={restart.id} restart={restart} entries={entries} adminView={adminView} onSaved={onSaved} />
+        ))}
     </>
   )
 }

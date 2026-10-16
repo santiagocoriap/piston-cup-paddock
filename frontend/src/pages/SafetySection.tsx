@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { api } from '../api/client'
+import { Explainer } from '../components/Feedback'
 import { useLoad } from '../lib/useLoad'
 
 /** Safety ratings, rules safety-1. Each change shows the incidents that caused it. */
@@ -15,8 +16,12 @@ export function SafetySection({ seasonId }: { seasonId: number }) {
 
   return (
     <section aria-label={t('safety.title')}>
-      <h2>{t('safety.title')}</h2>
-      <p className="muted">{t('safety.rules', { version: data.rules_version, laps: data.provisional_laps })}</p>
+      <div className="section-head">
+        <h2>{t('safety.title')}</h2>
+        <Explainer title={t('safety.title')} label={t('safety.howItWorks')}>
+          {t('safety.rules', { version: data.rules_version, laps: data.provisional_laps })}
+        </Explainer>
+      </div>
       <div className="table-wrap">
         <table aria-label={t('safety.title')}>
           <thead>
@@ -32,9 +37,11 @@ export function SafetySection({ seasonId }: { seasonId: number }) {
             {data.drivers.map((driver) => (
               <tr key={driver.entry_id}>
                 <td>{driver.driver_name}</td>
-                <td>
-                  {driver.status === 'unknown' ? '—' : driver.rating.toFixed(2)}{' '}
-                  <span className="badge">{t(`safety.status.${driver.status}`)}</span>
+                <td className="safety-cell">
+                  <b className={`safety-rating ${driver.status}`}>
+                    {driver.status === 'unknown' ? '—' : driver.rating.toFixed(2)}
+                  </b>
+                  <span className={`badge safety-${driver.status}`}>{t(`safety.status.${driver.status}`)}</span>
                 </td>
                 <td>{driver.laps}</td>
                 <td>{driver.points}</td>

@@ -1,15 +1,15 @@
 import { expect, test } from '@playwright/test'
 import { E2E_ADMIN } from '../fixtures'
-import { signIn } from './helpers'
+import { signIn, signOut } from './helpers'
 
 test('an admin signs in, stays signed in after a reload, and signs out', async ({ page }) => {
   await signIn(page)
-  await expect(page.getByRole('heading', { name: 'Campeonatos' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Campeonatos' })).toBeVisible()
 
   await page.reload()
-  await expect(page.getByRole('heading', { name: 'Campeonatos' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Campeonatos' })).toBeVisible()
 
-  await page.getByRole('button', { name: 'Cerrar sesión' }).click()
+  await signOut(page)
   await expect(page.getByRole('heading', { name: 'Iniciar sesión' })).toBeVisible()
 })
 
@@ -29,7 +29,7 @@ test('the health check reports the database', async ({ request }) => {
 
 test('the home page shows the dashboard and fits the screen', async ({ page }) => {
   await signIn(page)
-  await expect(page.getByRole('heading', { name: 'Mi paddock' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: /^Hola, / })).toBeVisible()
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   )

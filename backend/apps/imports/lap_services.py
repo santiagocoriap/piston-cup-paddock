@@ -38,9 +38,15 @@ def _applied_import(round_: Round, kind: str) -> ResultImport | None:
     )
 
 
-def _pit_laps(round_: Round, kind: str) -> dict[str, dict[int, str]] | None:
-    """For each GUID, the pit status of each lap: "in" for a lap with a pit entry, "out" for a
-    lap with only a pit exit. None when the round has no Real Penalty log of this session."""
+def _log_laps(
+    round_: Round, kind: str
+) -> tuple[dict[str, dict[int, str]], dict[tuple[str, int], int]] | None:
+    """From the last Real Penalty log of the session: for each GUID, the pit status of each lap
+    ("in" for a lap with a pit entry, "out" for a lap with only a pit exit), and the cut warnings
+    of each (GUID, lap). None when the round has no Real Penalty log of this session.
+
+    The last log is the last start. A start before a restart has its own log, so its pit entries
+    and cuts do not count."""
     log_type = LOG_TYPES.get(kind)
     log_file = (
         PenaltyLogFile.objects.filter(round=round_, session_type=log_type)
@@ -49,8 +55,9 @@ def _pit_laps(round_: Round, kind: str) -> dict[str, dict[int, str]] | None:
     )
     if log_file is None:
         return None
+    log = read_log(log_file)
     pits: dict[str, dict[int, str]] = {}
-    for event in read_log(log_file).pits:
+    for event in log.pits:
         if event.lap is None:
             continue
         laps = pits.setdefault(event.guid, {})
@@ -58,7 +65,10 @@ def _pit_laps(round_: Round, kind: str) -> dict[str, dict[int, str]] | None:
             laps[event.lap] = "in"
         else:
             laps.setdefault(event.lap, "out")
-    return pits
+    cuts: dict[tuple[str, int], int] = {}
+    for key in log.cut_laps:
+        cuts[key] = cuts.get(key, 0) + 1
+    return pits, cuts
 
 
 def _contact_laps(round_: Round) -> set[tuple[str, int]] | None:
@@ -90,7 +100,8 @@ def round_laps(round_: Round, kind: str) -> RoundLaps:
     rules = clean_rules_for(race, contacts is not None)
     if result_import is None:
         return RoundLaps(kind, sessions, False, False, rules, [])
-    pits = _pit_laps(round_, kind)
+    from_log = _log_laps(round_, kind)
+    pits, log_cuts = from_log if from_log else ({}, {})
     laps = ImportedLap.objects.filter(result_import=result_import, entry__isnull=False)
     rows: dict[int, list[LapRow]] = {}
     info: dict[int, DriverInfo] = {}
@@ -104,10 +115,11 @@ def round_laps(round_: Round, kind: str) -> RoundLaps:
                 lap_number=lap.lap_number,
                 time_ms=lap.lap_time_ms,
                 sectors_ms=list(lap.sectors_ms or []),
-                cuts=lap.cuts,
+                # AC does not count every cut. Real Penalty warns for more of them.
+                cuts=max(lap.cuts, log_cuts.get((lap.guid, lap.lap_number), 0)),
                 invalid_reason=lap.invalid_reason,
                 tyre=lap.tyre,
-                pit=(pits or {}).get(lap.guid, {}).get(lap.lap_number),
+                pit=pits.get(lap.guid, {}).get(lap.lap_number),
                 contact=(lap.guid, lap.lap_number) in (contacts or set()),
             )
         )
@@ -117,7 +129,7 @@ def round_laps(round_: Round, kind: str) -> RoundLaps:
         session=kind,
         sessions=sessions,
         has_sectors=any(r.sectors_ms for group in rows.values() for r in group),
-        has_pit_data=pits is not None,
+        has_pit_data=from_log is not None,
         clean_rules=rules,
         drivers=[(info[d.key], d) for d in analyzed],
     )

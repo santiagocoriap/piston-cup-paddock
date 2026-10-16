@@ -3,30 +3,51 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
+import { Combobox } from '../components/Combobox'
+import { Dialog } from '../components/Dialog'
 import { EventTime } from '../components/EventTime'
 import { Explainer, StatusBadge } from '../components/Feedback'
 import { Icon, type IconName } from '../components/Icon'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
+import { medal } from '../lib/medal'
 import { useLoad } from '../lib/useLoad'
+import { ResultChips, Trend } from '../components/ResultHistory'
 import { useMe } from '../session'
 
 type Card = components['schemas']['SeasonCardOut']
 type NextRound = components['schemas']['NextRoundOut']
+type LastRound = components['schemas']['LastRoundOut']
 type Ballot = components['schemas']['BallotSummary']
 type Conditions = components['schemas']['ConditionsOut']
 type Answer = 'yes' | 'maybe' | 'no'
-
-const MAX_KG = 45
-const MAX_PCT = 5
 
 /** The first thing a driver sees: the next race, what to do, the position, and the last results. */
 export function DashboardSection() {
   const { t } = useTranslation()
   const me = useMe()
   const dashboard = useLoad(() => api.GET('/api/dashboard'), [])
+  const [linking, setLinking] = useState(false)
+  const [notice, setNotice] = useState<string | null>(null)
+  const hideKey = `paddock.notRacing.${me.id}`
+  const [notRacing, setNotRacing] = useState(() => {
+    try {
+      return localStorage.getItem(hideKey) === 'yes'
+    } catch {
+      return false
+    }
+  })
   const data = dashboard.data
   if (!data) return null
+
+  function hideBox() {
+    setNotRacing(true)
+    try {
+      localStorage.setItem(hideKey, 'yes')
+    } catch {
+      // Private windows can refuse storage. The box then stays hidden for this page only.
+    }
+  }
 
   const withNext = data.seasons.filter((card) => card.next_round)
   const main = [...withNext].sort(byNextDate)[0] ?? data.seasons[0]
@@ -34,8 +55,58 @@ export function DashboardSection() {
   return (
     <section className="dashboard" aria-labelledby="home-title">
       <h1 id="home-title">{t('dashboard.hello', { name: me.username })}</h1>
-      {!data.has_driver_profile && <p className="muted">{t('dashboard.noProfile')}</p>}
-      {data.has_driver_profile && data.seasons.length === 0 && <p className="muted">{t('dashboard.noSeasons')}</p>}
+      {notice && (
+        <p role="status" className="notice-ok">
+          <Icon name="check" small />
+          {notice}
+        </p>
+      )}
+      {!data.has_driver_profile && !notRacing && (
+        <div className="empty-home">
+          <span className="champ-icon">
+            <Icon name="user" />
+          </span>
+          <div>
+            <p className="empty-title">{t('dashboard.noProfileTitle')}</p>
+            <p className="muted">{me.is_admin ? t('dashboard.noProfileAdmin') : t('dashboard.noProfile')}</p>
+          </div>
+          <div className="empty-home-actions">
+            {me.is_admin && (
+              <button type="button" onClick={() => setLinking(true)}>
+                {t('dashboard.pickProfile')}
+              </button>
+            )}
+            <button type="button" className="secondary" onClick={hideBox}>
+              {t('dashboard.notRacing')}
+            </button>
+          </div>
+        </div>
+      )}
+      {me.is_admin && (
+        <Dialog open={linking} title={t('dashboard.pickProfileTitle')} onClose={() => setLinking(false)}>
+          {linking && (
+            <LinkMyProfile
+              userId={me.id}
+              onLinked={(name) => {
+                setLinking(false)
+                setNotice(t('dashboard.linked', { name }))
+                dashboard.reload()
+              }}
+            />
+          )}
+        </Dialog>
+      )}
+      {data.has_driver_profile && data.seasons.length === 0 && (
+        <div className="empty-home">
+          <span className="champ-icon">
+            <Icon name="flag" />
+          </span>
+          <div>
+            <p className="empty-title">{t('dashboard.noSeasonsTitle')}</p>
+            <p className="muted">{t('dashboard.noSeasons')}</p>
+          </div>
+        </div>
+      )}
       {main && <SeasonHome key={main.season_id} card={main} />}
       {data.seasons.length > 1 && (
         <section aria-labelledby="other-seasons">
@@ -53,7 +124,7 @@ export function DashboardSection() {
                   </span>
                   {card.next_round && (
                     <Link to={`/rounds/${card.next_round.round_id}`}>
-                      R{card.next_round.round_number} · {card.next_round.track_name}
+                      {t('round.title', { number: card.next_round.round_number })} · {card.next_round.track_name}
                     </Link>
                   )}
                 </li>
@@ -93,12 +164,14 @@ function SeasonHome({ card }: { card: Card }) {
           attending={attending}
           onAnswered={(answer, count) => setAttendance({ mine: answer, attending: count })}
         />
+      ) : card.last_round ? (
+        <LastRace card={card} last={card.last_round} />
       ) : (
         <p className="muted">{t('dashboard.noNext')}</p>
       )}
       <div className="home-grid">
         <div>
-          <ToDo card={card} mine={mine} openBallots={openBallots} />
+          <ToDo card={card} openBallots={openBallots} />
           <Recent card={card} />
         </div>
         <div className="home-side">
@@ -123,7 +196,7 @@ function NextRace({
   attending: number
   onAnswered: (answer: Answer, attending: number) => void
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [error, setError] = useState<string | null>(null)
   const [changing, setChanging] = useState(false)
 
@@ -140,8 +213,17 @@ function NextRace({
   }
 
   const answered = mine && !changing
+  const preview = next.track_preview_url
+  const trackFacts = [
+    next.track_country,
+    next.track_length_m ? `${(next.track_length_m / 1000).toLocaleString(i18n.language, { maximumFractionDigits: 3 })} km` : null,
+    next.track_direction ? t(`facts.directions.${next.track_direction}`) : null,
+    next.pit_boxes ? t('dashboard.pitBoxes', { count: next.pit_boxes }) : null,
+  ].filter(Boolean)
   return (
-    <section className="hero" aria-labelledby="next-race">
+    <section className={preview ? 'hero race-hero has-image' : 'hero race-hero'} aria-labelledby="next-race">
+      {/* The picture of the layout from the game files, behind the text. */}
+      {preview && <img className="hero-backdrop" src={preview} alt="" />}
       <div className="hero-main">
         <p className="eyebrow">
           <span className="badge status-badge new">
@@ -149,7 +231,7 @@ function NextRace({
             {t('dashboard.next')}
           </span>
           <span>
-            R{next.round_number} · {card.championship_name} · {card.season_name}
+            {t('round.title', { number: next.round_number })} · {card.championship_name} · {card.season_name}
           </span>
         </p>
         <h2 id="next-race" className="hero-title">
@@ -161,7 +243,14 @@ function NextRace({
             <EventTime iso={next.scheduled_at} eventTimeZone={next.event_timezone} />
           </span>
         </p>
-        {next.scheduled_at && <Countdown iso={next.scheduled_at} />}
+        {trackFacts.length > 0 && (
+          <ul className="race-facts" aria-label={t('dashboard.trackFacts')}>
+            {trackFacts.map((fact) => (
+              <li key={fact}>{fact}</li>
+            ))}
+          </ul>
+        )}
+        {next.scheduled_at && <Countdown iso={next.scheduled_at} roundId={next.round_id} />}
         {answered ? (
           <div className="hero-answer" role="status">
             <StatusBadge status={mine === 'yes' ? 'confirmed' : mine === 'maybe' ? 'pending' : 'unknown'}>
@@ -199,7 +288,7 @@ function NextRace({
         </Link>
       </div>
       <dl className="hero-facts">
-        {next.track_outline_url && (
+        {next.track_outline_url && !preview && (
           <img
             className="hero-outline"
             src={next.track_outline_url}
@@ -218,12 +307,90 @@ function NextRace({
           </dd>
         </div>
         <ConditionFacts conditions={next.conditions} />
+        {next.first_lap_cutoff && (
+          <div>
+            <dt>{t('dashboard.firstLapCutoff')}</dt>
+            <dd>{next.first_lap_cutoff}</dd>
+          </div>
+        )}
       </dl>
     </section>
   )
 }
 
-function Countdown({ iso }: { iso: string }) {
+/** The banner when no race is next: the picture of the last track, with the result of the
+ * driver in a card on top. */
+function LastRace({ card, last }: { card: Card; last: LastRound }) {
+  const { t, i18n } = useTranslation()
+  const preview = last.track_preview_url
+  const placed = last.status === 'finished' && last.position !== null
+  const result = placed ? `P${last.position}` : t(`round.short.${last.status}`, { defaultValue: last.status.toUpperCase() })
+  const trackFacts = [
+    last.track_country,
+    last.track_length_m
+      ? `${(last.track_length_m / 1000).toLocaleString(i18n.language, { maximumFractionDigits: 3 })} km`
+      : null,
+  ].filter(Boolean)
+  return (
+    <section className={preview ? 'hero race-hero has-image' : 'hero race-hero'} aria-labelledby="last-race">
+      {preview && <img className="hero-backdrop" src={preview} alt="" />}
+      <div className="hero-main">
+        <p className="eyebrow">
+          <span className="badge status-badge last-badge">
+            <Icon name="history" small />
+            {t('dashboard.lastRace')}
+          </span>
+          <span>
+            {t('round.title', { number: last.round_number })} · {card.championship_name} · {card.season_name}
+          </span>
+        </p>
+        <h2 id="last-race" className="hero-title">
+          {last.track_name}
+        </h2>
+        <p className="hero-when">
+          <span className="hero-layout">{last.layout_name}</span>
+          {last.scheduled_at && (
+            <span>
+              <EventTime iso={last.scheduled_at} eventTimeZone={last.event_timezone} />
+            </span>
+          )}
+        </p>
+        {trackFacts.length > 0 && (
+          <ul className="race-facts" aria-label={t('dashboard.trackFacts')}>
+            {trackFacts.map((fact) => (
+              <li key={fact}>{fact}</li>
+            ))}
+          </ul>
+        )}
+        <p className="last-waiting">
+          <Icon name="clock" small />
+          {t('dashboard.waitingNext')}
+        </p>
+      </div>
+      <div className={`hero-facts last-result ${placed ? medal(last.position ?? 0) : ''}`.trim()}>
+        <p className="last-result-label">{t('dashboard.yourResult')}</p>
+        <p className="last-result-value">
+          {placed && (last.position ?? 99) <= 3 && <Icon name="medal" />}
+          <b>{result}</b>
+          <span>{t('dashboard.points', { count: last.points })}</span>
+        </p>
+        <p className="muted">{t('dashboard.standingNow', { rank: card.rank, entries: card.entries })}</p>
+        <div className="last-actions">
+          {last.has_report && (
+            <Link className="button-link" to={`/rounds/${last.round_id}?tab=report`}>
+              {t('dashboard.readReport')}
+            </Link>
+          )}
+          <Link className="button-link secondary-link" to={`/rounds/${last.round_id}`}>
+            {t('dashboard.seeResults')}
+          </Link>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Countdown({ iso, roundId }: { iso: string; roundId: number }) {
   const { t } = useTranslation()
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => {
@@ -231,7 +398,14 @@ function Countdown({ iso }: { iso: string }) {
     return () => window.clearInterval(timer)
   }, [])
   const left = new Date(iso).getTime() - now
-  if (left <= 0) return <p className="hero-live">{t('dashboard.started')}</p>
+  if (left <= 0)
+    return (
+      <p className="hero-live">
+        <span className="live-dot" aria-hidden="true" />
+        <b>{t('dashboard.live')}</b>
+        <Link to={`/rounds/${roundId}`}>{t('dashboard.liveLink')}</Link>
+      </p>
+    )
   const minutes = Math.floor(left / 60_000)
   const days = Math.floor(minutes / 1440)
   const hours = Math.floor((minutes % 1440) / 60)
@@ -240,24 +414,23 @@ function Countdown({ iso }: { iso: string }) {
   return (
     <div className="countdown" role="timer" aria-label={label}>
       <div>
-        <b>{days}</b>
+        <FlipValue value={String(days)} />
         <span>{t('dashboard.days', { count: days })}</span>
       </div>
       <div>
-        <b>{hours}</b>
+        <FlipValue value={String(hours)} />
         <span>{t('dashboard.hours', { count: hours })}</span>
       </div>
       <div>
-        <b>{String(mins).padStart(2, '0')}</b>
+        <FlipValue value={String(mins).padStart(2, '0')} />
         <span>{t('dashboard.minutes')}</span>
       </div>
     </div>
   )
 }
 
-function ToDo({ card, mine, openBallots }: { card: Card; mine: string | null; openBallots: Ballot[] }) {
+function ToDo({ card, openBallots }: { card: Card; openBallots: Ballot[] }) {
   const { t, i18n } = useTranslation()
-  const next = card.next_round
   const items: {
     key: string
     urgent: boolean
@@ -268,16 +441,6 @@ function ToDo({ card, mine, openBallots }: { card: Card; mine: string | null; op
     to: string
     action: string
   }[] = []
-  if (next && !mine)
-    items.push({
-      key: 'attend',
-      urgent: true,
-      icon: 'clock',
-      title: t('dashboard.todo.attend', { track: next.track_name }),
-      detail: t('dashboard.attending', { count: next.attending }),
-      to: `/rounds/${next.round_id}`,
-      action: t('dashboard.todo.answer'),
-    })
   for (const ballot of openBallots) {
     const voted = ballot.voted === true
     const closes = ballot.closes_at ? formatDateTime(ballot.closes_at, i18n.language) : null
@@ -338,25 +501,17 @@ function ToDo({ card, mine, openBallots }: { card: Card; mine: string | null; op
 
 function Recent({ card }: { card: Card }) {
   const { t } = useTranslation()
+  const newest = [...card.history].reverse().slice(0, 5)
   return (
     <section aria-labelledby="recent">
       <h2 id="recent">{t('dashboard.recent')}</h2>
-      {card.recent.length === 0 ? (
+      {newest.length === 0 ? (
         <p className="muted">{t('dashboard.noRecent')}</p>
       ) : (
-        <ol className="recent">
-          {card.recent.map((result) => (
-            <li key={result.round_id}>
-              <Link to={`/rounds/${result.round_id}`}>
-                R{result.round_number} · {result.track_name}
-              </Link>
-              <span className="num">
-                {result.position ? `P${result.position}` : result.status.toUpperCase()}
-                {result.status === 'dnf' && result.position ? ' DNF' : ''} · {result.points} pts
-              </span>
-            </li>
-          ))}
-        </ol>
+        <>
+          <Trend history={card.history} entries={card.entries} />
+          <ResultChips results={newest} />
+        </>
       )}
     </section>
   )
@@ -375,10 +530,38 @@ function Standing({ card }: { card: Card }) {
         {card.points} pts · {gap > 0 ? t('dashboard.gap', { count: gap }) : t('dashboard.leader')} ·{' '}
         {t('dashboard.winsCount', { count: card.wins })}
       </p>
+      {card.nearby.length > 1 && (
+        <table className="nearby">
+          <caption className="sr-only">{t('dashboard.nearby')}</caption>
+          <tbody>
+            {card.nearby.map((row) => {
+              const diff = row.points - card.points
+              return (
+                <tr key={row.rank} className={row.me ? 'me-row' : undefined}>
+                  <td className="num">P{row.rank}</td>
+                  <td>{row.me ? t('dashboard.you') : row.name}</td>
+                  <td className="num">{row.points}</td>
+                  <td className="num nearby-gap">{row.me ? '' : diff > 0 ? `+${diff}` : `−${Math.abs(diff)}`}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      )}
       <Link className="small-link" to={`/seasons/${card.season_id}`}>
         {t('dashboard.standings')}
       </Link>
     </section>
+  )
+}
+
+/** A value that flips like a timing board when it changes. */
+function FlipValue({ value }: { value: string }) {
+  // A new key starts the animation again for each new value.
+  return (
+    <b className="flip" key={value}>
+      {value}
+    </b>
   )
 }
 
@@ -391,14 +574,14 @@ function Handicap({ next }: { next: NextRound }) {
         label={t('dashboard.ballast')}
         value={next.ballast_kg}
         previous={next.previous_ballast_kg}
-        max={MAX_KG}
+        max={next.ballast_cap}
         unit="kg"
       />
       <Scale
         label={t('dashboard.restrictor')}
         value={next.restrictor_pct}
         previous={next.previous_restrictor_pct}
-        max={MAX_PCT}
+        max={next.restrictor_cap}
         unit="%"
       />
       <div>
@@ -504,5 +687,58 @@ function ConditionFacts({ conditions }: { conditions: Conditions | null }) {
         </div>
       )}
     </>
+  )
+}
+
+/** An admin links their own account to a driver profile that has no account yet. */
+function LinkMyProfile({ userId, onLinked }: { userId: number; onLinked: (name: string) => void }) {
+  const { t } = useTranslation()
+  const drivers = useLoad(() => api.GET('/api/drivers'), [])
+  const [value, setValue] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const free = (drivers.data ?? []).filter((driver) => driver.user_id === null)
+  return (
+    <form
+      className="modal-body"
+      aria-label={t('dashboard.pickProfileTitle')}
+      onSubmit={async (event) => {
+        event.preventDefault()
+        const driver = free.find((d) => String(d.id) === value)
+        if (!driver) return
+        setBusy(true)
+        setError(null)
+        const { error: apiError } = await api.POST('/api/drivers/{driver_id}/link', {
+          params: { path: { driver_id: driver.id } },
+          body: { user_id: userId },
+        })
+        setBusy(false)
+        if (apiError) return setError(errorMessage(t, apiError))
+        onLinked(driver.display_name)
+      }}
+    >
+      <h3>{t('dashboard.pickProfileTitle')}</h3>
+      {drivers.data && free.length === 0 ? (
+        <p className="muted">{t('dashboard.noFreeProfiles')}</p>
+      ) : (
+        <Combobox
+          label={t('dashboard.profileLabel')}
+          options={free.map((d) => ({ value: String(d.id), label: d.display_name, hint: d.steam_guid ?? undefined }))}
+          value={value}
+          onChange={setValue}
+          emptyText={t('dashboard.noProfileMatch')}
+        />
+      )}
+      {error && (
+        <p role="alert" className="error">
+          {error}
+        </p>
+      )}
+      <div className="modal-actions">
+        <button type="submit" disabled={busy || !value}>
+          {t('common.save')}
+        </button>
+      </div>
+    </form>
   )
 }

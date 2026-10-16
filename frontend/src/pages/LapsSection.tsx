@@ -4,6 +4,8 @@ import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { formatLapTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { Explainer } from '../components/Feedback'
+import { TabEmpty } from './TabEmpty'
 import { CompareSection } from './CompareSection'
 
 type RoundLaps = components['schemas']['RoundLapsOut']
@@ -22,7 +24,12 @@ export function LapsSection({ roundId }: { roundId: number }) {
     [roundId, session],
   )
   const data = laps.data
-  if (!data || data.sessions.length === 0) return null
+  if (!data) return null
+  if (data.sessions.length === 0) {
+    return (
+      <TabEmpty heading={t('laps.title')} icon="flag" title={t('tabEmpty.noLaps')} text={t('tabEmpty.laps')} />
+    )
+  }
   return (
     <section aria-label={t('laps.title')}>
       <h2>{t('laps.title')}</h2>
@@ -129,10 +136,10 @@ function Summary({ data }: { data: RoundLaps }) {
           </tbody>
         </table>
       </div>
-      <p className="muted">
+      <Explainer title={t('laps.title')} label={t('laps.howItWorks')}>
         {t('laps.averageHelp')} {t('laps.cleanHelp', { rules })}{' '}
         {data.has_sectors && t('laps.theoreticalHelp')}
-      </p>
+      </Explainer>
     </>
   )
 }

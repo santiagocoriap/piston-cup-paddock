@@ -15,11 +15,31 @@ class League(models.Model):
         return self.name
 
 
+class Team(models.Model):
+    """A team of a league. The entry form lists them, so a team name has one spelling."""
+
+    league = models.ForeignKey(League, on_delete=models.CASCADE, related_name="teams")
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        ordering = ["name"]
+        constraints = [models.UniqueConstraint(fields=["league", "name"], name="unique_team")]
+
+    def __str__(self):
+        return self.name
+
+
 class Championship(models.Model):
     league = models.ForeignKey(League, on_delete=models.PROTECT, related_name="championships")
     name = models.CharField(max_length=100)
     # Write a provisional AI report when a race file is applied, before the approval.
     provisional_reports = models.BooleanField(default=False)
+    # Apply a clean result file from the server collector with no admin click. The result
+    # stays provisional until an admin approves it. See docs/adr/0002-collector-automation.md.
+    auto_publish_results = models.BooleanField(default=True)
+    # Free slots after the league drivers in the server entry list, so a driver can change to an
+    # extra car. "Enviar al servidor" sends this number. An admin can change it for one push.
+    open_slots = models.PositiveSmallIntegerField(default=10)
 
     class Meta:
         ordering = ["name"]
@@ -102,6 +122,11 @@ class SeasonEntry(models.Model):
     car = models.ForeignKey(Car, on_delete=models.PROTECT, related_name="entries")
     number = models.PositiveSmallIntegerField()
     team = models.CharField(max_length=100, blank=True)
+    # The skin that the driver chose for the car. Empty: the server picks one. The skin must be
+    # a skin of the car of the entry (the API checks it).
+    skin = models.ForeignKey(
+        "catalog.CarSkin", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
 
     class Meta:
         ordering = ["number"]

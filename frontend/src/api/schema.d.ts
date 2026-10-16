@@ -55,6 +55,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/objects/{kind}/{object_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Object */
+        delete: operations["apps_core_deletion_api_delete_object"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/csrf": {
         parameters: {
             query?: never;
@@ -131,6 +148,47 @@ export interface paths {
         patch: operations["apps_identity_api_update_me"];
         trace?: never;
     };
+    "/api/auth/me/avatar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Avatar
+         * @description Set the picture of the signed-in user. Only a PNG or a JPEG of at most 2 MB.
+         */
+        post: operations["apps_identity_api_upload_avatar"];
+        /** Remove Avatar */
+        delete: operations["apps_identity_api_remove_avatar"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/avatars/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Avatar
+         * @description The picture of a user. Every signed-in user can see it, like the names.
+         */
+        get: operations["apps_identity_api_avatar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/catalog/tracks": {
         parameters: {
             query?: never;
@@ -199,6 +257,57 @@ export interface paths {
         head?: never;
         /** Set Guidance */
         patch: operations["apps_catalog_api_set_guidance"];
+        trace?: never;
+    };
+    "/api/catalog/tracks/{track_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Track */
+        patch: operations["apps_catalog_api_edit_track"];
+        trace?: never;
+    };
+    "/api/catalog/layouts/{layout_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Layout */
+        patch: operations["apps_catalog_api_edit_layout"];
+        trace?: never;
+    };
+    "/api/catalog/cars/{car_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Car */
+        patch: operations["apps_catalog_api_edit_car"];
         trace?: never;
     };
     "/api/catalog/classes": {
@@ -276,6 +385,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/catalog/game-import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Game Import
+         * @description "Importar desde el juego": the browser sends the files of the chosen cars and tracks.
+         *     The app adds the ones that are new, with their pictures and data.
+         */
+        post: operations["apps_catalog_api_game_import"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/catalog/layouts/{layout_id}/images/{kind}": {
         parameters: {
             query?: never;
@@ -285,6 +415,46 @@ export interface paths {
         };
         /** Layout Image */
         get: operations["apps_catalog_api_layout_image"];
+        put?: never;
+        /** Upload Layout Image */
+        post: operations["apps_catalog_api_upload_layout_image"];
+        /** Remove Layout Image */
+        delete: operations["apps_catalog_api_remove_layout_image"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/skins/{skin_id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Skin Preview */
+        get: operations["apps_catalog_api_skin_preview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/cars/{car_id}/data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Car Data
+         * @description All the numbers of the data folder of a car (see car_data.py). It is large, so the car
+         *     list does not carry it.
+         */
+        get: operations["apps_catalog_api_car_data"];
         put?: never;
         post?: never;
         delete?: never;
@@ -303,8 +473,10 @@ export interface paths {
         /** Car Image */
         get: operations["apps_catalog_api_car_image"];
         put?: never;
-        post?: never;
-        delete?: never;
+        /** Upload Car Image */
+        post: operations["apps_catalog_api_upload_car_image"];
+        /** Remove Car Image */
+        delete: operations["apps_catalog_api_remove_car_image"];
         options?: never;
         head?: never;
         patch?: never;
@@ -564,6 +736,64 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/seasons/{season_id}/teams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Season Teams
+         * @description The teams of the league of the season, for the entry form.
+         */
+        get: operations["apps_competition_api_season_teams"];
+        put?: never;
+        /** Create Team */
+        post: operations["apps_competition_api_create_team"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teams/{team_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Team
+         * @description A team leaves the list. Entries keep their team name.
+         */
+        delete: operations["apps_competition_api_delete_team"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/entries/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Entry */
+        patch: operations["apps_competition_api_update_entry"];
+        trace?: never;
+    };
     "/api/seasons/{season_id}/entries": {
         parameters: {
             query?: never;
@@ -653,6 +883,27 @@ export interface paths {
          * @description Set the calendar position or the date of a round.
          */
         patch: operations["apps_competition_api_update_round"];
+        trace?: never;
+    };
+    "/api/seasons/{season_id}/round-order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Order Rounds
+         * @description A new calendar order (drag and drop): round N is the Nth ID of the list. The list has
+         *     every round of the season. The dates stay with their rounds.
+         */
+        put: operations["apps_competition_api_order_rounds"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/rounds/{round_id}/cancel": {
@@ -782,6 +1033,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/entries/{entry_id}/skins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Entry Skins
+         * @description The skins that the driver of the entry can choose: the skins of the car of the entry.
+         */
+        get: operations["apps_competition_api_entry_skins"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/entries/{entry_id}/skin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Entry Skin
+         * @description Choose the skin of an entry (null: let the server pick). The driver can do it once the
+         *     entry exists, and a manager can do it for any driver.
+         */
+        put: operations["apps_competition_api_set_entry_skin"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/rounds/{round_id}": {
         parameters: {
             query?: never;
@@ -813,6 +1105,26 @@ export interface paths {
         get: operations["apps_results_api_get_version"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/result/lines/{entry_id}/dnf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Put Line Dnf
+         * @description Mark one driver as DNF with one click. The result gets a new version.
+         */
+        post: operations["apps_results_api_put_line_dnf"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1330,6 +1642,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/ballots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Ballots
+         * @description The ballots where the user is a voter: the open ones first, then the latest closed.
+         */
+        get: operations["apps_voting_api_my_ballots"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/seasons/{season_id}/ballots": {
         parameters: {
             query?: never;
@@ -1366,6 +1698,26 @@ export interface paths {
         patch: operations["apps_voting_api_update"];
         trace?: never;
     };
+    "/api/ballots/{ballot_id}/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Candidates
+         * @description Every layout or car class of the catalog, with its state for this ballot.
+         */
+        get: operations["apps_voting_api_candidates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/ballots/{ballot_id}/options": {
         parameters: {
             query?: never;
@@ -1374,7 +1726,8 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put?: never;
+        /** Put Options */
+        put: operations["apps_voting_api_put_options"];
         /** Create Option */
         post: operations["apps_voting_api_create_option"];
         delete?: never;
@@ -1505,6 +1858,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search All
+         * @description The search box in the header. It needs two letters or more.
+         */
+        get: operations["apps_dashboard_api_search_all"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Pending List
+         * @description What waits for this admin. A user who manages nothing gets an empty list.
+         */
+        get: operations["apps_dashboard_api_pending_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/dashboard": {
         parameters: {
             query?: never;
@@ -1550,6 +1943,26 @@ export interface paths {
         put?: never;
         /** Adjust */
         post: operations["apps_dashboard_api_adjust"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/tab-counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Round Tab Counts
+         * @description How much data each tab of the round page has.
+         */
+        get: operations["apps_dashboard_api_round_tab_counts"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1834,6 +2247,64 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/collector/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Collector Status
+         * @description The health of the collector, every 5 minutes: the files that wait, the last error, and
+         *     the Content Manager presets.
+         */
+        post: operations["apps_collectors_api_collector_status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/collector/version": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Collector Version */
+        get: operations["apps_collectors_api_collector_version"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/collector/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Collector Download
+         * @description The newest program, for the update of a collector.
+         */
+        get: operations["apps_collectors_api_collector_download"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/championships/{championship_id}/collectors": {
         parameters: {
             query?: never;
@@ -1846,6 +2317,27 @@ export interface paths {
         put?: never;
         /** New Collector */
         post: operations["apps_collectors_api_new_collector"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/collectors/{collector_id}/package": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Collector Package
+         * @description "Descargar colector": a zip with the program and a collector.ini with this key. The app
+         *     keeps only a hash of the key, so the admin sends the key back (it shows one time only).
+         */
+        post: operations["apps_collectors_api_collector_package"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1886,40 +2378,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/telemetry/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Collector Status */
-        get: operations["apps_telemetry_api_collector_status"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/telemetry/laps": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Upload Lap */
-        post: operations["apps_telemetry_api_upload_lap"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/me/telemetry": {
         parameters: {
             query?: never;
@@ -1931,23 +2389,6 @@ export interface paths {
         get: operations["apps_telemetry_api_my_telemetry"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/me/telemetry/key": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** New Key */
-        post: operations["apps_telemetry_api_new_key"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2005,6 +2446,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/track-map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Round Track Map
+         * @description The track drawing of the round, from the collector positions, for the telemetry map.
+         */
+        get: operations["apps_telemetry_api_round_track_map"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/rounds/{round_id}/engineer": {
         parameters: {
             query?: never;
@@ -2012,10 +2473,33 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Engineer */
+        /**
+         * Engineer
+         * @description Where the driver loses time in each corner, and why, against a reference lap.
+         */
         get: operations["apps_telemetry_api_engineer"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/engineer/note": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Engineer Note
+         * @description Ask the AI for a coaching note from the numbers of the engineer.
+         */
+        post: operations["apps_telemetry_api_engineer_note"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2300,6 +2784,148 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/script/laps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Script Lap */
+        post: operations["apps_telemetry_script_api_script_lap"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/script/now": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Script Now */
+        get: operations["apps_telemetry_script_api_script_now"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/championships/{championship_id}/script": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Script Setup */
+        get: operations["apps_telemetry_script_api_script_setup"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/championships/{championship_id}/script/code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Script New Code */
+        post: operations["apps_telemetry_script_api_script_new_code"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/server-setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Server Setup Preview
+         * @description What "Enviar al servidor" would write, and the state of the last push.
+         */
+        get: operations["apps_collectors_server_setup_api_server_setup_preview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/server-push": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Server Push */
+        post: operations["apps_collectors_server_setup_api_server_push"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/collector/commands": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Collector Command
+         * @description The push that waits for the collector, or nothing.
+         */
+        get: operations["apps_collectors_server_setup_api_collector_command"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/collector/commands/{push_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Collector Report */
+        post: operations["apps_collectors_server_setup_api_collector_report"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2341,6 +2967,18 @@ export interface components {
             /** Last Ok At */
             last_ok_at: string | null;
         };
+        /** DeletedOut */
+        DeletedOut: {
+            /** Name */
+            name: string;
+        };
+        /** InUseOut */
+        InUseOut: {
+            /** Detail */
+            detail: string;
+            /** Uses */
+            uses: string[];
+        };
         /** Me */
         Me: {
             /** Id */
@@ -2357,6 +2995,8 @@ export interface components {
             can_admin: boolean;
             /** Can Manage */
             can_manage: boolean;
+            /** Avatar Url */
+            avatar_url?: string | null;
         };
         /** Error */
         Error: {
@@ -2403,6 +3043,28 @@ export interface components {
             length_m: number | null;
             /** Country */
             country: string;
+            /** City */
+            city: string;
+            /** Width M */
+            width_m: number | null;
+            /** Direction */
+            direction: string;
+            /** Latitude */
+            latitude: number | null;
+            /** Longitude */
+            longitude: number | null;
+            /** Year */
+            year: number | null;
+            /** Author */
+            author: string;
+            /** Version */
+            version: string;
+            /** Url */
+            url: string;
+            /** Description */
+            description: string;
+            /** Tags */
+            tags: string[];
         };
         /** TrackOut */
         TrackOut: {
@@ -2412,6 +3074,8 @@ export interface components {
             key: string;
             /** Name */
             name: string;
+            /** Country */
+            country: string;
             /** Layouts */
             layouts: components["schemas"]["LayoutOut"][];
         };
@@ -2421,6 +3085,11 @@ export interface components {
             key: string;
             /** Name */
             name: string;
+            /**
+             * Country
+             * @default
+             */
+            country?: string;
         };
         /** LayoutIn */
         LayoutIn: {
@@ -2458,6 +3127,95 @@ export interface components {
             brand: string;
             /** Author */
             author: string;
+            /** Game Class */
+            game_class: string;
+            /** Country */
+            country: string;
+            /** Year */
+            year: number | null;
+            /** Power Hp */
+            power_hp: number | null;
+            /** Torque Nm */
+            torque_nm: number | null;
+            /** Weight Kg */
+            weight_kg: number | null;
+            /** Top Speed Kmh */
+            top_speed_kmh: number | null;
+            /** Acceleration */
+            acceleration: string;
+            /** Power To Weight */
+            power_to_weight: string;
+            /** Specs Text */
+            specs_text: {
+                [key: string]: string;
+            };
+            /** Version */
+            version: string;
+            /** Url */
+            url: string;
+            /** Description */
+            description: string;
+            /** Tags */
+            tags: string[];
+            /** Power Curve */
+            power_curve: number[][];
+            /** Torque Curve */
+            torque_curve: number[][];
+            /** Source */
+            source: string;
+            /** Source Url */
+            source_url: string;
+            /** Has Data */
+            has_data: boolean;
+            /** Data Error */
+            data_error: string;
+            /** Skins */
+            skins: components["schemas"]["SkinOut"][];
+            /** Tyres */
+            tyres: components["schemas"]["TyreOut"][];
+        };
+        /** SkinOut */
+        SkinOut: {
+            /** Id */
+            id: number;
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** Driver Name */
+            driver_name: string;
+            /** Team */
+            team: string;
+            /** Number */
+            number: string;
+            /** Has Preview */
+            has_preview: boolean;
+        };
+        /** TyreOut */
+        TyreOut: {
+            /** Index */
+            index: number;
+            /** Name */
+            name: string;
+            /** Short Name */
+            short_name: string;
+            front: components["schemas"]["TyreSideOut"];
+            rear: components["schemas"]["TyreSideOut"];
+        };
+        /** TyreSideOut */
+        TyreSideOut: {
+            /** Width */
+            width?: number | null;
+            /** Radius */
+            radius?: number | null;
+            /** Rim Radius */
+            rim_radius?: number | null;
+            /** Pressure Ideal */
+            pressure_ideal?: number | null;
+            /** Pressure Static */
+            pressure_static?: number | null;
+            /** Wear Curve */
+            wear_curve?: string | null;
         };
         /** CarIn */
         CarIn: {
@@ -2480,6 +3238,87 @@ export interface components {
             first_lap_cutoff?: string;
             /** Pit Boxes */
             pit_boxes?: number | null;
+        };
+        /** TrackEditIn */
+        TrackEditIn: {
+            /** Name */
+            name: string;
+            /** Country */
+            country?: string | null;
+        };
+        /**
+         * LayoutEditIn
+         * @description The fields to change. A field that the request leaves out keeps its value.
+         */
+        LayoutEditIn: {
+            /** Name */
+            name?: string | null;
+            /** Length M */
+            length_m?: number | null;
+            /** Width M */
+            width_m?: number | null;
+            /** Pit Boxes */
+            pit_boxes?: number | null;
+            /** Country */
+            country?: string | null;
+            /** City */
+            city?: string | null;
+            /** Direction */
+            direction?: ("" | "clockwise" | "anticlockwise") | null;
+            /** Latitude */
+            latitude?: number | null;
+            /** Longitude */
+            longitude?: number | null;
+            /** Year */
+            year?: number | null;
+            /** Author */
+            author?: string | null;
+            /** Version */
+            version?: string | null;
+            /** Url */
+            url?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Tags */
+            tags?: string[] | null;
+        };
+        /**
+         * CarEditIn
+         * @description The fields to change. A field that the request leaves out keeps its value.
+         */
+        CarEditIn: {
+            /** Name */
+            name?: string | null;
+            /** Brand */
+            brand?: string | null;
+            /** Game Class */
+            game_class?: string | null;
+            /** Country */
+            country?: string | null;
+            /** Year */
+            year?: number | null;
+            /** Power Hp */
+            power_hp?: number | null;
+            /** Torque Nm */
+            torque_nm?: number | null;
+            /** Weight Kg */
+            weight_kg?: number | null;
+            /** Top Speed Kmh */
+            top_speed_kmh?: number | null;
+            /** Acceleration */
+            acceleration?: string | null;
+            /** Power To Weight */
+            power_to_weight?: string | null;
+            /** Author */
+            author?: string | null;
+            /** Version */
+            version?: string | null;
+            /** Url */
+            url?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Tags */
+            tags?: string[] | null;
         };
         /** CarClassOut */
         CarClassOut: {
@@ -2548,6 +3387,19 @@ export interface components {
             /** Missing Cars */
             missing_cars: string[];
         };
+        /** GameImportOut */
+        GameImportOut: {
+            /** New Tracks */
+            new_tracks: string[];
+            /** New Layouts */
+            new_layouts: string[];
+            /** New Cars */
+            new_cars: string[];
+            /** Layouts */
+            layouts: string[];
+            /** Cars */
+            cars: string[];
+        };
         /** DriverOut */
         DriverOut: {
             /** Id */
@@ -2592,6 +3444,15 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** LeagueChampionshipOut */
+        LeagueChampionshipOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Season Count */
+            season_count: number;
+        };
         /** LeagueOut */
         LeagueOut: {
             /** Id */
@@ -2600,6 +3461,8 @@ export interface components {
             name: string;
             /** Timezone */
             timezone: string;
+            /** Championships */
+            championships: components["schemas"]["LeagueChampionshipOut"][];
         };
         /** LeagueIn */
         LeagueIn: {
@@ -2625,6 +3488,10 @@ export interface components {
             can_manage: boolean;
             /** Provisional Reports */
             provisional_reports: boolean;
+            /** Auto Publish Results */
+            auto_publish_results: boolean;
+            /** Open Slots */
+            open_slots: number;
         };
         /** NameIn */
         NameIn: {
@@ -2645,8 +3512,42 @@ export interface components {
             can_manage: boolean;
             /** Provisional Reports */
             provisional_reports: boolean;
+            /** Auto Publish Results */
+            auto_publish_results: boolean;
+            /** Open Slots */
+            open_slots: number;
             /** Seasons */
             seasons: components["schemas"]["SeasonSummary"][];
+            latest: components["schemas"]["LatestSeasonOut"] | null;
+            /** Progress */
+            progress: components["schemas"]["LatestSeasonOut"][];
+        };
+        /** LatestSeasonOut */
+        LatestSeasonOut: {
+            /** Season Id */
+            season_id: number;
+            /** Name */
+            name: string;
+            /** Done */
+            done: number;
+            /** Total */
+            total: number;
+            next_round: components["schemas"]["NextRoundBrief"] | null;
+            /** Leader */
+            leader: string | null;
+        };
+        /** NextRoundBrief */
+        NextRoundBrief: {
+            /** Round Id */
+            round_id: number;
+            /** Number */
+            number: number;
+            /** Track Name */
+            track_name: string;
+            /** Layout Name */
+            layout_name: string;
+            /** Scheduled At */
+            scheduled_at: string | null;
         };
         /** SeasonSummary */
         SeasonSummary: {
@@ -2669,6 +3570,8 @@ export interface components {
             user_id: number;
             /** Username */
             username: string;
+            /** Avatar Url */
+            avatar_url?: string | null;
             /** Role */
             role: string;
             /** Custom Role Id */
@@ -2689,10 +3592,17 @@ export interface components {
          * @enum {string}
          */
         Role: "admin" | "driver" | "steward" | "custom";
-        /** ChampionshipSettingsIn */
+        /**
+         * ChampionshipSettingsIn
+         * @description A missing setting keeps its value.
+         */
         ChampionshipSettingsIn: {
             /** Provisional Reports */
-            provisional_reports: boolean;
+            provisional_reports?: boolean | null;
+            /** Auto Publish Results */
+            auto_publish_results?: boolean | null;
+            /** Open Slots */
+            open_slots?: number | null;
         };
         /** RoleOut */
         RoleOut: {
@@ -2732,6 +3642,8 @@ export interface components {
             driver_id: number;
             /** Driver Name */
             driver_name: string;
+            /** Avatar Url */
+            avatar_url?: string | null;
             /** Car Id */
             car_id: number;
             /** Car Name */
@@ -2740,6 +3652,23 @@ export interface components {
             number: number;
             /** Team */
             team: string;
+            /** Skin Id */
+            skin_id?: number | null;
+            /**
+             * Skin Name
+             * @default
+             */
+            skin_name?: string;
+            /**
+             * Skin Has Preview
+             * @default false
+             */
+            skin_has_preview?: boolean;
+            /**
+             * Mine
+             * @default false
+             */
+            mine?: boolean;
         };
         /** RoundOut */
         RoundOut: {
@@ -2763,6 +3692,10 @@ export interface components {
             cancel_reason: string;
             /** Track Changes */
             track_changes: components["schemas"]["TrackChangeOut"][];
+            /** Announced Conditions */
+            announced_conditions: {
+                [key: string]: unknown;
+            };
         };
         /** SeasonDetail */
         SeasonDetail: {
@@ -2806,6 +3739,27 @@ export interface components {
              * Format: date-time
              */
             changed_at: string;
+        };
+        /** TeamOut */
+        TeamOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
+        /** TeamIn */
+        TeamIn: {
+            /** Name */
+            name: string;
+        };
+        /** EntryPatchIn */
+        EntryPatchIn: {
+            /** Car Id */
+            car_id?: number | null;
+            /** Number */
+            number?: number | null;
+            /** Team */
+            team?: string | null;
         };
         /** EntryIn */
         EntryIn: {
@@ -2884,6 +3838,11 @@ export interface components {
             scheduled_at?: string | null;
             announced_conditions?: components["schemas"]["ConditionsIn"] | null;
         };
+        /** RoundOrderIn */
+        RoundOrderIn: {
+            /** Round Ids */
+            round_ids: number[];
+        };
         /** ReasonIn */
         ReasonIn: {
             /** Reason */
@@ -2959,12 +3918,38 @@ export interface components {
              */
             reason?: string;
         };
+        /** EntrySkinOut */
+        EntrySkinOut: {
+            /** Id */
+            id: number;
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** Team */
+            team: string;
+            /** Number */
+            number: string;
+            /** Has Preview */
+            has_preview: boolean;
+        };
+        /** SkinChoiceIn */
+        SkinChoiceIn: {
+            /** Skin Id */
+            skin_id: number | null;
+        };
         /** BriefingOut */
         BriefingOut: {
             /** Announced Conditions */
             announced_conditions: {
                 [key: string]: unknown;
             };
+            server_conditions?: components["schemas"]["ServerConditionsOut"] | null;
+            /**
+             * Conditions Differ
+             * @default []
+             */
+            conditions_differ?: string[];
             /** Protest Window Minutes */
             protest_window_minutes: number;
             /** Restart Guidance */
@@ -3037,6 +4022,8 @@ export interface components {
             driver_id: number;
             /** Driver Name */
             driver_name: string;
+            /** Avatar Url */
+            avatar_url?: string | null;
             /** Laps */
             laps?: number | null;
             /** Total Ms */
@@ -3157,6 +4144,8 @@ export interface components {
             season_id: number;
             /** Season Name */
             season_name: string;
+            /** Championship Id */
+            championship_id: number;
             /** Championship Name */
             championship_name: string;
             /** Track Name */
@@ -3214,6 +4203,26 @@ export interface components {
             pole_bonus: number;
             /** Fastest Lap Bonus */
             fastest_lap_bonus: number;
+        };
+        /** ServerConditionsOut */
+        ServerConditionsOut: {
+            /** Session Type */
+            session_type: string;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /** Weather */
+            weather: string | null;
+            /** Air Temp C */
+            air_temp_c: number | null;
+            /** Track Temp C */
+            track_temp_c: number | null;
+            /** Time Of Day */
+            time_of_day: string | null;
+            /** Grip Pct */
+            grip_pct: number | null;
         };
         /**
          * Status
@@ -3637,6 +4646,21 @@ export interface components {
              */
             is_new?: boolean;
             preview?: components["schemas"]["PreviewOut"] | null;
+            /**
+             * Auto Status
+             * @default
+             */
+            auto_status?: string;
+            /**
+             * Auto Reasons
+             * @default []
+             */
+            auto_reasons?: string[];
+            /**
+             * Review Flags
+             * @default []
+             */
+            review_flags?: components["schemas"]["ReviewFlagOut"][];
         };
         /** MatchedOut */
         MatchedOut: {
@@ -3687,6 +4711,13 @@ export interface components {
             missing: string[];
             /** Warnings */
             warnings: string[];
+        };
+        /** ReviewFlagOut */
+        ReviewFlagOut: {
+            /** Entry Id */
+            entry_id: number;
+            /** Code */
+            code: string;
         };
         /** GuidLinkIn */
         GuidLinkIn: {
@@ -3841,6 +4872,8 @@ export interface components {
             best_sectors_ms: (number | null)[];
             /** Laps */
             laps: components["schemas"]["MarkedLapOut"][];
+            /** Stints */
+            stints: components["schemas"]["StintOut"][];
         };
         /** MarkedLapOut */
         MarkedLapOut: {
@@ -3881,6 +4914,25 @@ export interface components {
             clean_rules: string[];
             /** Drivers */
             drivers: components["schemas"]["DriverLapsOut"][];
+        };
+        /** StintOut */
+        StintOut: {
+            /** Number */
+            number: number;
+            /** First Lap */
+            first_lap: number;
+            /** Last Lap */
+            last_lap: number;
+            /** Laps */
+            laps: number;
+            /** Tyre */
+            tyre: string;
+            /** Best Ms */
+            best_ms: number | null;
+            /** Average Ms */
+            average_ms: number | null;
+            /** Ends In Pit */
+            ends_in_pit: boolean;
         };
         /** CompareLapOut */
         CompareLapOut: {
@@ -4063,6 +5115,8 @@ export interface components {
             holders: components["schemas"]["RecordLapOut"][];
             /** History */
             history: components["schemas"]["HistoryOut"][];
+            /** Ranking */
+            ranking: components["schemas"]["RecordLapOut"][];
         };
         /** HistoryOut */
         HistoryOut: {
@@ -4180,6 +5234,29 @@ export interface components {
             /** Source */
             source: string;
         };
+        /** MyBallotOut */
+        MyBallotOut: {
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Title */
+            title: string;
+            /** Status */
+            status: string;
+            /** Parent Id */
+            parent_id: number | null;
+            /** Winners */
+            winners: string[];
+            /** Closes At */
+            closes_at: string | null;
+            /** Voted */
+            voted: boolean | null;
+            /** Championship */
+            championship: string;
+            /** Season */
+            season: string;
+        };
         /** BallotSummary */
         BallotSummary: {
             /** Id */
@@ -4207,6 +5284,8 @@ export interface components {
             season_id: number;
             /** Season Name */
             season_name: string;
+            /** Championship Id */
+            championship_id: number;
             /** Championship Name */
             championship_name: string;
             /** Kind */
@@ -4243,6 +5322,12 @@ export interface components {
             power_overrides: {
                 [key: string]: number;
             };
+            /** Choice Overrides */
+            choice_overrides: {
+                [key: string]: number;
+            };
+            /** My Choice Limit */
+            my_choice_limit: number;
             /** Closed Early */
             closed_early: boolean;
             /** Close Reason */
@@ -4317,6 +5402,17 @@ export interface components {
             votes: number | null;
             /** Voters */
             voters: string[] | null;
+            /** Image Url */
+            image_url?: string | null;
+            /** Voter Pictures */
+            voter_pictures?: components["schemas"]["PersonOut"][] | null;
+        };
+        /** PersonOut */
+        PersonOut: {
+            /** Username */
+            username: string;
+            /** Avatar Url */
+            avatar_url: string | null;
         };
         /** TieOut */
         TieOut: {
@@ -4333,6 +5429,8 @@ export interface components {
             power: number;
             /** Voted */
             voted: boolean;
+            /** Avatar Url */
+            avatar_url?: string | null;
         };
         /** BallotIn */
         BallotIn: {
@@ -4359,6 +5457,10 @@ export interface components {
             max_runoffs?: number | null;
             /** Power Overrides */
             power_overrides?: {
+                [key: string]: number;
+            } | null;
+            /** Choice Overrides */
+            choice_overrides?: {
                 [key: string]: number;
             } | null;
             /** Opens At */
@@ -4421,6 +5523,10 @@ export interface components {
             power_overrides?: {
                 [key: string]: number;
             } | null;
+            /** Choice Overrides */
+            choice_overrides?: {
+                [key: string]: number;
+            } | null;
             /** Opens At */
             opens_at?: string | null;
             /** Remind Hours Before */
@@ -4433,6 +5539,24 @@ export interface components {
             show_voter_names?: boolean | null;
             /** Excluded Track Ids */
             excluded_track_ids?: number[] | null;
+        };
+        /** CandidateOut */
+        CandidateOut: {
+            /** Id */
+            id: number;
+            /** Group */
+            group: string;
+            /** Label */
+            label: string;
+            /** Image Url */
+            image_url?: string | null;
+            /** Status */
+            status: string;
+        };
+        /** SetOptionsIn */
+        SetOptionsIn: {
+            /** Ids */
+            ids: number[];
         };
         /** OptionIn */
         OptionIn: {
@@ -4466,6 +5590,39 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** SearchHitOut */
+        SearchHitOut: {
+            /** Kind */
+            kind: string;
+            /** Label */
+            label: string;
+            /** Detail */
+            detail: string;
+            /** Path */
+            path: string;
+            /** Number */
+            number: number | null;
+        };
+        /** PendingItemOut */
+        PendingItemOut: {
+            /** Path */
+            path: string;
+            /** Name */
+            name: string;
+            /** Championship */
+            championship: string | null;
+            /** Number */
+            number: number | null;
+        };
+        /** PendingOut */
+        PendingOut: {
+            /** Kind */
+            kind: string;
+            /** Count */
+            count: number;
+            /** Items */
+            items: components["schemas"]["PendingItemOut"][];
+        };
         /** ConditionsOut */
         ConditionsOut: {
             /** Time Of Day */
@@ -4485,6 +5642,46 @@ export interface components {
             has_driver_profile: boolean;
             /** Seasons */
             seasons: components["schemas"]["SeasonCardOut"][];
+        };
+        /** LastRoundOut */
+        LastRoundOut: {
+            /** Round Id */
+            round_id: number;
+            /** Round Number */
+            round_number: number;
+            /** Track Name */
+            track_name: string;
+            /** Layout Name */
+            layout_name: string;
+            /** Scheduled At */
+            scheduled_at: string | null;
+            /** Event Timezone */
+            event_timezone: string;
+            /** Status */
+            status: string;
+            /** Position */
+            position: number | null;
+            /** Points */
+            points: number;
+            /** Has Report */
+            has_report: boolean;
+            /** Track Preview Url */
+            track_preview_url: string | null;
+            /** Track Country */
+            track_country: string;
+            /** Track Length M */
+            track_length_m: number | null;
+        };
+        /** NearbyOut */
+        NearbyOut: {
+            /** Rank */
+            rank: number;
+            /** Name */
+            name: string;
+            /** Points */
+            points: number;
+            /** Me */
+            me: boolean;
         };
         /** NewReportOut */
         NewReportOut: {
@@ -4528,6 +5725,22 @@ export interface components {
             track_preview_url: string | null;
             /** Car Image Url */
             car_image_url: string | null;
+            /** Ballast Cap */
+            ballast_cap: number;
+            /** Restrictor Cap */
+            restrictor_cap: number;
+            /** Track Country */
+            track_country: string;
+            /** Track Length M */
+            track_length_m: number | null;
+            /** Track Direction */
+            track_direction: string;
+            /** Pit Boxes */
+            pit_boxes: number | null;
+            /** First Lap Cutoff */
+            first_lap_cutoff: string;
+            /** Restart Guidance */
+            restart_guidance: string;
         };
         /** RecentOut */
         RecentOut: {
@@ -4571,6 +5784,22 @@ export interface components {
             next_round: components["schemas"]["NextRoundOut"] | null;
             /** New Reports */
             new_reports: components["schemas"]["NewReportOut"][];
+            /** History */
+            history: components["schemas"]["RecentOut"][];
+            /** Nearby */
+            nearby: components["schemas"]["NearbyOut"][];
+            last_round: components["schemas"]["LastRoundOut"] | null;
+        };
+        /** AchievementOut */
+        AchievementOut: {
+            /** Key */
+            key: string;
+            /** Count */
+            count: number;
+            /** Goal */
+            goal: number;
+            /** Achieved */
+            achieved: boolean;
         };
         /** AdjustmentOut */
         AdjustmentOut: {
@@ -4607,6 +5836,8 @@ export interface components {
             id: number;
             /** Display Name */
             display_name: string;
+            /** Avatar Url */
+            avatar_url?: string | null;
             /** Can Adjust */
             can_adjust: boolean;
             career: components["schemas"]["CareerOut"];
@@ -4618,6 +5849,9 @@ export interface components {
             records: components["schemas"]["ProfileRecordOut"][];
             /** Restarts Caused */
             restarts_caused: components["schemas"]["ProfileRestartOut"][];
+            /** Achievements */
+            achievements: components["schemas"]["AchievementOut"][];
+            stats: components["schemas"]["StatsOut"];
         };
         /** ProfileRecordOut */
         ProfileRecordOut: {
@@ -4678,6 +5912,51 @@ export interface components {
             podiums: number;
             /** Starts */
             starts: number;
+            /** Number */
+            number: number;
+            /** Car Name */
+            car_name: string;
+            /** Team */
+            team: string;
+            /** History */
+            history: components["schemas"]["RecentOut"][];
+        };
+        /** StatsOut */
+        StatsOut: {
+            /** Starts */
+            starts: number;
+            /** Wins */
+            wins: number;
+            /** Podiums */
+            podiums: number;
+            /** Top5 */
+            top5: number;
+            /** Poles */
+            poles: number;
+            /** Fastest Laps */
+            fastest_laps: number;
+            /** Best Finish */
+            best_finish: number | null;
+            /** Average Finish */
+            average_finish: number | null;
+            /** Points */
+            points: number;
+            /** Laps */
+            laps: number;
+            /** Records */
+            records: number;
+            /** Win Rate */
+            win_rate: number | null;
+            /** Dnfs */
+            dnfs: number;
+            /** Dsqs */
+            dsqs: number;
+            /** Penalties */
+            penalties: number;
+            /** Incident Points */
+            incident_points: number;
+            /** Restarts Caused */
+            restarts_caused: number;
         };
         /** AdjustIn */
         AdjustIn: {
@@ -4693,6 +5972,21 @@ export interface components {
             points?: number;
             /** Reason */
             reason: string;
+        };
+        /** TabCountsOut */
+        TabCountsOut: {
+            /** Laps */
+            laps: number;
+            /** Incidents */
+            incidents: number;
+            /** Replay */
+            replay: number;
+            /** Restarts */
+            restarts: number;
+            /** Telemetry */
+            telemetry: number;
+            /** Reports */
+            reports: number;
         };
         /** AccountOut */
         AccountOut: {
@@ -4892,6 +6186,37 @@ export interface components {
             /** Events */
             events: components["schemas"]["EventIn"][];
         };
+        /** StatusIn */
+        StatusIn: {
+            /**
+             * Queued Files
+             * @default 0
+             */
+            queued_files?: number;
+            /**
+             * Last Error
+             * @default
+             */
+            last_error?: string;
+            /** Last Error At */
+            last_error_at?: string | null;
+            /** Presets */
+            presets?: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Current
+             * @default
+             */
+            current?: string;
+        };
+        /** CollectorVersionOut */
+        CollectorVersionOut: {
+            /** Version */
+            version: string | null;
+            /** Sha256 */
+            sha256: string | null;
+        };
         /** CollectorFileOut */
         CollectorFileOut: {
             /** Id */
@@ -4989,67 +6314,20 @@ export interface components {
             /** Name */
             name: string;
         };
+        /** PackageIn */
+        PackageIn: {
+            /** Key */
+            key: string;
+        };
         /** AssignIn */
         AssignIn: {
             /** Round Id */
             round_id: number;
         };
-        /** CollectorStatusOut */
-        CollectorStatusOut: {
-            /** Driver */
-            driver: string;
-            /** Laps */
-            laps: number;
-        };
-        /** LapReceivedOut */
-        LapReceivedOut: {
-            /** Id */
-            id: number;
-            /** Is New */
-            is_new: boolean;
-            /** Round Id */
-            round_id: number | null;
-        };
-        /** LapIn */
-        LapIn: {
-            /** Track */
-            track: string;
-            /** Car */
-            car: string;
-            /**
-             * Session Type
-             * @default
-             */
-            session_type?: string;
-            /** Lap Number */
-            lap_number: number;
-            /** Lap Time Ms */
-            lap_time_ms: number;
-            /**
-             * Valid
-             * @default true
-             */
-            valid?: boolean;
-            /**
-             * Recorded At
-             * Format: date-time
-             */
-            recorded_at: string;
-            /** Sample Hz */
-            sample_hz: number;
-            /** Channels */
-            channels: {
-                [key: string]: number[];
-            };
-        };
         /** MyTelemetryOut */
         MyTelemetryOut: {
             /** Has Driver */
             has_driver: boolean;
-            /** Has Key */
-            has_key: boolean;
-            /** Last Seen At */
-            last_seen_at: string | null;
             /** Laps */
             laps: number;
             /** Last Lap At */
@@ -5067,17 +6345,12 @@ export interface components {
              * Drivers
              * @enum {string}
              */
-            drivers: "none" | "laps";
+            drivers: "none" | "laps" | "full";
             /**
              * Admins
              * @enum {string}
              */
             admins: "none" | "laps" | "full";
-        };
-        /** KeyOut */
-        KeyOut: {
-            /** Key */
-            key: string;
         };
         /** SharingIn */
         SharingIn: {
@@ -5090,7 +6363,7 @@ export interface components {
              * Drivers
              * @enum {string}
              */
-            drivers: "none" | "laps";
+            drivers: "none" | "laps" | "full";
             /**
              * Admins
              * @enum {string}
@@ -5113,6 +6386,8 @@ export interface components {
             valid: boolean;
             /** Access */
             access: string;
+            /** Attempt Number */
+            attempt_number?: number | null;
         };
         /** LapDetailOut */
         LapDetailOut: {
@@ -5130,6 +6405,8 @@ export interface components {
             valid: boolean;
             /** Access */
             access: string;
+            /** Attempt Number */
+            attempt_number?: number | null;
             /** Sample Hz */
             sample_hz: number;
             /** Car */
@@ -5139,24 +6416,53 @@ export interface components {
                 [key: string]: number[];
             };
         };
-        /** AdviceOut */
-        AdviceOut: {
+        /** TrackMapOut */
+        TrackMapOut: {
+            /** Length M */
+            length_m: number | null;
+            /** Spline */
+            spline: number[];
+            /** X */
+            x: number[];
+            /** Z */
+            z: number[];
+        };
+        /** CauseOut */
+        CauseOut: {
             /** Kind */
             kind: string;
-            /** Zone */
-            zone: number;
-            /** Position */
-            position: number;
-            /** Reference Value */
-            reference_value: number;
-            /** Lap Values */
-            lap_values: number[];
+            /** Yours */
+            yours: number;
+            /** Reference */
+            reference: number;
             /** Difference */
             difference: number;
-            /** Laps Showing */
-            laps_showing: number;
-            /** Laps Total */
-            laps_total: number;
+        };
+        /** CornerOut */
+        CornerOut: {
+            /** Number */
+            number: number;
+            /** Start */
+            start: number;
+            /** Apex */
+            apex: number;
+            /** End */
+            end: number;
+            /** Loss S */
+            loss_s: number | null;
+            /** Reference Lap Id */
+            reference_lap_id: number;
+            yours: components["schemas"]["MetricsOut"];
+            reference: components["schemas"]["MetricsOut"];
+            /** Causes */
+            causes: components["schemas"]["CauseOut"][];
+        };
+        /** DriverOptionOut */
+        DriverOptionOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
         };
         /** EngineerLapOut */
         EngineerLapOut: {
@@ -5168,24 +6474,108 @@ export interface components {
             lap_number: number;
             /** Lap Time Ms */
             lap_time_ms: number;
-            /** Own */
-            own: boolean;
         };
         /** EngineerOut */
         EngineerOut: {
-            reference: components["schemas"]["EngineerLapOut"] | null;
+            driver: components["schemas"]["DriverOptionOut"] | null;
+            /** Drivers */
+            drivers: components["schemas"]["DriverOptionOut"][];
+            /** Session */
+            session: string;
             /** Laps */
             laps: components["schemas"]["EngineerLapOut"][];
-            /** Lap Length M */
-            lap_length_m: number | null;
-            /** Zones */
-            zones: number;
-            /** Advice */
-            advice: components["schemas"]["AdviceOut"][];
-            /** Setup Missing */
-            setup_missing: string[];
+            lap: components["schemas"]["EngineerLapOut"] | null;
+            reference: components["schemas"]["EngineerLapOut"] | null;
+            /** Reference Options */
+            reference_options: components["schemas"]["EngineerLapOut"][];
+            /** Length M */
+            length_m: number | null;
+            /** Has Pedals */
+            has_pedals: boolean;
+            /** Ideal S */
+            ideal_s: number | null;
+            /** Corners */
+            corners: components["schemas"]["CornerOut"][];
+            /** Spread */
+            spread: components["schemas"]["SpreadOut"][];
+            note: components["schemas"]["NoteOut"] | null;
+            /** Ai Available */
+            ai_available: boolean;
             /** Gaps */
             gaps: string[];
+        };
+        /** MetricsOut */
+        MetricsOut: {
+            /** Time S */
+            time_s: number | null;
+            /** Brake M */
+            brake_m: number | null;
+            /** Brake Peak */
+            brake_peak: number | null;
+            /** Min Kmh */
+            min_kmh: number | null;
+            /** Apex M */
+            apex_m: number | null;
+            /** Throttle M */
+            throttle_m: number | null;
+            /** Coast M */
+            coast_m: number | null;
+            /** Exit Kmh */
+            exit_kmh: number | null;
+            /** Gear */
+            gear: number | null;
+        };
+        /** NoteOut */
+        NoteOut: {
+            /** Id */
+            id: number;
+            /** Status */
+            status: string;
+            /** Text */
+            text: string;
+            /** Error */
+            error: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** SpreadOut */
+        SpreadOut: {
+            /** Number */
+            number: number;
+            /** Time S */
+            time_s: number;
+            /** Brake M */
+            brake_m: number | null;
+            /** Min Kmh */
+            min_kmh: number | null;
+            /** Best S */
+            best_s: number;
+            /** Worst S */
+            worst_s: number;
+        };
+        /** NoteIn */
+        NoteIn: {
+            /**
+             * Session
+             * @default race
+             * @enum {string}
+             */
+            session?: "race" | "qualifying" | "practice";
+            /** Driver */
+            driver?: number | null;
+            /** Lap */
+            lap?: number | null;
+            /** Reference */
+            reference?: string | null;
+            /**
+             * Language
+             * @default es
+             * @enum {string}
+             */
+            language?: "es" | "en";
         };
         /** CollectorHealthOut */
         CollectorHealthOut: {
@@ -5201,6 +6591,16 @@ export interface components {
             last_file_at: string | null;
             /** Last Event At */
             last_event_at: string | null;
+            /** Version */
+            version: string;
+            /** Latest Version */
+            latest_version: string;
+            /** Queued Files */
+            queued_files: number;
+            /** Last Error */
+            last_error: string;
+            /** Last Error At */
+            last_error_at: string | null;
         };
         /** FailedTaskOut */
         FailedTaskOut: {
@@ -5300,6 +6700,8 @@ export interface components {
             has_events: boolean;
             /** Can Review */
             can_review: boolean;
+            /** Last Start */
+            last_start: number;
             /** Incidents */
             incidents: components["schemas"]["IncidentOut"][];
         };
@@ -5626,6 +7028,166 @@ export interface components {
              */
             ids?: number[];
         };
+        /** ScriptLapOut */
+        ScriptLapOut: {
+            /** State */
+            state: string;
+            /** Lap Number */
+            lap_number?: number | null;
+            /** Cuts */
+            cuts?: number | null;
+        };
+        /** ScriptLapIn */
+        ScriptLapIn: {
+            /** Steam Id */
+            steam_id: string;
+            /** Track */
+            track: string;
+            /**
+             * Layout
+             * @default
+             */
+            layout?: string;
+            /** Car */
+            car: string;
+            /** Lap Number */
+            lap_number: number;
+            /** Lap Time Ms */
+            lap_time_ms: number;
+            /**
+             * Valid
+             * @default true
+             */
+            valid?: boolean;
+            /**
+             * Cuts
+             * @default 0
+             */
+            cuts?: number;
+            /** Ended At */
+            ended_at: number;
+            /** Sent At */
+            sent_at: number;
+            /** Samples */
+            samples: number[][];
+        };
+        /** NowOut */
+        NowOut: {
+            /** Session Type */
+            session_type?: string | null;
+            /** Round Number */
+            round_number?: number | null;
+            /**
+             * Label
+             * @default
+             */
+            label?: string;
+        };
+        /** ScriptSetupOut */
+        ScriptSetupOut: {
+            /** Script Url */
+            script_url: string;
+            /** Race Code */
+            race_code: string;
+            /** Created At */
+            created_at: string;
+            /** Csp Section */
+            csp_section: string;
+        };
+        /** PresetOut */
+        PresetOut: {
+            /** Folder */
+            folder: string;
+            /** Name */
+            name: string;
+        };
+        /** PushEntryOut */
+        PushEntryOut: {
+            /** Number */
+            number: number;
+            /** Name */
+            name: string;
+            /** Team */
+            team: string;
+            /** Guid */
+            guid: string;
+            /** Model */
+            model: string;
+            /** Ballast Kg */
+            ballast_kg: number;
+            /** Restrictor Pct */
+            restrictor_pct: number;
+        };
+        /** PushOut */
+        PushOut: {
+            /** Id */
+            id: number;
+            /** Status */
+            status: string;
+            /** Error */
+            error: string;
+            /** Requested By */
+            requested_by: string | null;
+            /**
+             * Requested At
+             * Format: date-time
+             */
+            requested_at: string;
+            /** Finished At */
+            finished_at: string | null;
+            /** Collector */
+            collector: string | null;
+        };
+        /** SetupOut */
+        SetupOut: {
+            /** Track */
+            track: {
+                [key: string]: unknown;
+            };
+            /** Entries */
+            entries: components["schemas"]["PushEntryOut"][];
+            /** Conditions */
+            conditions: {
+                [key: string]: unknown;
+            };
+            /** Warnings */
+            warnings: string[];
+            /** Open Slots */
+            open_slots: number;
+            /** Presets */
+            presets: components["schemas"]["PresetOut"][];
+            /** Preset */
+            preset: string;
+            latest: components["schemas"]["PushOut"] | null;
+            /** Has Collector */
+            has_collector: boolean;
+        };
+        /** PushIn */
+        PushIn: {
+            /** Open Slots */
+            open_slots?: number | null;
+            /** Preset */
+            preset?: string | null;
+        };
+        /** CommandOut */
+        CommandOut: {
+            /** Id */
+            id?: number | null;
+            /** Content */
+            content?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** CommandReportIn */
+        CommandReportIn: {
+            /** Status */
+            status: string;
+            /**
+             * Error
+             * @default
+             */
+            error?: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -5700,6 +7262,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BackupStatusOut"];
+                };
+            };
+        };
+    };
+    apps_core_deletion_api_delete_object: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: string;
+                object_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletedOut"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InUseOut"];
                 };
             };
         };
@@ -5844,6 +7438,76 @@ export interface operations {
             };
         };
     };
+    apps_identity_api_upload_avatar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    apps_identity_api_remove_avatar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+        };
+    };
+    apps_identity_api_avatar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     apps_catalog_api_list_tracks: {
         parameters: {
             query?: never;
@@ -5984,6 +7648,84 @@ export interface operations {
             };
         };
     };
+    apps_catalog_api_edit_track: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                track_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrackEditIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_edit_layout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                layout_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LayoutEditIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_edit_car: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                car_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CarEditIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarOut"];
+                };
+            };
+        };
+    };
     apps_catalog_api_list_classes: {
         parameters: {
             query?: never;
@@ -6104,6 +7846,36 @@ export interface operations {
             };
         };
     };
+    apps_catalog_api_game_import: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameImportOut"];
+                };
+            };
+        };
+    };
     apps_catalog_api_layout_image: {
         parameters: {
             query?: never;
@@ -6111,6 +7883,102 @@ export interface operations {
             path: {
                 layout_id: number;
                 kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_catalog_api_upload_layout_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                layout_id: number;
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_remove_layout_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                layout_id: number;
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_skin_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                skin_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_catalog_api_car_data: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                car_id: number;
             };
             cookie?: never;
         };
@@ -6143,6 +8011,62 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    apps_catalog_api_upload_car_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                car_id: number;
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * File
+                     * Format: binary
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_remove_car_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                car_id: number;
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarOut"];
+                };
             };
         };
     };
@@ -6570,6 +8494,100 @@ export interface operations {
             };
         };
     };
+    apps_competition_api_season_teams: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamOut"][];
+                };
+            };
+        };
+    };
+    apps_competition_api_create_team: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TeamIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_delete_team: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                team_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_competition_api_update_entry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EntryPatchIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntryOut"];
+                };
+            };
+        };
+    };
     apps_competition_api_create_entry: {
         parameters: {
             query?: never;
@@ -6696,6 +8714,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoundOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_order_rounds: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoundOrderIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundOut"][];
                 };
             };
         };
@@ -6900,6 +8944,54 @@ export interface operations {
             };
         };
     };
+    apps_competition_api_entry_skins: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntrySkinOut"][];
+                };
+            };
+        };
+    };
+    apps_competition_api_set_entry_skin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkinChoiceIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntryOut"];
+                };
+            };
+        };
+    };
     apps_results_api_get_round: {
         parameters: {
             query?: never;
@@ -6941,6 +9033,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LineOut"][];
+                };
+            };
+        };
+    };
+    apps_results_api_put_line_dnf: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundDetail"];
                 };
             };
         };
@@ -7746,6 +9861,26 @@ export interface operations {
             };
         };
     };
+    apps_voting_api_my_ballots: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyBallotOut"][];
+                };
+            };
+        };
+    };
     apps_voting_api_list_ballots: {
         parameters: {
             query?: never;
@@ -7828,6 +9963,54 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["BallotSettingsIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
+                };
+            };
+        };
+    };
+    apps_voting_api_candidates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateOut"][];
+                };
+            };
+        };
+    };
+    apps_voting_api_put_options: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetOptionsIn"];
             };
         };
         responses: {
@@ -8035,6 +10218,48 @@ export interface operations {
             };
         };
     };
+    apps_dashboard_api_search_all: {
+        parameters: {
+            query?: {
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchHitOut"][];
+                };
+            };
+        };
+    };
+    apps_dashboard_api_pending_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingOut"][];
+                };
+            };
+        };
+    };
     apps_dashboard_api_dashboard: {
         parameters: {
             query?: never;
@@ -8099,6 +10324,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProfileOut"];
+                };
+            };
+        };
+    };
+    apps_dashboard_api_round_tab_counts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TabCountsOut"];
                 };
             };
         };
@@ -8574,6 +10821,66 @@ export interface operations {
             };
         };
     };
+    apps_collectors_api_collector_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StatusIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_collectors_api_collector_version: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CollectorVersionOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_api_collector_download: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     apps_collectors_api_list_collectors: {
         parameters: {
             query?: never;
@@ -8619,6 +10926,30 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CollectorCreatedOut"];
                 };
+            };
+        };
+    };
+    apps_collectors_api_collector_package: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collector_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PackageIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -8670,50 +11001,6 @@ export interface operations {
             };
         };
     };
-    apps_telemetry_api_collector_status: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CollectorStatusOut"];
-                };
-            };
-        };
-    };
-    apps_telemetry_api_upload_lap: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LapIn"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LapReceivedOut"];
-                };
-            };
-        };
-    };
     apps_telemetry_api_my_telemetry: {
         parameters: {
             query?: never;
@@ -8730,26 +11017,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MyTelemetryOut"];
-                };
-            };
-        };
-    };
-    apps_telemetry_api_new_key: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["KeyOut"];
                 };
             };
         };
@@ -8822,10 +11089,35 @@ export interface operations {
             };
         };
     };
+    apps_telemetry_api_round_track_map: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackMapOut"];
+                };
+            };
+        };
+    };
     apps_telemetry_api_engineer: {
         parameters: {
             query?: {
                 session?: "race" | "qualifying" | "practice";
+                driver?: number | null;
+                lap?: number | null;
+                reference?: string | null;
             };
             header?: never;
             path: {
@@ -8842,6 +11134,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EngineerOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_api_engineer_note: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NoteIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NoteOut"];
                 };
             };
         };
@@ -9272,6 +11590,188 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NotificationsOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_script_api_script_lap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScriptLapIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScriptLapOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_script_api_script_now: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NowOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_script_api_script_setup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScriptSetupOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_script_api_script_new_code: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScriptSetupOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_server_setup_api_server_setup_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SetupOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_server_setup_api_server_push: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PushIn"] | null;
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SetupOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_server_setup_api_collector_command: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommandOut"];
+                };
+            };
+        };
+    };
+    apps_collectors_server_setup_api_collector_report: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                push_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommandReportIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PushOut"];
                 };
             };
         };

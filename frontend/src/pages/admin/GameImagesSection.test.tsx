@@ -31,4 +31,36 @@ describe('GameImagesSection', () => {
     fireEvent.submit(input.form!)
     expect(await screen.findByRole('alert')).toHaveTextContent('El archivo no es un ZIP válido.')
   })
+
+  it('refuses a file that is not a ZIP and shows the chosen ZIP', async () => {
+    mockApi({})
+    renderPage(<GameImagesSection onImported={vi.fn()} />, { path: '/', url: '/' })
+    const input = screen.getByLabelText('Archivo ZIP') as HTMLInputElement
+    await userEvent.upload(input, new File(['x'], 'notes.txt', { type: 'text/plain' }), { applyAccept: false })
+    expect(screen.getByRole('alert')).toHaveTextContent('El archivo tiene que ser un .zip.')
+    await userEvent.upload(input, new File(['PK'], 'paddock-images.zip', { type: 'application/zip' }))
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(screen.getByText('paddock-images.zip · 1 KB')).toBeInTheDocument()
+  })
+
+  it('copies the command and marks the step as done', async () => {
+    mockApi({})
+    const user = userEvent.setup()
+    renderPage(<GameImagesSection onImported={vi.fn()} />, { path: '/', url: '/' })
+    await user.click(screen.getByRole('button', { name: 'Copiar el comando' }))
+    expect(await navigator.clipboard.readText()).toBe('python tools/pack_game_images.py --needed paddock-needed.json')
+    expect(screen.getByRole('heading', { name: /^Correr el script\s*·\s*Hecho$/ })).toBeInTheDocument()
+  })
+
+  it('marks the upload step as done after an upload', async () => {
+    mockApi({
+      'POST /api/catalog/game-images': () => json(200, { layouts: [], cars: [], missing_layouts: [], missing_cars: [] }),
+    })
+    renderPage(<GameImagesSection onImported={vi.fn()} />, { path: '/', url: '/' })
+    expect(screen.getByRole('heading', { name: /^Subir el ZIP$/ })).toBeInTheDocument()
+    const input = screen.getByLabelText('Archivo ZIP') as HTMLInputElement
+    await userEvent.upload(input, new File(['PK'], 'paddock-images.zip', { type: 'application/zip' }))
+    fireEvent.submit(input.form!)
+    expect(await screen.findByRole('heading', { name: /^Subir el ZIP\s*·\s*Hecho$/ })).toBeInTheDocument()
+  })
 })

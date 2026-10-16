@@ -32,7 +32,7 @@ describe('App', () => {
     await userEvent.type(await screen.findByLabelText('Usuario'), 'santi')
     await userEvent.type(screen.getByLabelText('Contraseña'), 'secret-pass')
     await userEvent.click(screen.getByRole('button', { name: 'Entrar' }))
-    expect(await screen.findByRole('heading', { name: 'Campeonatos' })).toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: 'Campeonatos' })).toBeInTheDocument()
   })
 
   it('starts an admin in the driver mode and switches to the admin mode', async () => {
@@ -68,7 +68,7 @@ describe('App', () => {
       'GET /api/championships': () => json(200, []),
     })
     render(<App />)
-    expect(await screen.findByRole('heading', { name: 'Championships' })).toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: 'Championships' })).toBeInTheDocument()
   })
 
   it('shows no mode switch to a driver', async () => {
@@ -77,7 +77,7 @@ describe('App', () => {
       'GET /api/championships': () => json(200, []),
     })
     render(<App />)
-    await screen.findByRole('heading', { name: 'Campeonatos' })
+    await screen.findByRole('link', { name: 'Campeonatos' })
     expect(screen.queryByRole('button', { name: 'Modo admin' })).not.toBeInTheDocument()
   })
 })
