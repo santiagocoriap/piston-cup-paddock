@@ -11,6 +11,7 @@ import { Loading } from '../components/Layout'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
+import { DualPicker } from '../components/DualPicker'
 import { BallotOptionPicker } from './BallotOptionPicker'
 import { useAdminView } from '../session'
 import { Breadcrumbs } from '../components/Breadcrumbs'
@@ -782,6 +783,7 @@ function DecideForm({
   onDone: () => void
 }) {
   const { t } = useTranslation()
+  const [picked, setPicked] = useState<number[]>([])
   return (
     <ActionForm
       title={t('voting.decide')}
@@ -799,16 +801,14 @@ function DecideForm({
       }}
     >
       <p className="muted">{t('voting.decideHelp', { count })}</p>
-      <fieldset className="checks">
-        {options
+      <DualPicker
+        name="option_ids"
+        items={options
           .filter((option) => !option.selected)
-          .map((option) => (
-            <label key={option.id} className="check">
-              <input type="checkbox" name="option_ids" value={option.id} />
-              {option.label}
-            </label>
-          ))}
-      </fieldset>
+          .map((option) => ({ id: option.id, title: option.label, image: option.image_url, kind: ballot.kind === 'track' ? 'track' : 'car' }))}
+        value={picked}
+        onChange={setPicked}
+      />
       <label>
         {t('voting.decideReason')}
         <input name="reason" required maxLength={500} />

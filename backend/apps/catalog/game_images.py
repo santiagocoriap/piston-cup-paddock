@@ -27,7 +27,7 @@ from apps.audit.services import record
 
 from .acd import AcdError, read_acd
 from .car_data import read_car_data
-from .game_facts import car_facts, fill_empty, layout_facts
+from .game_facts import car_facts, data_facts, fill_empty, layout_facts
 from .models import Car, CarClass, CarClassMembership, CarSkin, TrackLayout
 
 MAX_IMAGE_BYTES = 5 * 1024 * 1024
@@ -38,6 +38,24 @@ MAX_DATA_FILE_BYTES = 2 * 1024 * 1024
 MAX_PICTURE_PIXELS = 40_000_000
 THUMBNAIL_SIDE = 640
 KUNOS = re.compile(r"^(?:kunos|ks_|assetto corsa)", re.IGNORECASE)
+# Cars of the base game that came before the ks_ prefix: no ks_ in the key, and no author.
+BASE_CAR_KEYS = frozenset(
+    {
+        "abarth500", "abarth500_s1", "alfa_romeo_giulietta_qv", "alfa_romeo_giulietta_qv_le",
+        "bmw_1m", "bmw_1m_s3", "bmw_m3_e30", "bmw_m3_e30_drift", "bmw_m3_e30_dtm",
+        "bmw_m3_e30_gra", "bmw_m3_e30_s1", "bmw_m3_e92", "bmw_m3_e92_drift", "bmw_m3_e92_s1",
+        "bmw_m3_gt2", "bmw_z4", "bmw_z4_drift", "bmw_z4_gt3", "bmw_z4_s1",
+        "ferrari_312t", "ferrari_458", "ferrari_458_gt2", "ferrari_458_s3", "ferrari_599xxevo",
+        "ferrari_f40", "ferrari_f40_s3", "ferrari_laferrari", "ktm_xbow_r",
+        "lotus_2_eleven", "lotus_2_eleven_gt4", "lotus_49", "lotus_98t", "lotus_elise_sc",
+        "lotus_elise_sc_s1", "lotus_elise_sc_s2", "lotus_evora_gtc", "lotus_evora_gte",
+        "lotus_evora_gte_carbon", "lotus_evora_s", "lotus_evora_s_s2", "lotus_exige_240",
+        "lotus_exige_240_s3", "lotus_exige_s", "lotus_exige_s_roadster", "lotus_exige_scura",
+        "lotus_exige_v6_cup", "lotus_exos_125", "lotus_exos_125_s1", "mclaren_mp412c",
+        "mclaren_mp412c_gt3", "mercedes_sls", "mercedes_sls_gt3", "p4-5_2011", "pagani_huayra",
+        "pagani_zonda_r", "ruf_yellowbird", "shelby_cobra_427sc", "tatuusfa1",
+    }
+)  # fmt: skip
 SKIN_FILE = re.compile(r"^cars/([^/]+)/skins/([^/]+)/[^/]+$", re.IGNORECASE)
 DATA_FILE = re.compile(r"^cars/([^/]+)/data/([^/]+)$", re.IGNORECASE)
 PNG = b"\x89PNG\r\n\x1a\n"
@@ -259,7 +277,7 @@ def _source_of(car: Car, info: dict, base: str, source: "_Source") -> tuple[str,
     if dlc or source.read(f"{base}/ui/dlc_preview.png", MAX_IMAGE_BYTES):
         return Car.Source.DLC, car_facts(dlc)["url"]
     author = str(info.get("author") or "")
-    if KUNOS.match(author) or KUNOS.match(car.key):
+    if KUNOS.match(author) or KUNOS.match(car.key) or (not author and car.key.lower() in BASE_CAR_KEYS):
         return Car.Source.BASE, ""
     return Car.Source.MOD, ""
 
@@ -376,6 +394,8 @@ def import_game_images(
             car.source, car.source_url = _source_of(car, info, base, source)
         if data or data_error:
             car.data, car.data_error = data, data_error
+        # What ui_car.json left empty comes from the data folder.
+        fill_empty(car, data_facts(car.data))
         car.save()
         _import_skins(source, car)
         _import_class(car)

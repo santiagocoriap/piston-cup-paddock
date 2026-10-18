@@ -4,6 +4,8 @@ import { api } from '../../api/client'
 import type { components } from '../../api/schema'
 import { ActionForm } from '../../components/ActionForm'
 import { DangerMenu } from '../../components/DangerMenu'
+import { DualPicker, type PickItem } from '../../components/DualPicker'
+import { CarStats } from './CatalogFacts'
 
 type CarClass = components['schemas']['CarClassOut']
 type Car = components['schemas']['CarOut']
@@ -23,6 +25,16 @@ export function CarClassesSection({ cars, classes, onSaved }: { cars: Car[]; cla
 function ClassCard({ item, cars, onSaved }: { item: CarClass; cars: Car[]; onSaved: () => void }) {
   const { t } = useTranslation()
   const [editing, setEditing] = useState(false)
+  const [picked, setPicked] = useState(item.car_ids)
+  const pickItems: PickItem[] = cars.map((car) => ({
+    id: car.id,
+    title: car.name,
+    subtitle: car.brand,
+    origin: { key: car.source, label: t(`carDetail.source.${car.source}`) },
+    tags: car.tags ?? [],
+    image: car.has_preview ? `/api/catalog/cars/${car.id}/images/preview` : null,
+    details: <CarStats car={car} />,
+  }))
   const names = cars.filter((c) => item.car_ids.includes(c.id)).map((c) => c.name)
   return (
     <div className="card class-card">
@@ -31,7 +43,10 @@ function ClassCard({ item, cars, onSaved }: { item: CarClass; cars: Car[]; onSav
         <DangerMenu target={{ kind: 'car_class', id: item.id, name: item.name }} onDeleted={onSaved} />
       </div>
       <p>{names.length > 0 ? names.join(', ') : t('classes.noCars')}</p>
-      <button type="button" className="secondary small" onClick={() => setEditing((e) => !e)}>
+      <button type="button" className="secondary small" onClick={() => {
+          setPicked(item.car_ids)
+          setEditing((e) => !e)
+        }}>
         {t('classes.editCars')}
       </button>
       {editing && (
@@ -50,15 +65,7 @@ function ClassCard({ item, cars, onSaved }: { item: CarClass; cars: Car[]; onSav
             return error
           }}
         >
-          <fieldset>
-            <legend>{t('classes.cars')}</legend>
-            {cars.map((car) => (
-              <label key={car.id} className="check">
-                <input type="checkbox" name="car_ids" value={car.id} defaultChecked={item.car_ids.includes(car.id)} />
-                {car.name}
-              </label>
-            ))}
-          </fieldset>
+          <DualPicker name="car_ids" items={pickItems} value={picked} onChange={setPicked} searchLabel={t('classes.search')} />
           <label>
             {t('classes.reason')}
             <input name="reason" maxLength={300} />

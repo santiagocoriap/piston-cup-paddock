@@ -169,6 +169,30 @@ def car_facts(info: dict) -> dict:
     }
 
 
+def data_facts(data: dict) -> dict:
+    """Specs that ui_car.json left empty, worked out from the data folder (car.data). Weight is
+    TOTALMASS, power the peak of power.lut (rpm, hp), torque the peak of hp * 7121 / rpm, and the
+    top speed is the speed at the rev limiter in the top gear (the real one can be lower, as
+    drag is not counted). A missing value is None."""
+    ini = data.get("ini", {}) if isinstance(data, dict) else {}
+    facts: dict = {"power_hp": None, "torque_nm": None, "weight_kg": None, "top_speed_kmh": None}
+    facts["weight_kg"] = _whole(ini.get("car", {}).get("BASIC", {}).get("TOTALMASS"), 30, 10_000)
+    points = [p for p in data.get("lut", {}).get("power", []) if p[0] > 500 and p[1] > 0]
+    if points:
+        facts["power_hp"] = _whole(max(p[1] for p in points), 10, 3000)
+        facts["torque_nm"] = _whole(max(p[1] * 7121 / p[0] for p in points), 10, 5000)
+    gears = ini.get("drivetrain", {}).get("GEARS", {})
+    top = gears.get(f"GEAR_{gears.get('COUNT')}")
+    final = gears.get("FINAL")
+    limiter = ini.get("engine", {}).get("ENGINE_DATA", {}).get("LIMITER")
+    radius = ini.get("tyres", {}).get("REAR", {}).get("RADIUS")
+    numbers = (top, final, limiter, radius)
+    if all(isinstance(n, int | float) and not isinstance(n, bool) and n > 0 for n in numbers):
+        metres_per_second = limiter / 60 * 2 * 3.14159265 * radius / (top * final)
+        facts["top_speed_kmh"] = _speed(round(metres_per_second * 3.6))
+    return facts
+
+
 def fill_empty(item, facts: dict) -> list[str]:
     """Copy each fact to a field that is still empty. An admin edit is never replaced.
     Returns the names of the fields that changed."""

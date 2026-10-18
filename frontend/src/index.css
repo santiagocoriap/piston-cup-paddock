@@ -9266,78 +9266,10 @@ label.setting-number input {
   border-bottom: 1px solid var(--border);
 }
 
-/* "Opciones de la votación": one checklist, with a picture of each layout. */
+/* "Opciones de la votación": the two-panel picker (DualPicker). */
 .option-picker > h3 {
   margin: 0;
   padding-right: var(--space-7);
-}
-
-.option-picker-filters {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-4);
-}
-
-.option-picker-filters input[type="search"] {
-  flex: 1 1 14rem;
-}
-
-.option-picker-list {
-  display: grid;
-  gap: var(--space-2);
-  max-height: 55vh;
-  margin: 0;
-  padding: 0;
-  overflow-y: auto;
-  list-style: none;
-}
-
-.option-picker-list li {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
-}
-
-.option-picker-list li.on {
-  border-color: var(--accent);
-}
-
-.option-picker-list li.blocked {
-  opacity: 0.55;
-}
-
-.option-picker-list label.check {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  margin: 0;
-  padding: var(--space-2) var(--space-3);
-  cursor: pointer;
-}
-
-.option-picker-list li.blocked label.check {
-  cursor: not-allowed;
-}
-
-.option-picker-list img,
-.option-picker-thumb {
-  flex: none;
-  width: 64px;
-  height: 36px;
-  border-radius: 6px;
-  object-fit: cover;
-  background: var(--surface-2, var(--line));
-}
-
-.option-picker-name {
-  display: grid;
-  min-width: 0;
-}
-
-.option-picker-why {
-  color: var(--warning-ink);
-  font-size: 13px;
 }
 
 /* The excluded tracks of a new ballot: chips to tick. */
@@ -10290,20 +10222,276 @@ button.danger {
   }
 }
 
-/* Car details: skins, tyres, and the data folder. */
+/* Car details: skins and tyres. */
 .badge.source-dlc { background: color-mix(in srgb, var(--accent, #c8102e) 18%, transparent); }
 .badge.source-mod { background: color-mix(in srgb, currentColor 8%, transparent); }
 .car-skins { list-style: none; margin: 0.5rem 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 0.5rem; }
 .car-skins li { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.85rem; }
 .car-skins img, .car-skin-blank { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; background: color-mix(in srgb, currentColor 8%, transparent); }
-.car-tyres { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 0.5rem 0; }
-.car-tyres th, .car-tyres td { text-align: left; padding: 0.25rem 0.5rem; border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent); }
-.car-data-file { margin-left: 0.75rem; }
-.car-data-file h4 { margin: 0.5rem 0 0.15rem; }
+.car-tyres-wrap { overflow-x: auto; }
+.car-tyres { width: 100%; white-space: nowrap; border-collapse: collapse; font-size: 0.85rem; margin: 0.5rem 0; }
+.car-tyres th, .car-tyres td { text-align: left; padding: 0.25rem 0.4rem; border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent); }
 
 /* The skin of a season entry, and the skin picker. */
 .entry-skin { font-size: 0.8rem; }
-.skin-choices { border: 0; padding: 0; margin: 0.75rem 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: 0.6rem; }
-.skin-choice { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.85rem; cursor: pointer; }
-.skin-choice img, .skin-choice-blank { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; background: color-mix(in srgb, currentColor 8%, transparent); }
-.skin-choice:has(input:checked) img, .skin-choice:has(input:checked) .skin-choice-blank { outline: 2px solid currentColor; }
+.skin-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(11rem, 100%), 1fr));
+  gap: var(--space-3);
+  min-width: 0;
+  margin: var(--space-4) 0;
+  padding: 0;
+  border: 0;
+}
+
+.skin-choice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  cursor: pointer;
+}
+
+.skin-choice:hover {
+  border-color: var(--ink-3);
+}
+
+.skin-choice:has(input:checked) {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.skin-choice:has(input:checked)::after {
+  content: "✓";
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.skin-choice:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.skin-choice-auto {
+  color: var(--ink-3);
+  font-weight: 600;
+}
+
+.skin-choice-name {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--space-2);
+  font-size: 13px;
+}
+
+.skin-choice-name b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.skin-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Two-panel picker: available on the left, chosen on the right. Cards look like the catalog. */
+.dual-picker {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.dual-picker {
+  container-type: inline-size;
+}
+
+.pick-panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+/* In a narrow box (a dialog), the panels go one above the other. */
+@container (max-width: 700px) {
+  .pick-panels {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.pick-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: var(--space-3);
+  min-height: 12rem;
+  padding: var(--space-3);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-md);
+}
+
+.pick-panel.drop-here {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.pick-panel > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.pick-panel h4 {
+  margin: 0;
+}
+
+.pick-grid {
+  display: grid;
+  overflow-x: hidden;
+  grid-template-columns: repeat(auto-fill, minmax(min(13rem, 100%), 1fr));
+  grid-auto-rows: max-content;
+  align-content: start;
+  gap: var(--space-3);
+  max-height: 60vh;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.pick-card {
+  display: flex;
+  min-width: 0;
+  flex: none;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  cursor: grab;
+}
+
+.pick-card.dragging {
+  opacity: 0.4;
+}
+
+.pick-card.blocked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pick-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: 2px;
+  padding: var(--space-2);
+  font-size: 13px;
+}
+
+.pick-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.pick-title b {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pick-move {
+  flex: none;
+  min-width: 1.75rem;
+  padding: 0 var(--space-2);
+}
+
+.pick-why {
+  color: var(--warning-ink);
+}
+
+.pick-card .catalog-stats {
+  margin-top: var(--space-2);
+}
+
+.pick-card .catalog-stats > div {
+  padding: var(--space-1) var(--space-2);
+}
+
+.pick-card .catalog-stats dd {
+  font-size: 13px;
+}
+
+.pick-empty {
+  grid-column: 1 / -1;
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.pick-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.pick-filters input[type="search"] {
+  flex: 1 1 14rem;
+}
+
+.pick-filters select {
+  min-width: 190px;
+}
+
+/* A track with several layouts: one card, a row for each layout. */
+.pick-layouts {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.pick-layouts > li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  cursor: grab;
+}
+
+.pick-layouts > li:last-child {
+  border-bottom: 0;
+}
+
+.pick-layouts > li.blocked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pick-layout-name {
+  display: grid;
+  min-width: 0;
+}
+

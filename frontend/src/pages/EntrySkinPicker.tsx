@@ -58,23 +58,35 @@ export function EntrySkinPicker({ entry, canChange, onChanged }: { entry: Entry;
           <fieldset className="skin-choices">
             <legend className="sr-only">{t('entrySkin.label')}</legend>
             <label className="skin-choice">
-              <input type="radio" name="skin" checked={chosen === null} onChange={() => setChosen(null)} />
-              <span className="skin-choice-blank" />
-              <span>{t('entrySkin.auto')}</span>
+              <input type="radio" className="sr-only" name="skin" checked={chosen === null} onChange={() => setChosen(null)} />
+              <span className="catalog-media car skin-choice-auto">{t('entrySkin.auto')}</span>
+              <span className="skin-choice-name">
+                <b>{t('entrySkin.auto')}</b>
+                <small className="muted">{t('entrySkin.autoHelp')}</small>
+              </span>
             </label>
             {skins.map((skin) => (
               <label key={skin.id} className="skin-choice">
-                <input type="radio" name="skin" checked={chosen === skin.id} onChange={() => setChosen(skin.id)} />
-                {skin.has_preview ? <img src={`/api/catalog/skins/${skin.id}/preview`} alt="" loading="lazy" /> : <span className="skin-choice-blank" />}
-                <span>{skin.name || skin.key}</span>
+                <input type="radio" className="sr-only" name="skin" checked={chosen === skin.id} onChange={() => setChosen(skin.id)} />
+                <span className="catalog-media car">
+                  {skin.has_preview && <img src={`/api/catalog/skins/${skin.id}/preview`} alt="" loading="lazy" />}
+                </span>
+                <span className="skin-choice-name">
+                  <b title={skin.name || skin.key}>{skin.name || skin.key}</b>
+                  {(skin.number || skin.team) && (
+                    <small className="muted">{[skin.number && `#${skin.number}`, skin.team].filter(Boolean).join(' · ')}</small>
+                  )}
+                </span>
               </label>
             ))}
           </fieldset>
         )}
         {error && <p role="alert">{error}</p>}
-        <button type="button" disabled={busy || skins === null} onClick={() => void save()}>
-          {t('common.save')}
-        </button>
+        <div className="skin-actions">
+          <button type="button" disabled={busy || skins === null} onClick={() => void save()}>
+            {t('common.save')}
+          </button>
+        </div>
       </Dialog>
     </>
   )

@@ -23,7 +23,7 @@ describe('CarClassesSection', () => {
     await userEvent.click(screen.getByText('Historial'))
     expect(screen.getByText('Cadillac: 2026-01-01 → 2026-06-30 (BoP)')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Cambiar autos' }))
-    await userEvent.click(screen.getByLabelText('Cadillac'))
+    await userEvent.click(screen.getByRole('button', { name: 'Agregar Cadillac' }))
     await userEvent.type(screen.getByLabelText('Motivo del cambio'), 'Nueva BoP')
     await userEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     await vi.waitFor(() =>

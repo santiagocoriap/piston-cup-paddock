@@ -67,7 +67,7 @@ describe('BallotPage', () => {
     expect(screen.getByRole('button', { name: 'Abrir desempate' })).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Elegir a mano' }))
     const decide = await screen.findByRole('form', { name: 'Elegir a mano' })
-    expect(within(decide).getAllByRole('checkbox')).toHaveLength(2)
+    expect(within(decide).getAllByRole('button', { name: /^Agregar (?!todos)/ })).toHaveLength(2)
   })
 
   it('shows the results as bars with the share, the winner, and the voters', async () => {
