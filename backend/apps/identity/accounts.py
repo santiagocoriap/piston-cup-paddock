@@ -68,16 +68,19 @@ def create_account(
     driver_id: int | None,
     championship_id: int | None,
     role: str | None,
+    platform_admin: bool = False,
 ) -> tuple[User, str]:
     username = username.strip()
     if not username:
         raise AccountError("username_required")
+    if platform_admin and not admin.is_superuser:
+        raise AccountError("forbidden")
     championship = None
     if championship_id is not None:
         championship = Championship.objects.filter(pk=championship_id).first()
         if championship is None or not can_manage(admin, championship):
             raise AccountError("forbidden")
-    elif not is_league_admin(admin):
+    elif not is_league_admin(admin) and not platform_admin:
         # A championship admin adds people only to a championship that the admin manages.
         raise AccountError("championship_required")
     if User.objects.filter(username__iexact=username).exists():
@@ -97,10 +100,12 @@ def create_account(
             raise AccountError("forbidden")
 
     with transaction.atomic():
-        user = User(username=username)
+        user = User(username=username, is_staff=platform_admin, is_superuser=platform_admin)
         user.set_unusable_password()
         user.save()
         changes = [change("username", None, username)]
+        if platform_admin:
+            changes.append(change("platform_admin", False, True))
         if profile:
             profile.user = user
             profile.save(update_fields=["user"])
@@ -121,6 +126,36 @@ def create_account(
         )
         token = new_link(user, AccountLink.Purpose.INVITE, admin)
     return user, token
+
+
+def set_platform_admin(admin, user: User, on: bool) -> User:
+    """Give or take the rights of the original account: every league, championship, and
+    account. Only a platform admin does this. The app always keeps one platform admin, and an
+    admin cannot take the own rights, so nobody locks the league out by mistake."""
+    if not admin.is_superuser:
+        raise AccountError("forbidden")
+    if not on:
+        if user.pk == admin.pk:
+            raise AccountError("own_platform_admin")
+        others = User.objects.filter(is_superuser=True, is_active=True).exclude(pk=user.pk)
+        if not others.exists():
+            raise AccountError("last_admin")
+    if user.is_superuser == on and user.is_staff == on:
+        return user
+    with transaction.atomic():
+        before = user.is_superuser
+        user.is_staff = on
+        user.is_superuser = on
+        user.save(update_fields=["is_staff", "is_superuser"])
+        record(
+            admin,
+            "account.platform_admin" if on else "account.platform_admin_removed",
+            "account",
+            user.id,
+            params={"username": user.username},
+            changes=[change("platform_admin", before, on)],
+        )
+    return user
 
 
 def can_manage_user(admin, user: User) -> bool:

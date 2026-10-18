@@ -303,7 +303,7 @@
     "number_taken": "Another driver of the season has that number.",
     "request_pending": "You already have a request waiting for an answer.",
     "request_decided": "That request already has an answer.",
-    "no_driver_profile": "Your account has no linked driver. Ask an admin to link it.",
+    "no_driver_profile": "Your account has no driver.",
     "join_incomplete": "Choose the season and the car.",
     "round_number_exists": "A round with this number exists.",
     "track_exists": "A track with this folder exists.",
@@ -390,7 +390,6 @@
     "custom_role_not_allowed": "Choose a custom role only with the role Custom role.",
     "round_not_in_championship": "That round is in another championship.",
     "file_not_assignable": "This file cannot be assigned.",
-    "no_driver_profile": "Your account has no driver.",
     "lap_not_in_session": "That lap is not in this session.",
     "report_not_failed": "That report did not fail.",
     "incident_not_found": "That incident does not exist.",
@@ -430,7 +429,8 @@
     "wrong_key": "The key is not for this collector.",
     "unknown_preset": "The collector does not have that Content Manager preset.",
     "delete_self": "You cannot delete your own account.",
-    "last_admin": "This is the last league admin: it cannot go."
+    "last_admin": "This is the last platform admin: the app needs at least one.",
+    "own_platform_admin": "You cannot remove your own platform admin rights."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -1225,7 +1225,7 @@
     "seeResults": "See results"
   },
   "briefing": {
-        "myCar": "Your car",
+    "myCar": "Your car",
     "theTrack": "The track",
     "expectedWeather": "Expected weather",
     "title": "Briefing",
@@ -1332,7 +1332,13 @@
     "linkTitle": "Link ready",
     "done": "Done",
     "pendingShort": "Waiting for a password",
-    "roleHint": "Pick a championship to give a role."
+    "roleHint": "Pick a championship to give a role.",
+    "platformAdmin": "Platform admin",
+    "platformAdminHelp": "Has the same access as the original account: all leagues, championships, and accounts. Can also make other platform admins.",
+    "makePlatformAdmin": "Make platform admin",
+    "removePlatformAdmin": "Remove platform admin",
+    "makePlatformAdminText": "{{name}} gets the same access as you: all leagues, championships, and accounts. {{name}} can also make and remove other platform admins.",
+    "removePlatformAdminText": "{{name}} stops being a platform admin and a league admin. The roles in the championships stay."
   },
   "invite": {
     "title": "Choose your password",

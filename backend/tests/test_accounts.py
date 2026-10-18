@@ -213,3 +213,56 @@ class TestLinkScope:
         assert response.status_code == 403
         foreign.refresh_from_db()
         assert foreign.user_id is None
+
+
+@pytest.fixture
+def owner(make_user):
+    """The original account: a platform admin."""
+    return make_user("owner", is_staff=True, is_superuser=True)
+
+
+def test_a_platform_admin_makes_another_platform_admin(api, owner):
+    client = api(owner)
+    made = client.post("/accounts", {"username": "second", "platform_admin": True})
+    assert made.status_code == 201
+    assert made.json()["account"]["is_platform_admin"] is True
+    second = User.objects.get(username="second")
+    assert second.is_staff and second.is_superuser
+    assert client.get("/auth/me").json()["is_platform_admin"] is True
+
+
+def test_a_platform_admin_gives_and_takes_the_rights(api, owner, make_user):
+    other = make_user("other")
+    client = api(owner)
+    answer = client.put(f"/accounts/{other.id}/platform-admin", {"on": True})
+    assert answer.status_code == 200 and answer.json()["is_platform_admin"] is True
+    other.refresh_from_db()
+    assert other.is_staff and other.is_superuser
+    answer = client.put(f"/accounts/{other.id}/platform-admin", {"on": False})
+    other.refresh_from_db()
+    assert answer.json()["is_platform_admin"] is False
+    assert not other.is_staff and not other.is_superuser
+
+
+def test_a_league_admin_cannot_make_a_platform_admin(api, league_admin, make_user):
+    other = make_user("other")
+    client = api(league_admin)
+    assert client.put(f"/accounts/{other.id}/platform-admin", {"on": True}).status_code == 403
+    made = client.post("/accounts", {"username": "sneaky", "platform_admin": True})
+    assert made.status_code == 403
+    assert not User.objects.filter(username="sneaky").exists()
+
+
+def test_the_last_platform_admin_and_the_own_rights_stay(api, owner, make_user):
+    client = api(owner)
+    answer = client.put(f"/accounts/{owner.id}/platform-admin", {"on": False})
+    assert answer.json()["detail"] == "own_platform_admin"
+    second = make_user("second", is_staff=True, is_superuser=True)
+    # With 2 platform admins, the second can take the rights of the first.
+    assert api(second).put(f"/accounts/{owner.id}/platform-admin", {"on": False}).status_code == 200
+
+
+def test_only_a_platform_admin_deletes_a_platform_admin(api, owner, league_admin):
+    answer = api(league_admin).delete(f"/objects/user/{owner.id}")
+    assert answer.status_code == 403
+    assert User.objects.filter(pk=owner.pk).exists()

@@ -6091,6 +6091,54 @@
         ]
       }
     },
+    "/api/accounts/{user_id}/platform-admin": {
+      "put": {
+        "operationId": "apps_identity_accounts_api_platform_admin",
+        "summary": "Platform Admin",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "title": "User Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Give or take the rights of a platform admin. Only a platform admin can do it.",
+        "tags": [
+          "accounts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformAdminIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/auth/invite/check": {
       "post": {
         "operationId": "apps_identity_accounts_api_check_link",
@@ -8440,6 +8488,10 @@
             "title": "Is Admin",
             "type": "boolean"
           },
+          "is_platform_admin": {
+            "title": "Is Platform Admin",
+            "type": "boolean"
+          },
           "can_admin": {
             "title": "Can Admin",
             "type": "boolean"
@@ -8466,6 +8518,7 @@
           "language",
           "timezone",
           "is_admin",
+          "is_platform_admin",
           "can_admin",
           "can_manage"
         ],
@@ -18410,6 +18463,10 @@
             "title": "Username",
             "type": "string"
           },
+          "is_platform_admin": {
+            "title": "Is Platform Admin",
+            "type": "boolean"
+          },
           "driver_name": {
             "anyOf": [
               {
@@ -18452,6 +18509,7 @@
         "required": [
           "id",
           "username",
+          "is_platform_admin",
           "driver_name",
           "championships",
           "has_password",
@@ -18524,12 +18582,30 @@
                 "type": "null"
               }
             ]
+          },
+          "platform_admin": {
+            "default": false,
+            "title": "Platform Admin",
+            "type": "boolean"
           }
         },
         "required": [
           "username"
         ],
         "title": "AccountIn",
+        "type": "object"
+      },
+      "PlatformAdminIn": {
+        "properties": {
+          "on": {
+            "title": "On",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "on"
+        ],
+        "title": "PlatformAdminIn",
         "type": "object"
       },
       "LinkInfo": {

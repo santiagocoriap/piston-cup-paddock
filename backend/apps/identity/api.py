@@ -30,6 +30,8 @@ class Me(Schema):
     language: str
     timezone: str
     is_admin: bool
+    # The rights of the original account: it can also make other platform admins.
+    is_platform_admin: bool
     can_admin: bool  # True when the user can manage something, so the admin mode is useful.
     can_manage: bool  # True for a championship admin. A steward or custom role is False.
     avatar_url: str | None = None
@@ -46,6 +48,7 @@ def _me(user) -> Me:
         language=user.language,
         timezone=user.timezone,
         is_admin=user.is_staff,
+        is_platform_admin=user.is_superuser,
         can_admin=has_any_staff_role(user),
         can_manage=manages_any_championship(user),
         avatar_url=user.avatar_url(),

@@ -12,8 +12,10 @@ import { initials } from '../../lib/initials'
 import { useLoad } from '../../lib/useLoad'
 import { Breadcrumbs } from '../../components/Breadcrumbs'
 import { DangerMenu } from '../../components/DangerMenu'
+import { useMe } from '../../session'
 
 type LinkOut = components['schemas']['LinkOut']
+type Account = components['schemas']['AccountOut']
 type Driver = components['schemas']['DriverOut']
 type Championship = components['schemas']['ChampionshipOut']
 
@@ -28,6 +30,8 @@ export function AccountsPage() {
   const [link, setLink] = useState<LinkOut | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [query, setQuery] = useState('')
+  const me = useMe()
+  const [rights, setRights] = useState<Account | null>(null)
 
   async function newLink(userId: number) {
     setError(null)
@@ -111,7 +115,12 @@ export function AccountsPage() {
                         {initials(account.username)}
                       </span>
                       <span className="driver-names">
-                        {account.username}
+                        <span>
+                          {account.username}
+                          {account.is_platform_admin && (
+                            <span className="badge platform-badge">{t('accounts.platformAdmin')}</span>
+                          )}
+                        </span>
                         {/* A phone hides the status column, so the status shows here. A wide screen hides this line. */}
                         <span className="driver-phone-account muted">
                           {account.has_password ? t('accounts.active') : t('accounts.pendingShort')}
@@ -156,6 +165,16 @@ export function AccountsPage() {
                           label: account.has_password ? t('accounts.resetLink') : t('accounts.inviteLink'),
                           onSelect: () => newLink(account.id),
                         },
+                        ...(me.is_platform_admin && account.id !== me.id
+                          ? [
+                              {
+                                label: account.is_platform_admin
+                                  ? t('accounts.removePlatformAdmin')
+                                  : t('accounts.makePlatformAdmin'),
+                                onSelect: () => setRights(account),
+                              },
+                            ]
+                          : []),
                       ]}
                     />
                   </td>
@@ -171,6 +190,7 @@ export function AccountsPage() {
           key={formKey}
           drivers={drivers.data ?? []}
           championships={championships.data ?? []}
+          canMakePlatformAdmin={me.is_platform_admin}
           onCreated={(data) => {
             setCreating(false)
             setLink(data)
@@ -178,6 +198,22 @@ export function AccountsPage() {
             drivers.reload()
           }}
         />
+      </Dialog>
+
+      <Dialog
+        open={rights !== null}
+        title={rights?.is_platform_admin ? t('accounts.removePlatformAdmin') : t('accounts.makePlatformAdmin')}
+        onClose={() => setRights(null)}
+      >
+        {rights && (
+          <PlatformRights
+            account={rights}
+            onDone={() => {
+              setRights(null)
+              accounts.reload()
+            }}
+          />
+        )}
       </Dialog>
 
       <Dialog open={link !== null} title={t('accounts.linkTitle')} onClose={() => setLink(null)}>
@@ -190,14 +226,17 @@ export function AccountsPage() {
 function NewAccountForm({
   drivers,
   championships,
+  canMakePlatformAdmin,
   onCreated,
 }: {
   drivers: Driver[]
   championships: Championship[]
+  canMakePlatformAdmin: boolean
   onCreated: (link: LinkOut) => void
 }) {
   const { t } = useTranslation()
   const [championship, setChampionship] = useState('')
+  const [platform, setPlatform] = useState(false)
   const roleLabel = useId()
   const roleHint = useId()
   return (
@@ -212,6 +251,7 @@ function NewAccountForm({
             driver_id: driver ? Number(driver) : null,
             championship_id: championship ? Number(championship) : null,
             role: championship ? (form.get('role') as 'driver' | 'admin') : null,
+            platform_admin: platform,
           },
         })
         if (data) onCreated(data)
@@ -266,6 +306,15 @@ function NewAccountForm({
           </span>
         )}
       </label>
+      {canMakePlatformAdmin && (
+        <label className="check platform-check">
+          <input type="checkbox" checked={platform} onChange={(event) => setPlatform(event.target.checked)} />
+          <span>
+            {t('accounts.platformAdmin')}
+            <span className="field-hint">{t('accounts.platformAdminHelp')}</span>
+          </span>
+        </label>
+      )}
     </ActionForm>
   )
 }
@@ -311,3 +360,45 @@ function LinkBox({ link, onDone }: { link: LinkOut; onDone: () => void }) {
     </div>
   )
 }
+
+/** Give or take the rights of a platform admin: the same access as the original account. */
+function PlatformRights({ account, onDone }: { account: Account; onDone: () => void }) {
+  const { t } = useTranslation()
+  const [error, setError] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  const giving = !account.is_platform_admin
+
+  async function confirm() {
+    setError(null)
+    setBusy(true)
+    const { error } = await api.PUT('/api/accounts/{user_id}/platform-admin', {
+      params: { path: { user_id: account.id } },
+      body: { on: giving },
+    })
+    setBusy(false)
+    if (error) setError(errorMessage(t, error))
+    else onDone()
+  }
+
+  return (
+    <div className="modal-body">
+      <p>
+        {giving
+          ? t('accounts.makePlatformAdminText', { name: account.username })
+          : t('accounts.removePlatformAdminText', { name: account.username })}
+      </p>
+      {error && (
+        <p role="alert" className="error">
+          {error}
+        </p>
+      )}
+      <div className="settings-actions">
+        <button type="button" className={giving ? undefined : 'danger'} onClick={confirm} disabled={busy}>
+          {busy && <span className="spinner" aria-hidden="true" />}
+          {giving ? t('accounts.makePlatformAdmin') : t('accounts.removePlatformAdmin')}
+        </button>
+      </div>
+    </div>
+  )
+}
+
