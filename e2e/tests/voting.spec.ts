@@ -50,11 +50,11 @@ test('an admin fixes a track, runs a track vote, and the winners fill the calend
   await page.goto((await ballotLink.getAttribute('href'))!)
   await expect(page.getByRole('heading', { level: 1, name: `Pistas ${run}` })).toBeVisible()
   // The ballot tools open in dialogs from the "Administrar" menu.
-  // All options in one checklist: tick the three tracks, then save.
   await openRoundAdmin(page, 'Opciones de la votación')
+  // The picker has 2 lists. "Agregar" moves a track from the available list to the ballot.
   const picker = page.getByRole('dialog')
   for (const name of ['Monza', 'Imola', 'Suzuka']) {
-    await picker.getByRole('checkbox', { name: new RegExp(`${name} ${run}`) }).check()
+    await picker.getByRole('button', { name: new RegExp(`^Agregar ${name} ${run}`) }).first().click()
   }
   await picker.getByRole('button', { name: 'Guardar (3 opciones)' }).click()
   for (const name of ['Monza', 'Imola', 'Suzuka']) {
