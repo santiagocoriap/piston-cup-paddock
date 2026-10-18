@@ -255,6 +255,7 @@ def _announced(round_: Round) -> dict | None:
 @dataclass
 class MyHandicap:
     entry_number: int
+    car_id: int
     car_name: str
     ballast_kg: int
     restrictor_pct: int
@@ -273,8 +274,10 @@ def my_handicap(user, round_: Round) -> MyHandicap | None:
     used = UsedHandicap.objects.filter(round=round_, entry=entry).first()
     if used:
         return MyHandicap(
-            entry.number, entry.car.name, used.ballast_kg, used.restrictor_pct, "used"
+            entry.number, entry.car_id, entry.car.name, used.ballast_kg, used.restrictor_pct, "used"
         )
     values = season_handicaps(round_.season, before_round=round_)
     mine = next(e for e in values.entries if e.entry_id == entry.id)
-    return MyHandicap(entry.number, entry.car.name, mine.next_kg, mine.next_pct, "assigned")
+    return MyHandicap(
+        entry.number, entry.car_id, entry.car.name, mine.next_kg, mine.next_pct, "assigned"
+    )

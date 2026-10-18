@@ -1,3 +1,4 @@
+import { JoinSeasonButton } from './JoinSeason'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
@@ -54,7 +55,17 @@ export function DashboardSection() {
 
   return (
     <section className="dashboard" aria-labelledby="home-title">
-      <h1 id="home-title">{t('dashboard.hello', { name: me.username })}</h1>
+      <div className="home-head">
+        <h1 id="home-title">{t('dashboard.hello', { name: me.username })}</h1>
+        {data.has_driver_profile && (
+          <JoinSeasonButton
+            onDone={(status, season) => {
+              setNotice(t(status === 'joined' ? 'join.joined' : 'join.requested', { season }))
+              dashboard.reload()
+            }}
+          />
+        )}
+      </div>
       {notice && (
         <p role="status" className="notice-ok">
           <Icon name="check" small />

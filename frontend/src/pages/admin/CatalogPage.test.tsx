@@ -61,7 +61,7 @@ describe('CatalogPage', () => {
     expect(screen.getByRole('heading', { name: 'Ferrari 488' })).toBeInTheDocument()
     expect(screen.getByText('1 skin')).toBeInTheDocument()
     expect(screen.getByText('1 compuesto de neumático')).toBeInTheDocument()
-    expect(screen.getByRole('row', { name: /Slick Soft/ })).toHaveTextContent('300/R340')
+    expect(screen.getByText('Slick Soft').closest('li')).toHaveTextContent('300/R340')
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Origen' }), '')
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Etiqueta' }), 'gt3')
     expect(screen.getByText('2 autos')).toBeInTheDocument()

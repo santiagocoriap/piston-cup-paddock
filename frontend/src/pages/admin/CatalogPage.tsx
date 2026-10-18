@@ -73,6 +73,7 @@ export function CatalogPage() {
   const [carTag, setCarTag] = useState('')
   const cars = useLoad(() => api.GET('/api/catalog/cars'), [])
   const classes = useLoad(() => api.GET('/api/catalog/classes'), [])
+  const weather = useLoad(() => api.GET('/api/catalog/weather'), [])
   const [params, setParams] = useSearchParams()
   const [creating, setCreating] = useState<Creating>(null)
   const asked = params.get('tab')
@@ -380,6 +381,7 @@ export function CatalogPage() {
         onImported={reloadImages}
         knownCars={cars.data?.map((car) => car.key) ?? []}
         knownTracks={tracks.data?.map((track) => track.key) ?? []}
+        knownWeather={weather.data?.map((preset) => preset.key) ?? []}
       />
     </section>
   )

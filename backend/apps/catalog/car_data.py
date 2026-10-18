@@ -120,6 +120,7 @@ def tyre_compounds(data: dict) -> list[dict]:
     """The compounds of tyres.ini. A compound is [FRONT] and [REAR] for the first, then
     [FRONT_1] and [REAR_1], ... Each is a name, a short name, the size and the ideal pressure."""
     sections = data.get("ini", {}).get("tyres", {})
+    lut = data.get("lut", {})
     compounds = []
     for index in range(0, 30):
         suffix = f"_{index}" if index else ""
@@ -135,14 +136,44 @@ def tyre_compounds(data: dict) -> list[dict]:
                 "index": index,
                 "name": str(front.get("NAME") or rear.get("NAME") or ""),
                 "short_name": str(front.get("SHORT_NAME") or rear.get("SHORT_NAME") or ""),
-                "front": _tyre_side(front),
-                "rear": _tyre_side(rear),
+                "front": _tyre_side(front, lut),
+                "rear": _tyre_side(rear, lut),
             }
         )
     return compounds
 
 
-def _tyre_side(section: dict) -> dict:
+def wear_summary(points: list[list[float]]) -> dict | None:
+    """How a compound loses grip, from its wear curve (x: wear, in the units of the game, y: grip).
+    Grip is relative to the best point of the curve. x_95, x_90 and x_80 are the wear at which
+    the grip falls under 95, 90 and 80 percent (None when it never does). The curve keeps at most
+    24 points, for a small chart."""
+    points = sorted(([float(x), float(y)] for x, y in points), key=lambda point: point[0])
+    best = max((y for _, y in points), default=0)
+    if len(points) < 2 or best <= 0:
+        return None
+    relative = [[x, y / best] for x, y in points]
+
+    def falls_under(level: float) -> float | None:
+        for (x0, y0), (x1, y1) in zip(relative, relative[1:], strict=False):
+            if y0 > level >= y1:
+                return round(x0 + (x1 - x0) * (y0 - level) / (y0 - y1), 4)
+        return None
+
+    if len(relative) > 24:
+        last = len(relative) - 1
+        relative = [relative[round(i * last / 23)] for i in range(24)]
+    return {
+        "curve": [[round(x, 4), round(y, 4)] for x, y in relative],
+        "x_95": falls_under(0.95),
+        "x_90": falls_under(0.90),
+        "x_80": falls_under(0.80),
+        "end_x": points[-1][0],
+        "end_grip": round(points[-1][1] / best, 4),
+    }
+
+
+def _tyre_side(section: dict, lut: dict | None = None) -> dict:
     """The size and pressures as numbers. Data saved before the parser read "0.2<tab>(note)" as a
     number still holds the text, so it is read again here."""
     side = {}
@@ -152,4 +183,7 @@ def _tyre_side(section: dict) -> dict:
             side[key.lower()] = value
     if "WEAR_CURVE" in section:
         side["wear_curve"] = str(section["WEAR_CURVE"])
+        stem = side["wear_curve"].rsplit(".", 1)[0].lower()
+        if wear := wear_summary((lut or {}).get(stem, [])):
+            side["wear"] = wear
     return side

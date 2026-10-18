@@ -94,6 +94,7 @@ def test_briefing_shows_conditions_protest_window_and_my_handicap(
     briefing = api(me).get(f"/rounds/{rounds[1].id}").json()["briefing"]
     assert briefing["announced_conditions"] == conditions
     assert briefing["protest_window_minutes"] == 60
+    assert briefing["my_handicap"].pop("car_id") > 0
     assert briefing["my_handicap"] == {
         "entry_number": 7,
         "car_name": "Acura ARX-06",

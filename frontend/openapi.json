@@ -537,6 +537,231 @@
         ]
       }
     },
+    "/api/catalog/cars/{car_id}": {
+      "get": {
+        "operationId": "apps_catalog_api_get_car",
+        "summary": "Get Car",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "car_id",
+            "schema": {
+              "title": "Car Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "apps_catalog_api_edit_car",
+        "summary": "Edit Car",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "car_id",
+            "schema": {
+              "title": "Car Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CarEditIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/layouts/{layout_id}": {
+      "get": {
+        "operationId": "apps_catalog_api_get_layout",
+        "summary": "Get Layout",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layout_id",
+            "schema": {
+              "title": "Layout Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LayoutOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "apps_catalog_api_edit_layout",
+        "summary": "Edit Layout",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layout_id",
+            "schema": {
+              "title": "Layout Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LayoutOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LayoutEditIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/weather": {
+      "get": {
+        "operationId": "apps_catalog_api_list_weather",
+        "summary": "List Weather",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WeatherOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalog/weather/{weather_id}/preview": {
+      "get": {
+        "operationId": "apps_catalog_api_weather_preview",
+        "summary": "Weather Preview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "weather_id",
+            "schema": {
+              "title": "Weather Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/catalog/cars": {
       "get": {
         "operationId": "apps_catalog_api_list_cars",
@@ -685,100 +910,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/TrackEditIn"
-              }
-            }
-          },
-          "required": true
-        },
-        "security": [
-          {
-            "SessionAuth": []
-          }
-        ]
-      }
-    },
-    "/api/catalog/layouts/{layout_id}": {
-      "patch": {
-        "operationId": "apps_catalog_api_edit_layout",
-        "summary": "Edit Layout",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "layout_id",
-            "schema": {
-              "title": "Layout Id",
-              "type": "integer"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LayoutOut"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "catalog"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LayoutEditIn"
-              }
-            }
-          },
-          "required": true
-        },
-        "security": [
-          {
-            "SessionAuth": []
-          }
-        ]
-      }
-    },
-    "/api/catalog/cars/{car_id}": {
-      "patch": {
-        "operationId": "apps_catalog_api_edit_car",
-        "summary": "Edit Car",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "car_id",
-            "schema": {
-              "title": "Car Id",
-              "type": "integer"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CarOut"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "catalog"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CarEditIn"
               }
             }
           },
@@ -3014,6 +3145,207 @@
           },
           "required": true
         },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/join/seasons": {
+      "get": {
+        "operationId": "apps_competition_join_api_join_options",
+        "summary": "Join Options",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JoinOptionsOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "The seasons that the driver of this account can join or ask to join.",
+        "tags": [
+          "competition"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seasons/{season_id}/join": {
+      "post": {
+        "operationId": "apps_competition_join_api_join_season",
+        "summary": "Join Season",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JoinOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Free join: enter the season now. Otherwise: send a request for an admin.",
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seasons/{season_id}/join-requests": {
+      "get": {
+        "operationId": "apps_competition_join_api_join_requests",
+        "summary": "Join Requests",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/JoinRequestOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/join-requests/{request_id}/approve": {
+      "post": {
+        "operationId": "apps_competition_join_api_approve_join",
+        "summary": "Approve Join",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "request_id",
+            "schema": {
+              "title": "Request Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JoinOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/join-requests/{request_id}/decline": {
+      "post": {
+        "operationId": "apps_competition_join_api_decline_join",
+        "summary": "Decline Join",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "request_id",
+            "schema": {
+              "title": "Request Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JoinOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "competition"
+        ],
         "security": [
           {
             "SessionAuth": []
@@ -8815,291 +9147,81 @@
               }
             ],
             "title": "Wear Curve"
+          },
+          "wear": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WearOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "title": "TyreSideOut",
         "type": "object"
       },
-      "CarIn": {
+      "WearOut": {
         "properties": {
-          "key": {
-            "maxLength": 100,
-            "minLength": 1,
-            "title": "Key",
-            "type": "string"
-          },
-          "name": {
-            "maxLength": 200,
-            "minLength": 1,
-            "title": "Name",
-            "type": "string"
-          }
-        },
-        "required": [
-          "key",
-          "name"
-        ],
-        "title": "CarIn",
-        "type": "object"
-      },
-      "GuidanceIn": {
-        "properties": {
-          "restart_guidance": {
-            "default": "",
-            "maxLength": 2000,
-            "title": "Restart Guidance",
-            "type": "string"
-          },
-          "first_lap_cutoff": {
-            "default": "",
-            "maxLength": 200,
-            "title": "First Lap Cutoff",
-            "type": "string"
-          },
-          "pit_boxes": {
-            "anyOf": [
-              {
-                "maximum": 200,
-                "minimum": 1,
-                "type": "integer"
+          "curve": {
+            "items": {
+              "items": {
+                "type": "number"
               },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Pit Boxes"
-          }
-        },
-        "title": "GuidanceIn",
-        "type": "object"
-      },
-      "TrackEditIn": {
-        "properties": {
-          "name": {
-            "maxLength": 200,
-            "minLength": 1,
-            "title": "Name",
-            "type": "string"
+              "type": "array"
+            },
+            "title": "Curve",
+            "type": "array"
           },
-          "country": {
+          "x_95": {
             "anyOf": [
               {
-                "maxLength": 100,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Country"
-          }
-        },
-        "required": [
-          "name"
-        ],
-        "title": "TrackEditIn",
-        "type": "object"
-      },
-      "LayoutEditIn": {
-        "description": "The fields to change. A field that the request leaves out keeps its value.",
-        "properties": {
-          "name": {
-            "anyOf": [
-              {
-                "maxLength": 200,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Name"
-          },
-          "length_m": {
-            "anyOf": [
-              {
-                "maximum": 100000,
-                "minimum": 100,
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Length M"
-          },
-          "width_m": {
-            "anyOf": [
-              {
-                "maximum": 100,
-                "minimum": 1,
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Width M"
-          },
-          "pit_boxes": {
-            "anyOf": [
-              {
-                "maximum": 200,
-                "minimum": 1,
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Pit Boxes"
-          },
-          "country": {
-            "anyOf": [
-              {
-                "maxLength": 100,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Country"
-          },
-          "city": {
-            "anyOf": [
-              {
-                "maxLength": 100,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "City"
-          },
-          "direction": {
-            "anyOf": [
-              {
-                "enum": [
-                  "",
-                  "clockwise",
-                  "anticlockwise"
-                ],
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Direction"
-          },
-          "latitude": {
-            "anyOf": [
-              {
-                "maximum": 90,
-                "minimum": -90,
                 "type": "number"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Latitude"
+            "title": "X 95"
           },
-          "longitude": {
+          "x_90": {
             "anyOf": [
               {
-                "maximum": 180,
-                "minimum": -180,
                 "type": "number"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Longitude"
+            "title": "X 90"
           },
-          "year": {
+          "x_80": {
             "anyOf": [
               {
-                "maximum": 2100,
-                "minimum": 1880,
-                "type": "integer"
+                "type": "number"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Year"
+            "title": "X 80"
           },
-          "author": {
-            "anyOf": [
-              {
-                "maxLength": 200,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Author"
+          "end_x": {
+            "title": "End X",
+            "type": "number"
           },
-          "version": {
-            "anyOf": [
-              {
-                "maxLength": 50,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "url": {
-            "anyOf": [
-              {
-                "maxLength": 300,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Url"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "maxLength": 5000,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "tags": {
-            "anyOf": [
-              {
-                "items": {
-                  "maxLength": 50,
-                  "type": "string"
-                },
-                "maxItems": 30,
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tags"
+          "end_grip": {
+            "title": "End Grip",
+            "type": "number"
           }
         },
-        "title": "LayoutEditIn",
+        "required": [
+          "curve",
+          "end_x",
+          "end_grip"
+        ],
+        "title": "WearOut",
         "type": "object"
       },
       "CarEditIn": {
@@ -9309,6 +9431,331 @@
           }
         },
         "title": "CarEditIn",
+        "type": "object"
+      },
+      "LayoutEditIn": {
+        "description": "The fields to change. A field that the request leaves out keeps its value.",
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "length_m": {
+            "anyOf": [
+              {
+                "maximum": 100000,
+                "minimum": 100,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Length M"
+          },
+          "width_m": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width M"
+          },
+          "pit_boxes": {
+            "anyOf": [
+              {
+                "maximum": 200,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pit Boxes"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "direction": {
+            "anyOf": [
+              {
+                "enum": [
+                  "",
+                  "clockwise",
+                  "anticlockwise"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direction"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "maximum": 90,
+                "minimum": -90,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "maximum": 180,
+                "minimum": -180,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 2100,
+                "minimum": 1880,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "maxLength": 50,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "maxLength": 50,
+                  "type": "string"
+                },
+                "maxItems": 30,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "title": "LayoutEditIn",
+        "type": "object"
+      },
+      "WeatherOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "has_preview": {
+            "title": "Has Preview",
+            "type": "boolean"
+          },
+          "facts": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            "title": "Facts",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "name",
+          "has_preview",
+          "facts"
+        ],
+        "title": "WeatherOut",
+        "type": "object"
+      },
+      "CarIn": {
+        "properties": {
+          "key": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "name"
+        ],
+        "title": "CarIn",
+        "type": "object"
+      },
+      "GuidanceIn": {
+        "properties": {
+          "restart_guidance": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Restart Guidance",
+            "type": "string"
+          },
+          "first_lap_cutoff": {
+            "default": "",
+            "maxLength": 200,
+            "title": "First Lap Cutoff",
+            "type": "string"
+          },
+          "pit_boxes": {
+            "anyOf": [
+              {
+                "maximum": 200,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pit Boxes"
+          }
+        },
+        "title": "GuidanceIn",
+        "type": "object"
+      },
+      "TrackEditIn": {
+        "properties": {
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "TrackEditIn",
         "type": "object"
       },
       "CarClassOut": {
@@ -9529,6 +9976,13 @@
             "title": "New Cars",
             "type": "array"
           },
+          "new_weather": {
+            "items": {
+              "type": "string"
+            },
+            "title": "New Weather",
+            "type": "array"
+          },
           "layouts": {
             "items": {
               "type": "string"
@@ -9548,6 +10002,7 @@
           "new_tracks",
           "new_layouts",
           "new_cars",
+          "new_weather",
           "layouts",
           "cars"
         ],
@@ -10025,6 +10480,10 @@
             "title": "Allow Repeat Layouts",
             "type": "boolean"
           },
+          "free_join": {
+            "title": "Free Join",
+            "type": "boolean"
+          },
           "voted_slots": {
             "title": "Voted Slots",
             "type": "integer"
@@ -10036,6 +10495,7 @@
           "planned_round_count",
           "protest_window_minutes",
           "allow_repeat_layouts",
+          "free_join",
           "voted_slots"
         ],
         "title": "SeasonSummary",
@@ -10444,6 +10904,10 @@
             "title": "Allow Repeat Layouts",
             "type": "boolean"
           },
+          "free_join": {
+            "title": "Free Join",
+            "type": "boolean"
+          },
           "voted_slots": {
             "title": "Voted Slots",
             "type": "integer"
@@ -10485,6 +10949,7 @@
           "planned_round_count",
           "protest_window_minutes",
           "allow_repeat_layouts",
+          "free_join",
           "voted_slots",
           "event_timezone",
           "championship_id",
@@ -10700,6 +11165,17 @@
               }
             ],
             "title": "Allow Repeat Layouts"
+          },
+          "free_join": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Free Join"
           }
         },
         "title": "SeasonSettingsIn",
@@ -11178,6 +11654,205 @@
         "title": "SkinChoiceIn",
         "type": "object"
       },
+      "JoinOptionsOut": {
+        "properties": {
+          "has_profile": {
+            "title": "Has Profile",
+            "type": "boolean"
+          },
+          "seasons": {
+            "items": {
+              "$ref": "#/components/schemas/JoinSeasonOut"
+            },
+            "title": "Seasons",
+            "type": "array"
+          }
+        },
+        "required": [
+          "has_profile",
+          "seasons"
+        ],
+        "title": "JoinOptionsOut",
+        "type": "object"
+      },
+      "JoinSeasonOut": {
+        "properties": {
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          },
+          "season_name": {
+            "title": "Season Name",
+            "type": "string"
+          },
+          "championship_id": {
+            "title": "Championship Id",
+            "type": "integer"
+          },
+          "championship_name": {
+            "title": "Championship Name",
+            "type": "string"
+          },
+          "free_join": {
+            "title": "Free Join",
+            "type": "boolean"
+          },
+          "mine": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mine"
+          }
+        },
+        "required": [
+          "season_id",
+          "season_name",
+          "championship_id",
+          "championship_name",
+          "free_join"
+        ],
+        "title": "JoinSeasonOut",
+        "type": "object"
+      },
+      "JoinOut": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "entry_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry Id"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "JoinOut",
+        "type": "object"
+      },
+      "JoinIn": {
+        "properties": {
+          "car_id": {
+            "title": "Car Id",
+            "type": "integer"
+          },
+          "number": {
+            "maximum": 999,
+            "minimum": 1,
+            "title": "Number",
+            "type": "integer"
+          },
+          "team": {
+            "default": "",
+            "maxLength": 100,
+            "title": "Team",
+            "type": "string"
+          },
+          "note": {
+            "default": "",
+            "maxLength": 300,
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "car_id",
+          "number"
+        ],
+        "title": "JoinIn",
+        "type": "object"
+      },
+      "JoinRequestOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "driver_name": {
+            "title": "Driver Name",
+            "type": "string"
+          },
+          "car_id": {
+            "title": "Car Id",
+            "type": "integer"
+          },
+          "car_name": {
+            "title": "Car Name",
+            "type": "string"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "team": {
+            "title": "Team",
+            "type": "string"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "driver_name",
+          "car_id",
+          "car_name",
+          "number",
+          "team",
+          "note",
+          "created_at"
+        ],
+        "title": "JoinRequestOut",
+        "type": "object"
+      },
+      "ApproveIn": {
+        "properties": {
+          "number": {
+            "anyOf": [
+              {
+                "maximum": 999,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Number"
+          }
+        },
+        "title": "ApproveIn",
+        "type": "object"
+      },
       "BriefingOut": {
         "properties": {
           "announced_conditions": {
@@ -11495,6 +12170,10 @@
             "title": "Entry Number",
             "type": "integer"
           },
+          "car_id": {
+            "title": "Car Id",
+            "type": "integer"
+          },
           "car_name": {
             "title": "Car Name",
             "type": "string"
@@ -11514,6 +12193,7 @@
         },
         "required": [
           "entry_number",
+          "car_id",
           "car_name",
           "ballast_kg",
           "restrictor_pct",
@@ -11742,6 +12422,10 @@
             "title": "Id",
             "type": "integer"
           },
+          "track_layout_id": {
+            "title": "Track Layout Id",
+            "type": "integer"
+          },
           "number": {
             "title": "Number",
             "type": "integer"
@@ -11943,6 +12627,7 @@
         },
         "required": [
           "id",
+          "track_layout_id",
           "number",
           "season_id",
           "season_name",

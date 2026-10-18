@@ -28,6 +28,7 @@ import { Avatar } from '../components/Avatar'
 import { DangerMenu } from '../components/DangerMenu'
 import { useRowDrag } from '../lib/useRowDrag'
 import { EntrySkinPicker } from './EntrySkinPicker'
+import { JoinRequestsPanel } from './JoinSeason'
 
 export function SeasonPage() {
   const { t, i18n } = useTranslation()
@@ -466,6 +467,7 @@ export function SeasonPage() {
                 />
               )}
             </div>
+            {adminView && <JoinRequestsPanel seasonId={seasonId} onChange={season.reload} />}
             {data.entries.length === 0 ? (
               <p>{t('season.noEntries')}</p>
             ) : (
@@ -591,6 +593,7 @@ function SeasonSettingsForm({
           body: {
             protest_window_minutes: Number(form.get('protest_window_minutes')),
             allow_repeat_layouts: form.get('allow_repeat_layouts') === 'on',
+            free_join: form.get('free_join') === 'on',
           },
         })
         if (!error) onChange()
@@ -612,6 +615,11 @@ function SeasonSettingsForm({
         <input type="checkbox" name="allow_repeat_layouts" defaultChecked={season.allow_repeat_layouts} />
         {t('calendar.allowRepeats')}
       </label>
+      <label className="check">
+        <input type="checkbox" name="free_join" defaultChecked={season.free_join} />
+        {t('join.freeJoin')}
+      </label>
+      <p className="muted">{t('join.freeJoinHelp')}</p>
     </ActionForm>
   )
 }

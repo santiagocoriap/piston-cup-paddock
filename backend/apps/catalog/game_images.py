@@ -26,9 +26,9 @@ from PIL import Image, UnidentifiedImageError
 from apps.audit.services import record
 
 from .acd import AcdError, read_acd
-from .car_data import read_car_data
+from .car_data import parse_ini, read_car_data
 from .game_facts import car_facts, data_facts, fill_empty, layout_facts
-from .models import Car, CarClass, CarClassMembership, CarSkin, TrackLayout
+from .models import Car, CarClass, CarClassMembership, CarSkin, TrackLayout, WeatherPreset
 
 MAX_IMAGE_BYTES = 5 * 1024 * 1024
 MAX_JSON_BYTES = 256 * 1024
@@ -74,6 +74,7 @@ class Report:
     cars: list[str] = field(default_factory=list)
     missing_layouts: list[str] = field(default_factory=list)
     missing_cars: list[str] = field(default_factory=list)
+    weather: list[str] = field(default_factory=list)
 
 
 class _Source:
@@ -262,6 +263,24 @@ def make_thumbnail(data: bytes | None, side: int = THUMBNAIL_SIDE) -> bytes | No
         return None
 
 
+def shrink_png(data: bytes | None, side: int = THUMBNAIL_SIDE) -> bytes | None:
+    """The same PNG at most `side` pixels wide or high, keeping the transparency (a track map
+    is a line drawing on a clear background). None when the data is not a picture."""
+    if not data:
+        return None
+    try:
+        with Image.open(io.BytesIO(data)) as picture:
+            if max(picture.size) > MAX_PICTURE_PIXELS**0.5 * 2:
+                return None
+            picture = picture.convert("RGBA")
+            picture.thumbnail((side, side))
+            out = io.BytesIO()
+            picture.save(out, "PNG", optimize=True)
+            return out.getvalue()
+    except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError):
+        return None
+
+
 def _put_thumbnail(field_file, name: str, data: bytes | None) -> bool:
     thumbnail = make_thumbnail(data)
     if thumbnail is None:
@@ -277,7 +296,11 @@ def _source_of(car: Car, info: dict, base: str, source: "_Source") -> tuple[str,
     if dlc or source.read(f"{base}/ui/dlc_preview.png", MAX_IMAGE_BYTES):
         return Car.Source.DLC, car_facts(dlc)["url"]
     author = str(info.get("author") or "")
-    if KUNOS.match(author) or KUNOS.match(car.key) or (not author and car.key.lower() in BASE_CAR_KEYS):
+    if (
+        KUNOS.match(author)
+        or KUNOS.match(car.key)
+        or (not author and car.key.lower() in BASE_CAR_KEYS)
+    ):
         return Car.Source.BASE, ""
     return Car.Source.MOD, ""
 
@@ -352,9 +375,10 @@ def import_game_images(
         if not (outline or preview or info):
             report.missing_layouts.append(label)
             continue
+        # The game pictures are large: the app keeps a small copy.
         if outline:
-            _put(layout.outline, "outline.png", outline)
-        if preview:
+            _put(layout.outline, "outline.png", shrink_png(outline) or outline)
+        if preview and not _put_thumbnail(layout.preview, "preview", preview):
             _put(layout.preview, "preview.png", preview)
         # The facts fill only empty fields, so an admin edit stays.
         fill_empty(layout, layout_facts(info))
@@ -421,3 +445,28 @@ def needed_keys() -> dict:
         ],
         "cars": list(Car.objects.order_by("key").values_list("key", flat=True)),
     }
+
+
+def import_weather(source: _Source, keys: set[str] | None = None) -> list[str]:
+    """Fill the weather presets of the catalog from weather/<key>/weather.ini and preview.jpg.
+    keys: only these presets (None: every preset of the catalog). Gives the keys that were read."""
+    done = []
+    for preset in WeatherPreset.objects.order_by("key"):
+        if keys is not None and preset.key.lower() not in {k.lower() for k in keys}:
+            continue
+        base = f"weather/{preset.key}"
+        ini = source.read(f"{base}/weather.ini", MAX_JSON_BYTES)
+        preview = source.read(f"{base}/preview.jpg", MAX_IMAGE_BYTES) or source.read(
+            f"{base}/preview.png", MAX_IMAGE_BYTES
+        )
+        if ini is None and preview is None:
+            continue
+        if ini is not None:
+            preset.data = parse_ini(ini)
+            name = str(preset.data.get("LAUNCHER", {}).get("NAME") or "").strip()
+            if name and preset.name == preset.key:
+                preset.name = name[:200]
+        _put_thumbnail(preset.preview, "preview", preview)
+        preset.save()
+        done.append(preset.key)
+    return done

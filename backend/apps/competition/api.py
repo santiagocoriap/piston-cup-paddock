@@ -78,6 +78,7 @@ class SeasonIn(Schema):
 class SeasonSettingsIn(Schema):
     protest_window_minutes: int | None = Field(None, ge=0, le=10080)
     allow_repeat_layouts: bool | None = None
+    free_join: bool | None = None
 
 
 class FixedRoundIn(Schema):
@@ -107,6 +108,7 @@ class SeasonSummary(Schema):
     planned_round_count: int
     protest_window_minutes: int
     allow_repeat_layouts: bool
+    free_join: bool
     voted_slots: int
 
 
@@ -345,6 +347,7 @@ def _season_summary(season: Season) -> SeasonSummary:
         planned_round_count=season.planned_round_count,
         protest_window_minutes=season.protest_window_minutes,
         allow_repeat_layouts=season.allow_repeat_layouts,
+        free_join=season.free_join,
         voted_slots=voted_slots(season),
     )
 
@@ -358,6 +361,7 @@ def _season_detail(user, season: Season) -> SeasonDetail:
         planned_round_count=season.planned_round_count,
         protest_window_minutes=season.protest_window_minutes,
         allow_repeat_layouts=season.allow_repeat_layouts,
+        free_join=season.free_join,
         voted_slots=voted_slots(season),
         event_timezone=season.championship.league.timezone,
         championship_id=season.championship_id,
@@ -790,7 +794,7 @@ def update_season_settings(request, season_id: int, payload: SeasonSettingsIn):
     season = _visible_season(request.user, season_id)
     require(can_manage(request.user, season.championship))
     changes = []
-    for field in ("protest_window_minutes", "allow_repeat_layouts"):
+    for field in ("protest_window_minutes", "allow_repeat_layouts", "free_join"):
         new = getattr(payload, field)
         if new is not None and new != getattr(season, field):
             changes.append(change(field, getattr(season, field), new))

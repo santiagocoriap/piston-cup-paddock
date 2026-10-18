@@ -144,6 +144,7 @@ class AppealDecisionIn(Schema):
 
 class MyHandicapOut(Schema):
     entry_number: int
+    car_id: int
     car_name: str
     ballast_kg: int
     restrictor_pct: int
@@ -184,6 +185,7 @@ class BriefingOut(Schema):
 
 class RoundDetail(Schema):
     id: int
+    track_layout_id: int
     number: int
     season_id: int
     season_name: str
@@ -396,6 +398,7 @@ def _round_detail(user, round_: Round) -> RoundDetail:
         season_name=season.name,
         championship_id=season.championship.id,
         championship_name=season.championship.name,
+        track_layout_id=round_.track_layout_id,
         track_name=round_.track_layout.track.name,
         layout_name=round_.track_layout.name,
         track_outline_url=round_.track_layout.image_url("outline"),

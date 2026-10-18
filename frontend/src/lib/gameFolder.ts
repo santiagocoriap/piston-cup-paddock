@@ -16,6 +16,7 @@ export type FileHandle = { kind: 'file'; name: string; getFile: () => Promise<Fi
 export type GameCar = { key: string; name: string; brand: string; dir: DirHandle }
 export type GameLayout = { key: string; name: string; dir: DirHandle }
 export type GameTrack = { key: string; name: string; layouts: GameLayout[] }
+export type GameWeather = { key: string; name: string; dir: DirHandle }
 
 const KEY = /^[A-Za-z0-9_.-]{1,100}$/
 
@@ -31,6 +32,14 @@ async function file(dir: DirHandle, name: string): Promise<File | null> {
   try {
     return await (await dir.getFileHandle(name)).getFile()
   } catch {
+    // Some browsers refuse a file by name. Look for it in the listing of the folder, without case.
+    try {
+      for await (const entry of dir.values()) {
+        if (entry.kind === 'file' && entry.name.toLowerCase() === name.toLowerCase()) return await entry.getFile()
+      }
+    } catch {
+      // The folder cannot be listed either.
+    }
     return null
   }
 }
@@ -172,6 +181,52 @@ export async function scanTracks(content: DirHandle, onCount?: (n: number) => vo
   return tracks
 }
 
+/** The weather presets: each folder of content/weather with a weather.ini. The name is the
+ * NAME of its [LAUNCHER] section. */
+export async function scanWeather(content: DirHandle, onCount?: (n: number) => void): Promise<GameWeather[]> {
+  const weatherDir = await child(content, 'weather')
+  return weatherDir ? scanWeatherFolder(weatherDir, onCount) : []
+}
+
+/** The presets of the weather folder itself (its folders are the presets). Edge and Chrome hide
+ * .ini files from the folder picker, so the dialog also takes this folder from a file input. */
+export async function scanWeatherFolder(weatherDir: DirHandle, onCount?: (n: number) => void): Promise<GameWeather[]> {
+  const found: GameWeather[] = []
+  for (const dir of await folders(weatherDir)) {
+    if (!KEY.test(dir.name)) continue
+    const ini = await file(dir, 'weather.ini')
+    if (!ini) continue
+    const name = (await ini.text()).match(/^\s*NAME\s*=\s*([^;\r\n]+)/im)?.[1]?.trim()
+    found.push({ key: dir.name, name: name || dir.name, dir })
+    onCount?.(found.length)
+  }
+  return found
+}
+
+/** What the picked content folder has for weather: whether it has a weather folder, and how
+ * many folders are in it. The import dialog shows it when it finds no presets. */
+export async function weatherFolderInfo(
+  content: DirHandle,
+): Promise<{ exists: boolean; folders: number; detail: string }> {
+  const weatherDir = await child(content, 'weather')
+  if (!weatherDir) return { exists: false, folders: 0, detail: '' }
+  const list = await folders(weatherDir)
+  let detail = ''
+  if (list.length > 0) {
+    // Why the first preset could not be read: the files that the browser sees, and its error.
+    const names: string[] = []
+    for await (const entry of list[0].values()) names.push(entry.name)
+    try {
+      await (await list[0].getFileHandle('weather.ini')).getFile()
+      detail = `${list[0].name}: ${names.join(', ')}`
+    } catch (error) {
+      const reason = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
+      detail = `${list[0].name} [${names.join(', ')}] ${reason}`
+    }
+  }
+  return { exists: true, folders: list.length, detail }
+}
+
 async function bytes(dir: DirHandle, name: string, limit = 5 * 1024 * 1024): Promise<Uint8Array | null> {
   const found = await file(dir, name)
   return found && found.size <= limit ? new Uint8Array(await found.arrayBuffer()) : null
@@ -202,7 +257,7 @@ export async function shrinkPicture(data: Uint8Array): Promise<Uint8Array | null
 /** A ZIP with the files of the chosen cars and tracks, for POST /api/catalog/game-import.
  * A car sends its data (data.acd, or the loose files of an unpacked data folder), the file that
  * marks a DLC car, and for each skin its name file and a small picture. */
-export async function packSelection(cars: GameCar[], tracks: GameTrack[]): Promise<Blob> {
+export async function packSelection(cars: GameCar[], tracks: GameTrack[], weather: GameWeather[] = []): Promise<Blob> {
   const files: Record<string, Uint8Array> = {}
   const put = (path: string, data: Uint8Array | null) => {
     if (data) files[path] = data
@@ -243,6 +298,11 @@ export async function packSelection(cars: GameCar[], tracks: GameTrack[]): Promi
         put(`${base}/${name}`, await bytes(layout.dir, name))
       }
     }
+  }
+  for (const preset of weather) {
+    put(`weather/${preset.key}/weather.ini`, await bytes(preset.dir, 'weather.ini', 256 * 1024))
+    const raw = await bytes(preset.dir, 'preview.jpg')
+    put(`weather/${preset.key}/preview.jpg`, raw ? await shrinkPicture(raw) : null)
   }
   // Pictures are compressed already: store them as they are.
   const zipped = zipSync(files, { level: 0 })

@@ -1,6 +1,6 @@
 import { unzipSync, strFromU8 } from 'fflate'
 import { describe, expect, it } from 'vitest'
-import { commonName, contentFolder, fromFileList, looseJson, packSelection, scanCars, scanTracks, type DirHandle, type FileHandle } from './gameFolder'
+import { commonName, contentFolder, fromFileList, looseJson, packSelection, scanCars, scanTracks, scanWeather, type DirHandle, type FileHandle } from './gameFolder'
 
 type Tree = { [name: string]: Tree | string }
 
@@ -127,5 +127,38 @@ describe('gameFolder', () => {
     const content = (await contentFolder(root))!
     expect((await scanCars(content)).map((c) => c.name)).toEqual(['BMW M3 E30'])
     expect((await scanTracks(content)).map((t) => t.key)).toEqual(['magione'])
+  })
+})
+
+describe('weather presets', () => {
+  const withWeather = folder('assettocorsa', {
+    content: {
+      weather: {
+        '3_clear': { 'weather.ini': '[CLOUDS]\nCOVER=0.9 ; clouds\n[LAUNCHER]\nNAME=Clear ; name in the launcher menus\n', 'colorCurves.ini': 'x' },
+        sol_35_rain: { 'weather.ini': '[LAUNCHER]\r\nNAME=Rain (Sol)\r\n', 'preview.jpg': 'jpg' },
+        'no ini': { 'colorCurves.ini': 'x' },
+        'readme_weather.txt': 'text',
+      },
+    },
+  })
+
+  it('finds the presets with their names, without the comment after the name', async () => {
+    const content = (await contentFolder(withWeather))!
+    const found = await scanWeather(content)
+    expect(found.map((w) => [w.key, w.name])).toEqual([
+      ['3_clear', 'Clear'],
+      ['sol_35_rain', 'Rain (Sol)'],
+    ])
+  })
+
+  it('packs weather.ini and the preview of the chosen presets', async () => {
+    const content = (await contentFolder(withWeather))!
+    const zip = await packSelection([], [], await scanWeather(content))
+    const files = unzipSync(new Uint8Array(await zip.arrayBuffer()))
+    expect(Object.keys(files).sort()).toEqual([
+      'weather/3_clear/weather.ini',
+      'weather/sol_35_rain/preview.jpg',
+      'weather/sol_35_rain/weather.ini',
+    ])
   })
 })

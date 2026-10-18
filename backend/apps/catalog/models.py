@@ -15,6 +15,10 @@ def skin_image_path(skin, filename):
     return f"catalog/cars/{skin.car.key}/skins/{skin.id}-{filename}"
 
 
+def weather_image_path(weather, filename):
+    return f"catalog/weather/{weather.key}/{filename}"
+
+
 class Track(models.Model):
     """A track folder in the AC content, for example ks_highlands."""
 
@@ -191,3 +195,20 @@ def classes_of(car_id: int, day) -> list[int]:
         models.Q(valid_to__isnull=True) | models.Q(valid_to__gte=day)
     )
     return list(rows.values_list("car_class_id", flat=True))
+
+
+class WeatherPreset(models.Model):
+    """A weather folder of the AC content (content/weather/<key>/weather.ini and preview.jpg).
+    The races announce a weather by this key or by its name."""
+
+    key = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=200)
+    preview = models.FileField(upload_to=weather_image_path, blank=True)
+    # The sections of weather.ini as numbers and texts (see car_data.parse_ini).
+    data = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name

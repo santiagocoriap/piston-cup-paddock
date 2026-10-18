@@ -10,14 +10,18 @@ import {
   packSelection,
   scanCars,
   scanTracks,
+  scanWeather,
+  scanWeatherFolder,
+  weatherFolderInfo,
   type DirHandle,
   type GameCar,
   type GameTrack,
+  type GameWeather,
 } from '../../lib/gameFolder'
 
-type Kind = 'cars' | 'tracks'
+type Kind = 'cars' | 'tracks' | 'weather'
 type Picker = (options: { mode: 'read' }) => Promise<DirHandle>
-type Result = { new_tracks: string[]; new_layouts: string[]; new_cars: string[] }
+type Result = { new_tracks: string[]; new_layouts: string[]; new_cars: string[]; new_weather: string[] }
 
 // The app sends the chosen items in parts, so one request stays small.
 const BATCH = 10
@@ -31,16 +35,20 @@ export function GameImportDialog({
   onImported,
   knownCars,
   knownTracks,
+  knownWeather = [],
 }: {
   open: boolean
   onClose: () => void
   onImported: () => void
   knownCars: string[]
   knownTracks: string[]
+  knownWeather?: string[]
 }) {
   const { t } = useTranslation()
   const [cars, setCars] = useState<GameCar[] | null>(null)
   const [tracks, setTracks] = useState<GameTrack[] | null>(null)
+  const [weather, setWeather] = useState<GameWeather[]>([])
+  const [weatherNote, setWeatherNote] = useState('')
   const [scanned, setScanned] = useState(0)
   const [kind, setKind] = useState<Kind>('cars')
   const [query, setQuery] = useState('')
@@ -50,12 +58,17 @@ export function GameImportDialog({
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<Result | null>(null)
   const known = useMemo(
-    () => ({ cars: new Set(knownCars.map((k) => k.toLowerCase())), tracks: new Set(knownTracks.map((k) => k.toLowerCase())) }),
-    [knownCars, knownTracks],
+    () => ({
+      cars: new Set(knownCars.map((k) => k.toLowerCase())),
+      tracks: new Set(knownTracks.map((k) => k.toLowerCase())),
+      weather: new Set(knownWeather.map((k) => k.toLowerCase())),
+    }),
+    [knownCars, knownTracks, knownWeather],
   )
   const picker = (window as unknown as { showDirectoryPicker?: Picker }).showDirectoryPicker
 
   const folderInput = useRef<HTMLInputElement>(null)
+  const weatherInput = useRef<HTMLInputElement>(null)
 
   async function pick() {
     setError(null)
@@ -85,10 +98,33 @@ export function GameImportDialog({
     setProgress(t('gameImport.reading'))
     const foundCars = await scanCars(content, setScanned)
     const foundTracks = await scanTracks(content, (n) => setScanned(foundCars.length + n))
+    const foundWeather = await scanWeather(content)
+    const info = await weatherFolderInfo(content)
+    setWeatherNote(
+      foundWeather.length > 0
+        ? ''
+        : info.exists
+          ? t('gameImport.weatherNoIni', { count: info.folders, folder: picked?.name ?? '', detail: info.detail })
+          : t('gameImport.weatherNoDir', { folder: picked?.name ?? '' }),
+    )
     setCars(foundCars)
     setTracks(foundTracks)
+    setWeather(foundWeather)
     setChosen(new Set())
     setProgress(null)
+  }
+
+  /** The weather folder from a file input: the browser hides .ini files from the picker. The
+   * admin can choose content/weather, or a folder that has it inside. */
+  async function scanWeatherFiles(files: File[]) {
+    setError(null)
+    const root = fromFileList(files)
+    const content = root ? await contentFolder(root) : null
+    const found = root ? (content ? await scanWeather(content) : await scanWeatherFolder(root)) : []
+    setWeather(found)
+    setWeatherNote(found.length > 0 ? '' : t('gameImport.weatherNone'))
+    setChosen((old) => new Set([...old].filter((id) => !id.startsWith('weather:'))))
+    setKind('weather')
   }
 
   const items = useMemo(() => {
@@ -96,7 +132,9 @@ export function GameImportDialog({
     const rows =
       kind === 'cars'
         ? (cars ?? []).map((c) => ({ id: `cars:${c.key}`, key: c.key, name: c.name, extra: c.brand, isNew: isNew('cars', c.key) }))
-        : (tracks ?? []).map((tr) => ({
+        : kind === 'weather'
+          ? weather.map((w) => ({ id: `weather:${w.key}`, key: w.key, name: w.name, extra: '', isNew: isNew('weather', w.key) }))
+          : (tracks ?? []).map((tr) => ({
             id: `tracks:${tr.key}`,
             key: tr.key,
             name: tr.name,
@@ -107,7 +145,7 @@ export function GameImportDialog({
     return rows.filter(
       (row) => (!onlyNew || row.isNew) && (!words || `${row.name} ${row.key}`.toLowerCase().includes(words)),
     )
-  }, [cars, tracks, kind, query, onlyNew, known, t])
+  }, [cars, tracks, weather, kind, query, onlyNew, known, t])
 
   const toggle = (id: string) =>
     setChosen((old) => {
@@ -131,12 +169,14 @@ export function GameImportDialog({
     setError(null)
     const pickedCars = (cars ?? []).filter((c) => chosen.has(`cars:${c.key}`))
     const pickedTracks = (tracks ?? []).filter((tr) => chosen.has(`tracks:${tr.key}`))
+    const pickedWeather = weather.filter((w) => chosen.has(`weather:${w.key}`))
     const queue = [
-      ...pickedCars.map((car) => ({ car, track: null })),
-      ...pickedTracks.map((track) => ({ car: null, track })),
+      ...pickedCars.map((car) => ({ car, track: null, weather: null })),
+      ...pickedTracks.map((track) => ({ car: null, track, weather: null })),
+      ...pickedWeather.map((preset) => ({ car: null, track: null, weather: preset })),
     ]
     const total = queue.length
-    const all: Result = { new_tracks: [], new_layouts: [], new_cars: [] }
+    const all: Result = { new_tracks: [], new_layouts: [], new_cars: [], new_weather: [] }
     let done = 0
     let failed = false
     try {
@@ -144,9 +184,10 @@ export function GameImportDialog({
         const part = queue.slice(i, i + BATCH)
         const partCars = part.flatMap((item) => (item.car ? [item.car] : []))
         const partTracks = part.flatMap((item) => (item.track ? [item.track] : []))
+        const partWeather = part.flatMap((item) => (item.weather ? [item.weather] : []))
         setProgress(t('gameImport.sending', { done, total }))
         const form = new FormData()
-        form.append('file', await packSelection(partCars, partTracks), 'game.zip')
+        form.append('file', await packSelection(partCars, partTracks, partWeather), 'game.zip')
         const response = await fetch('/api/catalog/game-import', {
           method: 'POST',
           body: form,
@@ -163,7 +204,8 @@ export function GameImportDialog({
         all.new_tracks.push(...added.new_tracks)
         all.new_layouts.push(...added.new_layouts)
         all.new_cars.push(...added.new_cars)
-        done += partCars.length + partTracks.length
+        all.new_weather.push(...(added.new_weather ?? []))
+        done += partCars.length + partTracks.length + partWeather.length
       }
     } finally {
       setProgress(null)
@@ -207,6 +249,22 @@ export function GameImportDialog({
             window.setTimeout(() => void scan(fromFileList(files)), 0)
           }}
         />
+        <input
+          ref={(element) => {
+            weatherInput.current = element
+            element?.setAttribute('webkitdirectory', '')
+            element?.setAttribute('directory', '')
+          }}
+          type="file"
+          multiple
+          hidden
+          aria-label={t('gameImport.pickWeather')}
+          onChange={(event) => {
+            const files = Array.from(event.target.files ?? [])
+            event.target.value = ''
+            if (files.length > 0) void scanWeatherFiles(files)
+          }}
+        />
         {!cars && !progress && (
           <>
             <p>{t('gameImport.help')}</p>
@@ -233,12 +291,13 @@ export function GameImportDialog({
               tracks: result.new_tracks.length,
               layouts: result.new_layouts.length,
             })}
+            {result.new_weather.length > 0 && ` ${t('gameImport.doneWeather', { count: result.new_weather.length })}`}
           </p>
         )}
         {cars && tracks && !progress && (
           <>
             <div className="game-import-tabs" role="tablist" aria-label={t('gameImport.title')}>
-              {(['cars', 'tracks'] as const).map((k) => (
+              {(['cars', 'tracks', 'weather'] as const).map((k) => (
                 <button
                   key={k}
                   type="button"
@@ -247,7 +306,7 @@ export function GameImportDialog({
                   className={kind === k ? 'active' : undefined}
                   onClick={() => setKind(k)}
                 >
-                  {t(`gameImport.${k}`, { count: (k === 'cars' ? cars : tracks).length })}
+                  {t(`gameImport.${k}`, { count: (k === 'cars' ? cars : k === 'tracks' ? tracks : weather).length })}
                 </button>
               ))}
             </div>
@@ -268,6 +327,14 @@ export function GameImportDialog({
                 {t('gameImport.allShown', { count: items.length })}
               </label>
             </div>
+            {kind === 'weather' && (
+              <p className="muted">
+                {t('gameImport.weatherHelp')}{' '}
+                <button type="button" className="secondary small" onClick={() => weatherInput.current?.click()}>
+                  {t('gameImport.pickWeather')}
+                </button>
+              </p>
+            )}
             <ul className="game-import-list">
               {items.map((row) => (
                 <li key={row.id}>
@@ -282,7 +349,7 @@ export function GameImportDialog({
                   </label>
                 </li>
               ))}
-              {items.length === 0 && <li className="muted">{t('gameImport.none')}</li>}
+              {items.length === 0 && <li className="muted">{kind === 'weather' && weatherNote ? weatherNote : t('gameImport.none')}</li>}
             </ul>
             <div className="settings-actions">
               <button type="button" onClick={importChosen} disabled={chosen.size === 0}>

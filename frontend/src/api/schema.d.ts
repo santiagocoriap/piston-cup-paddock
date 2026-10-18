@@ -224,6 +224,76 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/catalog/cars/{car_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Car */
+        get: operations["apps_catalog_api_get_car"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Car */
+        patch: operations["apps_catalog_api_edit_car"];
+        trace?: never;
+    };
+    "/api/catalog/layouts/{layout_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Layout */
+        get: operations["apps_catalog_api_get_layout"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Layout */
+        patch: operations["apps_catalog_api_edit_layout"];
+        trace?: never;
+    };
+    "/api/catalog/weather": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Weather */
+        get: operations["apps_catalog_api_list_weather"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/weather/{weather_id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Weather Preview */
+        get: operations["apps_catalog_api_weather_preview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/catalog/cars": {
         parameters: {
             query?: never;
@@ -274,40 +344,6 @@ export interface paths {
         head?: never;
         /** Edit Track */
         patch: operations["apps_catalog_api_edit_track"];
-        trace?: never;
-    };
-    "/api/catalog/layouts/{layout_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Edit Layout */
-        patch: operations["apps_catalog_api_edit_layout"];
-        trace?: never;
-    };
-    "/api/catalog/cars/{car_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Edit Car */
-        patch: operations["apps_catalog_api_edit_car"];
         trace?: never;
     };
     "/api/catalog/classes": {
@@ -1068,6 +1104,97 @@ export interface paths {
          */
         put: operations["apps_competition_api_set_entry_skin"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/join/seasons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Join Options
+         * @description The seasons that the driver of this account can join or ask to join.
+         */
+        get: operations["apps_competition_join_api_join_options"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seasons/{season_id}/join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Join Season
+         * @description Free join: enter the season now. Otherwise: send a request for an admin.
+         */
+        post: operations["apps_competition_join_api_join_season"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seasons/{season_id}/join-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Join Requests */
+        get: operations["apps_competition_join_api_join_requests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/join-requests/{request_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve Join */
+        post: operations["apps_competition_join_api_approve_join"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/join-requests/{request_id}/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decline Join */
+        post: operations["apps_competition_join_api_decline_join"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3216,71 +3343,22 @@ export interface components {
             pressure_static?: number | null;
             /** Wear Curve */
             wear_curve?: string | null;
+            wear?: components["schemas"]["WearOut"] | null;
         };
-        /** CarIn */
-        CarIn: {
-            /** Key */
-            key: string;
-            /** Name */
-            name: string;
-        };
-        /** GuidanceIn */
-        GuidanceIn: {
-            /**
-             * Restart Guidance
-             * @default
-             */
-            restart_guidance?: string;
-            /**
-             * First Lap Cutoff
-             * @default
-             */
-            first_lap_cutoff?: string;
-            /** Pit Boxes */
-            pit_boxes?: number | null;
-        };
-        /** TrackEditIn */
-        TrackEditIn: {
-            /** Name */
-            name: string;
-            /** Country */
-            country?: string | null;
-        };
-        /**
-         * LayoutEditIn
-         * @description The fields to change. A field that the request leaves out keeps its value.
-         */
-        LayoutEditIn: {
-            /** Name */
-            name?: string | null;
-            /** Length M */
-            length_m?: number | null;
-            /** Width M */
-            width_m?: number | null;
-            /** Pit Boxes */
-            pit_boxes?: number | null;
-            /** Country */
-            country?: string | null;
-            /** City */
-            city?: string | null;
-            /** Direction */
-            direction?: ("" | "clockwise" | "anticlockwise") | null;
-            /** Latitude */
-            latitude?: number | null;
-            /** Longitude */
-            longitude?: number | null;
-            /** Year */
-            year?: number | null;
-            /** Author */
-            author?: string | null;
-            /** Version */
-            version?: string | null;
-            /** Url */
-            url?: string | null;
-            /** Description */
-            description?: string | null;
-            /** Tags */
-            tags?: string[] | null;
+        /** WearOut */
+        WearOut: {
+            /** Curve */
+            curve: number[][];
+            /** X 95 */
+            x_95?: number | null;
+            /** X 90 */
+            x_90?: number | null;
+            /** X 80 */
+            x_80?: number | null;
+            /** End X */
+            end_x: number;
+            /** End Grip */
+            end_grip: number;
         };
         /**
          * CarEditIn
@@ -3319,6 +3397,86 @@ export interface components {
             description?: string | null;
             /** Tags */
             tags?: string[] | null;
+        };
+        /**
+         * LayoutEditIn
+         * @description The fields to change. A field that the request leaves out keeps its value.
+         */
+        LayoutEditIn: {
+            /** Name */
+            name?: string | null;
+            /** Length M */
+            length_m?: number | null;
+            /** Width M */
+            width_m?: number | null;
+            /** Pit Boxes */
+            pit_boxes?: number | null;
+            /** Country */
+            country?: string | null;
+            /** City */
+            city?: string | null;
+            /** Direction */
+            direction?: ("" | "clockwise" | "anticlockwise") | null;
+            /** Latitude */
+            latitude?: number | null;
+            /** Longitude */
+            longitude?: number | null;
+            /** Year */
+            year?: number | null;
+            /** Author */
+            author?: string | null;
+            /** Version */
+            version?: string | null;
+            /** Url */
+            url?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Tags */
+            tags?: string[] | null;
+        };
+        /** WeatherOut */
+        WeatherOut: {
+            /** Id */
+            id: number;
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** Has Preview */
+            has_preview: boolean;
+            /** Facts */
+            facts: {
+                [key: string]: number | boolean;
+            };
+        };
+        /** CarIn */
+        CarIn: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+        };
+        /** GuidanceIn */
+        GuidanceIn: {
+            /**
+             * Restart Guidance
+             * @default
+             */
+            restart_guidance?: string;
+            /**
+             * First Lap Cutoff
+             * @default
+             */
+            first_lap_cutoff?: string;
+            /** Pit Boxes */
+            pit_boxes?: number | null;
+        };
+        /** TrackEditIn */
+        TrackEditIn: {
+            /** Name */
+            name: string;
+            /** Country */
+            country?: string | null;
         };
         /** CarClassOut */
         CarClassOut: {
@@ -3395,6 +3553,8 @@ export interface components {
             new_layouts: string[];
             /** New Cars */
             new_cars: string[];
+            /** New Weather */
+            new_weather: string[];
             /** Layouts */
             layouts: string[];
             /** Cars */
@@ -3561,6 +3721,8 @@ export interface components {
             protest_window_minutes: number;
             /** Allow Repeat Layouts */
             allow_repeat_layouts: boolean;
+            /** Free Join */
+            free_join: boolean;
             /** Voted Slots */
             voted_slots: number;
         };
@@ -3709,6 +3871,8 @@ export interface components {
             protest_window_minutes: number;
             /** Allow Repeat Layouts */
             allow_repeat_layouts: boolean;
+            /** Free Join */
+            free_join: boolean;
             /** Voted Slots */
             voted_slots: number;
             /** Event Timezone */
@@ -3793,6 +3957,8 @@ export interface components {
             protest_window_minutes?: number | null;
             /** Allow Repeat Layouts */
             allow_repeat_layouts?: boolean | null;
+            /** Free Join */
+            free_join?: boolean | null;
         };
         /** FixedRoundIn */
         FixedRoundIn: {
@@ -3938,6 +4104,78 @@ export interface components {
             /** Skin Id */
             skin_id: number | null;
         };
+        /** JoinOptionsOut */
+        JoinOptionsOut: {
+            /** Has Profile */
+            has_profile: boolean;
+            /** Seasons */
+            seasons: components["schemas"]["JoinSeasonOut"][];
+        };
+        /** JoinSeasonOut */
+        JoinSeasonOut: {
+            /** Season Id */
+            season_id: number;
+            /** Season Name */
+            season_name: string;
+            /** Championship Id */
+            championship_id: number;
+            /** Championship Name */
+            championship_name: string;
+            /** Free Join */
+            free_join: boolean;
+            /** Mine */
+            mine?: string | null;
+        };
+        /** JoinOut */
+        JoinOut: {
+            /** Status */
+            status: string;
+            /** Entry Id */
+            entry_id?: number | null;
+            /** Request Id */
+            request_id?: number | null;
+        };
+        /** JoinIn */
+        JoinIn: {
+            /** Car Id */
+            car_id: number;
+            /** Number */
+            number: number;
+            /**
+             * Team
+             * @default
+             */
+            team?: string;
+            /**
+             * Note
+             * @default
+             */
+            note?: string;
+        };
+        /** JoinRequestOut */
+        JoinRequestOut: {
+            /** Id */
+            id: number;
+            /** Driver Name */
+            driver_name: string;
+            /** Car Id */
+            car_id: number;
+            /** Car Name */
+            car_name: string;
+            /** Number */
+            number: number;
+            /** Team */
+            team: string;
+            /** Note */
+            note: string;
+            /** Created At */
+            created_at: string;
+        };
+        /** ApproveIn */
+        ApproveIn: {
+            /** Number */
+            number?: number | null;
+        };
         /** BriefingOut */
         BriefingOut: {
             /** Announced Conditions */
@@ -4044,6 +4282,8 @@ export interface components {
         MyHandicapOut: {
             /** Entry Number */
             entry_number: number;
+            /** Car Id */
+            car_id: number;
             /** Car Name */
             car_name: string;
             /** Ballast Kg */
@@ -4138,6 +4378,8 @@ export interface components {
         RoundDetail: {
             /** Id */
             id: number;
+            /** Track Layout Id */
+            track_layout_id: number;
             /** Number */
             number: number;
             /** Season Id */
@@ -7578,6 +7820,142 @@ export interface operations {
             };
         };
     };
+    apps_catalog_api_get_car: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                car_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_edit_car: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                car_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CarEditIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_get_layout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                layout_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_edit_layout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                layout_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LayoutEditIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutOut"];
+                };
+            };
+        };
+    };
+    apps_catalog_api_list_weather: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeatherOut"][];
+                };
+            };
+        };
+    };
+    apps_catalog_api_weather_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                weather_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     apps_catalog_api_list_cars: {
         parameters: {
             query?: never;
@@ -7670,58 +8048,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TrackOut"];
-                };
-            };
-        };
-    };
-    apps_catalog_api_edit_layout: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                layout_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LayoutEditIn"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LayoutOut"];
-                };
-            };
-        };
-    };
-    apps_catalog_api_edit_car: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                car_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CarEditIn"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CarOut"];
                 };
             };
         };
@@ -8988,6 +9314,122 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EntryOut"];
+                };
+            };
+        };
+    };
+    apps_competition_join_api_join_options: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinOptionsOut"];
+                };
+            };
+        };
+    };
+    apps_competition_join_api_join_season: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JoinIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinOut"];
+                };
+            };
+        };
+    };
+    apps_competition_join_api_join_requests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinRequestOut"][];
+                };
+            };
+        };
+    };
+    apps_competition_join_api_approve_join: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApproveIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinOut"];
+                };
+            };
+        };
+    };
+    apps_competition_join_api_decline_join: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinOut"];
                 };
             };
         };

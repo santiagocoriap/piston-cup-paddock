@@ -20,6 +20,7 @@ import { RecordsPage } from './pages/RecordsPage'
 import { VotesPage } from './pages/VotesPage'
 import { RoundPage } from './pages/RoundPage'
 import { SeasonPage } from './pages/SeasonPage'
+import { GaragePage } from './pages/GaragePage'
 import { useMode } from './session'
 import { SessionProvider } from './SessionProvider'
 import { DriverProfilePage } from './pages/DriverProfilePage'
@@ -106,6 +107,7 @@ function AppRoutes({
         <Route path="rounds/:roundId" element={<RoundPage />} />
         <Route path="drivers/:driverId" element={<DriverProfilePage />} />
         <Route path="records" element={<RecordsPage />} />
+        <Route path="garage" element={<GaragePage />} />
         <Route path="votes" element={<VotesPage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="ballots/:ballotId" element={<BallotPage />} />

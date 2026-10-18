@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { CarTyres } from '../../components/CarTyres'
 import type { components } from '../../api/schema'
 
 type Car = components['schemas']['CarOut']
@@ -34,43 +35,6 @@ function Skins({ car }: { car: Car }) {
   )
 }
 
-/** The tyre compounds of tyres.ini: name, size, and the ideal pressure. */
-function Tyres({ car }: { car: Car }) {
-  const { t } = useTranslation()
-  const mm = (metres?: number | null) => (metres ? Math.round(metres * 1000) : '–')
-  return (
-    <div className="car-tyres-wrap">
-      <table className="car-tyres">
-        <thead>
-          <tr>
-            <th>{t('carDetail.compound')}</th>
-            <th>{t('carDetail.front')}</th>
-            <th>{t('carDetail.rear')}</th>
-            <th>{t('carDetail.pressure')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {car.tyres.map((tyre) => (
-            <tr key={tyre.index}>
-              <th scope="row">
-                {tyre.name || `#${tyre.index}`}
-                {tyre.short_name && <span className="badge chip">{tyre.short_name}</span>}
-              </th>
-              <td>
-                {mm(tyre.front.width)}/R{mm(tyre.front.radius)}
-              </td>
-              <td>
-                {mm(tyre.rear.width)}/R{mm(tyre.rear.radius)}
-              </td>
-              <td>{tyre.front.pressure_ideal ?? '–'} psi</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
 /** The skins and the tyres of a car, each folded. */
 export function CarDetails({ car }: { car: Car }) {
   const { t } = useTranslation()
@@ -83,7 +47,7 @@ export function CarDetails({ car }: { car: Car }) {
       {car.tyres.length > 0 && (
         <details>
           <summary>{t('carDetail.tyres', { count: car.tyres.length })}</summary>
-          <Tyres car={car} />
+          <CarTyres tyres={car.tyres} />
         </details>
       )}
       {car.data_error && <p className="muted">{t('carDetail.dataError')}</p>}

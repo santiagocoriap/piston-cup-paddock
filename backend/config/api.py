@@ -11,6 +11,7 @@ from apps.collectors.safety_api import router as safety_router
 from apps.collectors.server_setup_api import router as server_setup_router
 from apps.community.api import router as community_router
 from apps.competition.api import router as competition_router
+from apps.competition.join_api import router as join_router
 from apps.core.api import router as core_router
 from apps.core.backup_api import router as backup_router
 from apps.core.deletion_api import router as deletion_router
@@ -39,6 +40,7 @@ api.add_router("/auth", auth_router)
 api.add_router("/catalog", catalog_router)
 api.add_router("/", drivers_router)
 api.add_router("/", competition_router)
+api.add_router("/", join_router)
 api.add_router("/", results_router)
 api.add_router("/", audit_router)
 api.add_router("/", restarts_router)

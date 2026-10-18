@@ -151,3 +151,18 @@ def test_a_note_after_a_tyre_number_does_not_break_the_list(api, champ_admin):
     # Data saved by the older parser still holds the text.
     Car.objects.update(data={"ini": {"tyres": {"FRONT": {"NAME": "S", "WIDTH": "0.215\t (/129)"}}}})
     assert api(champ_admin).get("/catalog/cars").json()[0]["tyres"][0]["front"]["width"] == 0.215
+
+
+def test_wear_summary_gives_the_wear_where_grip_falls_under_each_level():
+    from apps.catalog.car_data import tyre_compounds, wear_summary
+
+    summary = wear_summary([[0, 100], [10, 100], [20, 90], [40, 70]])
+    assert summary["x_95"] == 15 and summary["x_90"] == 20 and summary["x_80"] == 30
+    assert summary["end_x"] == 40 and summary["end_grip"] == 0.7
+    assert wear_summary([[0, 100], [10, 98]])["x_95"] is None
+    assert wear_summary([[0, 0], [10, 0]]) is None and wear_summary([[0, 1]]) is None
+    data = {
+        "ini": {"tyres": {"FRONT": {"NAME": "Street", "WEAR_CURVE": "Hard_Front.lut"}}},
+        "lut": {"hard_front": [[0, 1], [50, 0.8]]},
+    }
+    assert tyre_compounds(data)[0]["front"]["wear"]["x_80"] == 50

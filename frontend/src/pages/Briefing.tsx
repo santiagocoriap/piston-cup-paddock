@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { components } from '../api/schema'
 import { EventTime } from '../components/EventTime'
+import { MyCarPanel, TrackPanel, WeatherPanel } from './CatalogViews'
 import { DrawHistory } from './ConditionsDraw'
 
 type RoundDetail = components['schemas']['RoundDetail']
@@ -91,6 +92,10 @@ export function Briefing({ round }: { round: RoundDetail }) {
             <p className="muted">{t('briefing.notEntered')}</p>
           )}
         </div>
+
+        <TrackPanel layoutId={round.track_layout_id} trackName={round.track_name} />
+        {mine && <MyCarPanel carId={mine.car_id} />}
+        <WeatherPanel announced={String((conditions as Record<string, unknown>).weather ?? '')} />
 
         <div className="card">
           <h3>{t('briefing.rules')}</h3>

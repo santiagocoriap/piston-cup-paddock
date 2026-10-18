@@ -26,7 +26,7 @@ from .game_images import (
     save_image,
 )
 from .game_import import import_from_game
-from .models import Car, CarClass, CarClassMembership, CarSkin, Track, TrackLayout
+from .models import Car, CarClass, CarClassMembership, CarSkin, Track, TrackLayout, WeatherPreset
 
 router = Router(tags=["catalog"])
 
@@ -197,6 +197,15 @@ class SkinOut(Schema):
         return bool(obj.preview)
 
 
+class WearOut(Schema):
+    curve: list[list[float]]
+    x_95: float | None = None
+    x_90: float | None = None
+    x_80: float | None = None
+    end_x: float
+    end_grip: float
+
+
 class TyreSideOut(Schema):
     width: float | None = None
     radius: float | None = None
@@ -204,6 +213,7 @@ class TyreSideOut(Schema):
     pressure_ideal: float | None = None
     pressure_static: float | None = None
     wear_curve: str | None = None
+    wear: WearOut | None = None
 
 
 class TyreOut(Schema):
@@ -294,6 +304,58 @@ def create_layout(request, track_id: int, payload: LayoutIn):
             params={"track": track.name, "name": layout.name},
         )
     return Status(201, layout)
+
+
+@router.get("/cars/{car_id}", response=CarOut)
+def get_car(request, car_id: int):
+    return get_object_or_404(Car.objects.prefetch_related("skins"), pk=car_id)
+
+
+@router.get("/layouts/{layout_id}", response=LayoutOut)
+def get_layout(request, layout_id: int):
+    return get_object_or_404(TrackLayout, pk=layout_id)
+
+
+class WeatherOut(Schema):
+    id: int
+    key: str
+    name: str
+    has_preview: bool
+    # What a pilot can use from weather.ini: "cloud_cover" (0 to 1), "fog_distance" (metres of
+    # sight), "temp_coeff" (-1 to 1: how much colder or warmer the asphalt is than the weather
+    # and the hour say), and "lights_forced" (true: headlights are on). Only what the file has.
+    facts: dict[str, float | bool]
+
+    @staticmethod
+    def resolve_has_preview(obj) -> bool:
+        return bool(obj.preview)
+
+    @staticmethod
+    def resolve_facts(obj) -> dict:
+        sources = {
+            "cloud_cover": ("CLOUDS", "COVER"),
+            "fog_distance": ("FOG", "DISTANCE"),
+            "temp_coeff": ("LAUNCHER", "TEMPERATURE_COEFF"),
+        }
+        facts: dict = {}
+        for name, (section, key) in sources.items():
+            value = obj.data.get(section, {}).get(key)
+            if isinstance(value, int | float) and not isinstance(value, bool):
+                facts[name] = value
+        forced = obj.data.get("CAR_LIGHTS", {}).get("FORCE_ON")
+        if isinstance(forced, int | float) and forced:
+            facts["lights_forced"] = True
+        return facts
+
+
+@router.get("/weather", response=list[WeatherOut])
+def list_weather(request):
+    return WeatherPreset.objects.all()
+
+
+@router.get("/weather/{weather_id}/preview")
+def weather_preview(request, weather_id: int):
+    return _image_response(get_object_or_404(WeatherPreset, pk=weather_id).preview)
 
 
 @router.get("/cars", response=list[CarOut])
@@ -518,6 +580,7 @@ class GameImportOut(Schema):
     new_tracks: list[str]
     new_layouts: list[str]
     new_cars: list[str]
+    new_weather: list[str]
     layouts: list[str]
     cars: list[str]
 

@@ -10493,5 +10493,211 @@ button.danger {
 .pick-layout-name {
   display: grid;
   min-width: 0;
-}
-
+}
+
+.home-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.home-head h1 {
+  margin: 0;
+}
+
+.join-requests {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  padding: var(--space-3);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+}
+
+.join-requests h3,
+.join-requests ul {
+  margin: 0;
+}
+
+.join-requests ul {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.join-requests li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.join-requests li > span:first-child {
+  display: grid;
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.join-number input {
+  width: 5rem;
+}
+
+/* Tyres of a car: size, pressure, and how the grip falls with wear. */
+.tyre-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-2) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tyre-list > li {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.tyre-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tyre-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  font-size: 13px;
+}
+
+.tyre-facts dt {
+  color: var(--ink-3);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tyre-facts dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tyre-wear {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.wear-bar {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--surface-3);
+}
+
+.wear-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.wear-curve {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.wear-curve p {
+  margin: 0;
+  font-size: 12px;
+}
+
+.wear-chart {
+  width: 100%;
+  height: 2.5rem;
+  border-radius: 4px;
+  background: var(--surface-2);
+}
+
+.wear-chart polyline {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.wear-guide {
+  stroke: var(--line);
+  stroke-dasharray: 2 2;
+  vector-effect: non-scaling-stroke;
+}
+
+/* The pilot pages: tracks with their layouts, and the cards of the race briefing. */
+.garage-tracks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(22rem, 100%), 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.track-info {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+}
+
+.track-info h3,
+.track-info p {
+  margin: 0;
+}
+
+.track-layouts {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.track-layouts > li {
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.track-layouts > li > span {
+  display: grid;
+  min-width: 0;
+}
+
+.layout-thumb {
+  border-radius: var(--radius-sm);
+}
+
+.layout-thumb.wide {
+  max-width: 24rem;
+}
+
+.briefing-catalog {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+}
+
+.briefing-catalog h3,
+.briefing-catalog p {
+  margin: 0;
+}
+
+.garage {
+  display: grid;
+  gap: var(--space-4);
+}

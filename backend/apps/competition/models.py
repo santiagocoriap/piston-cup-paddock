@@ -104,6 +104,8 @@ class Season(models.Model):
     protest_window_minutes = models.PositiveIntegerField(default=60)
     # By default a fixed layout cannot also be a voting candidate.
     allow_repeat_layouts = models.BooleanField(default=False)
+    # Free join: a driver enters the season alone. Off: the driver asks, and an admin decides.
+    free_join = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -137,6 +139,43 @@ class SeasonEntry(models.Model):
 
     def __str__(self):
         return f"#{self.number} {self.driver}"
+
+
+class JoinRequest(models.Model):
+    """A driver asks to enter a season that has no free join. An admin approves or declines."""
+
+    class Status(models.TextChoices):
+        PENDING = "pending", _("Pending")
+        APPROVED = "approved", _("Approved")
+        DECLINED = "declined", _("Declined")
+
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="join_requests")
+    driver = models.ForeignKey(
+        DriverProfile, on_delete=models.CASCADE, related_name="join_requests"
+    )
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="+")
+    number = models.PositiveSmallIntegerField()
+    team = models.CharField(max_length=100, blank=True)
+    note = models.CharField(max_length=300, blank=True)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    decided_at = models.DateTimeField(null=True, blank=True)
+    decided_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+
+    class Meta:
+        ordering = ["created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["season", "driver"],
+                condition=models.Q(status="pending"),
+                name="one_pending_request_per_driver",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.driver} -> {self.season} ({self.status})"
 
 
 class Round(models.Model):

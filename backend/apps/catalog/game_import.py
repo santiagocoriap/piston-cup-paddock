@@ -13,13 +13,21 @@ from django.db import transaction
 
 from apps.audit.services import record
 
-from .game_images import MAX_JSON_BYTES, ZipSource, _ui_json, import_game_images
-from .models import Car, Track, TrackLayout
+from .car_data import parse_ini
+from .game_images import (
+    MAX_JSON_BYTES,
+    ZipSource,
+    _ui_json,
+    import_game_images,
+    import_weather,
+)
+from .models import Car, Track, TrackLayout, WeatherPreset
 
 # A folder name of AC: other text cannot be a key (the server files use the keys).
 KEY = re.compile(r"^[A-Za-z0-9_.\-]{1,100}$")
 TRACK_JSON = re.compile(r"^tracks/([^/]+)/ui/(?:([^/]+)/)?ui_track\.json$", re.IGNORECASE)
 CAR_JSON = re.compile(r"^cars/([^/]+)/ui/ui_car\.json$", re.IGNORECASE)
+WEATHER_INI = re.compile(r"^weather/([^/]+)/weather\.ini$", re.IGNORECASE)
 DEFAULT_LAYOUT = "GP"
 
 
@@ -30,6 +38,7 @@ class ImportReport:
     new_cars: list[str] = field(default_factory=list)
     layouts: list[str] = field(default_factory=list)  # With pictures or data.
     cars: list[str] = field(default_factory=list)
+    new_weather: list[str] = field(default_factory=list)
 
 
 def _common_name(names: list[str]) -> str:
@@ -53,10 +62,14 @@ def _layout_name(full: str, track_name: str, key: str) -> str:
     return rest or full or key or DEFAULT_LAYOUT
 
 
-def read_selection(source: ZipSource) -> tuple[dict[str, dict[str, str]], dict[str, str]]:
-    """The tracks ({track key: {layout key: name}}) and the cars ({key: name}) in the ZIP."""
+def read_selection(
+    source: ZipSource,
+) -> tuple[dict[str, dict[str, str]], dict[str, str], dict[str, str]]:
+    """The tracks ({track key: {layout key: name}}), the cars ({key: name}) and the weather
+    presets ({key: name}) in the ZIP."""
     tracks: dict[str, dict[str, str]] = {}
     cars: dict[str, str] = {}
+    weather: dict[str, str] = {}
     for info in source.index.values():
         name = info.filename.replace("\\", "/").lstrip("/")
         if name.lower().startswith("content/"):
@@ -70,13 +83,19 @@ def read_selection(source: ZipSource) -> tuple[dict[str, dict[str, str]], dict[s
             if KEY.match(match[1]):
                 info_json = _ui_json(source.read(name, MAX_JSON_BYTES))
                 cars[match[1]] = str(info_json.get("name") or "").strip() or match[1]
-    return tracks, cars
+        elif match := WEATHER_INI.match(name):
+            if KEY.match(match[1]):
+                ini = parse_ini(source.read(name, MAX_JSON_BYTES) or b"")
+                weather[match[1]] = (
+                    str(ini.get("LAUNCHER", {}).get("NAME") or "").strip() or match[1]
+                )
+    return tracks, cars, weather
 
 
 @transaction.atomic
 def import_from_game(source: ZipSource, user=None) -> ImportReport:
     report = ImportReport()
-    tracks, cars = read_selection(source)
+    tracks, cars, weather = read_selection(source)
     layout_labels: set[str] = set()
     for key, layouts in sorted(tracks.items()):
         names = [name for name in layouts.values() if name]
@@ -100,7 +119,12 @@ def import_from_game(source: ZipSource, user=None) -> ImportReport:
         if not Car.objects.filter(key__iexact=key).exists():
             Car.objects.create(key=key, name=name)
             report.new_cars.append(key)
+    for key, name in sorted(weather.items()):
+        if not WeatherPreset.objects.filter(key__iexact=key).exists():
+            WeatherPreset.objects.create(key=key, name=name)
+            report.new_weather.append(key)
     images = import_game_images(source, only_layouts=layout_labels, only_cars=set(cars))
+    import_weather(source, set(weather))
     report.layouts, report.cars = images.layouts, images.cars
     if user is not None:
         record(
@@ -112,6 +136,7 @@ def import_from_game(source: ZipSource, user=None) -> ImportReport:
                 "tracks": len(report.new_tracks),
                 "layouts": len(report.new_layouts),
                 "cars": len(report.new_cars),
+                "weather": len(report.new_weather),
             },
         )
     return report

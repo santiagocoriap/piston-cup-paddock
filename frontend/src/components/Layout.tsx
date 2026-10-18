@@ -82,6 +82,7 @@ export function Layout({ onSignOut }: { onSignOut: () => void }) {
     { to: '/championships', icon: 'trophy', label: t('nav.championships') },
     { to: '/votes', icon: 'check', label: t('nav.votes'), count: votesToCast },
     { to: '/records', icon: 'timer', label: t('nav.records') },
+    { to: '/garage', icon: 'map', label: t('nav.garage') },
   ]
   const admin: NavEntry[] = [
     ...(adminMode && me.is_admin
