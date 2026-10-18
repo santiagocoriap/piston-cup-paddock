@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api, readCookie } from '../api/client'
+import { FileDrop } from '../components/FileDrop'
 import type { components } from '../api/schema'
 import { errorMessage } from '../lib/errors'
 import { formatDateTime, formatLapTime } from '../lib/format'
@@ -67,10 +68,7 @@ export function ImportSection({
       <h3>{t('imports.title')}</h3>
       <p className="muted">{t('imports.help')}</p>
       <form className="upload" onSubmit={submit} aria-label={t('imports.title')}>
-        <label>
-          {t('imports.file')}
-          <input name="file" type="file" accept=".json,application/json" required />
-        </label>
+        <FileDrop label={t('imports.file')} name="file" accept=".json,application/json" required />
         <button type="submit">{t('imports.upload')}</button>
       </form>
       {message && (
@@ -103,10 +101,38 @@ export function ImportSection({
                 </button>{' '}
                 <span className="badge">{t(`imports.session.${item.session_type}`)}</span>
                 <span className="badge">{t(`imports.status.${item.status}`)}</span>
+                {item.auto_status && (
+                  <span className={`badge auto-${item.auto_status}`}>{t(`imports.auto.${item.auto_status}`)}</span>
+                )}
                 <span className="muted">
                   {' '}
-                  {item.uploaded_by} · {formatDateTime(item.uploaded_at, i18n.language)}
+                  {item.uploaded_by ?? t('imports.byCollector')} · {formatDateTime(item.uploaded_at, i18n.language)}
                 </span>
+                {item.status === 'preview' && (item.auto_reasons ?? []).length > 0 && (
+                  <ul className="auto-notes">
+                    {(item.auto_reasons ?? []).map((reason) => (
+                      <li key={reason}>
+                        {t(`imports.autoReasons.${reason}`, {
+                          defaultValue: t(`imports.warnings.${reason}`, { defaultValue: reason }),
+                        })}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {(item.review_flags ?? []).length > 0 && (
+                  <ul className="auto-notes dnf-notes">
+                    {(item.review_flags ?? []).map((flag) => (
+                      <DnfNote
+                        key={flag.entry_id}
+                        roundId={roundId}
+                        name={entries.find((e) => e.entry_id === flag.entry_id)?.driver_name ?? `#${flag.entry_id}`}
+                        entryId={flag.entry_id}
+                        code={flag.code}
+                        onMarked={onApplied}
+                      />
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>
@@ -323,3 +349,55 @@ function DriverRow({
     </tr>
   )
 }
+
+/** One driver with fewer laps than the winner. A disconnect before the end points to a DNF.
+ * The admin marks the DNF with one click. */
+function DnfNote({
+  roundId,
+  entryId,
+  name,
+  code,
+  onMarked,
+}: {
+  roundId: number
+  entryId: number
+  name: string
+  code: string
+  onMarked: () => void
+}) {
+  const { t } = useTranslation()
+  const [done, setDone] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function mark() {
+    setError(null)
+    const { error } = await api.POST('/api/rounds/{round_id}/result/lines/{entry_id}/dnf', {
+      params: { path: { round_id: roundId, entry_id: entryId } },
+    })
+    if (error) setError(errorMessage(t, error))
+    else {
+      setDone(true)
+      onMarked()
+    }
+  }
+
+  return (
+    <li>
+      {t(`imports.dnfNote.${code}`, { name, defaultValue: t('imports.dnfNote.fewer_laps', { name }) })}{' '}
+      {done ? (
+        <span className="badge">{t('imports.dnfMarked')}</span>
+      ) : (
+        <button type="button" className="link" onClick={mark}>
+          {t('imports.markDnf')}
+        </button>
+      )}
+      {error && (
+        <span role="alert" className="error">
+          {' '}
+          {error}
+        </span>
+      )}
+    </li>
+  )
+}
+

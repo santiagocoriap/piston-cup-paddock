@@ -20,6 +20,19 @@ def test_league_admin_makes_a_league_championship_and_season(api, league_admin):
     assert season.json()["planned_round_count"] == 8
 
 
+def test_league_list_shows_the_championships_and_their_season_count(api, league_admin, season):
+    leagues = api(league_admin).get("/leagues").json()
+    league = next(item for item in leagues if item["id"] == season.championship.league_id)
+    assert league["championships"] == [
+        {"id": season.championship_id, "name": season.championship.name, "season_count": 1}
+    ]
+
+
+def test_new_league_has_no_championships(api, league_admin):
+    response = api(league_admin).post("/leagues", {"name": "Empty League"})
+    assert response.json()["championships"] == []
+
+
 def test_duplicate_season_name_gives_conflict(api, league_admin, season):
     response = api(league_admin).post(
         f"/championships/{season.championship_id}/seasons",

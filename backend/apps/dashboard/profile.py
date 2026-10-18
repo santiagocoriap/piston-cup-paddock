@@ -13,7 +13,10 @@ from apps.competition.permissions import can_view, is_league_admin, visible_cham
 from apps.identity.models import CareerAdjustment, DriverProfile
 from apps.records.services import record_boards
 from apps.restarts.models import Restart
+from apps.results.models import Penalty, ResultLine
 from apps.results.services import career_points, season_standings
+
+from .services import RecentResult
 
 POINTS_PER_LEVEL = 100
 
@@ -88,13 +91,19 @@ class SeasonRow:
     wins: int
     podiums: int
     starts: int
+    # The entry of the driver in this season.
+    number: int = 0
+    car_name: str = ""
+    team: str = ""
+    # Every result of the season in round order, for the chips and the trend line.
+    history: list[RecentResult] = field(default_factory=list)
 
 
 def seasons(user, driver: DriverProfile) -> list[SeasonRow]:
     rows = []
     entries = (
         SeasonEntry.objects.filter(driver=driver)
-        .select_related("season__championship")
+        .select_related("season__championship", "car")
         .order_by("-season__created_at")
     )
     for entry in entries:
@@ -106,6 +115,7 @@ def seasons(user, driver: DriverProfile) -> list[SeasonRow]:
         if mine is None:
             continue
         scores = [s for s in mine.rounds if s.status is not None]
+        rounds = {r.number: r for r in season.rounds.select_related("track_layout__track")}
         rows.append(
             SeasonRow(
                 season_id=season.id,
@@ -117,9 +127,124 @@ def seasons(user, driver: DriverProfile) -> list[SeasonRow]:
                 wins=mine.wins,
                 podiums=sum(1 for s in scores if s.position and s.position <= 3),
                 starts=sum(1 for s in scores if s.status != "dns"),
+                number=entry.number,
+                car_name=entry.car.name,
+                team=entry.team,
+                history=[
+                    RecentResult(
+                        round_id=rounds[s.round_number].id,
+                        round_number=s.round_number,
+                        track_name=rounds[s.round_number].track_layout.track.name,
+                        status=s.status,
+                        position=s.position,
+                        points=s.points,
+                    )
+                    for s in scores
+                    if s.round_number in rounds
+                ],
             )
         )
     return rows
+
+
+def current_lines(driver: DriverProfile, season_ids: list[int]) -> list[ResultLine]:
+    """The lines of the driver in the current version of each result of these seasons."""
+    lines = list(
+        ResultLine.objects.filter(
+            entry__driver=driver, entry__season_id__in=season_ids
+        ).select_related("version")
+    )
+    latest: dict[int, int] = {}
+    for line in lines:
+        result_id = line.version.result_id
+        latest[result_id] = max(latest.get(result_id, 0), line.version.number)
+    return [line for line in lines if line.version.number == latest[line.version.result_id]]
+
+
+@dataclass
+class Stats:
+    starts: int
+    wins: int
+    podiums: int
+    top5: int
+    poles: int
+    fastest_laps: int
+    best_finish: int | None
+    average_finish: float | None  # The average place of the finished races.
+    points: int
+    laps: int
+    records: int
+    win_rate: float | None  # Wins per start, from 0 to 100.
+    dnfs: int
+    dsqs: int
+    penalties: int
+    incident_points: int
+    restarts_caused: int
+
+
+def stats(
+    driver: DriverProfile,
+    rows: list[SeasonRow],
+    record_count: int,
+    restart_count: int,
+    incident_points: int,
+) -> Stats:
+    """The numbers of the career, from the seasons the viewer can see."""
+    season_ids = [row.season_id for row in rows]
+    lines = current_lines(driver, season_ids)
+    started = [line for line in lines if line.status != "dns"]
+    finished = [line.position for line in lines if line.status == "finished" and line.position]
+    wins = sum(1 for line in lines if line.position == 1 and line.status == "finished")
+    return Stats(
+        starts=len(started),
+        wins=wins,
+        podiums=sum(1 for p in finished if p <= 3),
+        top5=sum(1 for p in finished if p <= 5),
+        poles=sum(line.pole for line in lines),
+        fastest_laps=sum(line.fastest_lap for line in lines),
+        best_finish=min(finished) if finished else None,
+        average_finish=round(sum(finished) / len(finished), 1) if finished else None,
+        points=sum(row.points for row in rows),
+        laps=sum(line.laps or 0 for line in lines),
+        records=record_count,
+        win_rate=round(100 * wins / len(started)) if started else None,
+        dnfs=sum(1 for line in lines if line.status == "dnf"),
+        dsqs=sum(1 for line in lines if line.status == "dsq"),
+        penalties=Penalty.objects.filter(
+            entry__driver=driver, entry__season_id__in=season_ids
+        ).count(),
+        incident_points=incident_points,
+        restarts_caused=restart_count,
+    )
+
+
+@dataclass
+class Achievement:
+    key: str  # "win", "podium", "pole", "fastest_lap", "starts", "record".
+    count: int
+    goal: int  # The count that unlocks the badge.
+
+    @property
+    def achieved(self) -> bool:
+        return self.count >= self.goal
+
+
+def achievements(
+    driver: DriverProfile, rows: list[SeasonRow], record_count: int
+) -> list[Achievement]:
+    """The badges of the driver, from the seasons the viewer can see. Poles and fastest laps
+    come from the current version of each result."""
+    lines = current_lines(driver, [row.season_id for row in rows])
+    poles = sum(line.pole for line in lines)
+    fastest = sum(line.fastest_lap for line in lines)
+    return [
+        Achievement("win", sum(row.wins for row in rows), 1),
+        Achievement("podium", sum(row.podiums for row in rows), 1),
+        Achievement("pole", poles, 1),
+        Achievement("fastest_lap", fastest, 1),
+        Achievement("starts", sum(row.starts for row in rows), 10),
+        Achievement("record", record_count, 1),
+    ]
 
 
 @dataclass

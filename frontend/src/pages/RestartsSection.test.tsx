@@ -49,7 +49,30 @@ function show(adminView: boolean) {
   })
 }
 
+const same = (id: number, from: number) => ({
+  id, abandoned_attempt: from, replacement_attempt: from + 1, lap: null, elapsed_seconds: null, location: '',
+  reason: 'other', explanation: '', requested_by: null, executed_by: null, logged_by: 'santi',
+  responsibility: 'unknown', review_status: 'pending', responsible: [],
+})
+
 describe('RestartsSection', () => {
+  it('puts restarts with the same values in one row', async () => {
+    mockApi({
+      'GET /api/rounds/9/restarts': () =>
+        json(200, {
+          ...data,
+          attempts: [1, 2, 3, 4].map((number) => ({ number, status: number < 4 ? 'abandoned' : 'accepted' })),
+          restarts: [same(20, 1), same(21, 2), same(22, 3)],
+        }),
+    })
+    show(false)
+    const row = await screen.findByRole('row', { name: /1 → 4/ })
+    expect(within(row).getByText('×3')).toBeInTheDocument()
+    expect(screen.getAllByRole('row')).toHaveLength(2)
+    await userEvent.click(within(row).getByRole('button', { name: 'Ver uno por uno' }))
+    expect(screen.getAllByRole('row')).toHaveLength(5)
+  })
+
   it('shows the restart count, the attempts, and the shared label', async () => {
     mockApi({ 'GET /api/rounds/9/restarts': () => json(200, data) })
     show(false)
@@ -68,6 +91,7 @@ describe('RestartsSection', () => {
       'POST /api/rounds/9/restarts': () => json(201, data),
     })
     show(true)
+    await userEvent.click(await screen.findByRole('button', { name: 'Registrar reinicio' }))
     const form = await screen.findByRole('form', { name: 'Registrar reinicio' })
     await userEvent.type(within(form).getByLabelText('Vuelta'), '1')
     await userEvent.type(within(form).getByLabelText('Lugar'), 'T2')

@@ -3,38 +3,21 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../../api/client'
 import type { components } from '../../api/schema'
 import { ActionForm } from '../../components/ActionForm'
-import { useLoad } from '../../lib/useLoad'
+import { DangerMenu } from '../../components/DangerMenu'
+import { DualPicker, type PickItem } from '../../components/DualPicker'
+import { CarStats } from './CatalogFacts'
 
 type CarClass = components['schemas']['CarClassOut']
 type Car = components['schemas']['CarOut']
 
 /** Car classes and their cars. A change keeps the old rows in the history. */
-export function CarClassesSection({ cars }: { cars: Car[] }) {
+export function CarClassesSection({ cars, classes, onSaved }: { cars: Car[]; classes: CarClass[]; onSaved: () => void }) {
   const { t } = useTranslation()
-  const classes = useLoad(() => api.GET('/api/catalog/classes'), [])
   return (
-    <section aria-label={t('classes.title')}>
-      <h2>{t('classes.title')}</h2>
-      {classes.data?.length === 0 && <p>{t('classes.none')}</p>}
-      {classes.data?.map((item) => (
-        <ClassCard key={item.id} item={item} cars={cars} onSaved={classes.reload} />
+    <section aria-label={t('classes.title')} className="class-list">
+      {classes.map((item) => (
+        <ClassCard key={item.id} item={item} cars={cars} onSaved={onSaved} />
       ))}
-      <div className="forms">
-        <ActionForm
-          title={t('classes.new')}
-          submitLabel={t('common.create')}
-          onSubmit={async (form) => {
-            const { error } = await api.POST('/api/catalog/classes', { body: { name: String(form.get('name')) } })
-            if (!error) classes.reload()
-            return error
-          }}
-        >
-          <label>
-            {t('classes.name')}
-            <input name="name" required maxLength={60} />
-          </label>
-        </ActionForm>
-      </div>
     </section>
   )
 }
@@ -42,12 +25,28 @@ export function CarClassesSection({ cars }: { cars: Car[] }) {
 function ClassCard({ item, cars, onSaved }: { item: CarClass; cars: Car[]; onSaved: () => void }) {
   const { t } = useTranslation()
   const [editing, setEditing] = useState(false)
+  const [picked, setPicked] = useState(item.car_ids)
+  const pickItems: PickItem[] = cars.map((car) => ({
+    id: car.id,
+    title: car.name,
+    subtitle: car.brand,
+    origin: { key: car.source, label: t(`carDetail.source.${car.source}`) },
+    tags: car.tags ?? [],
+    image: car.has_preview ? `/api/catalog/cars/${car.id}/images/preview` : null,
+    details: <CarStats car={car} />,
+  }))
   const names = cars.filter((c) => item.car_ids.includes(c.id)).map((c) => c.name)
   return (
-    <div className="card">
-      <h3>{item.name}</h3>
+    <div className="card class-card">
+      <div className="class-head">
+        <h3>{item.name}</h3>
+        <DangerMenu target={{ kind: 'car_class', id: item.id, name: item.name }} onDeleted={onSaved} />
+      </div>
       <p>{names.length > 0 ? names.join(', ') : t('classes.noCars')}</p>
-      <button type="button" className="secondary small" onClick={() => setEditing((e) => !e)}>
+      <button type="button" className="secondary small" onClick={() => {
+          setPicked(item.car_ids)
+          setEditing((e) => !e)
+        }}>
         {t('classes.editCars')}
       </button>
       {editing && (
@@ -66,15 +65,7 @@ function ClassCard({ item, cars, onSaved }: { item: CarClass; cars: Car[]; onSav
             return error
           }}
         >
-          <fieldset>
-            <legend>{t('classes.cars')}</legend>
-            {cars.map((car) => (
-              <label key={car.id} className="check">
-                <input type="checkbox" name="car_ids" value={car.id} defaultChecked={item.car_ids.includes(car.id)} />
-                {car.name}
-              </label>
-            ))}
-          </fieldset>
+          <DualPicker name="car_ids" items={pickItems} value={picked} onChange={setPicked} searchLabel={t('classes.search')} />
           <label>
             {t('classes.reason')}
             <input name="reason" maxLength={300} />

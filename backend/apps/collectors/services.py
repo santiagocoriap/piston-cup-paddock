@@ -1,12 +1,15 @@
 """Receive files and events from a server collector.
 
-A collector can only add raw evidence. It finds no users, changes no seasons, and applies
-nothing. The app finds the round from the time and the track of the file. An admin still
-checks the preview and applies the import.
+A collector can only add raw evidence. It finds no users and changes no seasons. The app finds
+the round from the time and the track of the file. When the championship allows it, a clean file
+becomes a provisional result with no admin click (apps/imports/auto_publish.py). A file with a
+problem waits for an admin.
 """
 
 import hashlib
+import hmac
 import json
+import logging
 import re
 import secrets
 from datetime import datetime, timedelta
@@ -19,13 +22,15 @@ from django.utils.dateparse import parse_datetime
 
 from apps.audit.services import record
 from apps.competition.models import Championship, Round
-from apps.imports import penalty_services
+from apps.imports import auto_publish, penalty_services
 from apps.imports import services as imports
 from apps.imports.ac_results import parse, track_key
 from apps.imports.models import PenaltyLogFile, ResultImport
 from apps.imports.real_penalty import parse as parse_log
 
 from .models import CollectorEvent, CollectorFile, CollectorToken
+
+log = logging.getLogger(__name__)
 
 MAX_BYTES = 5 * 1024 * 1024
 MAX_EVENTS = 500  # In one batch.
@@ -57,6 +62,27 @@ def create_token(championship: Championship, name: str, user) -> tuple[Collector
             params={"name": name},
         )
     return token, raw
+
+
+USER_AGENT = re.compile(r"paddock-collector/(\d+\.\d+\.\d+)")
+
+
+def remember_version(token: CollectorToken, user_agent: str) -> None:
+    match = USER_AGENT.search(user_agent)
+    if match and match[1] != token.version:
+        token.version = match[1]
+        CollectorToken.objects.filter(pk=token.pk).update(version=match[1])
+
+
+def save_status(token: CollectorToken, queued: int, error: str, error_at) -> None:
+    token.queued_files = queued
+    token.last_error = error.strip()[:200]
+    token.last_error_at = error_at if token.last_error else None
+    token.save(update_fields=["queued_files", "last_error", "last_error_at"])
+
+
+def key_matches(token: CollectorToken, raw: str) -> bool:
+    return hmac.compare_digest(token.token_hash, _hash(raw.strip()))
 
 
 def revoke_token(token: CollectorToken, user) -> None:
@@ -143,7 +169,23 @@ def receive_file(
                 _assign(item, round_, content, None)
         else:
             item.save()
+    if item.status == CollectorFile.State.ASSIGNED:
+        _publish(item)
     return item, True
+
+
+def _publish(item: CollectorFile) -> None:
+    """Publish the file with no admin click when it has no problem. The file is already safe:
+    an error here never loses it, and an admin can still apply it by hand."""
+    try:
+        if item.kind == CollectorFile.Kind.RESULT:
+            result_import = item.round.imports.filter(sha256=item.sha256).first()
+            if result_import:
+                auto_publish.auto_apply(result_import)
+        else:
+            auto_publish.auto_penalties(item.round)
+    except Exception:
+        log.exception("Automatic publication failed for collector file %s", item.id)
 
 
 def _assign(item: CollectorFile, round_: Round, content: bytes, user) -> None:
@@ -212,4 +254,17 @@ def receive_events(token: CollectorToken, run_id: str, events: list[dict]) -> in
         )
     before = CollectorEvent.objects.filter(token=token, run_id=run_id).count()
     CollectorEvent.objects.bulk_create(rows, ignore_conflicts=True)
-    return CollectorEvent.objects.filter(token=token, run_id=run_id).count() - before
+    added = CollectorEvent.objects.filter(token=token, run_id=run_id).count() - before
+    if added:
+        _match_script_laps(token)
+    return added
+
+
+def _match_script_laps(token: CollectorToken) -> None:
+    """New server events can be the missing part for laps of the Paddock script that wait."""
+    from apps.telemetry import script
+
+    try:
+        script.rematch(token.championship)
+    except Exception:
+        log.exception("Matching the script laps failed for collector %s", token.id)

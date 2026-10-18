@@ -54,3 +54,14 @@ def test_final_race_has_pit_lane_events():
 def test_text_that_is_not_a_log_is_refused():
     with pytest.raises(PenaltyLogError):
         parse("hello")
+
+
+def test_a_cut_warning_has_its_lap():
+    log = parse(
+        "2026-10-15 20:18:26.7: Type: 3\n"
+        "2026-10-15 20:20:23.0: Cutting Warning - Car ID: 0 - Name: A - GUID: 76561198400388076"
+        " - Lap: 1 - Norm.pos.: 0.89 - Cutting warning: 1/3\n"
+        "2026-10-15 20:23:51.0: End session\n"
+    )
+    assert log.cuts == {"76561198400388076": 1}
+    assert log.cut_laps == [("76561198400388076", 1)]

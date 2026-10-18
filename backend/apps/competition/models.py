@@ -15,11 +15,31 @@ class League(models.Model):
         return self.name
 
 
+class Team(models.Model):
+    """A team of a league. The entry form lists them, so a team name has one spelling."""
+
+    league = models.ForeignKey(League, on_delete=models.CASCADE, related_name="teams")
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        ordering = ["name"]
+        constraints = [models.UniqueConstraint(fields=["league", "name"], name="unique_team")]
+
+    def __str__(self):
+        return self.name
+
+
 class Championship(models.Model):
     league = models.ForeignKey(League, on_delete=models.PROTECT, related_name="championships")
     name = models.CharField(max_length=100)
     # Write a provisional AI report when a race file is applied, before the approval.
     provisional_reports = models.BooleanField(default=False)
+    # Apply a clean result file from the server collector with no admin click. The result
+    # stays provisional until an admin approves it. See docs/adr/0002-collector-automation.md.
+    auto_publish_results = models.BooleanField(default=True)
+    # Free slots after the league drivers in the server entry list, so a driver can change to an
+    # extra car. "Enviar al servidor" sends this number. An admin can change it for one push.
+    open_slots = models.PositiveSmallIntegerField(default=10)
 
     class Meta:
         ordering = ["name"]
@@ -84,6 +104,8 @@ class Season(models.Model):
     protest_window_minutes = models.PositiveIntegerField(default=60)
     # By default a fixed layout cannot also be a voting candidate.
     allow_repeat_layouts = models.BooleanField(default=False)
+    # Free join: a driver enters the season alone. Off: the driver asks, and an admin decides.
+    free_join = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -102,6 +124,11 @@ class SeasonEntry(models.Model):
     car = models.ForeignKey(Car, on_delete=models.PROTECT, related_name="entries")
     number = models.PositiveSmallIntegerField()
     team = models.CharField(max_length=100, blank=True)
+    # The skin that the driver chose for the car. Empty: the server picks one. The skin must be
+    # a skin of the car of the entry (the API checks it).
+    skin = models.ForeignKey(
+        "catalog.CarSkin", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
 
     class Meta:
         ordering = ["number"]
@@ -112,6 +139,43 @@ class SeasonEntry(models.Model):
 
     def __str__(self):
         return f"#{self.number} {self.driver}"
+
+
+class JoinRequest(models.Model):
+    """A driver asks to enter a season that has no free join. An admin approves or declines."""
+
+    class Status(models.TextChoices):
+        PENDING = "pending", _("Pending")
+        APPROVED = "approved", _("Approved")
+        DECLINED = "declined", _("Declined")
+
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="join_requests")
+    driver = models.ForeignKey(
+        DriverProfile, on_delete=models.CASCADE, related_name="join_requests"
+    )
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="+")
+    number = models.PositiveSmallIntegerField()
+    team = models.CharField(max_length=100, blank=True)
+    note = models.CharField(max_length=300, blank=True)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    decided_at = models.DateTimeField(null=True, blank=True)
+    decided_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+
+    class Meta:
+        ordering = ["created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["season", "driver"],
+                condition=models.Q(status="pending"),
+                name="one_pending_request_per_driver",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.driver} -> {self.season} ({self.status})"
 
 
 class Round(models.Model):

@@ -75,6 +75,12 @@ def test_race_laps_of_the_real_night(api, night):
     }
     # Lap 3 has a pit exit and a new entry (a teleport to the pits), so it counts as "in".
     assert pits["Driver 06"] == ["in", "in", "in", "out"]
+    # Each pit entry ends a stint. The stints cover every race lap of the driver.
+    driver06 = next(d for d in data["drivers"] if d["driver_name"] == "Driver 06")
+    stints = driver06["stints"]
+    assert len(stints) == 4
+    assert sum(s["laps"] for s in stints) == len(driver06["laps"])
+    assert [s["ends_in_pit"] for s in stints] == [True, True, True, False]
 
 
 def test_qualifying_marks_the_invalid_lap(api, night):
@@ -83,6 +89,7 @@ def test_qualifying_marks_the_invalid_lap(api, night):
     laps = [lap for d in data["drivers"] for lap in d["laps"] if lap["lap_number"]]
     invalid = [lap for lap in laps if lap["time_ms"] == 336531]
     assert invalid[0]["valid"] is False
+    assert all(d["stints"] == [] for d in data["drivers"])  # Only a race has stints.
     assert "first_lap" not in data["clean_rules"]
 
 

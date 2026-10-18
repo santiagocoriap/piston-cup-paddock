@@ -57,6 +57,12 @@ const noRestarts = {
     }),
 }
 
+/** The result form opens in a dialog from the "Administrar" menu. */
+async function openResultForm() {
+  await userEvent.click(await screen.findByRole('button', { name: 'Administrar' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Cargar resultado' }))
+}
+
 const show = (me = undefined as typeof DRIVER | undefined) =>
   renderPage(<RoundPage />, { path: '/rounds/:roundId', url: '/rounds/9', me })
 
@@ -119,13 +125,15 @@ describe('RoundPage', () => {
       'PUT /api/rounds/9/result': () => json(200, round(true, [])),
     })
     show()
+    await openResultForm()
     await userEvent.selectOptions(await screen.findByLabelText('Estado Bing'), 'finished')
     await userEvent.type(screen.getByLabelText('Pos. Bing'), '1')
     await userEvent.selectOptions(screen.getByLabelText('Estado Vice'), 'dnf')
     await userEvent.type(screen.getByLabelText('Pos. Vice'), '2')
     await userEvent.click(screen.getByRole('button', { name: 'Guardar resultado' }))
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Resultado guardado.')
+    // The dialog closes after the save.
+    await vi.waitFor(() => expect(screen.queryByLabelText('Estado Bing')).not.toBeInTheDocument())
     const put = calls.find((call) => call.key === 'PUT /api/rounds/9/result')!
     expect(put.body).toEqual({
       lines: [
@@ -143,6 +151,7 @@ describe('RoundPage', () => {
       'PUT /api/rounds/9/result': () => json(422, { detail: 'positions_not_continuous' }),
     })
     show()
+    await openResultForm()
     await userEvent.selectOptions(await screen.findByLabelText('Estado Bing'), 'finished')
     await userEvent.type(screen.getByLabelText('Pos. Bing'), '3')
     await userEvent.click(screen.getByRole('button', { name: 'Guardar resultado' }))
@@ -152,6 +161,7 @@ describe('RoundPage', () => {
   it('disables the position for DNS and DSQ', async () => {
     mockApi({ ...noRestarts, 'GET /api/rounds/9': () => json(200, round(true)) })
     show()
+    await openResultForm()
     await userEvent.selectOptions(await screen.findByLabelText('Estado Bing'), 'dsq')
     expect(screen.getByLabelText('Pos. Bing')).toBeDisabled()
   })
@@ -166,7 +176,8 @@ describe('RoundPage', () => {
         ], { penalties: [{ id: 4, entry_id: 1, driver_name: 'Bing', kind: 'positions', value: 1, reason: 'Corte', source: 'steward', attempt: 1, protest_id: null, created_by: 'santi', created_at: '2026-10-19T02:30:00Z' }] })),
     })
     show(DRIVER)
-    expect(await screen.findByText('Provisional')).toBeInTheDocument()
+    // The header and the status banner both show the state.
+    expect(await screen.findAllByText('Provisional')).toHaveLength(2)
     expect(screen.getByText(/Protestas hasta/)).toBeInTheDocument()
     const bing = screen.getAllByRole('row', { name: /Bing/ })[0]
     expect(within(bing).getByText('Sanción')).toHaveAttribute('title', 'Cargado: 1')
@@ -233,6 +244,32 @@ describe('RoundPage', () => {
     expect(within(briefing).getByText(/Plazo de protestas: 60 minutos/)).toBeInTheDocument()
   })
 
+  it('shows what the server used and where it differs from the announcement', async () => {
+    mockApi({
+      ...noRestarts,
+      'GET /api/rounds/9': () =>
+        json(200, round(false, null, {
+          briefing: {
+            announced_conditions: { time_of_day: '15:30', weather: 'Despejado', air_temp_c: 28, track_temp_c: 30, grip: '', notes: '' },
+            protest_window_minutes: 60,
+            my_handicap: null,
+            server_conditions: {
+              session_type: 'race', started_at: '2026-10-11T22:27:00Z', weather: '3_clear',
+              air_temp_c: 20, track_temp_c: 31, time_of_day: '16:00', grip_pct: 89,
+            },
+            conditions_differ: ['air_temp'],
+          },
+        })),
+    })
+    show(DRIVER)
+    const briefing = await screen.findByRole('region', { name: 'Briefing' })
+    expect(within(briefing).getByText('En el servidor')).toBeInTheDocument()
+    expect(within(briefing).getAllByText('Despejado')).toHaveLength(2)
+    expect(within(briefing).getByText('20 °C')).toBeInTheDocument()
+    expect(within(briefing).getByText('89 %')).toBeInTheDocument()
+    expect(within(briefing).getByRole('status')).toHaveTextContent('No coincide con lo anunciado: temperatura del aire.')
+  })
+
   it('opens the analysis in tabs and keeps the race tab first', async () => {
     const line = { entry_id: 1, status: 'finished', position: 1, entered_status: 'finished', entered_position: 1, pole: false, fastest_lap: false, number: 1, driver_name: 'Bing', points: 25 }
     mockApi({ ...noRestarts, 'GET /api/rounds/9': () => json(200, round(false, [line])) })
@@ -243,6 +280,30 @@ describe('RoundPage', () => {
     await userEvent.click(within(tabs).getByRole('button', { name: 'Reinicios' }))
     expect(within(tabs).getByRole('button', { name: 'Reinicios' })).toHaveAttribute('aria-current', 'page')
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
+  })
+
+  it('shows the podium, the winner, and a count on each tab with data', async () => {
+    const line = (entry_id: number, position: number, driver_name: string, points: number) => ({
+      entry_id, status: 'finished', position, entered_status: 'finished', entered_position: position,
+      pole: false, fastest_lap: false, number: entry_id, driver_name, points,
+    })
+    mockApi({
+      ...noRestarts,
+      'GET /api/rounds/9': () => json(200, round(false, [line(1, 1, 'Bing', 25), line(2, 2, 'Vice', 18)])),
+      'GET /api/rounds/9/tab-counts': () =>
+        json(200, { laps: 40, incidents: 0, replay: 0, restarts: 3, telemetry: 0, reports: 1 }),
+    })
+    show(DRIVER)
+    const podium = await screen.findByRole('list', { name: 'Podio' })
+    expect(within(podium).getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+      'VVice#2218 pts',
+      'BBing#1125 pts',
+    ])
+    expect(screen.getByText('Ganó Bing')).toBeInTheDocument()
+    const tabs = screen.getByRole('navigation', { name: 'Secciones de la fecha' })
+    const restarts = within(tabs).getByRole('button', { name: 'Reinicios' })
+    await vi.waitFor(() => expect(restarts).toHaveTextContent('Reinicios3'))
+    expect(within(tabs).getByRole('button', { name: 'Incidentes' })).toHaveClass('empty')
   })
 
   it('puts the briefing first before the race and folds it after the result', async () => {

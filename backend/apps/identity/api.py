@@ -1,10 +1,15 @@
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpRequest
+from django.core.files.base import ContentFile
+from django.http import Http404, HttpRequest, HttpResponse
 from django.middleware.csrf import get_token
-from ninja import Field, Router, Schema, Status
+from django.shortcuts import get_object_or_404
+from ninja import Field, File, Router, Schema, Status
+from ninja.errors import HttpError
+from ninja.files import UploadedFile
 from ninja.security import django_auth
 from ninja.utils import check_csrf
 
+from apps.catalog.game_images import JPEG, PNG
 from apps.common.timezones import is_timezone
 from apps.competition.permissions import has_any_staff_role, manages_any_championship
 
@@ -27,6 +32,7 @@ class Me(Schema):
     is_admin: bool
     can_admin: bool  # True when the user can manage something, so the admin mode is useful.
     can_manage: bool  # True for a championship admin. A steward or custom role is False.
+    avatar_url: str | None = None
 
 
 class Error(Schema):
@@ -42,6 +48,7 @@ def _me(user) -> Me:
         is_admin=user.is_staff,
         can_admin=has_any_staff_role(user),
         can_manage=manages_any_championship(user),
+        avatar_url=user.avatar_url(),
     )
 
 
@@ -97,3 +104,55 @@ def update_me(request: HttpRequest, payload: Settings):
         user.timezone = payload.timezone
     user.save(update_fields=["language", "timezone"])
     return Status(200, _me(user))
+
+
+# The browser makes the picture square and small before the upload.
+MAX_AVATAR_BYTES = 2 * 1024 * 1024
+
+
+@router.post("/me/avatar", response=Me, auth=django_auth)
+def upload_avatar(request: HttpRequest, file: File[UploadedFile]):
+    """Set the picture of the signed-in user. Only a PNG or a JPEG of at most 2 MB."""
+    if file.size > MAX_AVATAR_BYTES:
+        raise HttpError(400, "image_too_large")
+    data = file.read()
+    if data.startswith(PNG):
+        name = "avatar.png"
+    elif data.startswith(JPEG):
+        name = "avatar.jpg"
+    else:
+        raise HttpError(400, "image_not_supported")
+    user = request.user
+    if user.avatar:
+        user.avatar.delete(save=False)
+    user.avatar.save(name, ContentFile(data), save=False)
+    user.save(update_fields=["avatar"])
+    return _me(user)
+
+
+@router.delete("/me/avatar", response=Me, auth=django_auth)
+def remove_avatar(request: HttpRequest):
+    user = request.user
+    if user.avatar:
+        user.avatar.delete(save=False)
+        user.save(update_fields=["avatar"])
+    return _me(user)
+
+
+@router.get("/avatars/{user_id}", auth=django_auth)
+def avatar(request: HttpRequest, user_id: int):
+    """The picture of a user. Every signed-in user can see it, like the names."""
+    user = get_object_or_404(User, pk=user_id)
+    if not user.avatar:
+        raise Http404
+    # A picture is at most 2 MB, so the response holds the bytes and no file stays open.
+    with user.avatar.open("rb") as handle:
+        data = handle.read()
+    response = HttpResponse(
+        data, content_type="image/png" if data.startswith(PNG) else "image/jpeg"
+    )
+    response["X-Content-Type-Options"] = "nosniff"
+    response["Content-Security-Policy"] = "sandbox; default-src 'none'"
+    # The address changes with each upload, so the browser can keep the picture.
+    response["Cache-Control"] = "private, max-age=31536000, immutable"
+    return response

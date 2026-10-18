@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AC integration plan</title>
+<style>
+:root { --bg:#f6f6f8; --ink:#16161a; --muted:#55555f; --line:#e1e1e7; --card:#ffffff; --brand:#d71920; --ok:#13804b; --todo:#a86200; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0b0b0d; --ink:#f3f3f5; --muted:#a3a3ad; --line:#2a2a31; --card:#151519; --ok:#3ddc84; --todo:#f5b700; } }
+:root[data-theme="dark"] { --bg:#0b0b0d; --ink:#f3f3f5; --muted:#a3a3ad; --line:#2a2a31; --card:#151519; --ok:#3ddc84; --todo:#f5b700; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 system-ui, -apple-system, Segoe UI, sans-serif; }
+main { max-width:1040px; margin:0 auto; padding:24px 16px 72px; }
+.hero { padding:32px 28px; border-radius:16px; color:#f6f4f1; margin-bottom:16px;
+  background:radial-gradient(circle at 15% 10%, rgba(215,25,32,.45), transparent 55%), #0f0f12; }
+.kicker { margin:0 0 6px; color:#ff6b70; font-size:13px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+.hero h1 { margin:0 0 10px; font-size:clamp(28px,5vw,44px); line-height:1.05; }
+.lead { max-width:62ch; margin:0 0 18px; color:rgba(246,244,241,.85); }
+.pills { display:flex; flex-wrap:wrap; gap:8px; margin:0; padding:0; list-style:none; }
+.pills li { padding:6px 12px; border:1px solid rgba(255,255,255,.2); border-radius:999px; background:rgba(255,255,255,.06); font-size:14px; }
+.pills b { color:#ff6b70; font-size:18px; margin-right:4px; }
+nav { position:sticky; top:0; z-index:5; display:flex; gap:6px; overflow-x:auto; padding:10px 0; margin-bottom:8px; background:var(--bg); }
+nav a { flex:none; padding:6px 12px; border:1px solid var(--line); border-radius:999px; color:var(--ink); text-decoration:none; font-size:14px; background:var(--card); }
+nav a:hover { border-color:var(--brand); }
+section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin:0 0 20px; scroll-margin-top:60px; }
+h2 { margin:0 0 6px; font-size:21px; border-left:4px solid var(--brand); padding-left:10px; }
+section > p { color:var(--muted); margin:0 0 14px; }
+.diagram { overflow-x:auto; background:#ffffff; border-radius:10px; border:1px solid var(--line); }
+.mermaid { margin:0; padding:14px; text-align:center; min-width:560px; }
+table { border-collapse:collapse; width:100%; font-size:15px; }
+td, th { border-top:1px solid var(--line); padding:9px 10px; text-align:left; vertical-align:top; }
+th { color:var(--muted); font-size:13px; text-transform:uppercase; letter-spacing:.04em; }
+td:first-child { font-weight:700; white-space:nowrap; }
+.phases { margin-top:16px; }
+.timeline { display:grid; gap:6px; }
+.bar-row { display:grid; grid-template-columns:minmax(0,240px) minmax(0,1fr); gap:12px; align-items:center; font-size:14px; }
+.bar-track { display:block; height:26px; border-radius:6px; background:var(--bg); }
+.bar { display:flex; align-items:center; justify-content:center; height:100%; min-width:34px; border-radius:6px; background:var(--brand); color:#fff; font-size:12px; font-weight:700; }
+@media (max-width:600px) { .bar-row { grid-template-columns:minmax(0,1fr); gap:2px; } }
+.phases td:first-child { white-space:normal; }
+.steps { margin:0; padding-left:22px; }
+.steps li { margin:6px 0; }
+.checks { margin:0; padding:0; list-style:none; }
+.checks li { margin:8px 0; padding:10px 12px; border-radius:8px; border:1px solid var(--line); }
+.checks .ok b { color:var(--ok); }
+.checks .todo b { color:var(--todo); }
+@media (max-width:600px) { td:first-child { white-space:normal; } section { padding:16px; } }
+</style></head>
+<body><main>
+<header class="hero"><p class="kicker">Piston Cup Paddock · Plan</p><h1>How the AC integration works</h1><p class="lead">The goal: a race night needs no upload and no typing. The data goes from the AC server and from each driver to the app by itself. The admin only checks problems and approves the official result.</p><ul class="pills"><li><b>0</b> programs for drivers to open</li><li><b>1</b> click for the admin before the race</li><li><b>1</b> click for the admin after the race</li></ul></header><nav><a href="#overview">Overview</a><a href="#admin">Admin</a><a href="#driver">Driver</a><a href="#night">Race night</a><a href="#lap">Lap check</a><a href="#trust">Trust</a><a href="#plan">Plan</a><a href="#questions">Questions</a></nav><section><h2>Words in this page</h2><table><tr><td>Paddock app</td><td>The website of the league. It keeps results, standings, and laps.</td></tr><tr><td>Server program</td><td>paddock-collector.exe. It runs on the PC of the AC server. It sends files and events to the app, and writes the race setup into the server.</td></tr><tr><td>Paddock script</td><td>A small Lua script. The league server sends it into AC when a driver joins. It runs inside the game and sends each lap to the app.</td></tr><tr><td>Key</td><td>A secret password for the server program. The app shows it one time only.</td></tr><tr><td>Race code</td><td>A new secret for each race. The app makes it, the server gives it to the drivers on the server, and the script sends it with each lap.</td></tr><tr><td>CSP</td><td>Custom Shaders Patch. A free add-on for AC. The league server already needs it.</td></tr></table></section><section id="overview"><h2>0. The whole system in one picture</h2><p>The boxes are the places where things run. The arrows show what goes where. Only the admin clicks one button. All other arrows happen by themselves.</p><div class="diagram"><pre class="mermaid">flowchart TB
+    subgraph SERVERPC[&quot;PC of the AC server&quot;]
+        AC[&quot;AC server&quot;]
+        RP[&quot;Real Penalty&quot;]
+        SC[&quot;Server program&lt;br/&gt;paddock-collector.exe&quot;]
+        FILES[(&quot;Server files&lt;br/&gt;entry_list.ini&lt;br/&gt;server_cfg.ini&lt;br/&gt;csp_extra_options.ini&quot;)]
+    end
+    subgraph DRIVERPC[&quot;PC of each driver&quot;]
+        GAME[&quot;AC with CSP&quot;]
+        PS[&quot;Paddock script&lt;br/&gt;runs inside AC&quot;]
+    end
+    subgraph CLOUD[&quot;The internet&quot;]
+        APP[&quot;Paddock app&lt;br/&gt;the league website&quot;]
+    end
+    ADMIN([&quot;Admin&quot;])
+    DRIVER([&quot;Driver&quot;])
+
+    ADMIN -- &quot;clicks &#x27;Enviar al servidor&#x27;&quot; --&gt; APP
+    APP -- &quot;race setup and race code&quot; --&gt; SC
+    SC -- &quot;writes before the race&quot; --&gt; FILES
+    FILES -- &quot;AC reads at start&quot; --&gt; AC
+    AC -- &quot;live events&quot; --&gt; SC
+    AC -- &quot;result file&quot; --&gt; SC
+    RP -- &quot;penalty log&quot; --&gt; SC
+    SC -- &quot;files and events&quot; --&gt; APP
+    DRIVER -- &quot;joins the server&quot; --&gt; GAME
+    GAME &lt;-- &quot;race&quot; --&gt; AC
+    AC -- &quot;sends the script address&quot; --&gt; GAME
+    GAME -- &quot;starts by itself&quot; --&gt; PS
+    PS -- &quot;each lap&quot; --&gt; APP
+    APP -- &quot;results, standings, telemetry&quot; --&gt; DRIVER</pre></div></section><section id="admin"><h2>1. Admin: connect the AC server to the app</h2><p>The admin does this one time. After this, the server program starts by itself with Windows.</p><div class="diagram"><pre class="mermaid">flowchart TD
+    A([Start: the admin wants the server to talk to the app]) --&gt; B[&quot;In the app, turn on &#x27;Modo admin&#x27;&quot;]
+    B --&gt; C[&quot;Open the championship page, then &#x27;Colectores&#x27;&quot;]
+    C --&gt; D[&quot;Click &#x27;Crear clave&#x27;.&lt;br/&gt;The key is a secret password for the server PC&quot;]
+    D --&gt; E[&quot;Click &#x27;Descargar colector&#x27;.&lt;br/&gt;You get a zip: the program + a settings file with the key inside&quot;]
+    E --&gt; F[&quot;Copy the zip to the PC that runs the AC server, and unzip it&quot;]
+    F --&gt; G[&quot;Run paddock-collector.exe --setup&quot;]
+    G --&gt; H[&quot;The program asks 2 things:&lt;br/&gt;1. Where is the AC server folder?&lt;br/&gt;2. What is the public address and port of the server?&quot;]
+    H --&gt; I{&quot;The program calls the app:&lt;br/&gt;&#x27;Is my key good?&#x27;&quot;}
+    I -- No --&gt; J[&quot;The screen says what is wrong.&lt;br/&gt;Fix the key or the address&quot;]
+    J --&gt; G
+    I -- Yes --&gt; K[&quot;Run paddock-collector.exe --install.&lt;br/&gt;Now it starts by itself with Windows&quot;]
+    K --&gt; L[&quot;In Content Manager, add the extra plugin 127.0.0.1:6973.&lt;br/&gt;Now the program hears the race live&quot;]
+    L --&gt; M[&quot;In collector.ini set write_server_config = true.&lt;br/&gt;The program can now write the race setup&lt;br/&gt;and the Paddock script into the server&quot;]
+    M --&gt; N([&quot;Done. In &#x27;Colectores&#x27; the server shows a green dot: &#x27;Conectado&#x27;&quot;])</pre></div></section><section id="driver"><h2>2. Driver: what you do</h2><p>The driver installs nothing new and opens nothing. Nobody must remember to start a program.</p><div class="diagram"><pre class="mermaid">flowchart TD
+    A([Start: an admin sends you an invite link]) --&gt; B[&quot;Open the link. Choose your password&quot;]
+    B --&gt; C[&quot;The admin puts your Steam ID on your driver profile.&lt;br/&gt;It tells the app which car on the server is you&quot;]
+    C --&gt; D{&quot;Do you have Content Manager&lt;br/&gt;and CSP in AC?&quot;}
+    D -- No --&gt; E[&quot;Install them one time.&lt;br/&gt;The league server needs them anyway&quot;]
+    E --&gt; F
+    D -- Yes --&gt; F[&quot;In &#x27;Mi cuenta&#x27;, choose who sees your laps&quot;]
+    F --&gt; G([&quot;Done. You install nothing more and open nothing more&quot;])
+    G --&gt; H[&quot;Race night: join the league server in AC, as always&quot;]
+    H --&gt; I[&quot;AC gets the Paddock script from the server by itself&lt;br/&gt;and runs it inside the game&quot;]
+    I --&gt; J[&quot;A small line in AC says:&lt;br/&gt;&#x27;Paddock: Fecha 3 · Carrera · grabando&#x27;&quot;]
+    J --&gt; K[&quot;Drive. Each lap goes to the app by itself&quot;]
+    K --&gt; L([&quot;Leave the server. The script stops by itself&quot;])</pre></div></section><section id="night"><h2>3. Race night: who talks to whom</h2><p>This happens on each race night. Read it from top to bottom. The arrows show who sends what to whom.</p><div class="diagram"><pre class="mermaid">sequenceDiagram
+    autonumber
+    actor Admin
+    participant App as Paddock app
+    participant SC as Server program&lt;br/&gt;(next to AC server)
+    participant AC as AC server
+    participant PS as Paddock script&lt;br/&gt;(inside AC of each driver)
+    actor Driver
+
+    Note over Admin,App: Before the race
+    Admin-&gt;&gt;App: Draw the conditions. The app knows each ballast and restrictor
+    Admin-&gt;&gt;App: Click &quot;Enviar al servidor&quot;
+    App-&gt;&gt;App: Make a new race code
+    SC-&gt;&gt;App: Every 30 s: &quot;Is there work for me?&quot;
+    App--&gt;&gt;SC: Yes: entry list, weather, track, race code
+    SC-&gt;&gt;SC: Is the AC server stopped? Save a copy of the old files
+    SC-&gt;&gt;AC: Write entry_list.ini, server_cfg.ini, csp_extra_options.ini
+    SC--&gt;&gt;App: Done
+    Admin-&gt;&gt;AC: Start the AC server
+
+    Note over AC,Driver: The race
+    Driver-&gt;&gt;AC: Join the server in AC
+    AC--&gt;&gt;PS: Here is the script address and the race code
+    PS-&gt;&gt;PS: AC downloads the script and starts it. No click
+    AC--&gt;&gt;SC: Live: new session, driver connected with Steam ID
+    SC--&gt;&gt;App: Session started. Drivers on the server
+    PS-&gt;&gt;App: &quot;What runs now?&quot;
+    App--&gt;&gt;PS: Fecha 3, race
+    PS--&gt;&gt;Driver: Line in AC: Paddock grabando
+    loop Each lap
+        PS-&gt;&gt;App: Lap with speed, pedals, Steam ID, race code
+        App-&gt;&gt;App: Right code? Steam ID on the server now? Then it is a league lap
+    end
+    AC--&gt;&gt;SC: Live: crashes, laps, disconnects
+
+    Note over AC,App: After the race
+    AC-&gt;&gt;SC: Writes the result file. Real Penalty writes its log
+    SC-&gt;&gt;App: Send the result file and the log
+    App-&gt;&gt;App: Find the round. Check the file
+    alt No problems
+        App--&gt;&gt;Admin: Provisional result is published. Drivers get a notice
+    else A problem
+        App--&gt;&gt;Admin: &quot;Revisar importación&quot; in your to-do list
+    end
+    Admin-&gt;&gt;App: Approve the official result</pre></div></section><section id="lap"><h2>4. Is this lap a league lap?</h2><p>The app asks these questions for each lap. Only a lap with &#x27;yes&#x27; to all questions counts for the league.</p><div class="diagram"><pre class="mermaid">flowchart TD
+    A([A lap comes to the app]) --&gt; B{&quot;Did the Paddock script send it,&lt;br/&gt;with the race code of tonight?&quot;}
+    B -- &quot;No, it came from the practice app&quot; --&gt; P
+    B -- &quot;No, old or wrong code&quot; --&gt; X
+    B -- Yes --&gt; D{&quot;Was a league session running&lt;br/&gt;at that time?&quot;}
+    D -- &quot;Not yet known&quot; --&gt; W[&quot;Wait. Check again when&lt;br/&gt;the server data comes&quot;]
+    W --&gt; D
+    D -- No --&gt; X
+    D -- Yes --&gt; E{&quot;Does the server say that this Steam ID&lt;br/&gt;was connected then?&quot;}
+    E -- No --&gt; X
+    E -- Yes --&gt; F{&quot;Same track and same car?&quot;}
+    F -- No --&gt; X
+    F -- Yes --&gt; L([&quot;LEAGUE LAP&lt;br/&gt;Goes to the round, the session, and the attempt&quot;])
+    P([&quot;PRACTICE LAP&lt;br/&gt;Private. Only the driver sees it&quot;])
+    X([&quot;NOT KEPT&lt;br/&gt;The app does not store it&quot;])</pre></div></section><section id="trust"><h2>How the app trusts a lap</h2><p>A driver has no key for the script. These checks replace the key:</p><ol class="steps"><li>The lap has the race code of tonight. Only drivers on the league server get this code.</li><li>The server program says that this Steam ID was on the server at that time.</li><li>The lap time is inside a league session, and the track and the car are the same.</li><li>If one point fails, the app does not keep the lap.</li></ol></section><section id="plan"><h2>5. The work plan</h2><p>About 8.5 working days. Each phase is one pull request, with tests. The app stays usable after each phase.</p><div class="timeline" aria-label="Work plan timeline"><div class="bar-row"><span class="bar-label">0. Test the script idea</span><span class="bar-track"><span class="bar" style="margin-left:0.00%;width:5.88%">0.5 d</span></span></div><div class="bar-row"><span class="bar-label">1. Publish clean imports</span><span class="bar-track"><span class="bar" style="margin-left:5.88%;width:11.76%">1 d</span></span></div><div class="bar-row"><span class="bar-label">2. Session sync and the script</span><span class="bar-track"><span class="bar" style="margin-left:17.65%;width:29.41%">2.5 d</span></span></div><div class="bar-row"><span class="bar-label">3. Conditions and disconnects</span><span class="bar-track"><span class="bar" style="margin-left:47.06%;width:11.76%">1 d</span></span></div><div class="bar-row"><span class="bar-label">4. Send the setup to the server</span><span class="bar-track"><span class="bar" style="margin-left:58.82%;width:23.53%">2 d</span></span></div><div class="bar-row"><span class="bar-label">5. Install with one click</span><span class="bar-track"><span class="bar" style="margin-left:82.35%;width:11.76%">1 d</span></span></div><div class="bar-row"><span class="bar-label">6. Health and alerts</span><span class="bar-track"><span class="bar" style="margin-left:94.12%;width:5.88%">0.5 d</span></span></div></div><table class="phases"><tr><th>Phase</th><th>Days</th><th>What it gives</th></tr><tr><td><b>0. Test the script idea</b></td><td>0.5</td><td>Check that the server script runs by itself, can send to the app, and can read the Steam ID.</td></tr><tr><td><b>1. Publish clean imports</b></td><td>1</td><td>A result file with no problems becomes a provisional result with no admin click.</td></tr><tr><td><b>2. Session sync and the script</b></td><td>2.5</td><td>The app stores each server session and who was on it. The Paddock script sends the laps.</td></tr><tr><td><b>3. Conditions and disconnects</b></td><td>1</td><td>The app reads the weather from the server. A disconnect gives a DNF suggestion.</td></tr><tr><td><b>4. Send the setup to the server</b></td><td>2</td><td>&#x27;Enviar al servidor&#x27; writes the entry list, ballast, restrictor, weather, and the race code.</td></tr><tr><td><b>5. Install with one click</b></td><td>1</td><td>The server program becomes an .exe that starts with Windows and updates itself.</td></tr><tr><td><b>6. Health and alerts</b></td><td>0.5</td><td>The app warns the admins when a collector stops or a race night has no results.</td></tr></table></section><section><h2>Phase 0 result: the idea works</h2><ul class="checks"><li class="ok"><b>Checked:</b> Phase 0 test, October 14, 2026: AC loaded the script from the server with no click from the driver.</li><li class="ok"><b>Checked:</b> The script sent the start message and each lap to a receiver with web.post.</li><li class="ok"><b>Checked:</b> The script read the Steam ID of the driver and the race code from the server options.</li><li class="ok"><b>Checked:</b> The script used about 0.002 ms for each frame. The game ran at 217 FPS.</li><li class="todo"><b>Learned:</b> The section must be [SCRIPT_1], [SCRIPT_2], and so on. Other names load nothing.</li><li class="todo"><b>Learned:</b> The league server keeps the CSP options in the welcome message, as a $CSP0 block.</li></ul></section><section id="questions"><h2>Open questions</h2><ol class="steps"><li>Does the league run the server from a Content Manager preset, or from a plain server folder? What is the public address and port?</li><li>Who stops and starts the AC server before a race? The plan expects an admin.</li><li>Does Real Penalty &#x27;Seconds penalty to final time&#x27; change the total time in the result file?</li><li>Is the Windows SmartScreen warning on the server PC acceptable, or do we buy a code signing certificate?</li><li>Do all drivers use CSP? The result files say that the server needs it.</li></ol></section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'default', flowchart: { htmlLabels: true }, sequence: { useMaxWidth: true } });</script>
+</body></html>

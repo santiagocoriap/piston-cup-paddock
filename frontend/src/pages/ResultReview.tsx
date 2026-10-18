@@ -122,15 +122,7 @@ export function Versions({ round }: { round: RoundDetail }) {
   )
 }
 
-export function Penalties({
-  round,
-  adminView,
-  onChange,
-}: {
-  round: RoundDetail
-  adminView: boolean
-  onChange: () => void
-}) {
+export function Penalties({ round }: { round: RoundDetail }) {
   const { t } = useTranslation()
   if (!round.status) return null
   return (
@@ -153,34 +145,46 @@ export function Penalties({
           ))}
         </ul>
       )}
-      {adminView && (
-        <div className="forms">
-          <ActionForm
-            title={t('review.addPenalty')}
-            submitLabel={t('review.addPenalty')}
-            onSubmit={async (form) => {
-              const { error } = await api.POST('/api/rounds/{round_id}/penalties', {
-                params: { path: { round_id: round.id } },
-                body: {
-                  entry_id: Number(form.get('entry_id')),
-                  kind: form.get('kind') as PenaltyKind,
-                  value: Number(form.get('value') || 0),
-                  reason: String(form.get('reason') ?? ''),
-                },
-              })
-              if (!error) onChange()
-              return error
-            }}
-          >
-            <PenaltyFields round={round} />
-            <label>
-              {t('review.reason')}
-              <input name="reason" required maxLength={500} />
-            </label>
-          </ActionForm>
-        </div>
-      )}
     </>
+  )
+}
+
+/** The admin form for a new penalty. It opens in a dialog from the round admin menu. */
+export function AddPenaltyForm({
+  round,
+  onChange,
+  onDone,
+}: {
+  round: RoundDetail
+  onChange: () => void
+  onDone: () => void
+}) {
+  const { t } = useTranslation()
+  return (
+    <ActionForm
+      title={t('review.addPenalty')}
+      submitLabel={t('review.addPenalty')}
+      onDone={onDone}
+      onSubmit={async (form) => {
+        const { error } = await api.POST('/api/rounds/{round_id}/penalties', {
+          params: { path: { round_id: round.id } },
+          body: {
+            entry_id: Number(form.get('entry_id')),
+            kind: form.get('kind') as PenaltyKind,
+            value: Number(form.get('value') || 0),
+            reason: String(form.get('reason') ?? ''),
+          },
+        })
+        if (!error) onChange()
+        return error
+      }}
+    >
+      <PenaltyFields round={round} />
+      <label>
+        {t('review.reason')}
+        <input name="reason" required maxLength={500} />
+      </label>
+    </ActionForm>
   )
 }
 

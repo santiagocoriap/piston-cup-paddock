@@ -26,6 +26,8 @@ services:
       POSTGRES_HOST: db
       POSTGRES_PORT: "5432"
       MEDIA_ROOT: /app/media
+      # "1" turns the AI reports off, even with a key in .env. The end-to-end tests use it.
+      AI_DISABLED: ${AI_DISABLED:-}
     volumes:
       - media-data:/app/media
       - backups:/app/backend/backups
@@ -48,6 +50,8 @@ services:
       POSTGRES_HOST: db
       POSTGRES_PORT: "5432"
       MEDIA_ROOT: /app/media
+      # "1" turns the AI reports off, even with a key in .env. The end-to-end tests use it.
+      AI_DISABLED: ${AI_DISABLED:-}
     volumes:
       - media-data:/app/media
       - backups:/app/backend/backups

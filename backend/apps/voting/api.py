@@ -7,6 +7,8 @@ from ninja import Field, Router, Schema, Status
 from ninja.errors import HttpError
 from pydantic import AwareDatetime
 
+from apps.catalog.models import CarClass, TrackLayout
+from apps.competition.calendar import fixed_layout_ids
 from apps.competition.models import Season
 from apps.competition.permissions import can_manage, can_view
 
@@ -15,12 +17,15 @@ from .services import (
     BallotError,
     add_option,
     cast_vote,
+    choice_limit,
     close_ballot,
     create_ballot,
     decide_manually,
+    layout_problem,
     open_ballot,
     remind,
     remove_option,
+    set_options,
     start_runoff,
     tie,
     totals,
@@ -45,6 +50,7 @@ class BallotSettingsIn(Schema):
     min_prior_starts: int | None = Field(None, ge=0, le=100)
     max_runoffs: int | None = Field(None, ge=0, le=20)
     power_overrides: dict[str, int] | None = None
+    choice_overrides: dict[str, int] | None = None
     opens_at: AwareDatetime | None = None
     remind_hours_before: int | None = Field(None, ge=0, le=168)
     min_participation_pct: int | None = Field(None, ge=0, le=100)
@@ -87,12 +93,22 @@ class OptionOut(Schema):
     selected_by: str
     votes: int | None  # None when the totals are hidden from this user.
     voters: list[str] | None  # None when the choices are hidden from this user.
+    # The picture of the track layout or the car class. None without a picture.
+    image_url: str | None = None
+    # The voters with their pictures. None when the choices are hidden from this user.
+    voter_pictures: list["PersonOut"] | None = None
+
+
+class PersonOut(Schema):
+    username: str
+    avatar_url: str | None
 
 
 class VoterOut(Schema):
     username: str
     power: int
     voted: bool
+    avatar_url: str | None = None
 
 
 class TieOut(Schema):
@@ -118,10 +134,16 @@ class BallotSummary(Schema):
     voted: bool | None
 
 
+class MyBallotOut(BallotSummary):
+    championship: str
+    season: str
+
+
 class BallotDetail(Schema):
     id: int
     season_id: int
     season_name: str
+    championship_id: int
     championship_name: str
     kind: str
     title: str
@@ -139,6 +161,8 @@ class BallotDetail(Schema):
     max_runoffs: int | None
     power_exceptions: list[VoterOut]
     power_overrides: dict[str, int]  # User ID to power, set before the opening.
+    choice_overrides: dict[str, int]  # User ID to the options that the user can choose.
+    my_choice_limit: int
     closed_early: bool
     close_reason: str
     opens_at: datetime | None
@@ -211,8 +235,12 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
     counts = totals(ballot)
     me = ballot.voters.filter(user=user).first()
     names: dict[int, list[str]] = {}
+    pictures: dict[int, list[PersonOut]] = {}
     for vote in Vote.objects.filter(option__ballot=ballot).select_related("voter__user"):
         names.setdefault(vote.option_id, []).append(vote.voter.user.username)
+        pictures.setdefault(vote.option_id, []).append(
+            PersonOut(username=vote.voter.user.username, avatar_url=vote.voter.user.avatar_url())
+        )
     voted, voter_count = voted_counts(ballot)
     tied, open_slots = tie(ballot)
     voters_with_votes = set(
@@ -223,6 +251,7 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
         id=ballot.id,
         season_id=ballot.season_id,
         season_name=ballot.season.name,
+        championship_id=ballot.season.championship.id,
         championship_name=ballot.season.championship.name,
         kind=ballot.kind,
         title=ballot.title,
@@ -239,6 +268,8 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
         min_prior_starts=ballot.min_prior_starts,
         max_runoffs=ballot.max_runoffs,
         power_overrides={str(k): int(v) for k, v in ballot.power_overrides.items()},
+        choice_overrides={str(k): int(v) for k, v in ballot.choice_overrides.items()},
+        my_choice_limit=choice_limit(ballot, user) if user.is_authenticated else 0,
         power_exceptions=[
             VoterOut(username=v.user.username, power=v.power, voted=v.id in voters_with_votes)
             for v in all_voters
@@ -277,12 +308,21 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
                 selected_by=o.selected_by,
                 votes=counts[o.id] if totals_visible else None,
                 voters=sorted(names.get(o.id, [])) if choices_visible else None,
+                image_url=_option_image(o),
+                voter_pictures=sorted(pictures.get(o.id, []), key=lambda p: p.username)
+                if choices_visible
+                else None,
             )
-            for o in ballot.options.all()
+            for o in ballot.options.select_related("track_layout")
         ],
         tie=TieOut(option_ids=[o.id for o in tied], open_slots=open_slots) if tied else None,
         voters=[
-            VoterOut(username=v.user.username, power=v.power, voted=v.id in voters_with_votes)
+            VoterOut(
+                username=v.user.username,
+                power=v.power,
+                voted=v.id in voters_with_votes,
+                avatar_url=v.user.avatar_url(),
+            )
             for v in all_voters
         ]
         if manager
@@ -290,8 +330,50 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
     )
 
 
+def _option_image(option) -> str | None:
+    """The picture of a track option. A car class has no picture."""
+    return option.track_layout.image_url("preview") if option.track_layout_id else None
+
+
 def _settings(payload: BallotSettingsIn) -> dict:
     return payload.dict(exclude_unset=True, exclude={"kind"})
+
+
+@router.get("/me/ballots", response=list[MyBallotOut])
+def my_ballots(request):
+    """The ballots where the user is a voter: the open ones first, then the latest closed."""
+    voters = {
+        voter.ballot_id: voter.id
+        for voter in BallotVoter.objects.filter(user=request.user, power__gt=0)
+    }
+    voted = set(
+        Vote.objects.filter(voter_id__in=voters.values()).values_list("voter_id", flat=True)
+    )
+    ballots = (
+        Ballot.objects.filter(id__in=voters)
+        .exclude(status=Ballot.State.DRAFT)
+        .select_related("season__championship")
+        .prefetch_related("options")
+    )
+    rows = [
+        MyBallotOut(
+            id=b.id,
+            kind=b.kind,
+            title=b.title,
+            status=b.status,
+            parent_id=b.parent_id,
+            winners=[o.label for o in b.options.all() if o.selected]
+            if b.status == Ballot.State.DECIDED
+            else [],
+            closes_at=b.closes_at,
+            voted=voters[b.id] in voted,
+            championship=b.season.championship.name,
+            season=b.season.name,
+        )
+        for b in ballots
+    ]
+    rows.sort(key=lambda row: (row.status != Ballot.State.OPEN, -row.id))
+    return rows[:30]
 
 
 @router.get("/seasons/{season_id}/ballots", response=list[BallotSummary])
@@ -338,6 +420,56 @@ def update(request, ballot_id: int, payload: BallotSettingsIn):
     ballot = _ballot(request.user, ballot_id)
     _manager(request.user, ballot)
     _run(lambda: update_ballot(ballot, request.user, _settings(payload)))
+    return _detail(request.user, ballot)
+
+
+class CandidateOut(Schema):
+    id: int  # The layout ID (track ballot) or the car class ID (car class ballot).
+    group: str  # The track name, or "" for a car class.
+    label: str
+    image_url: str | None = None
+    # "ok", "added", "track_excluded", "layout_is_fixed", or "grid_too_small".
+    status: str
+
+
+@router.get("/ballots/{ballot_id}/candidates", response=list[CandidateOut])
+def candidates(request, ballot_id: int):
+    """Every layout or car class of the catalog, with its state for this ballot."""
+    ballot = _ballot(request.user, ballot_id)
+    _manager(request.user, ballot)
+    if ballot.kind == Ballot.Kind.TRACK:
+        added = set(ballot.options.values_list("track_layout_id", flat=True))
+        fixed = fixed_layout_ids(ballot.season)
+        drivers = ballot.season.entries.count()
+        layouts = TrackLayout.objects.select_related("track").order_by("track__name", "name")
+        return [
+            CandidateOut(
+                id=layout.id,
+                group=layout.track.name,
+                label=layout.name,
+                image_url=layout.image_url("preview"),
+                status="added"
+                if layout.id in added
+                else layout_problem(ballot, layout, fixed, drivers) or "ok",
+            )
+            for layout in layouts
+        ]
+    added = set(ballot.options.values_list("car_class_id", flat=True))
+    return [
+        CandidateOut(id=c.id, group="", label=c.name, status="added" if c.id in added else "ok")
+        for c in CarClass.objects.order_by("name")
+    ]
+
+
+class SetOptionsIn(Schema):
+    ids: list[int] = Field(max_length=500)
+
+
+@router.put("/ballots/{ballot_id}/options", response=BallotDetail)
+def put_options(request, ballot_id: int, payload: SetOptionsIn):
+    ballot = _ballot(request.user, ballot_id)
+    _manager(request.user, ballot)
+    _run(lambda: set_options(ballot, request.user, payload.ids))
     return _detail(request.user, ballot)
 
 

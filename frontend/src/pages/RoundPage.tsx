@@ -10,6 +10,7 @@ import { formatDateTime, formatLapTime } from '../lib/format'
 import { useLoad } from '../lib/useLoad'
 import { useAdminView } from '../session'
 import { penaltyChanged } from '../lib/results'
+import { medal } from '../lib/medal'
 import { ImportSection } from './ImportSection'
 import { EngineerSection } from './EngineerSection'
 import { IncidentsSection } from './IncidentsSection'
@@ -19,9 +20,14 @@ import { ReplaySection } from './ReplaySection'
 import { ReportSection } from './ReportSection'
 import { Briefing } from './Briefing'
 import { RestartsSection } from './RestartsSection'
-import { ApproveButton, Penalties, Protests, ResultStatus, Versions } from './ResultReview'
+import { StrategySection } from './StrategySection'
+import { AddPenaltyForm, ApproveButton, Penalties, Protests, ResultStatus, Versions } from './ResultReview'
 import { TelemetrySection } from './TelemetrySection'
 import { AttendanceCard } from './AttendanceCard'
+import { Breadcrumbs } from '../components/Breadcrumbs'
+import { AdminActions } from '../components/AdminActions'
+import { ServerPushPanel } from './ServerPushPanel'
+import { Avatar } from '../components/Avatar'
 
 type RoundDetail = components['schemas']['RoundDetail']
 type Status = components['schemas']['LineIn']['status']
@@ -31,6 +37,17 @@ const STATUSES: (Status | 'absent')[] = ['absent', 'finished', 'dnf', 'dns', 'ds
 
 const TABS = ['race', 'laps', 'incidents', 'replay', 'restarts', 'telemetry', 'engineer', 'report'] as const
 type Tab = (typeof TABS)[number]
+type Counts = components['schemas']['TabCountsOut']
+/** The tabs with a count. "race" and "engineer" have none: the race always has content, and the
+ * engineer depends on the viewer. */
+const COUNTED: Partial<Record<Tab, keyof Counts>> = {
+  laps: 'laps',
+  incidents: 'incidents',
+  replay: 'replay',
+  restarts: 'restarts',
+  telemetry: 'telemetry',
+  report: 'reports',
+}
 
 export function RoundPage() {
   const { t, i18n } = useTranslation()
@@ -45,6 +62,10 @@ export function RoundPage() {
   const [saves, setSaves] = useState(0)
   // An applied file changes the entered result, so the result form starts again from it.
   const [imports, setImports] = useState(0)
+  const counts = useLoad(
+    () => api.GET('/api/rounds/{round_id}/tab-counts', { params: { path: { round_id: roundId } } }),
+    [roundId, saves, imports],
+  )
   const data = round.data
   // A steward or a custom role gets only the tools of its capabilities.
   const staffView = useAdminView((data?.capabilities.length ?? 0) > 0)
@@ -53,6 +74,7 @@ export function RoundPage() {
   const requested = search.get('tab') as Tab | null
   const tab: Tab = requested && TABS.includes(requested) ? requested : 'race'
   const hasResult = data.result !== null && data.result !== undefined
+  const winner = data.result?.find((line) => line.position === 1)
   const changed = () => {
     round.reload()
     setSaves((n) => n + 1)
@@ -64,8 +86,67 @@ export function RoundPage() {
     setSearch(params, { replace: true })
   }
 
+
+  const adminActions = [
+    ...(may('results')
+      ? [
+          {
+            id: 'import',
+            label: t('imports.title'),
+            content: () => (
+              <ImportSection
+                roundId={data.id}
+                entries={data.entries}
+                onApplied={() => {
+                  changed()
+                  setImports((n) => n + 1)
+                }}
+              />
+            ),
+          },
+          {
+            id: 'logs',
+            label: t('penaltyLogs.title'),
+            content: () => <PenaltyLogsSection roundId={data.id} onApplied={changed} />,
+          },
+          {
+            id: 'result',
+            label: t('round.enter'),
+            content: (close: () => void) => (
+              <ResultForm
+                key={imports}
+                round={data}
+                onSaved={() => {
+                  changed()
+                  close()
+                }}
+              />
+            ),
+          },
+        ]
+      : []),
+    ...(data.can_manage
+      ? [
+          {
+            id: 'server',
+            label: t('serverPush.title'),
+            content: () => <ServerPushPanel roundId={data.id} />,
+          },
+        ]
+      : []),
+    ...(may('penalties') && data.status
+      ? [
+          {
+            id: 'penalty',
+            label: t('review.addPenalty'),
+            content: (close: () => void) => <AddPenaltyForm round={data} onChange={changed} onDone={close} />,
+          },
+        ]
+      : []),
+  ]
+
   const briefing = (
-    <>
+    <div className="briefing-body">
       <Briefing round={data} />
       <AttendanceCard roundId={data.id} />
       <p>
@@ -73,22 +154,37 @@ export function RoundPage() {
           {t('calendar.addRound')}
         </a>
       </p>
-    </>
+    </div>
   )
 
   return (
     <section className="round-page">
+      <Breadcrumbs
+        items={[
+          { label: data.championship_name, to: `/championships/${data.championship_id}` },
+          { label: data.season_name, to: `/seasons/${data.season_id}` },
+          { label: t('round.title', { number: data.number }) },
+        ]}
+      />
       <header className="round-head">
-        <p className="eyebrow">
-          {data.championship_name} · <Link to={`/seasons/${data.season_id}`}>{data.season_name}</Link>
-        </p>
         <h1 className="round-title">
           <span className="round-number">{t('round.title', { number: data.number })}</span>
           <span>
             {data.track_name} · {data.layout_name}
           </span>
         </h1>
-        <p className="muted">{formatDateTime(data.scheduled_at, i18n.language)}</p>
+        <p className="round-meta">
+          <span className="muted">{formatDateTime(data.scheduled_at, i18n.language)}</span>
+          {data.status && (
+            <span className={`state state-${data.status}`}>{t(`review.status.${data.status}`)}</span>
+          )}
+          {winner && (
+            <span className="round-winner">
+              <Icon name="trophy" small />
+              {t('round.winner', { name: winner.driver_name })}
+            </span>
+          )}
+        </p>
         {data.track_outline_url && (
           <img
             className="round-outline"
@@ -99,25 +195,39 @@ export function RoundPage() {
       </header>
 
       <nav className="round-tabs" aria-label={t('round.sections')}>
-        {TABS.map((name) => (
-          <button
-            key={name}
-            type="button"
-            aria-current={tab === name ? 'page' : undefined}
-            className={tab === name ? 'on' : undefined}
-            onClick={() => showTab(name)}
-          >
-            {t(`round.tabs.${name}`)}
-          </button>
-        ))}
+        {TABS.map((name) => {
+          const key = COUNTED[name]
+          const count = key && counts.data ? counts.data[key] : null
+          const classes = [tab === name ? 'on' : '', count === 0 ? 'empty' : ''].filter(Boolean).join(' ')
+          return (
+            <button
+              key={name}
+              type="button"
+              aria-current={tab === name ? 'page' : undefined}
+              className={classes || undefined}
+              onClick={() => showTab(name)}
+            >
+              {t(`round.tabs.${name}`)}
+              {count !== null && count > 0 && (
+                <span className="tab-count" aria-hidden="true">
+                  {count}
+                </span>
+              )}
+            </button>
+          )
+        })}
       </nav>
 
       {tab === 'race' && (
         <>
           {!hasResult && briefing}
 
-          <h2>{t('round.result')}</h2>
+          <div className="section-head">
+            <h2>{t('round.result')}</h2>
+            <AdminActions actions={adminActions} />
+          </div>
           <StatusBanner round={data} />
+          {may('results') && <ApproveButton round={data} onChange={changed} />}
           {data.handicap_checks.length > 0 && (
             <div className="data-state" role="status">
               <span className="ds-icon">
@@ -141,7 +251,11 @@ export function RoundPage() {
               </div>
             </div>
           )}
+          {hasResult && <Podium round={data} />}
           {hasResult ? <ResultTable round={data} /> : <p>{t('round.noResult')}</p>}
+          {hasResult && (
+            <StrategySection roundId={data.id} order={(data.result ?? []).map((line) => line.entry_id)} />
+          )}
           <p className="muted round-rules">
             {t('round.rules', { version: data.rules.version, points: data.rules.points_by_position.join('-') })}{' '}
             {(data.rules.pole_bonus > 0 || data.rules.fastest_lap_bonus > 0) &&
@@ -150,7 +264,7 @@ export function RoundPage() {
 
           <div className="round-review">
             <div>
-              <Penalties round={data} adminView={may('penalties')} onChange={changed} />
+              <Penalties round={data} />
             </div>
             <div id="protests">
               <Protests round={data} adminView={may('penalties')} onChange={changed} />
@@ -165,27 +279,6 @@ export function RoundPage() {
             </details>
           )}
 
-          {(may('results') || may('penalties')) && (
-            <section className="admin-tools" aria-labelledby="admin-tools">
-              <h2 id="admin-tools">
-                <Icon name="shield" />
-                {t('round.adminTools')}
-              </h2>
-              {may('results') && <ApproveButton round={data} onChange={changed} />}
-              {may('results') && (
-                <ImportSection
-                  roundId={data.id}
-                  entries={data.entries}
-                  onApplied={() => {
-                    changed()
-                    setImports((n) => n + 1)
-                  }}
-                />
-              )}
-              {may('results') && <PenaltyLogsSection roundId={data.id} onApplied={changed} />}
-              {may('results') && <ResultForm key={imports} round={data} onSaved={changed} />}
-            </section>
-          )}
         </>
       )}
 
@@ -197,7 +290,17 @@ export function RoundPage() {
       )}
       {tab === 'telemetry' && <TelemetrySection roundId={data.id} />}
       {tab === 'engineer' && <EngineerSection roundId={data.id} />}
-      {tab === 'report' && <ReportSection target={{ kind: 'round', id: data.id }} adminView={may('reports')} />}
+      {tab === 'report' && (
+        <ReportSection
+          target={{ kind: 'round', id: data.id }}
+          adminView={may('reports')}
+          masthead={{
+            cover: data.track_preview_url,
+            kicker: t('report.kicker', { number: data.number }),
+            headline: `${data.track_name} · ${data.layout_name}`,
+          }}
+        />
+      )}
     </section>
   )
 }
@@ -284,7 +387,12 @@ function ResultTable({ round }: { round: RoundDetail }) {
         <tbody>
           {lines.map((line) => (
             <tr key={line.entry_id} className={line.status === 'dns' || line.status === 'dsq' ? 'dim' : undefined}>
-              <td className="pos">{line.position ?? t(`round.short.${line.status}`)}</td>
+              <td className={`pos ${medal(line.position)}`.trim()}>
+                <span className="pos-medal">
+                  {medal(line.position) && <Icon name="medal" small />}
+                  {line.position ?? t(`round.short.${line.status}`)}
+                </span>
+              </td>
               <td>
                 <span className="car-number">#{line.number}</span>
                 <Link to={`/drivers/${line.driver_id}`}>{line.driver_name}</Link>
@@ -313,6 +421,32 @@ function ResultTable({ round }: { round: RoundDetail }) {
         </tbody>
       </table>
     </div>
+  )
+}
+
+/** The top 3 as a podium: second, first, third, from left to right. */
+function Podium({ round }: { round: RoundDetail }) {
+  const { t } = useTranslation()
+  const top = [2, 1, 3]
+    .map((place) => round.result?.find((line) => line.position === place))
+    .filter((line) => line !== undefined)
+  if (top.length === 0) return null
+  return (
+    <ol className="podium" aria-label={t('round.podium')}>
+      {top.map((line) => (
+        <li key={line.entry_id} className={`podium-step ${medal(line.position)}`}>
+          <span className="podium-name">
+            <Avatar name={line.driver_name} url={line.avatar_url} className="podium-avatar" />
+            <Link to={`/drivers/${line.driver_id}`}>{line.driver_name}</Link>
+            <span className="car-number">#{line.number}</span>
+          </span>
+          <span className="podium-block">
+            <b>{line.position}</b>
+            <span>{t('round.pointsShort', { count: line.points })}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
   )
 }
 

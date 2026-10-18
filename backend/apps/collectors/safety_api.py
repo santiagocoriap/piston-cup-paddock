@@ -20,37 +20,40 @@ from apps.rules.safety import (
     rate,
 )
 
-from .incident_api import accepted_race_incidents
+from .incident_api import night_incidents
 
 router = Router(tags=["safety"])
 
 
 def _round_inputs(round_: Round) -> dict[str, RoundInput]:
-    """For each GUID: laps of the accepted race start and its incidents."""
+    """For each GUID: the laps of the qualifying and the race, and the incidents of every start
+    of both. A crash in the qualifying, or before a restart, counts for the rating too."""
     label = f"{round_.season.name} R{round_.number} {round_.track_layout.track.name}"
-    race_import = (
-        ResultImport.objects.filter(
-            round=round_, session__kind=Session.Kind.RACE, status=ResultImport.State.APPLIED
-        )
-        .order_by("-applied_at")
-        .first()
-    )
     laps: dict[str, int] = defaultdict(int)
-    if race_import:
-        for guid in ImportedLap.objects.filter(result_import=race_import).values_list(
-            "guid", flat=True
-        ):
-            laps[guid] += 1
-    incidents, names, has_events = accepted_race_incidents(round_)
+    for kind in (Session.Kind.QUALIFYING, Session.Kind.RACE):
+        applied = (
+            ResultImport.objects.filter(
+                round=round_, session__kind=kind, status=ResultImport.State.APPLIED
+            )
+            .order_by("-applied_at")
+            .first()
+        )
+        if applied:
+            for guid in ImportedLap.objects.filter(result_import=applied).values_list(
+                "guid", flat=True
+            ):
+                laps[guid] += 1
+    incidents, names, has_events = night_incidents(round_)
     inputs = {guid: RoundInput(round_.id, label, count, has_events) for guid, count in laps.items()}
-    for incident in incidents:
+    for session, incident in incidents:
         others = sorted(names.get(car, car) for car in incident.cars)
         for car in incident.cars:
             if car not in inputs:
                 continue
             points = incident_points(incident.kind, incident.max_speed)
             text = (
-                f"{points} pts · lap {incident.events[0].lap} · {incident.kind} · "
+                f"{points} pts · {session} {incident.events[0].attempt} · "
+                f"lap {incident.events[0].lap} · {incident.kind} · "
                 f"{round(incident.max_speed)} km/h · {' + '.join(others)}"
             )
             inputs[car].incidents.append((incident.kind, incident.max_speed, text))

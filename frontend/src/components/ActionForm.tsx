@@ -8,10 +8,12 @@ type Props = {
   /** Send the form. Return the API error, or undefined when the request worked. */
   onSubmit: (form: FormData) => Promise<unknown>
   children: ReactNode
+  /** Runs after a success, for example to close the dialog that holds the form. */
+  onDone?: () => void
 }
 
 /** A form that shows the API error, and clears its fields after a success. */
-export function ActionForm({ title, submitLabel, onSubmit, children }: Props) {
+export function ActionForm({ title, submitLabel, onSubmit, children, onDone }: Props) {
   const { t } = useTranslation()
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -23,8 +25,10 @@ export function ActionForm({ title, submitLabel, onSubmit, children }: Props) {
     setError(null)
     const apiError = await onSubmit(new FormData(element))
     setBusy(false)
-    if (apiError === undefined) element.reset()
-    else setError(errorMessage(t, apiError))
+    if (apiError === undefined) {
+      element.reset()
+      onDone?.()
+    } else setError(errorMessage(t, apiError))
   }
 
   return (

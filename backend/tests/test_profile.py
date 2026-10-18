@@ -47,6 +47,22 @@ def test_profile_of_the_winner(api, night):
     assert data["restarts_caused"][0]["label"] == "2026 R1"
     assert data["safety"][0]["status"] == "unknown"  # No collector events.
     assert data["can_adjust"] is True
+    # The entry, the results of the season, and the badges.
+    assert season["number"] > 0 and season["car_name"]
+    assert [(r["round_number"], r["position"], r["points"]) for r in season["history"]] == [
+        (1, 1, 25)
+    ]
+    badges = {a["key"]: (a["count"], a["achieved"]) for a in data["achievements"]}
+    assert badges["win"] == (1, True)
+    assert badges["podium"] == (1, True)
+    assert badges["starts"] == (1, False)  # The badge needs 10 starts.
+    assert badges["record"][1] is True
+    stats = data["stats"]
+    assert (stats["starts"], stats["wins"], stats["podiums"], stats["top5"]) == (1, 1, 1, 1)
+    assert (stats["best_finish"], stats["average_finish"], stats["win_rate"]) == (1, 1.0, 100)
+    assert (stats["points"], stats["dnfs"], stats["restarts_caused"]) == (25, 0, 1)
+    assert stats["laps"] == 10  # From the result file of the night.
+    assert stats["records"] >= 1
 
 
 def test_adjust_and_reset_keep_the_history(api, night):

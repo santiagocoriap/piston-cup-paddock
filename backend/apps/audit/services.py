@@ -42,6 +42,7 @@ def record(
         actor_name=getattr(actor, "username", "") or "system",
         action=action,
         championship=championship,
+        championship_name=championship.name if championship else "",
         target_type=target_type,
         target_id=target_id,
         params=params,

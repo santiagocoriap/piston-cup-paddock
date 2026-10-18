@@ -80,12 +80,43 @@ def collisions(round_: Round, session: str) -> tuple[list[Collision], dict[str, 
     return found, names, any_event
 
 
+def session_starts(round_: Round, session: str) -> int:
+    """How many times the server started this session on the round night. The last start is
+    the one that counts: each earlier start ended with a restart."""
+    if round_.scheduled_at is None:
+        return 0
+    started = CollectorEvent.objects.filter(
+        token__championship_id=round_.season.championship_id,
+        occurred_at__gte=round_.scheduled_at - WINDOW,
+        occurred_at__lte=round_.scheduled_at + WINDOW,
+        kind="session_started",
+    ).values_list("data", flat=True)
+    wanted = {name: number for number, name in AC_SESSION_TYPES.items()}[session]
+    return sum(1 for data in started if (data or {}).get("type") == wanted)
+
+
 def accepted_race_incidents(round_: Round) -> tuple[list[Incident], dict[str, str], bool]:
     """The incidents of the last race start (the accepted race), the car names, and if the
-    round has any collector event."""
+    round has any collector event. An incident of a start before a restart does not count."""
     found, names, has_events = collisions(round_, "race")
-    accepted = max((c.attempt for c in found), default=0)
+    accepted = session_starts(round_, "race")
     return [i for i in group(found) if i.events[0].attempt == accepted], names, has_events
+
+
+def night_incidents(
+    round_: Round, sessions: tuple[str, ...] = ("qualifying", "race")
+) -> tuple[list[tuple[str, Incident]], dict[str, str], bool]:
+    """The incidents of every start of these sessions, with the session of each. A start that
+    ended with a restart counts too: a crash before a restart is still a crash."""
+    found: list[tuple[str, Incident]] = []
+    names: dict[str, str] = {}
+    has_events = False
+    for session in sessions:
+        collisions_of, more_names, any_event = collisions(round_, session)
+        has_events = has_events or any_event
+        names.update(more_names)
+        found += [(session, incident) for incident in group(collisions_of)]
+    return found, names, has_events
 
 
 class EventOut(Schema):
@@ -123,6 +154,8 @@ class IncidentsOut(Schema):
     gap_seconds: float
     has_events: bool
     can_review: bool
+    # The number of the last start. An incident of an earlier start is from before a restart.
+    last_start: int
     incidents: list[IncidentOut]
 
 
@@ -185,6 +218,7 @@ def _incidents_out(user, round_: Round, session: str) -> IncidentsOut:
         gap_seconds=GAP_SECONDS,
         has_events=any_event,
         can_review=can(user, round_.season.championship, "penalties"),
+        last_start=session_starts(round_, session),
         incidents=[_incident_out(i, names, reviews) for i in group(found)],
     )
 

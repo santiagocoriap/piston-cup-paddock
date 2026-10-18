@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { ActionForm } from '../components/ActionForm'
+import { AdminActions } from '../components/AdminActions'
 import { useLoad } from '../lib/useLoad'
 
 type Step = components['schemas']['StepOut']
@@ -50,7 +51,88 @@ export function HandicapsSection({
 
   return (
     <>
-      <h2>{t('handicaps.title')}</h2>
+      <div className="section-head">
+        <h2>{t('handicaps.title')}</h2>
+        {adminView && (
+          <AdminActions
+            actions={[
+              {
+                id: 'adjust',
+                label: t('handicaps.adjust'),
+                content: (close) => (
+                  <ActionForm
+                    title={t('handicaps.adjust')}
+                    submitLabel={t('common.save')}
+                    onDone={close}
+                    onSubmit={async (form) => {
+                      const { error } = await api.POST('/api/seasons/{season_id}/handicaps/adjustments', {
+                        params: { path },
+                        body: {
+                          entry_id: Number(form.get('entry_id')),
+                          round_id: Number(form.get('round_id')),
+                          ballast_kg: Number(form.get('ballast_kg')),
+                          restrictor_pct: Number(form.get('restrictor_pct')),
+                          mode: form.get('mode') as Mode,
+                          reason: String(form.get('reason') ?? ''),
+                        },
+                      })
+                      if (!error) data.reload()
+                      return error
+                    }}
+                  >
+                    <div className="field-row">
+                      <label>
+                        {t('handicaps.driver')}
+                        <select name="entry_id" required defaultValue="">
+                          <option value="" disabled>
+                            {t('common.select')}
+                          </option>
+                          {entries.map((entry) => (
+                            <option key={entry.entry_id} value={entry.entry_id}>
+                              #{entry.number} {entry.driver_name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        {t('handicaps.round')}
+                        <select name="round_id" required defaultValue={data.data?.next_round_id ?? ''}>
+                          {rounds.map((round) => (
+                            <option key={round.id} value={round.id}>
+                              {t('season.roundLabel', { number: round.number })} · {round.track_name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                    <div className="field-row">
+                      <label>
+                        {t('handicaps.ballast')}
+                        <input name="ballast_kg" type="number" min={0} max={rules.ballast_cap} required />
+                      </label>
+                      <label>
+                        {t('handicaps.restrictor')}
+                        <input name="restrictor_pct" type="number" min={0} max={rules.restrictor_cap} required />
+                      </label>
+                    </div>
+                    <label>
+                      {t('handicaps.mode')}
+                      <select name="mode" defaultValue="temporary">
+                        <option value="temporary">{t('handicaps.modes.temporary')}</option>
+                        <option value="persistent">{t('handicaps.modes.persistent')}</option>
+                      </select>
+                    </label>
+                    <label>
+                      {t('handicaps.reason')}
+                      <input name="reason" required maxLength={500} />
+                    </label>
+                  </ActionForm>
+                ),
+              },
+            ]}
+          />
+        )}
+      </div>
       <p className="muted">
         {t('handicaps.rules', {
           ballast: rules.ballast_steps.join('/'),
@@ -122,76 +204,6 @@ export function HandicapsSection({
         </table>
       </div>
 
-      {adminView && (
-        <div className="forms">
-          <ActionForm
-            title={t('handicaps.adjust')}
-            submitLabel={t('common.save')}
-            onSubmit={async (form) => {
-              const { error } = await api.POST('/api/seasons/{season_id}/handicaps/adjustments', {
-                params: { path },
-                body: {
-                  entry_id: Number(form.get('entry_id')),
-                  round_id: Number(form.get('round_id')),
-                  ballast_kg: Number(form.get('ballast_kg')),
-                  restrictor_pct: Number(form.get('restrictor_pct')),
-                  mode: form.get('mode') as Mode,
-                  reason: String(form.get('reason') ?? ''),
-                },
-              })
-              if (!error) data.reload()
-              return error
-            }}
-          >
-            <div className="field-row">
-              <label>
-                {t('handicaps.driver')}
-                <select name="entry_id" required defaultValue="">
-                  <option value="" disabled>
-                    {t('common.select')}
-                  </option>
-                  {entries.map((entry) => (
-                    <option key={entry.entry_id} value={entry.entry_id}>
-                      #{entry.number} {entry.driver_name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                {t('handicaps.round')}
-                <select name="round_id" required defaultValue={data.data.next_round_id ?? ''}>
-                  {rounds.map((round) => (
-                    <option key={round.id} value={round.id}>
-                      R{round.number} · {round.track_name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            <div className="field-row">
-              <label>
-                {t('handicaps.ballast')}
-                <input name="ballast_kg" type="number" min={0} max={rules.ballast_cap} required />
-              </label>
-              <label>
-                {t('handicaps.restrictor')}
-                <input name="restrictor_pct" type="number" min={0} max={rules.restrictor_cap} required />
-              </label>
-            </div>
-            <label>
-              {t('handicaps.mode')}
-              <select name="mode" defaultValue="temporary">
-                <option value="temporary">{t('handicaps.modes.temporary')}</option>
-                <option value="persistent">{t('handicaps.modes.persistent')}</option>
-              </select>
-            </label>
-            <label>
-              {t('handicaps.reason')}
-              <input name="reason" required maxLength={500} />
-            </label>
-          </ActionForm>
-        </div>
-      )}
     </>
   )
 }

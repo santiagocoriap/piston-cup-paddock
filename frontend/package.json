@@ -11,12 +11,14 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "fflate": "0.8.2",
     "i18next": "^26.4.3",
     "openapi-fetch": "^0.17.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-i18next": "^17.0.16",
-    "react-router": "^8.4.0"
+    "react-router": "^8.4.0",
+    "uplot": "1.6.31"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.1",

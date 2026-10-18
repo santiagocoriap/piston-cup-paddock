@@ -21,6 +21,7 @@ from .penalty_services import preview as penalty_preview
 from .penalty_services import upload_log
 from .real_penalty import PenaltyLogError
 from .services import apply, link_guid, preview, upload
+from .stints import split_stints
 
 router = Router(tags=["imports"])
 
@@ -53,6 +54,11 @@ class PreviewOut(Schema):
     warnings: list[str]
 
 
+class ReviewFlagOut(Schema):
+    entry_id: int
+    code: str
+
+
 class ImportOut(Schema):
     id: int
     filename: str
@@ -64,6 +70,9 @@ class ImportOut(Schema):
     applied_at: datetime | None
     is_new: bool = False
     preview: PreviewOut | None = None
+    auto_status: str = ""
+    auto_reasons: list[str] = []
+    review_flags: list[ReviewFlagOut] = []
 
 
 class GuidLinkIn(Schema):
@@ -105,6 +114,9 @@ def _out(result_import: ResultImport, *, with_preview: bool, is_new: bool = Fals
         applied_at=result_import.applied_at,
         is_new=is_new,
         preview=PreviewOut(**vars(preview(result_import))) if with_preview else None,
+        auto_status=result_import.auto_status,
+        auto_reasons=result_import.auto_reasons,
+        review_flags=[ReviewFlagOut(**flag) for flag in result_import.review_flags],
     )
 
 
@@ -282,6 +294,17 @@ class AverageOut(Schema):
     excluded: dict[str, int]
 
 
+class StintOut(Schema):
+    number: int
+    first_lap: int
+    last_lap: int
+    laps: int
+    tyre: str
+    best_ms: int | None
+    average_ms: int | None
+    ends_in_pit: bool
+
+
 class DriverLapsOut(Schema):
     entry_id: int
     driver_name: str
@@ -293,6 +316,8 @@ class DriverLapsOut(Schema):
     theoretical_ms: int | None
     best_sectors_ms: list[int | None]
     laps: list[MarkedLapOut]
+    # The race laps in stints. A session other than the race has no stints.
+    stints: list[StintOut]
 
 
 class RoundLapsOut(Schema):
@@ -336,6 +361,12 @@ def get_laps(request, round_id: int, session: Literal["race", "qualifying", "pra
                     )
                     for lap in laps.laps
                 ],
+                stints=[
+                    StintOut(**vars(stint))
+                    for stint in split_stints([lap.row for lap in laps.laps])
+                ]
+                if data.session == "race"
+                else [],
             )
             for info, laps in data.drivers
         ],

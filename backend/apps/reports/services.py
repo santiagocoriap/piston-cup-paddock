@@ -30,7 +30,9 @@ class ReportError(ValueError):
 
 
 def ai_configured() -> bool:
-    """True when the provider key of the report model is set."""
+    """True when the provider key of the report model is set, and AI_DISABLED is not on."""
+    if settings.AI_DISABLED:
+        return False
     try:
         check = litellm.validate_environment(model=settings.AI_REPORT_MODEL)
     except Exception:  # An unknown model counts as not configured.

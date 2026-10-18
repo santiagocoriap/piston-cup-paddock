@@ -59,6 +59,12 @@ export function localInputToIso(value: string, timeZone: string = currentTimeZon
   return `${value}:00${sign}${pad(offset / 60)}:${pad(offset % 60)}`
 }
 
+/** The value for a datetime-local input: an ISO time as the clock shows it in the timezone. */
+export function isoToLocalInput(iso: string, timeZone: string = currentTimeZone()): string {
+  const utc = new Date(iso).getTime()
+  return new Date(utc + offsetMinutes(timeZone, utc) * 60_000).toISOString().slice(0, 16)
+}
+
 /** Show a time in milliseconds as m:ss.mmm, or h:mm:ss.mmm for one hour or more. */
 export function formatLapTime(ms: number | null | undefined): string {
   if (ms === null || ms === undefined || ms <= 0) return '—'

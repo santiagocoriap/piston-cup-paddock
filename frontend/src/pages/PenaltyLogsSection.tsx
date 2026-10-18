@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api, readCookie } from '../api/client'
+import { FileDrop } from '../components/FileDrop'
 import type { components } from '../api/schema'
 import { errorMessage } from '../lib/errors'
 import { formatLapTime } from '../lib/format'
@@ -43,10 +44,7 @@ export function PenaltyLogsSection({ roundId, onApplied }: { roundId: number; on
       <h3>{t('penaltyLogs.title')}</h3>
       <p className="muted">{t('penaltyLogs.help')}</p>
       <form className="upload" onSubmit={upload} aria-label={t('penaltyLogs.title')}>
-        <label>
-          {t('penaltyLogs.files')}
-          <input name="files" type="file" accept=".log,text/plain" multiple required />
-        </label>
+        <FileDrop label={t('penaltyLogs.files')} name="files" accept=".log,text/plain" multiple required />
         <button type="submit">{t('penaltyLogs.upload')}</button>
       </form>
       {message && (

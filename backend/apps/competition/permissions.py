@@ -1,6 +1,6 @@
 """Who can see and change a championship. Every check goes through this module."""
 
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 
 from .models import Championship, ChampionshipMember
 
@@ -14,9 +14,15 @@ def is_league_admin(user) -> bool:
 
 
 def visible_championships(user) -> QuerySet[Championship]:
+    """A league admin sees all. A member sees the championship, and so does a driver with an
+    entry in one of its seasons: a driver who races and votes must see what they race in."""
     if is_league_admin(user):
         return Championship.objects.all()
-    return Championship.objects.filter(members__user=user).distinct()
+    if not user.is_authenticated:
+        return Championship.objects.none()
+    return Championship.objects.filter(
+        Q(members__user=user) | Q(seasons__entries__driver__user=user)
+    ).distinct()
 
 
 def can_view(user, championship: Championship) -> bool:

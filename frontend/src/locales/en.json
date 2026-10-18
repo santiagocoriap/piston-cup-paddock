@@ -11,7 +11,9 @@
     "submit": "Sign in",
     "invalid": "Incorrect username or password.",
     "error": "Sign in failed. Try again.",
-    "tooMany": "Too many wrong passwords. Wait 15 minutes and try again."
+    "tooMany": "Too many wrong passwords. Wait 15 minutes and try again.",
+    "help": "Sign in with the username that a league admin gave you.",
+    "noAccount": "No account? Ask an admin for an invitation link."
   },
   "nav": {
     "championships": "Championships",
@@ -22,9 +24,34 @@
     "main": "Main navigation",
     "audit": "History",
     "records": "Records",
+    "garage": "Cars and tracks",
     "home": "Home",
     "account": "My account",
-    "accounts": "Accounts"
+    "accounts": "Accounts",
+    "breadcrumbs": "Breadcrumb",
+    "collapseSide": "Make the menu narrow",
+    "expandSide": "Make the menu wide",
+    "pendingCount_one": "{{count}} pending",
+    "pendingCount_other": "{{count}} pending",
+    "userMenu": "Menu of {{name}}",
+    "themeDay": "Day theme",
+    "themeNight": "Night theme",
+    "roleLeagueAdmin": "League admin",
+    "roleAdmin": "Championship admin",
+    "roleDriver": "Driver",
+    "search": "Search",
+    "searchPlaceholder": "Search pages, drivers, championships, or rounds",
+    "searchShortcut": "Ctrl K",
+    "searchEmpty": "Nothing matches “{{query}}”.",
+    "searchHint": "Type 2 letters or more to search drivers, championships, and rounds.",
+    "searchGroups": {
+      "pages": "Pages",
+      "championship": "Championships",
+      "season": "Seasons",
+      "round": "Rounds",
+      "driver": "Drivers"
+    },
+    "votes": "Votes"
   },
   "common": {
     "create": "Create",
@@ -32,12 +59,26 @@
     "save": "Save",
     "name": "Name",
     "key": "AC folder",
-    "select": "Select an option"
+    "select": "Select an option",
+    "close": "Close",
+    "cancel": "Cancel",
+    "next": "Next",
+    "back": "Back",
+    "stepOf": "Step {{current}} of {{total}}"
   },
   "championships": {
     "title": "Championships",
     "empty": "You are not in a championship yet.",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "open": "Open championship",
+    "moreSeasons_one": "{{count}} more season",
+    "moreSeasons_other": "{{count}} more seasons",
+    "progress": "{{done}} of {{total}} rounds",
+    "next": "Next: Round {{number}} · {{track}}",
+    "noNext": "There are no more rounds in the calendar.",
+    "leader": "Leader: {{name}}",
+    "noDate": "No date",
+    "help": "The championships where you race or are an admin. Open one to see its seasons, rounds, and members."
   },
   "championship": {
     "seasons": "Seasons",
@@ -73,7 +114,35 @@
       "reports": "Generate AI reports",
       "records": "Invalidate record laps"
     },
-    "provisionalReports": "Write a provisional report when the race file is applied (before approval)"
+    "provisionalReports": "Write a provisional report when the race file is applied (before approval)",
+    "latest": "Latest",
+    "openSeason": "Open season",
+    "protestWindow_one": "Protests: {{count}} minute after the provisional result",
+    "protestWindow_other": "Protests: {{count}} minutes after the provisional result",
+    "current": "Current season",
+    "progress": "{{done}} of {{total}} rounds",
+    "adminTabs": {
+      "seasons": "Seasons",
+      "members": "Members",
+      "roles": "Roles",
+      "health": "Health",
+      "collectors": "Collectors"
+    },
+    "addMember": "Add a member",
+    "roleOf": "Role of {{name}}",
+    "capabilityShort": {
+      "results": "Results",
+      "penalties": "Penalties",
+      "restarts": "Restarts",
+      "reports": "Reports",
+      "records": "Records"
+    },
+    "roleCapability": "{{capability}} for {{role}}",
+    "roleMenu": "Actions for the role {{name}}",
+    "rename": "Change the name",
+    "autoPublish": "Publish clean collector results automatically (they stay provisional)",
+    "openSlots": "Open slots on the server",
+    "openSlotsHelp": "Extra cars after the league drivers, so a driver can change car. \"Send to server\" uses this number."
   },
   "season": {
     "plannedRounds": "{{count}} planned rounds",
@@ -99,14 +168,30 @@
     "addEntry": "Add entry",
     "protestWindow": "Protest window (minutes)",
     "settings": "Season settings",
-    "provisionalNote": "Cells in italics are provisional results."
+    "provisionalNote": "Cells in italics are provisional results.",
+    "download": "Download",
+    "downloads": {
+      "calendar": "Calendar (.ics)",
+      "csv": "{{name}} (CSV)"
+    },
+    "roundLabel": "Round {{number}}"
   },
   "leagues": {
     "title": "Leagues",
     "empty": "There are no leagues yet.",
     "newLeague": "New league",
     "newChampionship": "New championship",
-    "league": "League"
+    "help": "Each league groups championships. Each championship has its seasons.",
+    "emptyText": "A league groups the championships. Create the first one to start.",
+    "championshipCount_one": "{{count}} championship",
+    "championshipCount_other": "{{count}} championships",
+    "seasonCount_one": "{{count}} season",
+    "seasonCount_other": "{{count}} seasons",
+    "noChampionships": "This league has no championships yet.",
+    "open": "Open",
+    "timezone": "Timezone: {{zone}}",
+    "championshipName": "Championship name",
+    "created": "Championship “{{name}}” created."
   },
   "drivers": {
     "title": "Drivers",
@@ -116,7 +201,6 @@
     "steamGuid": "Steam GUID (17 digits, optional)",
     "account": "Account",
     "noAccount": "No account",
-    "link": "Link",
     "careerPoints": "Career points",
     "merge": "Merge two profiles",
     "mergeButton": "Merge",
@@ -124,7 +208,32 @@
     "mergeOld": "Profile to remove",
     "mergeInto": "Profile to keep",
     "mergeReason": "Reason",
-    "confirmMerge": "This cannot be undone. Continue?"
+    "help": "The driver profiles. A profile can have an account to sign in to the app.",
+    "search": "Search drivers",
+    "searchPlaceholder": "Name, Steam GUID, or account",
+    "count_one": "{{count}} driver",
+    "count_other": "{{count}} drivers",
+    "noMatch": "No driver matches “{{query}}”.",
+    "emptyText": "Add the first driver. You can link the account later.",
+    "actions": "Actions for {{name}}",
+    "linkAccount": "Link account",
+    "linkTitle": "Link account: {{name}}",
+    "linkHelp": "Pick the app account of this driver. An account goes with one driver only.",
+    "accountSearch": "Account",
+    "noOptions": "No account matches.",
+    "takenBy": "Linked to {{name}}",
+    "saved": "Account saved.",
+    "mergeWith": "Merge with…",
+    "swap": "Swap",
+    "seasons": "Seasons",
+    "records": "Records",
+    "none": "None",
+    "deleted": "Is deleted",
+    "kept": "Stays",
+    "pickKept": "Pick the profile that stays.",
+    "mergeConfirm": "I understand that the profile “{{name}}” is deleted and that this cannot be undone.",
+    "merged": "“{{old}}” was merged into “{{kept}}”.",
+    "actionsColumn": "Actions"
   },
   "catalog": {
     "title": "Tracks and cars",
@@ -155,8 +264,33 @@
       "done": "Done: {{layouts}} layouts and {{cars}} cars with images.",
       "missing_one": "{{count}} with no files in the ZIP",
       "missing_other": "{{count}} with no files in the ZIP",
-      "author": "author: {{author}}"
-    }
+      "author": "author: {{author}}",
+      "step1Title": "Get the list",
+      "step2Title": "Run the script",
+      "step3Title": "Upload the ZIP",
+      "stepDone": "Done",
+      "copy": "Copy the command",
+      "copied": "Copied",
+      "dropHere": "Drop the ZIP here, or click to pick it.",
+      "wrongType": "The file must be a .zip.",
+      "chosen": "{{name}} · {{size}}"
+    },
+    "noImage": "No image yet",
+    "pitBoxes_one": "{{count}} pit box",
+    "pitBoxes_other": "{{count}} pit boxes",
+    "help": "The tracks, cars, and car classes that the league uses.",
+    "sections": "Catalog sections",
+    "tabImages": "Images",
+    "missingImages_one": "{{count}} without an image",
+    "missingImages_other": "{{count}} without an image",
+    "layoutCount_one": "{{count}} layout",
+    "layoutCount_other": "{{count}} layouts",
+    "noLayouts": "This track has no layouts yet.",
+    "tracksEmptyText": "Add the first track. Then add its layouts.",
+    "carsEmptyText": "Add the first car with its AC folder.",
+    "newLayoutFor": "New layout: {{name}}",
+    "layoutCreated": "Layout “{{name}}” created.",
+    "noClass": "No class"
   },
   "errors": {
     "generic": "Something went wrong. Try again.",
@@ -166,6 +300,11 @@
     "championship_exists": "A championship with this name exists in this league.",
     "season_exists": "A season with this name exists.",
     "entry_exists": "This driver or this number is already in the season.",
+    "number_taken": "Another driver of the season has that number.",
+    "request_pending": "You already have a request waiting for an answer.",
+    "request_decided": "That request already has an answer.",
+    "no_driver_profile": "Your account has no linked driver. Ask an admin to link it.",
+    "join_incomplete": "Choose the season and the car.",
     "round_number_exists": "A round with this number exists.",
     "track_exists": "A track with this folder exists.",
     "layout_exists": "This track already has a layout with this folder.",
@@ -284,7 +423,14 @@
     "pool_empty": "The conditions pool of the season is empty.",
     "backup_running": "A backup is already running.",
     "bad_zip": "The file is not a valid ZIP.",
-    "too_many_files": "The ZIP has too many files. Use the league list."
+    "too_many_files": "The ZIP has too many files. Use the league list.",
+    "image_too_large": "The picture is bigger than 5 MB.",
+    "image_not_supported": "The picture must be a PNG or a JPEG.",
+    "no_release": "The app does not have the collector program yet. Try again later.",
+    "wrong_key": "The key is not for this collector.",
+    "unknown_preset": "The collector does not have that Content Manager preset.",
+    "delete_self": "You cannot delete your own account.",
+    "last_admin": "This is the last league admin: it cannot go."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -347,7 +493,11 @@
     "minutesLeft_one": "Protests close · {{count}} minute left",
     "minutesLeft_other": "Protests close · {{count}} minutes left",
     "windowClosed": "Protest window closed",
-    "protestLink": "Send a protest"
+    "protestLink": "Send a protest",
+    "winner": "{{name}} won",
+    "podium": "Podium",
+    "pointsShort_one": "{{count}} pt",
+    "pointsShort_other": "{{count}} pts"
   },
   "mode": {
     "label": "Mode",
@@ -356,7 +506,10 @@
     "driverShort": "Driver",
     "adminShort": "Admin",
     "bannerTag": "ADMIN MODE",
-    "bannerText": "Changes affect the whole league and stay in the history."
+    "bannerText": "Changes affect the whole league and stay in the history.",
+    "bannerShort": "Admin mode",
+    "steward": "Steward mode",
+    "stewardShort": "Steward"
   },
   "audit": {
     "title": "Change history",
@@ -373,6 +526,8 @@
       "member.set": "{{actor}} gave {{username}} the role {{role}}.",
       "season.created": "{{actor}} made the season {{season}} of {{championship}}.",
       "entry.created": "{{actor}} added {{driver}} as #{{number}} ({{car}}) to {{season}}.",
+      "join.requested": "{{actor}} asked to join {{season}} with #{{number}} ({{car}}).",
+      "join.declined": "{{actor}} declined the request of {{driver}} for {{season}}.",
       "round.created": "{{actor}} added round {{number}} at {{track}} to {{season}}.",
       "result.saved": "{{actor}} entered the result of round {{number}} ({{track}}).",
       "result.changed": "{{actor}} changed the result of round {{number}} ({{track}}).",
@@ -447,7 +602,18 @@
       "round.conditions_redrawn": "{{actor}} drew the conditions of round {{number}} ({{track}}) again.",
       "season.conditions_pool": "{{actor}} changed the conditions pool of {{season}}.",
       "backup.started": "{{actor}} started a backup.",
-      "catalog.game_images": "{{actor}} imported game images: {{layouts}} layouts and {{cars}} cars."
+      "catalog.game_images": "{{actor}} imported game images: {{layouts}} layouts and {{cars}} cars.",
+      "track.renamed": "{{actor}} edited the track {{name}}.",
+      "layout.renamed": "{{actor}} renamed the layout to {{name}}.",
+      "car.renamed": "{{actor}} renamed the car to {{name}}.",
+      "layout.outline_set": "{{actor}} uploaded the map of {{name}}.",
+      "layout.preview_set": "{{actor}} uploaded the photo of {{name}}.",
+      "layout.outline_removed": "{{actor}} removed the map of {{name}}.",
+      "layout.preview_removed": "{{actor}} removed the photo of {{name}}.",
+      "car.preview_set": "{{actor}} uploaded the photo of the car {{name}}.",
+      "car.badge_set": "{{actor}} uploaded the logo of the car {{name}}.",
+      "car.preview_removed": "{{actor}} removed the photo of the car {{name}}.",
+      "car.badge_removed": "{{actor}} removed the logo of the car {{name}}."
     },
     "fields": {
       "role": "Role",
@@ -479,7 +645,29 @@
       "driver": "Driver"
     },
     "none": "—",
-    "pts": "{{count}} pts"
+    "pts": "{{count}} pts",
+    "help": "Every change by an admin is here: who made it, when, and why.",
+    "search": "Search the history",
+    "searchPlaceholder": "Person, change, or reason",
+    "kindLabel": "Kind of change",
+    "kinds": {
+      "all": "All",
+      "results": "Results",
+      "penalties": "Penalties",
+      "season": "Seasons",
+      "people": "Drivers and accounts",
+      "catalog": "Catalog",
+      "reports": "Reports"
+    },
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "more_one": "{{count}} more like this",
+    "more_other": "{{count}} more like this",
+    "count_one": "{{count}} change",
+    "count_other": "{{count}} changes",
+    "noMatch": "No change matches these filters.",
+    "limitNote": "You see the last {{count}} changes.",
+    "open": "Open"
   },
   "restarts": {
     "title": "Starts and restarts",
@@ -540,7 +728,12 @@
     "suggested": "Suggestion (first collision from the collector): {{names}}. An admin confirms.",
     "incidents_one": "{{count}} incident in that start",
     "incidents_other": "{{count}} incidents in that start",
-    "incidentLine": "{{seconds}} s after the start · lap {{lap}} · {{cars}}"
+    "incidentLine": "{{seconds}} s after the start · lap {{lap}} · {{cars}}",
+    "timeline": "Starts",
+    "groupCount_one": "×{{count}}",
+    "groupCount_other": "×{{count}}",
+    "showEach": "Show each one",
+    "hideEach": "Hide"
   },
   "review": {
     "status": {
@@ -655,7 +848,22 @@
     "apply": "Apply the file",
     "applied": "The file is applied.",
     "qualifyingNote": "A qualifying or practice file stores the laps, but it does not change the race result.",
-    "handicapDiffers": "Assigned {{assignedKg}} kg and {{assignedPct}} %, the file says {{fileKg}} kg and {{filePct}} %."
+    "handicapDiffers": "Assigned {{assignedKg}} kg and {{assignedPct}} %, the file says {{fileKg}} kg and {{filePct}} %.",
+    "auto": {
+      "applied": "Published by the collector",
+      "blocked": "Waits for an admin"
+    },
+    "byCollector": "collector",
+    "autoReasons": {
+      "unmatched_drivers": "Some drivers in the file have no entry.",
+      "result_exists": "The round already has a result: an admin decides on a change."
+    },
+    "dnfNote": {
+      "disconnected": "{{name}} left the server before the end: likely a DNF.",
+      "fewer_laps": "{{name}} did fewer laps than the winner: check for a DNF."
+    },
+    "markDnf": "Mark DNF",
+    "dnfMarked": "Marked DNF"
   },
   "handicaps": {
     "title": "Ballast and restrictor",
@@ -688,7 +896,7 @@
   "records": {
     "title": "Track records",
     "help": "Only laps from official results count: qualifying and the accepted race start.",
-    "empty": "There are no records yet. They show when an imported round has an official result.",
+    "empty": "They show when an imported round has an official result.",
     "layout": "Track",
     "all": "All tracks",
     "category": {
@@ -741,7 +949,25 @@
     "time": "Time (m:ss.mmm)",
     "manualSourceLabel": "Source (screenshot, video, old file)",
     "carClass": "Class",
-    "noClass": "No class"
+    "noClass": "No class",
+    "emptyTitle": "There are no records yet",
+    "noMatch": "No records for these filters",
+    "noMatchHelp": "Try another track, car, or season.",
+    "clearFilters": "Clear filters",
+    "activeFilters": "Active filters",
+    "removeFilter": "Remove the filter {{name}}",
+    "sessionAll": "Both",
+    "sessionShort": {
+      "qualifying": "Qualifying",
+      "race": "Race"
+    },
+    "add": "Add record",
+    "ranking": "Best laps",
+    "position": "Pos.",
+    "gap": "Gap",
+    "details": "Record details",
+    "lapTime": "Time",
+    "holderLabel": "Held by"
   },
   "voting": {
     "title": "Ballots",
@@ -799,7 +1025,7 @@
     "label": "Class name",
     "remove": "Remove",
     "power": "Vote value",
-    "setPower": "Change the value of a vote",
+    "setPower": "Votes per user",
     "user": "User",
     "open": "Open the ballot",
     "openHelp": "When the ballot opens, the voter list is frozen.",
@@ -821,7 +1047,6 @@
       "runoff": "by runoff",
       "admin": "chosen by an admin"
     },
-    "votes": "{{count}} votes",
     "multipleShort": "Several options for each driver",
     "noPrior": "No requirement",
     "opensLabel": "Opens on its own (optional)",
@@ -837,13 +1062,46 @@
     },
     "minParticipationRule": "At least {{pct}} % of the voters must vote.",
     "lowParticipationHappened": "Too few voters voted: the ballot closed with no winner. An admin decides.",
-    "excludedTracks": "Tracks that cannot be chosen",
     "showVoterNames": "Show who voted (not what they chose)",
     "votedNames": "Voted: {{names}}",
     "remindNow": "Remind the drivers who did not vote",
     "reminded": "Reminder sent.",
     "carClass": "Class",
-    "freeLabel": "Free text (below)"
+    "freeLabel": "Free text (below)",
+    "steps": {
+      "what": "What is voted",
+      "who": "Who sees what, and when",
+      "advanced": "Advanced options"
+    },
+    "runoffOpen": "A runoff is open",
+    "goRunoff": "Vote in the runoff",
+    "kindTitle": "{{kind}} ballot",
+    "participationLabel": "Participation",
+    "closesInLabel": "Closes in",
+    "closesIn": "Closes in {{days}} days, {{hours}} hours, and {{minutes}} minutes",
+    "rules": "Rules",
+    "yourVote": "Your vote",
+    "oneChosen": "You chose 1 option",
+    "chooseOne": "Choose 1 option",
+    "chosenOf": "{{count}} of {{limit}} chosen",
+    "results": "Results",
+    "options": "Options",
+    "state": "State",
+    "tieHelp": "Open a runoff, or choose by hand from Manage.",
+    "remindHelp": "The users who did not vote get a reminder.",
+    "sendReminder": "Send reminder",
+    "votes_one": "{{count}} vote",
+    "votes_other": "{{count}} votes",
+    "addFreeOption": "Add a free option",
+    "choiceLimit": "Options they can choose",
+    "powerHelp": "Vote value: how many times each choice counts. Options they can choose: how many they can tick (the ballot has {{count}}).",
+    "choiceExceptions": "Options with another limit: {{list}}",
+    "inCalendar": "The winning tracks are in the season calendar already.",
+    "toCalendar": "Order them and set their dates",
+    "settings": "Ballot settings",
+    "goVote": "Vote",
+    "goSee": "Open",
+    "settingsSaved": "Settings saved."
   },
   "calendar": {
     "fixed": "Reserve a fixed track",
@@ -851,11 +1109,9 @@
     "position": "Position (optional)",
     "date": "Date and time (optional)",
     "noDate": "No date",
-    "edit": "Change position or date",
     "round": "Round",
     "votedSlots": "{{count}} free rounds for voting",
     "allowRepeats": "A fixed track can also be a voting candidate",
-    "conditions": "Announced conditions (optional)",
     "timesNote": "Times in {{zone}}.",
     "download": "Download calendar (.ics)",
     "addRound": "Add this round to my calendar",
@@ -863,7 +1119,15 @@
     "feedHelp": "Subscribe to this address in Google Calendar or your phone calendar. It updates with the rounds of your championships. Do not share it.",
     "feedAddress": "Calendar address",
     "newAddress": "Make a new address",
-    "confirmNew": "The old address stops working. Continue?"
+    "confirmNew": "The old address stops working. Continue?",
+    "status": {
+      "done": "Raced",
+      "next": "Next",
+      "later": "Upcoming",
+      "cancelled": "Cancelled"
+    },
+    "copy": "Copy",
+    "copied": "Copied"
   },
   "dashboard": {
     "title": "My paddock",
@@ -914,13 +1178,11 @@
     "todo": {
       "title": "What to do",
       "none": "Nothing to do.",
-      "attend": "Tell us if you race at {{track}}",
-      "answer": "Answer",
       "vote": "Vote: {{title}}",
       "runoff": "Runoff: {{title}}",
       "voteDetail": "Open ballot",
       "voteAction": "Vote",
-      "report": "New report: R{{round}} · {{track}}",
+      "report": "New report: Round {{round}} · {{track}}",
       "read": "Read",
       "voted": "You voted: {{title}}",
       "closes": "Closes {{date}}",
@@ -930,11 +1192,42 @@
     "changed": "Before {{previous}} {{unit}} · {{change}} {{unit}}",
     "noConditions": "To be confirmed",
     "noWeather": "No weather data",
-    "air": "air {{value}} °C",
-    "track": "track {{value}} °C",
-    "outlineAlt": "Map of {{track}} · {{layout}}"
+    "air": "air {{value}} °C",
+    "track": "track {{value}} °C",
+    "outlineAlt": "Map of {{track}} · {{layout}}",
+    "noProfileTitle": "You do not race with this account yet",
+    "noSeasonsTitle": "You have no season yet",
+    "noProfileAdmin": "Pick your driver profile to see your races here.",
+    "pickProfile": "Pick your profile",
+    "pickProfileTitle": "Link my account",
+    "profileLabel": "Driver profile",
+    "noFreeProfiles": "There is no profile without an account. Make one in Drivers.",
+    "noProfileMatch": "No profile matches.",
+    "notRacing": "I do not race in this league",
+    "linked": "Your account is now linked to {{name}}.",
+    "live": "Live",
+    "liveLink": "Open the round",
+    "trend": "Position by round",
+    "nearby": "The drivers near you",
+    "you": "You",
+    "points_one": "{{count}} pt",
+    "points_other": "{{count}} pts",
+    "trendScale": "P{{position}}",
+    "pitBoxes_one": "{{count}} pit box",
+    "pitBoxes_other": "{{count}} pit boxes",
+    "trackFacts": "Track facts",
+    "firstLapCutoff": "First lap cutoff",
+    "lastRace": "Last race",
+    "waitingNext": "Waiting for the next race",
+    "yourResult": "Your result",
+    "standingNow": "You are P{{rank}} of {{entries}} in the championship",
+    "readReport": "Read report",
+    "seeResults": "See results"
   },
   "briefing": {
+        "myCar": "Your car",
+    "theTrack": "The track",
+    "expectedWeather": "Expected weather",
     "title": "Briefing",
     "schedule": "Schedule",
     "noDate": "Date to be confirmed",
@@ -955,7 +1248,31 @@
     "notEntered": "You are not in this season.",
     "eventTime": "Event time: {{time}} ({{zone}})",
     "restartGuidance": "First-lap restarts",
-    "cutoff": "Cutoff"
+    "cutoff": "Cutoff",
+    "serverConditions": "On the server",
+    "serverFrom": "What the server used in the {{session}}, from the collector.",
+    "differ": "Not as announced: {{list}}.",
+    "differNames": {
+      "air_temp": "air temperature",
+      "track_temp": "track temperature",
+      "time_of_day": "time of day",
+      "grip": "grip"
+    },
+    "weathers": {
+      "clear": "Clear",
+      "mid_clear": "Mostly clear",
+      "light_clouds": "Some clouds",
+      "mid_clouds": "Cloudy",
+      "heavy_clouds": "Heavy clouds",
+      "light_fog": "Mist",
+      "heavy_fog": "Fog",
+      "broken_clouds": "Broken clouds",
+      "overcast": "Overcast",
+      "light_rain": "Light rain",
+      "rain": "Rain",
+      "heavy_rain": "Heavy rain",
+      "thunderstorm": "Thunderstorm"
+    }
   },
   "account": {
     "title": "My account",
@@ -963,7 +1280,14 @@
     "timezone": "Timezone",
     "browserZone": "The browser zone ({{zone}})",
     "timezoneHelp": "Race times show in this zone. When the event zone is different, you also see the event time.",
-    "saved": "The changes are saved."
+    "saved": "The changes are saved.",
+    "preferences": "Language and time",
+    "addPhoto": "Upload photo",
+    "changePhoto": "Change photo",
+    "removePhoto": "Remove photo",
+    "photoSaved": "Photo saved.",
+    "photoRemoved": "Photo removed.",
+    "photoHelp": "PNG, JPEG, or WebP. It is cut to a square."
   },
   "exports": {
     "title": "Export (CSV)",
@@ -994,7 +1318,21 @@
     "openLink": "Has an unused link",
     "lastLogin": "Last sign-in",
     "never": "Never",
-    "championships": "Championships"
+    "championships": "Championships",
+    "search": "Search accounts",
+    "searchPlaceholder": "Username, driver, or championship",
+    "count_one": "{{count}} account",
+    "count_other": "{{count}} accounts",
+    "noMatch": "No account matches “{{query}}”.",
+    "actions": "Actions for {{name}}",
+    "actionsColumn": "Actions",
+    "inviteLink": "New invite link",
+    "resetLink": "New link to change the password",
+    "linkHelp": "Copy the link and send it in the league chat. It works one time only.",
+    "linkTitle": "Link ready",
+    "done": "Done",
+    "pendingShort": "Waiting for a password",
+    "roleHint": "Pick a championship to give a role."
   },
   "invite": {
     "title": "Choose your password",
@@ -1005,14 +1343,26 @@
     "submit": "Save and enter",
     "checking": "Checking the link…",
     "invalid": "This link does not work: it was used or it ended. Ask an admin for a new one.",
-    "rules": "At least 8 characters, and not only numbers."
+    "rules": "At least 8 characters, and not only numbers.",
+    "rulesTitle": "The password",
+    "checks": {
+      "length": "8 characters or more",
+      "notDigits": "Not only numbers",
+      "match": "The two passwords are the same"
+    },
+    "invalidTitle": "Link not valid",
+    "toLogin": "Go to sign in",
+    "badgeInvite": "Invitation",
+    "badgeReset": "New password"
   },
   "password": {
     "title": "Change the password",
     "current": "Current password",
     "new": "New password",
     "again": "Type the new password again",
-    "saved": "The password is changed."
+    "saved": "The password is changed.",
+    "help": "Use at least 8 characters. Your session stays open after the change.",
+    "save": "Change password"
   },
   "penaltyLogs": {
     "title": "Import Real Penalty logs",
@@ -1077,7 +1427,10 @@
     },
     "facts": "Facts used",
     "outdated": "This report is outdated: the result changed after it.",
-    "regenerate": "Update report"
+    "regenerate": "Update report",
+    "byline": "By the Paddock desk",
+    "readAll": "Read the full story",
+    "kicker": "Race story · Round {{number}}"
   },
   "laps": {
     "title": "Laps",
@@ -1128,7 +1481,8 @@
     },
     "tyre": "Tyre",
     "incident": "Incident",
-    "contact": "contact"
+    "contact": "contact",
+    "howItWorks": "How it works"
   },
   "title": {
     "title": "Title fight",
@@ -1150,7 +1504,14 @@
     "limits": {
       "rules_changed": "The rules changed in the season. The remaining rounds use the current rules.",
       "provisional_results": "Some results are provisional. The math can change."
-    }
+    },
+    "now": "Points now",
+    "max": "Maximum possible",
+    "line": "{{name}} wins the title with {{points}} pts",
+    "ownShort": "In own hands",
+    "helpShort": "Needs help",
+    "barLabel": "{{name}}: {{points}} pts now, maximum possible {{best}}",
+    "empty": "It shows after the first race with a result. It shows who can still win the championship and how many points the leader needs."
   },
   "seasonReport": {
     "title": "Season report",
@@ -1158,7 +1519,8 @@
       "finished": "finished",
       "in_progress": "in progress"
     },
-    "meta": "Season {{status}}, official rounds only · {{date}} · {{language}}"
+    "meta": "Season {{status}}, official rounds only · {{date}} · {{language}}",
+    "kicker": "Season story"
   },
   "collectors": {
     "title": "Collectors",
@@ -1192,21 +1554,17 @@
       "not_readable": "unknown format"
     },
     "chooseRound": "Round for {{name}}",
-    "assign": "Assign"
+    "assign": "Assign",
+    "download": "Download collector",
+    "downloadHelp": "A zip with the Windows program and a collector.ini with this key. Copy it to the server PC and follow LEEME.txt. Collector already there? You need no zip: copy the key, click the Paddock icon, then “Configurar…”, and paste it.",
+    "copy": "Copy key",
+    "copied": "Copied"
   },
   "telemetry": {
     "title": "Telemetry",
-    "help": "The driver collector is optional. It records speed, position, and pedals for each lap. Results work without it. Instructions are in collector/README.md.",
-    "noKey": "You have no key yet.",
-    "neverSeen": "The collector never connected.",
-    "lastSeen": "Collector seen {{date}}",
+    "help": "The Paddock script sends your laps from the league server, with speed, position, and pedals. You install nothing. Here you choose who sees them.",
     "laps_one": "{{count}} recorded lap",
     "laps_other": "{{count}} recorded laps",
-    "makeKey": "Make key",
-    "newKey": "Make new key",
-    "replaceKey": "The old key stops working. Continue?",
-    "keyOnce": "Copy the key now. The app does not show it again.",
-    "key": "Telemetry key",
     "sharing": "Who sees your telemetry",
     "teammates": "Teammates",
     "drivers": "Other drivers",
@@ -1216,7 +1574,7 @@
       "laps": "Lap times and speed",
       "full": "Everything, with pedals and steering"
     },
-    "protected": "Other drivers never see your pedals, your steering, or your setup.",
+    "protected": "Choose “Everything” only if every driver may see your pedals and your steering. Your setup never shows.",
     "saved": "Saved.",
     "roundTitle": "Driver telemetry",
     "access": {
@@ -1230,7 +1588,8 @@
     "steerChart": "Steering of {{name}}",
     "gearChart": "Gears of {{name}}",
     "steer": "steering: the middle line is straight ahead",
-    "gear": "gear (max {{max}})"
+    "gear": "gear (max {{max}})",
+    "lastLap": "last {{date}}"
   },
   "compare": {
     "title": "Compare laps",
@@ -1274,9 +1633,10 @@
     "noCollectors": "There are no collectors. Rounds are entered by hand.",
     "status": {
       "running": "running",
-      "stopped": "stopped",
+      "stopped": "stopped at race time",
       "never": "never connected",
-      "revoked": "revoked"
+      "revoked": "revoked",
+      "off": "off (normal away from a race)"
     },
     "lastSeen": "seen {{date}}",
     "lastFile": "last file {{date}}",
@@ -1301,7 +1661,14 @@
       "report": "Report",
       "job": "Worker task"
     },
-    "retry": "Retry"
+    "retry": "Retry",
+    "detail": "Show the details",
+    "version": "version {{version}}",
+    "noVersion": "unknown version",
+    "updates": "updates to {{version}} at its start",
+    "queued_one": "{{count}} file waiting to send",
+    "queued_other": "{{count}} files waiting to send",
+    "lastError": "Last error ({{date}}): {{error}}"
   },
   "incidents": {
     "title": "Incidents",
@@ -1325,52 +1692,77 @@
     "all": "All",
     "summary": "Start {{attempt}} · lap {{lap}} · {{cars}} · {{speed}} km/h",
     "map": "Incident map",
-    "mapHelp": "Each dot is an incident, at its position on the track. Red areas show where many happen. This track has no outline drawing yet.",
+    "mapHelp": "Each dot is an incident, at its place on the track. The red areas show where many are. The white line is the track, from the recorded positions.",
     "noPositions": "The incidents have no position.",
     "detail": "Incident events",
     "review": "Review incident",
     "note": "Note",
     "saveReview": "Save review",
-    "lap": "Lap"
+    "lap": "Lap",
+    "mapHelpNoTrack": "Each dot is an incident, at its place on the track. The red areas show where many are. Without recorded positions, the map has no track drawing.",
+    "beforeRestart": "Before the restart"
   },
   "engineer": {
     "title": "Race engineer",
-    "reference": "Reference: {{driver}}, lap {{lap}} ({{time}}), the fastest lap that you can see.",
-    "referenceOwn": "Reference: your best lap, lap {{lap}} ({{time}}). Nobody else shares a faster lap.",
-    "lapsUsed_one": "{{count}} of your laps is compared.",
-    "lapsUsed_other": "{{count}} of your laps are compared.",
-    "length": "measured lap length: {{meters}} m",
-    "notEnough": "At least two of your laps with telemetry and a reference are needed.",
-    "caution": "This shows where you lose time against the reference, not why. It compares only speed, because other drivers do not share their pedals. Advice shows only when the difference repeats.",
-    "noAdvice": "The {{zones}} braking zones show no difference that repeats.",
-    "evidence": "Your laps",
-    "test": "Try",
-    "kind": {
-      "brake_later": {
-        "title": "Braking zone {{zone}} (at {{position}} % of the lap)",
-        "finding": "You start to brake {{difference}} m before the reference on average, on {{showing}} of {{total}} laps.",
-        "unit": "m earlier",
-        "test": "brake 10 m later for 3 laps and check if the sector time goes down. If you run wide, go back to the old point."
-      },
-      "carry_speed": {
-        "title": "Corner {{zone}} (at {{position}} % of the lap)",
-        "finding": "Your minimum speed is {{difference}} km/h lower than the reference ({{reference}} km/h), on {{showing}} of {{total}} laps.",
-        "unit": "km/h",
-        "test": "release the brake a little earlier and carry more speed to the apex for 3 laps. Compare the exit speed."
-      },
-      "consistent_exit": {
-        "title": "Exit {{zone}} (at {{position}} % of the lap)",
-        "finding": "Your exit speed changes a lot from lap to lap (spread {{difference}} km/h). The reference exits at {{reference}} km/h.",
-        "unit": "km/h",
-        "test": "choose one fixed point to go full throttle and repeat it for 5 laps. A steady exit is usually worth more than one fast exit now and then."
-      }
+    "driver": "Driver",
+    "yourLap": "Your lap",
+    "compareWith": "Compare with",
+    "ownLap": "Your lap {{number}} · {{time}}",
+    "ownBest": "Your best corners",
+    "reference": "Reference: {{name}}",
+    "gap": "Gap",
+    "ideal": "Your ideal lap",
+    "idealGain": "{{seconds}} s less, with your best time in each corner",
+    "noPedals": "This lap has no pedals: the engineer compares speed only.",
+    "noLaps": "The engineer needs valid laps with telemetry in this session. A lap with a cut does not count.",
+    "whereToGain": "Where to gain time",
+    "nothingToGain": "You lose no more than 0.04 s in any corner against the reference.",
+    "corner": "Corner {{number}}",
+    "cornerShort": "Corner",
+    "noCause": "The difference has no single clear cause: it is spread over the whole corner. Look at it in the telemetry.",
+    "openTelemetry": "Open in the telemetry",
+    "openTelemetryFor": "Open corner {{number}} in the telemetry",
+    "allCorners": "All corners",
+    "time": "Time",
+    "brake": "Braking",
+    "minSpeed": "Minimum",
+    "throttle": "Full throttle",
+    "exit": "Exit",
+    "gear": "Gear",
+    "tableHelp": "Time: what you gain (−) or lose (+) in the corner and the straight after it. Braking and Full throttle: meters from the start line where you start to brake and where you are back at full throttle, with the difference in brackets (− is earlier). Minimum and Exit: your speed and the difference with the reference. Gear: yours / the reference.",
+    "consistency": "Consistency",
+    "spreadText": "from {{best}} s to {{worst}} s by lap (deviation {{spread}} s)",
+    "spreadBrake": "Your braking point moves about {{meters}} m from lap to lap.",
+    "spreadMin": "Your minimum speed moves about {{kmh}} km/h from lap to lap.",
+    "caution": "The engineer measures differences, not mistakes. Try one change at a time for a few laps and look at the time of that corner.",
+    "map": "Track map with the numbered corners",
+    "mapHelp": "Red: you lose time. Green: you gain time. Click a number to see the corner in the table.",
+    "pin": "Corner {{number}}: {{loss}}",
+    "noteTitle": "Engineer summary (AI)",
+    "noteWriting": "The engineer is writing…",
+    "noteFailed": "The summary failed. Try again later.",
+    "noAi": "The AI is not set up in this app.",
+    "askNote": "Ask for the summary",
+    "noteHelp": "Claude writes a short summary from these numbers. It costs a few US cents, and the app keeps it for this lap and reference.",
+    "cause": {
+      "brake_early": "You start to brake {{difference}} m earlier than the reference.",
+      "brake_late": "You brake {{difference}} m later and reach the apex slower.",
+      "brake_soft": "You brake softer: {{yours}} % of pedal against {{reference}} %.",
+      "min_speed": "Your minimum speed is {{yours}} km/h, the reference {{reference}} km/h.",
+      "throttle_late": "You are back at full throttle {{difference}} m later.",
+      "coasting": "You go {{yours}} m with no pedal, the reference {{reference}} m.",
+      "exit_speed": "You exit at {{yours}} km/h, the reference at {{reference}} km/h.",
+      "gear": "You use gear {{yours}} at the apex, the reference gear {{reference}}."
     },
-    "setupOff": "Setup advice: off. It needs {{missing}} data, and the app does not get it yet.",
-    "missing": {
-      "setup": "setup",
-      "tyre_temperatures": "tyre temperature",
-      "fuel": "fuel",
-      "track_conditions": "track conditions"
+    "try": {
+      "brake_early": "Try braking 5 to 10 m later each time.",
+      "brake_late": "Try braking a few meters earlier to reach the apex better.",
+      "brake_soft": "Try a harder first push on the brake, then release it slowly.",
+      "min_speed": "Try releasing the brake earlier and carrying more speed to the apex.",
+      "throttle_late": "Try going back to the throttle earlier, slowly.",
+      "coasting": "Try going from the throttle to the brake with no gap.",
+      "exit_speed": "Try a wider exit and an earlier throttle.",
+      "gear": "Try the gear of the reference."
     }
   },
   "safety": {
@@ -1387,7 +1779,8 @@
     },
     "history": "Changes of {{name}}",
     "unknownRound": "no collector events: no change (it does not count as a clean race).",
-    "change": "{{laps}} laps {{up}}, {{points}} points {{down}} = {{total}} → {{after}}"
+    "change": "{{laps}} laps {{up}}, {{points}} points {{down}} = {{total}} → {{after}}",
+    "howItWorks": "How it works"
   },
   "replay": {
     "title": "Position replay",
@@ -1458,7 +1851,32 @@
     },
     "adjustPoints": "Points (negative to take away)",
     "reason": "Reason",
-    "adjustments": "Adjustments"
+    "adjustments": "Adjustments",
+    "badges": "Achievements",
+    "badge": {
+      "win": "First win",
+      "podium": "First podium",
+      "pole": "First pole",
+      "fastest_lap": "Fastest lap",
+      "starts": "10 starts",
+      "record": "Track record"
+    },
+    "badgeCount_one": "{{count}} time",
+    "badgeCount_other": "{{count}} times",
+    "badgeGoal": "{{count}} of {{goal}}",
+    "recent": "Recent results · {{season}}",
+    "place": "P{{rank}} of {{entries}} · {{points}} pts",
+    "winsCount_one": "{{count}} win",
+    "winsCount_other": "{{count}} wins",
+    "podiumsCount_one": "{{count}} podium",
+    "podiumsCount_other": "{{count}} podiums",
+    "startsCount_one": "{{count}} start",
+    "startsCount_other": "{{count}} starts",
+    "perStartValue": "{{value}} pts per start",
+    "levelLabel": "Level {{level}}: {{points}} of {{next}} career points",
+    "levelWord": "LEVEL",
+    "pointsOf": "{{points}} / {{next}} career points",
+    "officialOnly": "Only official results count."
   },
   "attendance": {
     "title": "Are you coming?",
@@ -1484,12 +1902,20 @@
       "protest.new": "New protest in R{{number}} · {{track}}",
       "protest.decided": "Your protest in R{{number}} has a decision",
       "ballot.open": "A ballot is open in {{season}}",
+      "join.requested": "{{driver}} asked to join {{season}} ({{championship}})",
+      "join.approved": "You were approved for {{season}} ({{championship}})",
+      "join.declined": "Your request for {{season}} ({{championship}}) was declined",
       "report.ready.race": "New report: R{{number}} · {{track}}",
       "report.ready.season": "New season report: {{season}}",
       "ballot.reminder": "Reminder: you did not vote in {{ballot}} yet",
       "protest.appealed": "New appeal in R{{number}} · {{track}}",
-      "protest.appeal_decided": "Your appeal in R{{number}} has a decision"
-    }
+      "protest.appeal_decided": "Your appeal in R{{number}} has a decision",
+      "import.blocked": "File to check: {{championship}} R{{number}} · {{track}}",
+      "collector.no_results": "No results: {{championship}} R{{number}} · {{track}}. The collector did not send the race file."
+    },
+    "all": "All",
+    "unread": "Unread",
+    "noneUnread": "Nothing is unread."
   },
   "roundTools": {
     "actions": "Actions",
@@ -1506,7 +1932,30 @@
     "cloneTitle": "Copy to a new season",
     "clone": "Create season",
     "cloneName": "Name of the new season",
-    "cloneHelp": "It copies the entries, the current rules, and the fixed tracks (with no date). It does not copy results."
+    "cloneHelp": "It copies the entries, the current rules, and the fixed tracks (with no date). It does not copy results.",
+    "menu": "Actions for round {{number}}",
+    "settings": "Date and conditions",
+    "settingsTitle": "Round {{number}} · {{track}}",
+    "conditionsHelp": "The drivers see this in the briefing. Leave a field empty to not announce it.",
+    "weathers": {
+      "sol_01_clear": "Clear",
+      "sol_02_few_clouds": "Few clouds",
+      "sol_03_scattered_clouds": "Scattered clouds",
+      "sol_04_windy": "Windy",
+      "sol_05_broken_clouds": "Broken clouds",
+      "sol_06_overcast": "Overcast",
+      "sol_11_mist": "Mist",
+      "sol_12_fog": "Fog",
+      "sol_21_haze": "Haze",
+      "sol_31_light_drizzle": "Light drizzle",
+      "sol_32_drizzle": "Drizzle",
+      "sol_34_light_rain": "Light rain",
+      "sol_35_rain": "Rain",
+      "sol_36_heavy_rain": "Heavy rain",
+      "sol_41_light_thunderstorm": "Light thunderstorm",
+      "sol_42_thunderstorm": "Thunderstorm"
+    },
+    "weatherKeep": "No change (the preset weather)"
   },
   "protestExtras": {
     "addEvidence": "Add evidence",
@@ -1534,9 +1983,11 @@
     "editCars": "Change cars",
     "carsOf": "Cars of {{name}}",
     "cars": "Cars",
+    "search": "Search car",
     "reason": "Reason for the change",
     "history": "History",
-    "today": "today"
+    "today": "today",
+    "emptyText": "A class groups similar cars, for example LMDh or GT3."
   },
   "draw": {
     "button": "Draw conditions",
@@ -1566,5 +2017,527 @@
     "lastOk": "Last good backup: {{date}}",
     "start": "Back up now",
     "refresh": "Refresh"
+  },
+  "home": {
+    "pending": {
+      "title": "Pending",
+      "none": "Nothing pending.",
+      "more": "and {{count}} more",
+      "open": "Open",
+      "results_one": "{{count}} result to approve",
+      "results_other": "{{count}} results to approve",
+      "protests_one": "{{count}} protest to decide",
+      "protests_other": "{{count}} protests to decide",
+      "ballots_closed_one": "{{count}} ballot to decide",
+      "ballots_closed_other": "{{count}} ballots to decide",
+      "ballots_open_one": "{{count}} open ballot",
+      "ballots_open_other": "{{count}} open ballots",
+      "accounts_one": "{{count}} account waiting for a password",
+      "accounts_other": "{{count}} accounts waiting for a password",
+      "images_one": "{{count}} track or car without an image",
+      "images_other": "{{count}} tracks or cars without an image",
+      "imports_one": "{{count}} collector file to check",
+      "imports_other": "{{count}} collector files to check"
+    }
+  },
+  "seasonNav": {
+    "label": "Season sections",
+    "title": "Title fight",
+    "safety": "Safety",
+    "handicaps": "Ballast",
+    "ballots": "Ballots",
+    "rules": "Rules",
+    "report": "Report"
+  },
+  "seasonStats": {
+    "rounds": "Rounds raced",
+    "drivers": "Drivers",
+    "leader": "Leader",
+    "next": "Next round"
+  },
+  "seasonAdmin": {
+    "manage": "Manage"
+  },
+  "rulesCard": {
+    "points": "Points by position",
+    "pole": "Pole",
+    "fastest": "Fastest lap",
+    "ballast": "Ballast",
+    "restrictor": "Restrictor",
+    "steps": "{{steps}} · max. {{cap}}"
+  },
+  "tabEmpty": {
+    "noCollector": "No collector data",
+    "incidents": "The server collector sent no events for this round. Incidents show when the collector runs during the race.",
+    "noPositions": "No positions for the replay",
+    "replay": "The replay uses the positions that the server collector sends. This round has no positions.",
+    "noTelemetry": "No telemetry laps",
+    "telemetry": "Laps show when a driver uploads the telemetry of this round from their collector.",
+    "noProfile": "You need a driver profile",
+    "engineerProfile": "The engineer uses your telemetry laps. Choose your driver profile on Home.",
+    "goHome": "Go to Home",
+    "noOwnLaps": "No laps of yours",
+    "engineerLaps": "The engineer gives advice when you upload the telemetry of this round.",
+    "noLaps": "No laps",
+    "laps": "Laps show when an admin uploads the result file of the server."
+  },
+  "fileDrop": {
+    "choose": "Choose a file",
+    "orDrop": "or drop it here"
+  },
+  "catalogEdit": {
+    "menu": "Actions for {{name}}",
+    "rename": "Change the name",
+    "name": "Name",
+    "file": "Picture for {{name}}",
+    "upload": {
+      "outline": "Upload the map",
+      "preview": "Upload the photo",
+      "badge": "Upload the logo"
+    },
+    "remove": {
+      "outline": "Remove the map",
+      "preview": "Remove the photo",
+      "badge": "Remove the logo"
+    },
+    "confirmRemove": "Remove this picture?",
+    "help": "PNG or JPEG, up to 5 MB.",
+    "editTrack": "Edit the name and the country",
+    "country": "Country",
+    "editFacts": "Edit the data"
+  },
+  "catalogFilter": {
+    "search": "Search",
+    "trackPlaceholder": "Search a track, a layout, or a country",
+    "carPlaceholder": "Search a car or a brand",
+    "image": "Picture",
+    "images": {
+      "all": "All pictures",
+      "with": "With a picture",
+      "without": "Without a picture"
+    },
+    "classLabel": "Class",
+    "allClasses": "All classes",
+    "trackCount_one": "{{count}} track",
+    "trackCount_other": "{{count}} tracks",
+    "carCount_one": "{{count}} car",
+    "carCount_other": "{{count}} cars",
+    "noMatch": "No result with these filters.",
+    "clear": "Clear the filters",
+    "country": "Country",
+    "allCountries": "All countries",
+    "noCountry": "No country"
+  },
+  "facts": {
+    "length": "Length",
+    "width": "Width",
+    "pitBoxes": "Pit boxes",
+    "direction": "Direction",
+    "directions": {
+      "clockwise": "Clockwise",
+      "anticlockwise": "Anticlockwise"
+    },
+    "power": "Power",
+    "torque": "Torque",
+    "weight": "Weight",
+    "topSpeed": "Top speed",
+    "sheet": "Data sheet",
+    "place": "Place",
+    "position": "Coordinates",
+    "year": "Year",
+    "author": "Mod author",
+    "version": "Version",
+    "url": "Website",
+    "brand": "Brand",
+    "country": "Country",
+    "city": "City",
+    "gameClass": "Mod class",
+    "acceleration": "Acceleration",
+    "powerToWeight": "Weight per power",
+    "tags": "Tags (with commas between them)",
+    "description": "Description",
+    "lengthM": "Length (m)",
+    "widthM": "Width (m)",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "powerHp": "Power (hp)",
+    "torqueNm": "Torque (Nm)",
+    "weightKg": "Weight (kg)",
+    "topSpeedKmh": "Top speed (km/h)"
+  },
+  "strategy": {
+    "title": "Strategy and tyres",
+    "noPitData": "Without Real Penalty logs, only a tyre change shows a stop.",
+    "driver": "Stints of {{name}}",
+    "stops_one": "{{count}} stop",
+    "stops_other": "{{count}} stops",
+    "stint_one": "Stint {{number}}: {{tyre}}, lap {{first}} ({{count}} lap)",
+    "stint_other": "Stint {{number}}: {{tyre}}, laps {{first}} to {{last}} ({{count}} laps)",
+    "best": "best {{time}}",
+    "average": "average {{time}}",
+    "laps_one": "{{count}} lap",
+    "laps_other": "{{count}} laps",
+    "table": "Stint details",
+    "stintColumn": "Stint",
+    "tyre": "Tyre",
+    "lapsColumn": "Laps",
+    "bestColumn": "Best lap",
+    "averageColumn": "Average"
+  },
+  "stats": {
+    "title": "Statistics",
+    "results": "Results",
+    "totals": "Totals",
+    "mistakes": "Mistakes and incidents",
+    "starts": "Starts",
+    "wins": "Wins",
+    "podiums": "Podiums",
+    "top5": "Top 5",
+    "poles": "Poles",
+    "fastestLaps": "Fastest laps",
+    "bestFinish": "Best finish",
+    "averageFinish": "Average finish",
+    "points": "Points",
+    "laps": "Laps",
+    "records": "Records",
+    "winRate": "Wins per start",
+    "dnfs": "Retirements",
+    "dsqs": "Disqualified",
+    "penalties": "Penalties",
+    "incidentPoints": "Incident points",
+    "restartsCaused": "Restarts caused",
+    "note": "Official and provisional results of the seasons you can see count. The incident points come from the collector."
+  },
+  "auth": {
+    "tagline": "The league, from the start to the checkered flag.",
+    "features": {
+      "results": "Results, lap times, and records of each round",
+      "penalties": "Penalties, protests, and safety",
+      "votes": "Track and car votes"
+    },
+    "show": "Show",
+    "hide": "Hide",
+    "capsLock": "Caps Lock is on."
+  },
+  "driverScript": {
+    "title": "Script for the drivers",
+    "help": "With this text on the server, AC sends the laps of each driver to the app. Drivers install nothing and open nothing: the script runs inside the game while they are on the server.",
+    "step1": "In Content Manager, open the preset of the league server.",
+    "step2": "Paste this text in the CSP extra options, below the text that is there.",
+    "step3": "Save and restart the server. From phase 4, the server collector does this by itself.",
+    "section": "Text for the CSP options",
+    "copy": "Copy text",
+    "newCode": "Make a new code",
+    "confirmNew": "The old code keeps working for 6 hours. After that, paste the new text on the server. Continue?",
+    "codeDate": "Code made on {{date}}."
+  },
+  "serverPush": {
+    "title": "Send to the server",
+    "help": "The server collector writes this into the Content Manager preset: the drivers with their ballast and restrictor, the track, the announced conditions, and the Paddock script with a new code. It writes only while the server is stopped, and it keeps a copy of the old files. Then start the server in Content Manager.",
+    "noCollector": "The championship has no collector. Make a key in Collectors.",
+    "track": "Track: {{track}} · {{layout}}",
+    "driver": "Driver",
+    "car": "Car",
+    "ballast": "Ballast",
+    "restrictor": "Restrictor",
+    "guid": "Steam ID",
+    "noGuid": "No Steam ID",
+    "send": "Send to the server",
+    "warnings": {
+      "no_guid": "{{name}} has no Steam ID: the slot is not booked.",
+      "weather_kept": "The announced weather is not an AC weather name: the server keeps its weather."
+    },
+    "status": {
+      "pending": "Sent on {{date}}. Waits for the collector.",
+      "waiting": "The collector waits for the server to stop.",
+      "done": "Written on the server on {{date}}. Start the server in Content Manager.",
+      "failed": "Could not write on {{date}}.",
+      "cancelled": "Replaced by a newer push."
+    },
+    "errors": {
+      "server_running": "the server is running",
+      "writing_disabled": "the collector does not write: write_server_config = false",
+      "unknown_preset": "the collector does not have that preset",
+      "content_manager_open": "Content Manager is open. Close it: when it opens again, it reads the new files"
+    },
+    "openSlots": "Open slots",
+    "openSlotsHelp": "Empty: {{count}}, the number of the championship. Another number counts only for this push.",
+    "preset": "Content Manager preset",
+    "presetDefault": "The collector preset",
+    "presetHelp": "The collector writes to this preset and uses it from now on. Then start this preset in Content Manager."
+  },
+  "delete": {
+    "league": "Delete the league {{name}} with its championships, seasons, rounds, and results? This cannot be undone.",
+    "championship": "Delete the championship {{name}} with its seasons, rounds, results, members, and collectors? This cannot be undone.",
+    "season": "Delete the season {{name}} with its rounds, results, and entries? This cannot be undone.",
+    "entry": "Remove {{name}} from this season?",
+    "round": "Delete round {{number}}? This cannot be undone.",
+    "member": "Remove {{name}} from this championship?",
+    "role": "Delete the role {{name}}?",
+    "track": "Delete the track {{name}} and its layouts?",
+    "layout": "Delete the layout {{name}}?",
+    "car": "Delete the car {{name}}?",
+    "class": "Delete the class {{name}}?",
+    "driver": "Delete the driver {{name}}? Their telemetry laps are deleted too.",
+    "ballot": "Delete the ballot {{name}} with its options and votes?"
+  },
+  "votes": {
+    "help": "The votes where you can vote. The open ones come first.",
+    "open": "Open",
+    "done": "Finished",
+    "vote": "Vote",
+    "voted": "You voted",
+    "closes": "closes {{date}}",
+    "emptyTitle": "No votes",
+    "emptyText": "When an admin opens a vote where you can vote, it shows here and you get a notification."
+  },
+  "gameImport": {
+    "button": "Import from the game",
+    "title": "Import from the game",
+    "help": "Pick the content folder of Assetto Corsa (inside assettocorsa). The browser reads the cars and the tracks on your PC: it sends nothing yet. Then you choose which to add, and the app makes them with pictures and data. In Firefox, the browser asks if you want to upload the files: accept. It only reads the list.",
+    "pick": "Pick the content folder",
+    "pickAgain": "Pick another folder",
+    "wrongFolder": "That folder has no cars or tracks. Pick the assettocorsa folder or its content folder.",
+    "reading": "Reading the folder…",
+    "found_one": "{{count}} found",
+    "found_other": "{{count}} found",
+    "cars_one": "{{count}} car",
+    "cars_other": "{{count}} cars",
+    "tracks_one": "{{count}} track",
+    "tracks_other": "{{count}} tracks",
+    "weather_one": "{{count}} weather preset",
+    "weather_other": "{{count}} weather presets",
+    "layouts_one": "{{count}} layout",
+    "layouts_other": "{{count}} layouts",
+    "search": "Search by name or folder",
+    "onlyNew": "Only the ones not in the catalog",
+    "allShown": "Choose the {{count}} in the list",
+    "inCatalog": "In catalog",
+    "none": "Nothing to show.",
+    "import_one": "Import {{count}}",
+    "import_other": "Import {{count}}",
+    "sending": "Importing {{done}} of {{total}}…",
+    "done": "Done: {{cars}} new cars and {{tracks}} new tracks, with {{layouts}} layouts.",
+    "doneWeather": "{{count}} new weather presets.",
+    "weatherNoDir": "The folder «{{folder}}» has no content/weather. If you play on another PC, pick the assettocorsa folder of that PC.",
+    "weatherNoIni": "Found content/weather in «{{folder}}» with {{count}} folders, but none has a weather.ini. ({{detail}})",
+    "weatherHelp": "Chrome and Edge do not let the folder picker read .ini files. If the weather presets do not show, choose only the content/weather folder with this button.",
+    "pickWeather": "Choose the weather folder",
+    "weatherNone": "That folder has no weather presets (folders with a weather.ini). Choose content/weather.",
+    "noFiles": "The browser gave no files. Pick the content folder again."
+  },
+  "calendarOrder": {
+    "title": "Dates of the whole calendar",
+    "help": "Drag a round to its place, or use the arrows. Pick the day and time of each one ({{zone}} time). Then Save.",
+    "voted": "voted",
+    "date": "Day and time of {{track}}",
+    "up": "Move {{track}} up",
+    "down": "Move {{track}} down",
+    "saved": "Calendar saved.",
+    "drag": "Drag to change the order",
+    "moved": "Order saved."
+  },
+  "teams": {
+    "title": "Teams",
+    "none": "No team",
+    "new": "+ New team…",
+    "newName": "Team name",
+    "help": "The teams of the league. The entry form lists them. Removing a team from the list does not change the entries.",
+    "remove": "Remove",
+    "empty": "No teams yet."
+  },
+  "garage": {
+    "title": "Cars and tracks",
+    "help": "What you can look up before a race: cars with their numbers, tyres and skins, tracks with their layouts, and the weather.",
+    "sections": "Sections",
+    "cars": "Cars",
+    "tracks": "Tracks",
+    "weather": "Weather",
+    "search": "Search by name, brand or country",
+    "none": "Nothing matches.",
+    "noneText": "Try another search, or ask an admin to import the game content.",
+    "mainLayout": "Main layout"
+  },
+  "tyres": {
+    "noWear": "No wear data.",
+    "relative": "Life compared with the longest-lasting tyre of this car",
+    "holds95": "Keeps over 95% of the grip up to {{end}} (ends at {{grip}}%).",
+    "drops": "Grip under 95% at {{x95}} · under 90% at {{x90}} · under 80% at {{x80}} (the game's wear units)."
+  },
+  "weather": {
+    "cloudCover": "Clouds",
+    "fogDistance": "Visibility",
+    "tempCoeff": "Asphalt (coeff.)",
+    "lightsForced": "Lights",
+    "yes": "Forced on",
+    "tempHelp": "The coefficient goes from -1 to 1: negative values make the asphalt colder than the weather and the hour say, positive values warmer."
+  },
+  "join": {
+    "button": "Join a season",
+    "title": "Join a season",
+    "help": "Choose the season, your car and your number.",
+    "none": "There are no seasons you can join.",
+    "season": "Season",
+    "free": "free join",
+    "pending": "request sent",
+    "freeHelp": "This season has free join: you are entered at once.",
+    "requestHelp": "This season needs approval: an admin will review your request.",
+    "noCars": "No car matches.",
+    "note": "Note for the admin (optional)",
+    "submitFree": "Join",
+    "submitRequest": "Ask to join",
+    "joined": "You are entered in {{season}}.",
+    "requested": "Request sent for {{season}}. An admin will review it.",
+    "freeJoin": "Free join",
+    "freeJoinHelp": "With free join, a driver enters alone. Without it, the driver asks and an admin decides.",
+    "requests_one": "{{count}} request to join",
+    "requests_other": "{{count}} requests to join",
+    "approve": "Approve",
+    "decline": "Decline"
+  },
+  "picker": {
+    "available": "Available",
+    "chosen": "Chosen",
+    "search": "Search",
+    "origin": "Source",
+    "allOrigins": "All sources",
+    "tag": "Tag",
+    "allTags": "All tags",
+    "addAll": "Add all ({{count}})",
+    "removeAll": "Remove all",
+    "add": "Add {{name}}",
+    "remove": "Remove {{name}}",
+    "noneAvailable": "Nothing available.",
+    "noneChosen": "Drag here or tap + to choose."
+  },
+  "optionPicker": {
+    "title": "Ballot options",
+    "helpTracks": "Tick the tracks of the ballot and untick the ones to remove. The grey ones cannot go in: it says why.",
+    "helpClasses": "Tick the car classes of the ballot and untick the ones to remove.",
+    "search": "Search track or layout",
+    "save_one": "Save ({{count}} option)",
+    "save_other": "Save ({{count}} options)",
+    "why": {
+      "track_excluded": "Excluded from this ballot",
+      "layout_is_fixed": "Already a fixed round of the season",
+      "grid_too_small": "Fewer pit boxes than entered drivers"
+    }
+  },
+  "deletion": {
+    "title": "Delete {{name}}?",
+    "confirm": "Delete",
+    "noUndo": "You cannot undo this.",
+    "typeName": "To confirm, type “{{name}}”",
+    "what": {
+      "league": "The league goes with all its championships, seasons, rounds, results, votes, and teams. The drivers, the accounts, and the catalog stay.",
+      "championship": "The championship goes with its seasons, rounds, results, votes, members, and collectors. The drivers and the catalog stay.",
+      "season": "The season goes with its rounds, results, entries, votes, and rules.",
+      "round": "The round goes with its results, imported files, laps, and report.",
+      "entry": "The entry of the driver in this season goes. An entry with results stays.",
+      "ballot": "The vote goes with its options and votes. Rounds that it added to the calendar stay.",
+      "driver": "The driver profile goes. A driver with an entry in a season stays: remove the entry first.",
+      "user": "The account goes. Its driver profile stays, without an account.",
+      "track": "The track goes with its layouts. A track that a round, a record, or a vote uses stays.",
+      "layout": "The layout goes. A layout that a round, a record, or a vote uses stays.",
+      "car": "The car goes. A car of an entry or a record stays.",
+      "car_class": "The car class goes. The cars stay. A class that a vote uses stays."
+    },
+    "errors": {
+      "in_use": "You cannot delete it: it is in use.",
+      "entry_has_results": "You cannot delete it: the entry has results."
+    },
+    "uses": {
+      "round": "Round: {{value}}",
+      "ballot": "Vote: {{value}}",
+      "entry": "Entry: {{value}}",
+      "records": "Manual records: {{value}}",
+      "track_changes": "Track changes: {{value}}",
+      "results": "Result lines: {{value}}",
+      "penalties": "Penalties: {{value}}"
+    },
+    "menu": "More options for {{name}}",
+    "delete": {
+      "league": "Delete league",
+      "championship": "Delete championship",
+      "season": "Delete season",
+      "round": "Delete round",
+      "entry": "Remove entry",
+      "ballot": "Delete vote",
+      "driver": "Delete driver",
+      "user": "Delete account",
+      "track": "Delete track",
+      "layout": "Delete layout",
+      "car": "Delete car",
+      "car_class": "Delete class"
+    },
+    "options": "Options"
+  },
+  "telemetryTool": {
+    "sessions": {
+      "race": "Race",
+      "qualifying": "Qualifying",
+      "practice": "Practice"
+    },
+    "lanes": {
+      "delta": "Delta",
+      "speed_kmh": "Speed",
+      "gas": "Throttle",
+      "brake": "Brake",
+      "steer": "Steering",
+      "gear": "Gear",
+      "rpm": "RPM"
+    },
+    "short": {
+      "gas": "Thr.",
+      "brake": "Brake",
+      "gear": "Gear"
+    },
+    "lapShort": "L{{number}}",
+    "lap": "Lap",
+    "setReference": "Use as the delta reference",
+    "setReferenceFor": "Use {{lap}} as the reference",
+    "pickHelp": "Click a lap to add it to the chart (up to {{count}}). REF marks the lap that the delta compares with.",
+    "channels": "Data on the chart",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "wholeLap": "Whole lap",
+    "controls": "Mouse wheel: zoom · Drag: pick a part · Shift + drag or the bar below: move · Double click: whole lap",
+    "pickOne": "Pick a lap above.",
+    "loading": "Loading the laps…",
+    "hoverHelp": "Move the mouse on the chart or the track",
+    "map": "Track map with the chart cursor",
+    "noMap": "Without server positions, there is no track map.",
+    "mapHelp": "In red: the part on the chart. Move the mouse on the track to move the cursor. Click: zoom to that corner.",
+    "mapHelpCompare": "Each part has the color of the fastest lap there. The part on the chart is bright. Click: zoom to that corner."
+  },
+  "carDetail": {
+    "source": {
+      "base": "Base game",
+      "dlc": "DLC",
+      "mod": "Mod"
+    },
+    "sourceLabel": "Source",
+    "allSources": "All sources",
+    "tagLabel": "Tag",
+    "allTags": "All tags",
+    "skins_one": "{{count}} skin",
+    "skins_other": "{{count}} skins",
+    "noSkins": "No skins imported",
+    "tyres_one": "{{count}} tyre compound",
+    "tyres_other": "{{count}} tyre compounds",
+    "compound": "Compound",
+    "front": "Front",
+    "rear": "Rear",
+    "pressure": "Ideal pressure",
+    "dataError": "The data of this car could not be read (data.acd file)."
+  },
+  "entrySkin": {
+    "label": "Skin",
+    "auto": "Automatic",
+    "autoHelp": "The server picks one",
+    "current": "Skin: {{name}}",
+    "choose": "Choose skin",
+    "title": "Skin for {{car}}",
+    "help": "Choose the skin you will race with. With \"Automatic\" the server picks one."
   }
 }

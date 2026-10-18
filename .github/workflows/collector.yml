@@ -1,0 +1,60 @@
+# Builds the Windows program of the server collector (phase 5 of docs/plans/ac-integration.md).
+#
+# - A pull request that changes collector/ only builds the program, as a check.
+# - A tag collector-vX.Y.Z also makes a GitHub release with paddock-collector.exe and SHA256SUMS.
+#   The app finds the newest release, gives it in "Descargar colector", and the collectors update
+#   to it. The tag must match VERSION in collector/paddock_collector.py.
+name: Collector program
+
+on:
+  push:
+    tags: ["collector-v*"]
+  pull_request:
+    paths: ["collector/**", ".github/workflows/collector.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write # Only for the release of a tag.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check the tag and the version
+        if: startsWith(github.ref, 'refs/tags/collector-v')
+        shell: bash
+        run: |
+          version=$(python -c "import re;print(re.search(r'^VERSION = \"(.+)\"', open('collector/paddock_collector.py', encoding='utf-8').read(), re.M)[1])")
+          test "collector-v$version" = "$GITHUB_REF_NAME" || { echo "Tag $GITHUB_REF_NAME does not match VERSION $version"; exit 1; }
+
+      - name: Build paddock-collector.exe
+        run: |
+          python -m pip install pyinstaller==6.16.0
+          pyinstaller --onefile --noconsole --name paddock-collector collector/paddock_collector.py
+
+      - name: Write SHA256SUMS
+        shell: bash
+        run: cd dist && sha256sum paddock-collector.exe > SHA256SUMS && cat SHA256SUMS
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: paddock-collector
+          path: dist/
+
+      - name: Make the release
+        if: startsWith(github.ref, 'refs/tags/collector-v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/paddock-collector.exe dist/SHA256SUMS \
+            --title "Colector $GITHUB_REF_NAME" \
+            --notes "Server collector for Windows. The app gives it in Colectores > Descargar colector."

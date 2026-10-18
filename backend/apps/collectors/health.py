@@ -16,6 +16,8 @@ from apps.reports.models import RaceReport
 from .models import CollectorEvent, CollectorFile, CollectorToken
 
 STOPPED_AFTER = timedelta(minutes=15)  # The collector pings every 5 minutes.
+# The collector runs only on a race night. "stopped" is a problem only near a race start.
+RACE_TIME = timedelta(hours=3)
 ROUND_WINDOW = timedelta(hours=12)
 RECENT_ROUNDS = 6
 
@@ -28,6 +30,11 @@ class CollectorHealth:
     last_seen_at: object
     last_file_at: object
     last_event_at: object
+    version: str = ""
+    latest_version: str = ""  # The newest release. The collector updates to it at its start.
+    queued_files: int = 0
+    last_error: str = ""
+    last_error_at: object = None
 
 
 @dataclass
@@ -58,12 +65,24 @@ class Health:
     unmatched_files: int
 
 
-def collector_status(token: CollectorToken, now) -> str:
+def collector_status(token: CollectorToken, now, race_now: bool = True) -> str:
+    """ "off" is normal: the collector runs only on a race night. "stopped" is a collector that
+    does not run near the start of a race."""
     if token.revoked_at:
         return "revoked"
     if token.last_seen_at is None:
         return "never"
-    return "running" if now - token.last_seen_at <= STOPPED_AFTER else "stopped"
+    if now - token.last_seen_at <= STOPPED_AFTER:
+        return "running"
+    return "stopped" if race_now else "off"
+
+
+def race_now(championship: Championship, now) -> bool:
+    return Round.objects.filter(
+        season__championship=championship,
+        scheduled_at__gte=now - RACE_TIME,
+        scheduled_at__lte=now + RACE_TIME,
+    ).exists()
 
 
 def _round_health(round_: Round, tokens: list[CollectorToken]) -> RoundHealth:
@@ -117,8 +136,12 @@ def _round_health(round_: Round, tokens: list[CollectorToken]) -> RoundHealth:
 
 
 def championship_health(championship: Championship) -> Health:
+    from .release import latest
+
     now = timezone.now()
     tokens = list(championship.collectors.all())
+    racing = race_now(championship, now)
+    newest = latest()
     collectors = []
     for token in tokens:
         last_file = token.files.order_by("-received_at").values_list("received_at", flat=True)
@@ -127,10 +150,15 @@ def championship_health(championship: Championship) -> Health:
             CollectorHealth(
                 id=token.id,
                 name=token.name,
-                status=collector_status(token, now),
+                status=collector_status(token, now, racing),
                 last_seen_at=token.last_seen_at,
                 last_file_at=last_file.first(),
                 last_event_at=last_event.first(),
+                version=token.version,
+                latest_version=newest.version if newest else "",
+                queued_files=token.queued_files,
+                last_error=token.last_error,
+                last_error_at=token.last_error_at,
             )
         )
     active = [t for t in tokens if not t.revoked_at]

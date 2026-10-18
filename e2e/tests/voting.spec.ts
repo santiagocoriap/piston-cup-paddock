@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { signIn, submitForm } from './helpers'
+import { openAdminForm, openRoundAdmin, signIn, submitForm } from './helpers'
 
 async function api(page: Page, method: 'POST' | 'PUT', path: string, data: unknown) {
   const cookies = await page.context().cookies()
@@ -37,26 +37,42 @@ test('an admin fixes a track, runs a track vote, and the winners fill the calend
   await page.getByRole('button', { name: 'Modo admin' }).click()
   await page.goto(`/seasons/${season.id}`)
 
-  // A fixed track leaves two voted slots.
+  // A fixed track leaves two voted slots. The calendar forms open from the "Administrar" menu.
+  await openAdminForm(page, 'calendar', 'Reservar pista fija')
   await submitForm(page, 'Reservar pista fija', {}, { 'Pista y trazado': `Spa ${run} · GP` })
   await expect(page.getByText('2 fechas libres para votar')).toBeVisible()
 
-  // A track ballot with two choices for each driver.
+  // A track ballot with two choices for each driver. The first step of the form has these fields.
+  await openAdminForm(page, 'ballots', 'Nueva votación')
   await submitForm(page, 'Nueva votación', { Título: `Pistas ${run}`, 'Opciones por piloto': '2' })
-  await page.getByRole('link', { name: `Pistas ${run}` }).click()
+  // Open the ballot by its address. A click on the card sometimes lands before the list reloads.
+  const ballotLink = page.getByRole('link', { name: `Pistas ${run}` })
+  await page.goto((await ballotLink.getAttribute('href'))!)
+  await expect(page.getByRole('heading', { level: 1, name: `Pistas ${run}` })).toBeVisible()
+  // The ballot tools open in dialogs from the "Administrar" menu.
+  await openRoundAdmin(page, 'Opciones de la votación')
+  // The picker has 2 lists. "Agregar" moves a track from the available list to the ballot.
+  const picker = page.getByRole('dialog')
   for (const name of ['Monza', 'Imola', 'Suzuka']) {
-    await submitForm(page, 'Agregar opción', {}, { Pista: `${name} ${run} · GP` })
+    await picker.getByRole('button', { name: new RegExp(`^Agregar ${name} ${run}`) }).first().click()
+  }
+  await picker.getByRole('button', { name: 'Guardar (3 opciones)' }).click()
+  for (const name of ['Monza', 'Imola', 'Suzuka']) {
     await expect(page.getByText(`${name} ${run} - GP`).first()).toBeVisible()
   }
-  await page.getByRole('button', { name: 'Abrir la votación' }).click()
+  await openRoundAdmin(page, 'Abrir la votación')
+  await page.getByRole('dialog').getByRole('button', { name: 'Abrir la votación' }).click()
   await expect(page.getByText('Abierta', { exact: true })).toBeVisible()
 
   // The admin votes as a driver, then closes the ballot.
-  const voteForm = page.locator('fieldset.vote')
-  await voteForm.getByLabel(new RegExp(`Monza ${run}`)).check()
-  await voteForm.getByLabel(new RegExp(`Imola ${run}`)).check()
+  // Each option is a card. A click on the card checks its hidden box.
+  const voteForm = page.locator('fieldset.vote-grid')
+  await voteForm.locator('label').filter({ hasText: `Monza ${run}` }).click()
+  await voteForm.locator('label').filter({ hasText: `Imola ${run}` }).click()
+  await expect(voteForm.getByLabel(new RegExp(`Imola ${run}`))).toBeChecked()
   await page.getByRole('button', { name: 'Votar' }).click()
   await expect(page.getByRole('status')).toHaveText('Tu voto quedó guardado.')
+  await openRoundAdmin(page, 'Cerrar la votación')
   await submitForm(page, 'Cerrar la votación', {})
   await expect(page.getByText('Decidida', { exact: true })).toBeVisible()
 

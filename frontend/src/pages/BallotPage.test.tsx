@@ -65,8 +65,31 @@ describe('BallotPage', () => {
     show(ADMIN)
     expect(await screen.findByText('Empate: 2 opciones compiten por 1 lugares.')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Abrir desempate' })).toBeInTheDocument()
-    const decide = screen.getByRole('form', { name: 'Elegir a mano' })
-    expect(within(decide).getAllByRole('checkbox')).toHaveLength(2)
+    await userEvent.click(screen.getByRole('button', { name: 'Elegir a mano' }))
+    const decide = await screen.findByRole('form', { name: 'Elegir a mano' })
+    expect(within(decide).getAllByRole('button', { name: /^Agregar (?!todos)/ })).toHaveLength(2)
+  })
+
+  it('shows the results as bars with the share, the winner, and the voters', async () => {
+    mockApi({
+      'GET /api/ballots/7': () =>
+        json(200, ballot({
+          status: 'decided', can_vote: false, my_choices: [1],
+          options: [
+            { id: 1, label: 'Spa - GP', track_layout_id: 1, selected: true, selected_by: 'vote', votes: 3, voters: ['v1'],
+              image_url: '/spa.png', voter_pictures: [{ username: 'v1', avatar_url: null }] },
+            { id: 2, label: 'Monza - GP', track_layout_id: 2, selected: false, selected_by: '', votes: 1, voters: [] },
+          ],
+        })),
+    })
+    show()
+    const results = await screen.findByRole('region', { name: 'Resultados' })
+    const bars = within(results).getAllByRole('listitem')
+    expect(within(bars[0]).getByText('75 %')).toBeInTheDocument()
+    expect(within(bars[0]).getByText('por votos')).toBeInTheDocument()
+    expect(within(bars[0]).getByText('Tu elección')).toBeInTheDocument()
+    expect(within(bars[0]).getByLabelText('v1')).toBeInTheDocument()
+    expect(within(bars[1]).getByText('25 %')).toBeInTheDocument()
   })
 
   it('hides the vote form from a user who is not a voter', async () => {
@@ -93,7 +116,9 @@ describe('BallotPage extras', () => {
     expect(await screen.findByText(/Tiene que votar al menos el 75 %/)).toBeInTheDocument()
     expect(screen.getByText('Ya votaron: v1, v2')).toBeInTheDocument()
     expect(screen.getByText(/Recordatorio 24 horas antes del cierre/)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Administrar' }))
     await userEvent.click(screen.getByRole('button', { name: 'Recordar ahora a quien no votó' }))
+    await userEvent.click(await screen.findByRole('button', { name: 'Enviar recordatorio' }))
     await vi.waitFor(() => expect(calls.some((c) => c.key === 'POST /api/ballots/7/remind')).toBe(true))
   })
 })
