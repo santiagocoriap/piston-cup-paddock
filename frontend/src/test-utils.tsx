@@ -7,8 +7,8 @@ import type { components } from './api/schema'
 import type { Mode } from './session'
 import { SessionProvider } from './SessionProvider'
 
-export const ADMIN: Me = { id: 1, username: 'santi', language: 'es', timezone: '', is_admin: true, can_admin: true, can_manage: true }
-export const DRIVER: Me = { id: 2, username: 'racer', language: 'es', timezone: '', is_admin: false, can_admin: false, can_manage: false }
+export const ADMIN: Me = { id: 1, username: 'santi', language: 'es', timezone: '', is_admin: true, is_platform_admin: true, can_admin: true, can_manage: true }
+export const DRIVER: Me = { id: 2, username: 'racer', language: 'es', timezone: '', is_admin: false, is_platform_admin: false, can_admin: false, can_manage: false }
 
 type Car = components['schemas']['CarOut']
 

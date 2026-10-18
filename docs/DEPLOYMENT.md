@@ -14,7 +14,7 @@ The `media-data` volume keeps the uploaded result files.
 
 1. In Coolify, add a new resource of the type "Docker Compose" from this Git repository.
 2. Set the environment variables from `.env.example` in Coolify. Use new random values for `DJANGO_SECRET_KEY` and `POSTGRES_PASSWORD`.
-3. Set `DJANGO_ALLOWED_HOSTS` to the domain, for example `paddock.example.com`.
+3. Set `DJANGO_ALLOWED_HOSTS` to the domain and `localhost`, for example `paddock.example.com,localhost`. The health check of the `web` container calls `localhost`. Without it, the check fails and Coolify stops the deploy.
 4. Set `DJANGO_CSRF_TRUSTED_ORIGINS` to the full URL, for example `https://paddock.example.com`.
 5. Set `TRUSTED_PROXY_COUNT` to `1`. The login limit then uses the real client address behind the Coolify proxy.
 6. Give the `web` service the domain on port 8000. Coolify then gives HTTPS through its proxy.

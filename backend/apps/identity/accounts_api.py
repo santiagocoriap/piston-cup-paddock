@@ -18,6 +18,7 @@ from .accounts import (
     create_account,
     new_link,
     open_link,
+    set_platform_admin,
     use_link,
 )
 from .models import AccountLink, User
@@ -34,11 +35,18 @@ class AccountIn(Schema):
     driver_id: int | None = None
     championship_id: int | None = None
     role: ChampionshipMember.Role | None = None
+    # The rights of the original account. Only a platform admin can give them.
+    platform_admin: bool = False
+
+
+class PlatformAdminIn(Schema):
+    on: bool
 
 
 class AccountOut(Schema):
     id: int
     username: str
+    is_platform_admin: bool
     driver_name: str | None
     championships: list[str]
     has_password: bool
@@ -82,6 +90,7 @@ def _out(user: User) -> AccountOut:
     return AccountOut(
         id=user.id,
         username=user.username,
+        is_platform_admin=user.is_superuser,
         driver_name=profile.display_name if profile else None,
         championships=sorted(
             f"{m.championship.name} ({m.role})"
@@ -117,6 +126,7 @@ def create(request, payload: AccountIn):
             driver_id=payload.driver_id,
             championship_id=payload.championship_id,
             role=payload.role,
+            platform_admin=payload.platform_admin,
         )
     except AccountError as error:
         raise HttpError(403 if error.code == "forbidden" else 422, error.code) from error
@@ -134,6 +144,17 @@ def reset_link(request, user_id: int):
     )
     token = new_link(user, purpose, request.user)
     return _link_out(user, token)
+
+
+@router.put("/accounts/{user_id}/platform-admin", response=AccountOut, auth=django_auth)
+def platform_admin(request, user_id: int, payload: PlatformAdminIn):
+    """Give or take the rights of a platform admin. Only a platform admin can do it."""
+    user = get_object_or_404(User, pk=user_id, is_active=True)
+    try:
+        set_platform_admin(request.user, user, payload.on)
+    except AccountError as error:
+        raise HttpError(403 if error.code == "forbidden" else 422, error.code) from error
+    return _out(user)
 
 
 @router.post("/auth/invite/check", response={200: LinkInfo, 422: AccountErrorOut}, auth=None)

@@ -169,9 +169,12 @@ def _delete_driver(driver: DriverProfile) -> None:
 def _delete_user(user, actor) -> None:
     if user.pk == actor.pk:
         raise DeleteError("delete_self")
-    if (
-        user.is_staff
-        and not get_user_model().objects.filter(is_staff=True).exclude(pk=user.pk).exists()
+    # Only a platform admin deletes a platform admin.
+    if user.is_superuser and not actor.is_superuser:
+        raise DeleteError("forbidden")
+    users = get_user_model().objects.exclude(pk=user.pk)
+    if (user.is_staff and not users.filter(is_staff=True).exists()) or (
+        user.is_superuser and not users.filter(is_superuser=True, is_active=True).exists()
     ):
         raise DeleteError("last_admin")
     user.delete()  # The driver profile stays, without an account.

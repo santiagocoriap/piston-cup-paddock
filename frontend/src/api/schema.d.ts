@@ -2202,6 +2202,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/accounts/{user_id}/platform-admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Platform Admin
+         * @description Give or take the rights of a platform admin. Only a platform admin can do it.
+         */
+        put: operations["apps_identity_accounts_api_platform_admin"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/invite/check": {
         parameters: {
             query?: never;
@@ -3118,6 +3138,8 @@ export interface components {
             timezone: string;
             /** Is Admin */
             is_admin: boolean;
+            /** Is Platform Admin */
+            is_platform_admin: boolean;
             /** Can Admin */
             can_admin: boolean;
             /** Can Manage */
@@ -6236,6 +6258,8 @@ export interface components {
             id: number;
             /** Username */
             username: string;
+            /** Is Platform Admin */
+            is_platform_admin: boolean;
             /** Driver Name */
             driver_name: string | null;
             /** Championships */
@@ -6267,6 +6291,16 @@ export interface components {
             /** Championship Id */
             championship_id?: number | null;
             role?: components["schemas"]["Role"] | null;
+            /**
+             * Platform Admin
+             * @default false
+             */
+            platform_admin?: boolean;
+        };
+        /** PlatformAdminIn */
+        PlatformAdminIn: {
+            /** On */
+            on: boolean;
         };
         /** LinkInfo */
         LinkInfo: {
@@ -10932,6 +10966,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LinkOut"];
+                };
+            };
+        };
+    };
+    apps_identity_accounts_api_platform_admin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlatformAdminIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountOut"];
                 };
             };
         };

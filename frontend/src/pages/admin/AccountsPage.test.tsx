@@ -7,7 +7,7 @@ import { AccountsPage } from './AccountsPage'
 afterEach(() => vi.restoreAllMocks())
 
 const account = {
-  id: 5, username: 'bing', driver_name: 'Bing', championships: ['LMDh (driver)'], has_password: false,
+  id: 5, username: 'bing', is_platform_admin: false, driver_name: 'Bing', championships: ['LMDh (driver)'], has_password: false,
   open_link: true, last_login: null,
 }
 
@@ -35,7 +35,7 @@ describe('AccountsPage', () => {
     expect(screen.getByRole('dialog', { name: 'Link listo' })).toHaveAttribute('open')
     expect(within(box).getByRole('textbox')).toHaveValue(`${window.location.origin}/invite#tok123`)
     expect(calls.find((c) => c.key === 'POST /api/accounts')!.body).toEqual({
-      username: 'bing', driver_id: 3, championship_id: 1, role: 'driver',
+      username: 'bing', driver_id: 3, championship_id: 1, role: 'driver', platform_admin: false,
     })
   })
 
@@ -68,5 +68,23 @@ describe('AccountsPage', () => {
     await userEvent.type(await screen.findByPlaceholderText('Usuario, piloto o campeonato'), 'lmdh')
     expect(screen.getByText('1 cuenta')).toBeInTheDocument()
     expect(screen.queryByText('santi')).not.toBeInTheDocument()
+  })
+
+  it('makes an account a platform admin after a confirmation', async () => {
+    const calls = mockApi({
+      'GET /api/accounts': () => json(200, [account]),
+      'GET /api/drivers': () => json(200, []),
+      'GET /api/championships': () => json(200, []),
+      'PUT /api/accounts/5/platform-admin': () => json(200, { ...account, is_platform_admin: true }),
+    })
+    renderPage(<AccountsPage />, { path: '/admin/accounts', url: '/admin/accounts' })
+    await userEvent.click(await screen.findByRole('button', { name: /bing/ }))
+    await userEvent.click(screen.getByRole('button', { name: 'Hacer admin de la plataforma' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Hacer admin de la plataforma' })
+    expect(within(dialog).getByText(/bing va a tener el mismo acceso que vos/)).toBeInTheDocument()
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Hacer admin de la plataforma' }))
+    await vi.waitFor(() =>
+      expect(calls.find((c) => c.key === 'PUT /api/accounts/5/platform-admin')!.body).toEqual({ on: true }),
+    )
   })
 })

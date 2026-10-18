@@ -36,6 +36,7 @@ def test_login_with_correct_password_starts_a_session(user):
         "username": "driver",
         "language": "es",
         "is_admin": False,
+        "is_platform_admin": False,
         "can_admin": False,
         "can_manage": False,
         "timezone": "",

@@ -303,7 +303,7 @@
     "number_taken": "Ese número ya lo tiene otro piloto de la temporada.",
     "request_pending": "Ya tenés un pedido esperando respuesta.",
     "request_decided": "Ese pedido ya tiene respuesta.",
-    "no_driver_profile": "Tu cuenta no tiene un piloto vinculado. Pedile a un admin que lo vincule.",
+    "no_driver_profile": "Tu cuenta no tiene piloto.",
     "join_incomplete": "Elegí la temporada y el auto.",
     "round_number_exists": "Ya existe una fecha con ese número.",
     "track_exists": "Ya existe una pista con esa carpeta.",
@@ -390,7 +390,6 @@
     "custom_role_not_allowed": "Elegí un rol personalizado solo con el rol Rol personalizado.",
     "round_not_in_championship": "Esa fecha es de otro campeonato.",
     "file_not_assignable": "Este archivo no se puede asignar.",
-    "no_driver_profile": "Tu cuenta no tiene piloto.",
     "lap_not_in_session": "Esa vuelta no es de esta sesión.",
     "report_not_failed": "Ese reporte no falló.",
     "incident_not_found": "Ese incidente no existe.",
@@ -430,7 +429,8 @@
     "wrong_key": "La clave no es de este colector.",
     "unknown_preset": "El colector no tiene esa plantilla de Content Manager.",
     "delete_self": "No podés borrar tu propia cuenta.",
-    "last_admin": "Es el último admin de la liga: no se puede borrar."
+    "last_admin": "Es el último admin de la plataforma: la app necesita al menos uno.",
+    "own_platform_admin": "No podés quitarte a vos mismo los permisos de admin de la plataforma."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -1225,7 +1225,7 @@
     "seeResults": "Ver resultados"
   },
   "briefing": {
-        "myCar": "Tu auto",
+    "myCar": "Tu auto",
     "theTrack": "La pista",
     "expectedWeather": "Clima esperado",
     "title": "Briefing",
@@ -1332,7 +1332,13 @@
     "linkTitle": "Link listo",
     "done": "Listo",
     "pendingShort": "Esperando contraseña",
-    "roleHint": "Elegí un campeonato para darle un rol."
+    "roleHint": "Elegí un campeonato para darle un rol.",
+    "platformAdmin": "Admin de la plataforma",
+    "platformAdminHelp": "Tiene el mismo acceso que la cuenta original: todas las ligas, los campeonatos y las cuentas. También puede hacer otros admins de la plataforma.",
+    "makePlatformAdmin": "Hacer admin de la plataforma",
+    "removePlatformAdmin": "Quitar admin de la plataforma",
+    "makePlatformAdminText": "{{name}} va a tener el mismo acceso que vos: todas las ligas, los campeonatos y las cuentas. También va a poder hacer y quitar otros admins de la plataforma.",
+    "removePlatformAdminText": "{{name}} deja de ser admin de la plataforma y de la liga. Sus roles en los campeonatos quedan."
   },
   "invite": {
     "title": "Elegí tu contraseña",

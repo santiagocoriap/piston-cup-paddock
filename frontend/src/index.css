@@ -10459,40 +10459,74 @@ button.danger {
 
 .pick-filters select {
   min-width: 190px;
-}
-
-/* A track with several layouts: one card, a row for each layout. */
-.pick-layouts {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--line);
-  list-style: none;
-}
-
-.pick-layouts > li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  padding: var(--space-1) var(--space-2);
-  border-bottom: 1px solid var(--line);
-  font-size: 13px;
-  cursor: grab;
-}
-
-.pick-layouts > li:last-child {
-  border-bottom: 0;
-}
-
-.pick-layouts > li.blocked {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.pick-layout-name {
-  display: grid;
-  min-width: 0;
+}
+
+
+
+/* A track with several layouts: one card, a row for each layout. */
+
+.pick-layouts {
+
+  display: grid;
+
+  margin: 0;
+
+  padding: 0;
+
+  border-top: 1px solid var(--line);
+
+  list-style: none;
+
+}
+
+
+
+.pick-layouts > li {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: var(--space-2);
+
+  padding: var(--space-1) var(--space-2);
+
+  border-bottom: 1px solid var(--line);
+
+  font-size: 13px;
+
+  cursor: grab;
+
+}
+
+
+
+.pick-layouts > li:last-child {
+
+  border-bottom: 0;
+
+}
+
+
+
+.pick-layouts > li.blocked {
+
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+}
+
+
+
+.pick-layout-name {
+
+  display: grid;
+
+  min-width: 0;
+
 }
 
 .home-head {
@@ -10701,3 +10735,19 @@ button.danger {
   display: grid;
   gap: var(--space-4);
 }
+
+/* A platform admin: the same access as the original account. */
+.platform-badge {
+  margin-left: var(--space-2);
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.platform-check {
+  align-items: flex-start;
+}
+
+.platform-check .field-hint {
+  display: block;
+}
+
