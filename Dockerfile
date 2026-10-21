@@ -12,8 +12,10 @@ RUN pnpm --filter @paddock/frontend build
 # Stage 2: the Django app. The web and worker services both use this image.
 FROM python:3.13-slim
 COPY --from=ghcr.io/astral-sh/uv:0.9.12 /uv /bin/uv
+# A slow server builds web and worker at the same time: 60 s to compile one file is too short.
 ENV PYTHONUNBUFFERED=1 \
     UV_COMPILE_BYTECODE=1 \
+    UV_COMPILE_BYTECODE_TIMEOUT=600 \
     UV_LINK_MODE=copy \
     UV_PROJECT_ENVIRONMENT=/opt/venv \
     PATH=/opt/venv/bin:$PATH \
