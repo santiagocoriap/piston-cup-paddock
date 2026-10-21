@@ -7437,6 +7437,8 @@ export interface components {
             latest: components["schemas"]["PushOut"] | null;
             /** Has Collector */
             has_collector: boolean;
+            /** Collector Seen At */
+            collector_seen_at: string | null;
         };
         /** PushIn */
         PushIn: {

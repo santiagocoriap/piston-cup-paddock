@@ -3,6 +3,7 @@ for the server collector."""
 
 from datetime import datetime
 
+from django.db.models import Max
 from django.http import Http404, HttpRequest
 from django.shortcuts import get_object_or_404
 from ninja import Field, Router, Schema
@@ -55,6 +56,8 @@ class SetupOut(Schema):
     preset: str
     latest: PushOut | None
     has_collector: bool
+    # The last time that any active collector of the championship called the app.
+    collector_seen_at: datetime | None
 
 
 def _push_out(item: ServerPush | None) -> PushOut | None:
@@ -104,6 +107,9 @@ def _setup_out(request: HttpRequest, round_: Round) -> SetupOut:
         open_slots=content["open_slots"],
         latest=_push_out(round_.server_pushes.select_related("requested_by", "collector").first()),
         has_collector=championship.collectors.filter(revoked_at__isnull=True).exists(),
+        collector_seen_at=championship.collectors.filter(revoked_at__isnull=True).aggregate(
+            seen=Max("last_seen_at")
+        )["seen"],
     )
 
 

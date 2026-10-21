@@ -4,7 +4,7 @@ import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { Icon } from '../components/Icon'
 import { errorMessage } from '../lib/errors'
-import { formatDateTime } from '../lib/format'
+import { PushStatus } from './PushStatus'
 
 type Setup = components['schemas']['SetupOut']
 
@@ -20,7 +20,7 @@ function clock(angle: number): string {
 /** "Enviar al servidor": what the server collector writes into the Content Manager preset,
  * and the state of the last push. The admin then starts the server in Content Manager. */
 export function ServerPushPanel({ roundId }: { roundId: number }) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const path = { round_id: roundId }
   const [setup, setSetup] = useState<Setup | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -162,14 +162,7 @@ export function ServerPushPanel({ roundId }: { roundId: number }) {
         />
         <small className="muted">{t('serverPush.openSlotsHelp', { count: setup.open_slots })}</small>
       </label>
-      {latest && (
-        <p className={latest.status === 'failed' ? 'error' : 'muted'} role="status">
-          {t(`serverPush.status.${latest.status}`, {
-            date: formatDateTime(latest.finished_at ?? latest.requested_at, i18n.language),
-          })}
-          {latest.error && ` (${t(`serverPush.errors.${latest.error}`, { defaultValue: latest.error })})`}
-        </p>
-      )}
+      {latest && <PushStatus push={latest} collectorSeenAt={setup.collector_seen_at} />}
       {error && (
         <p role="alert" className="error">
           {error}

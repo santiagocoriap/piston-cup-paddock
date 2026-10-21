@@ -22,6 +22,7 @@ const setup = (latest: unknown) => ({
   preset: 'SERVER_01',
   latest,
   has_collector: true,
+  collector_seen_at: null,
 })
 
 describe('ServerPushPanel', () => {
@@ -29,7 +30,7 @@ describe('ServerPushPanel', () => {
     const calls = mockApi({
       'GET /api/rounds/9/server-setup': () => json(200, setup(null)),
       'POST /api/rounds/9/server-push': () =>
-        json(200, setup({ id: 1, status: 'pending', error: '', requested_by: 'santi', requested_at: '2026-10-14T21:00:00Z', finished_at: null, collector: null })),
+        json(200, setup({ id: 1, status: 'pending', error: '', requested_by: 'santi', requested_at: new Date().toISOString(), finished_at: null, collector: null })),
     })
     renderPage(<ServerPushPanel roundId={9} />, { path: '/', url: '/' })
     expect(await screen.findByText('Ana')).toBeInTheDocument()
@@ -68,5 +69,25 @@ describe('ServerPushPanel', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Enviar al servidor' }))
     await screen.findByText('Ana')
     expect(calls.find((c) => c.key === 'POST /api/rounds/9/server-push')?.body).toEqual({ preset: 'Rain Piston' })
+  })
+
+  it('says why a push failed and what to do', async () => {
+    mockApi({
+      'GET /api/rounds/9/server-setup': () =>
+        json(200, setup({ id: 2, status: 'failed', error: 'permission_denied:server_cfg.ini', requested_by: 'santi', requested_at: '2026-10-14T21:00:00Z', finished_at: '2026-10-14T21:01:00Z', collector: 'PC' })),
+    })
+    renderPage(<ServerPushPanel roundId={9} />, { path: '/', url: '/' })
+    const box = await screen.findByRole('alert')
+    expect(box).toHaveTextContent('Windows no deja escribir el archivo server_cfg.ini.')
+    expect(box).toHaveTextContent('Qué hacer: Cerrá los programas que usan la plantilla')
+  })
+
+  it('warns when the collector does not answer', async () => {
+    mockApi({
+      'GET /api/rounds/9/server-setup': () =>
+        json(200, setup({ id: 3, status: 'pending', error: '', requested_by: 'santi', requested_at: '2026-10-14T21:00:00Z', finished_at: null, collector: null })),
+    })
+    renderPage(<ServerPushPanel roundId={9} />, { path: '/', url: '/' })
+    expect(await screen.findByText(/El colector no respondió/)).toBeInTheDocument()
   })
 })

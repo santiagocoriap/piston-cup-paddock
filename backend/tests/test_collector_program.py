@@ -509,6 +509,38 @@ def test_the_collector_tells_each_step_one_time(preset, tmp_path, monkeypatch):
     assert "code-1" in (preset / "csp_extra_options.ini").read_text(encoding="utf-8")
 
 
+def test_a_failed_push_tells_the_reason_and_the_file(preset, tmp_path, monkeypatch):
+    app = FakeCommands({"id": 6, "content": CONTENT})
+    on = settings(tmp_path)
+    on.preset_dir = preset
+    on.write_server_config = True
+    monkeypatch.setattr(pc, "content_manager_open", lambda: False)
+    monkeypatch.setattr(pc, "server_running", lambda folder: False)
+
+    def locked(*args, **kwargs):
+        raise PermissionError(13, "Permission denied", str(preset / "server_cfg.ini"))
+
+    monkeypatch.setattr(pc, "write_setup", locked)
+    pc.handle_command(app, on, {})
+    assert app.reports == [(6, "failed", "permission_denied:server_cfg.ini")]
+
+
+@pytest.mark.parametrize(
+    "error, reason",
+    [
+        (
+            FileNotFoundError(2, "No such file", "C:/x/entry_list.ini"),
+            "file_missing:entry_list.ini",
+        ),
+        (KeyError("entries"), "bad_setup:'entries'"),
+        (OSError(28, "No space left on device"), "write_failed:No space left on device"),
+        (RuntimeError("boom"), "unexpected:RuntimeError"),
+    ],
+)
+def test_push_errors_have_a_code_and_a_detail(error, reason):
+    assert pc.push_error(error) == reason
+
+
 def test_a_name_cannot_add_a_line_to_the_server_files(preset):
     """A line break in a name could add a key such as ADMIN_PASSWORD."""
     bad = {**CONTENT["entries"][0], "name": "Ana\r\nADMIN_PASSWORD=x", "team": "R\nojo"}

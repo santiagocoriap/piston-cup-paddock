@@ -21862,6 +21862,18 @@
           "has_collector": {
             "title": "Has Collector",
             "type": "boolean"
+          },
+          "collector_seen_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collector Seen At"
           }
         },
         "required": [
@@ -21873,7 +21885,8 @@
           "presets",
           "preset",
           "latest",
-          "has_collector"
+          "has_collector",
+          "collector_seen_at"
         ],
         "title": "SetupOut",
         "type": "object"
