@@ -12,6 +12,7 @@ from ninja.files import UploadedFile
 from ninja.security import HttpBearer
 from pydantic import Field
 
+from apps.common.urls import public_url
 from apps.competition.models import Championship, Round
 from apps.competition.permissions import can, can_manage, can_view
 
@@ -292,7 +293,7 @@ def collector_package(request, collector_id: int, payload: PackageIn):
     found = release.latest()
     if found is None:
         raise HttpError(503, "no_release")
-    app_url = request.build_absolute_uri("/").rstrip("/")
+    app_url = public_url(request)
     try:
         data = release.package(found, app_url, payload.key.strip())
     except (OSError, release.ReleaseError) as error:

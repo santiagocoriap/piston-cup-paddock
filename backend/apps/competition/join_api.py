@@ -13,6 +13,7 @@ from apps.common.api import require
 from apps.identity.models import DriverProfile, User
 
 from .api import _team_for, _visible_season
+from .cars import allowed_car_ids, require_allowed
 from .models import ChampionshipMember, JoinRequest, Season, SeasonEntry
 from .permissions import can_manage
 
@@ -27,6 +28,8 @@ class JoinSeasonOut(Schema):
     free_join: bool
     # "entered", "pending" or "declined" when this driver already did something here.
     mine: str | None = None
+    # The cars that the season allows. None: any car.
+    car_ids: list[int] | None = None
 
 
 class JoinOptionsOut(Schema):
@@ -150,6 +153,7 @@ def join_options(request):
                 championship_name=season.championship.name,
                 free_join=season.free_join,
                 mine=mine,
+                car_ids=allowed_car_ids(season),
             )
         )
     return JoinOptionsOut(has_profile=True, seasons=rows)
@@ -165,6 +169,7 @@ def join_season(request, season_id: int, payload: JoinIn):
     if season.entries.filter(driver=profile).exists():
         raise HttpError(409, "entry_exists")
     car = get_object_or_404(Car, pk=payload.car_id)
+    require_allowed(season, car)
     team = _team_for(season, payload.team)
     if season.free_join:
         entry = _enter(season, profile, car, payload.number, team, request.user)

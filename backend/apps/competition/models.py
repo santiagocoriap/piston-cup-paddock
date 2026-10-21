@@ -106,6 +106,9 @@ class Season(models.Model):
     allow_repeat_layouts = models.BooleanField(default=False)
     # Free join: a driver enters the season alone. Off: the driver asks, and an admin decides.
     free_join = models.BooleanField(default=False)
+    # The car classes of the season. An entry can only use a car of these classes. Empty: any
+    # car. A decided car class vote fills it.
+    car_classes = models.ManyToManyField("catalog.CarClass", blank=True, related_name="seasons")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

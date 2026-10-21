@@ -14,6 +14,8 @@ function season(canManage: boolean) {
     championship_id: 1,
     championship_name: 'LMDh',
     can_manage: canManage,
+    car_classes: [],
+    car_ids: null,
     entries: [
       { id: 1, driver_id: 3, driver_name: 'Bing', car_id: 2, car_name: 'Acura', number: 93, team: 'MSR' },
     ],
@@ -24,7 +26,8 @@ function season(canManage: boolean) {
         track_layout_id: 4,
         track_name: 'Highlands',
         layout_name: 'Long',
-        scheduled_at: '2026-10-19T00:30:00Z',
+        // Always in the future, so the round is the next one.
+        scheduled_at: new Date(Date.now() + 7 * 86_400_000).toISOString(),
         origin: 'manual', cancelled: false, cancel_reason: '', track_changes: [],
       },
     ],
@@ -52,6 +55,13 @@ const show = (me = undefined as typeof DRIVER | undefined) =>
   renderPage(<SeasonPage />, { path: '/seasons/:seasonId', url: '/seasons/5', me })
 
 describe('SeasonPage', () => {
+  it('warns when the season has no entered drivers', async () => {
+    mockApi({ 'GET /api/seasons/5': () => json(200, { ...season(false), entries: [] }), ...standings })
+    show(DRIVER)
+    expect(await screen.findByText('Esta temporada no tiene pilotos inscriptos.')).toBeInTheDocument()
+    expect(screen.getByText(/Un admin todavía tiene que inscribir/)).toBeInTheDocument()
+  })
+
   it('lets the driver of an entry choose the skin, and nobody else', async () => {
     const mine = { ...season(false).entries[0], mine: true }
     const body = { ...season(false), entries: [mine, { ...mine, id: 2, driver_name: 'Rival', mine: false, number: 94 }] }

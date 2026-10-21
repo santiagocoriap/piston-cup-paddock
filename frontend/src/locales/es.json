@@ -174,7 +174,11 @@
       "calendar": "Calendario (.ics)",
       "csv": "{{name}} (CSV)"
     },
-    "roundLabel": "Fecha {{number}}"
+    "roundLabel": "Fecha {{number}}",
+    "noDriversTitle": "Esta temporada no tiene pilotos inscriptos.",
+    "noDriversAdmin": "Sin inscriptos no hay grilla, ni votaciones, ni resultados que asignar.",
+    "noDriversDriver": "Un admin todavía tiene que inscribir a los pilotos.",
+    "noDriversGo": "Inscribir pilotos"
   },
   "leagues": {
     "title": "Ligas",
@@ -309,7 +313,7 @@
     "track_exists": "Ya existe una pista con esa carpeta.",
     "layout_exists": "Esa pista ya tiene un trazado con esa carpeta.",
     "car_exists": "Ya existe un auto con esa carpeta.",
-    "steam_guid_exists": "Otro piloto ya tiene ese Steam GUID.",
+    "steam_guid_exists": "Ese Steam ID ya es de otro piloto.",
     "account_has_profile": "Esa cuenta ya está vinculada a otro piloto.",
     "positions_not_continuous": "Las posiciones tienen que ir de 1 en 1, sin huecos ni repetidas.",
     "position_required": "Cada piloto que terminó o abandonó necesita una posición.",
@@ -430,7 +434,8 @@
     "unknown_preset": "El colector no tiene esa plantilla de Content Manager.",
     "delete_self": "No podés borrar tu propia cuenta.",
     "last_admin": "Es el último admin de la plataforma: la app necesita al menos uno.",
-    "own_platform_admin": "No podés quitarte a vos mismo los permisos de admin de la plataforma."
+    "own_platform_admin": "No podés quitarte a vos mismo los permisos de admin de la plataforma.",
+    "car_not_in_class": "Ese auto no es de las clases de la temporada."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -613,7 +618,10 @@
       "car.preview_set": "{{actor}} subió la foto del auto {{name}}.",
       "car.badge_set": "{{actor}} subió el logo del auto {{name}}.",
       "car.preview_removed": "{{actor}} quitó la foto del auto {{name}}.",
-      "car.badge_removed": "{{actor}} quitó el logo del auto {{name}}."
+      "car.badge_removed": "{{actor}} quitó el logo del auto {{name}}.",
+      "entry.auto_created": "{{actor}} inscribió a {{driver}} en {{season}} con el #{{number}} ({{car}}), al decidir la clase.",
+      "entry.car_changed": "{{actor}} cambió el auto de {{driver}} en {{season}}.",
+      "season.car_classes_changed": "{{actor}} cambió las clases de auto de {{season}}."
     },
     "fields": {
       "role": "Rol",
@@ -1101,7 +1109,9 @@
     "settings": "Ajustes de la votación",
     "goVote": "Votar",
     "goSee": "Ver",
-    "settingsSaved": "Ajustes guardados."
+    "settingsSaved": "Ajustes guardados.",
+    "carCount_one": "{{count}} auto",
+    "carCount_other": "{{count}} autos"
   },
   "calendar": {
     "fixed": "Reservar pista fija",
@@ -1338,7 +1348,10 @@
     "makePlatformAdmin": "Hacer admin de la plataforma",
     "removePlatformAdmin": "Quitar admin de la plataforma",
     "makePlatformAdminText": "{{name}} va a tener el mismo acceso que vos: todas las ligas, los campeonatos y las cuentas. También va a poder hacer y quitar otros admins de la plataforma.",
-    "removePlatformAdminText": "{{name}} deja de ser admin de la plataforma y de la liga. Sus roles en los campeonatos quedan."
+    "removePlatformAdminText": "{{name}} deja de ser admin de la plataforma y de la liga. Sus roles en los campeonatos quedan.",
+    "newDriver": "Nuevo piloto, con el nombre de usuario",
+    "steamId": "Steam ID (opcional)",
+    "steamIdHelp": "Los 17 números del perfil de Steam. Con el Steam ID, la app reconoce al piloto en los resultados del servidor. Se puede poner después en Pilotos."
   },
   "invite": {
     "title": "Elegí tu contraseña",
@@ -1917,7 +1930,8 @@
       "protest.appealed": "Nueva apelación en R{{number}} · {{track}}",
       "protest.appeal_decided": "Tu apelación de R{{number}} tiene decisión",
       "import.blocked": "Archivo para revisar: {{championship}} R{{number}} · {{track}}",
-      "collector.no_results": "Sin resultados: {{championship}} R{{number}} · {{track}}. El colector no mandó el archivo de carrera."
+      "collector.no_results": "Sin resultados: {{championship}} R{{number}} · {{track}}. El colector no mandó el archivo de carrera.",
+      "entry.auto_created": "Te inscribimos en {{season}} con el #{{number}} y un {{car}}. Podés cambiar el auto en la temporada."
     },
     "all": "Todas",
     "unread": "Sin leer",
@@ -2251,7 +2265,8 @@
     "send": "Enviar al servidor",
     "warnings": {
       "no_guid": "{{name}} no tiene Steam ID: su lugar no queda reservado.",
-      "weather_kept": "El clima anunciado no es un nombre de clima de AC: el servidor mantiene su clima."
+      "weather_kept": "El clima anunciado no es un nombre de clima de AC: el servidor mantiene su clima.",
+      "local_address": "La dirección de la app es local (localhost). El juego de los otros pilotos no puede bajar el script de Paddock, y su telemetría no llega. Abrí la app con su dirección pública, o pedile a un admin que configure PUBLIC_URL."
     },
     "status": {
       "pending": "Enviado el {{date}}. Espera al colector.",
@@ -2260,17 +2275,61 @@
       "failed": "No se pudo escribir el {{date}}.",
       "cancelled": "Reemplazado por un envío más nuevo."
     },
-    "errors": {
-      "server_running": "el servidor está encendido",
-      "writing_disabled": "el colector tiene la escritura apagada: write_server_config = false",
-      "unknown_preset": "el colector no tiene esa plantilla",
-      "content_manager_open": "Content Manager está abierto. Cerralo: al abrirlo otra vez, lee los archivos nuevos"
-    },
     "openSlots": "Lugares libres",
     "openSlotsHelp": "Vacío: {{count}}, el número del campeonato. Otro número cuenta solo para este envío.",
     "preset": "Plantilla de Content Manager",
     "presetDefault": "La del colector",
-    "presetHelp": "El colector escribe en esta plantilla y la usa desde ahora. Después, iniciá esta plantilla en Content Manager."
+    "presetHelp": "El colector escribe en esta plantilla y la usa desde ahora. Después, iniciá esta plantilla en Content Manager.",
+    "reasons": {
+      "server_running": {
+        "why": "El servidor de AC está encendido. El colector escribe la plantilla solo con el servidor apagado.",
+        "fix": "Apagá el servidor en Content Manager. El colector escribe solo, en menos de un minuto."
+      },
+      "content_manager_open": {
+        "why": "Content Manager está abierto. Guarda su copia de la plantilla encima de los archivos nuevos.",
+        "fix": "Cerrá Content Manager. El colector escribe solo, y al abrirlo otra vez lee los archivos nuevos."
+      },
+      "writing_disabled": {
+        "why": "El colector tiene apagada la escritura de la plantilla.",
+        "fix": "En la PC del servidor, hacé clic en el ícono de Paddock, «Configurar…», y tildá «Permitir Enviar al servidor»."
+      },
+      "unknown_preset": {
+        "why": "El colector no encuentra la plantilla {{detail}}.",
+        "fix": "Elegí otra plantilla arriba, o revisá la carpeta de la plantilla en «Configurar…» del colector."
+      },
+      "permission_denied": {
+        "why": "Windows no deja escribir el archivo {{detail}}.",
+        "fix": "Cerrá los programas que usan la plantilla, por ejemplo un editor de texto. Después enviá otra vez."
+      },
+      "file_missing": {
+        "why": "Falta el archivo {{detail}} en la plantilla.",
+        "fix": "Abrí la plantilla en Content Manager y guardala una vez: Content Manager crea los archivos. Después enviá otra vez."
+      },
+      "bad_file": {
+        "why": "Un archivo de la plantilla tiene un formato que el colector no entiende.",
+        "fix": "Abrí la plantilla en Content Manager, guardala, y enviá otra vez."
+      },
+      "bad_setup": {
+        "why": "Los datos de la fecha no sirven para el servidor ({{detail}}).",
+        "fix": "Revisá los autos de los inscriptos y la pista de la fecha. Si sigue, mandá este texto a un admin."
+      },
+      "write_failed": {
+        "why": "El colector no pudo escribir en la plantilla: {{detail}}.",
+        "fix": "Revisá que el disco tenga lugar y que la carpeta de la plantilla exista."
+      },
+      "unexpected": {
+        "why": "El colector tuvo un error inesperado.",
+        "fix": "En la PC del servidor, hacé clic en el ícono de Paddock, «Abrir registro», y mandá las últimas líneas a un admin."
+      },
+      "collector_silent": {
+        "why": "El colector no respondió. Puede estar cerrado, o la PC del servidor no tiene internet.",
+        "fix": "En la PC del servidor, abrí «Iniciar Paddock». El colector toma el envío solo cuando arranca."
+      }
+    },
+    "failedTitle": "No se pudo escribir en el servidor ({{date}})",
+    "waitingTitle": "El envío espera",
+    "whatToDo": "Qué hacer:",
+    "collectorSeen": "El colector se conectó por última vez el {{date}}."
   },
   "delete": {
     "league": "¿Eliminar la liga {{name}} con sus campeonatos, temporadas, fechas y resultados? No se puede deshacer.",
@@ -2545,5 +2604,20 @@
     "choose": "Elegir skin",
     "title": "Skin de {{car}}",
     "help": "Elige la skin con la que vas a correr. Con «Automático» el servidor elige una."
+  },
+  "entryCar": {
+    "choose": "Cambiar auto",
+    "title": "Elegí tu auto",
+    "helpClass": "Solo los autos de las clases de la temporada. Al cambiar de auto, el skin vuelve a «Auto».",
+    "helpAny": "La temporada no tiene clases: sirve cualquier auto. Al cambiar de auto, el skin vuelve a «Auto».",
+    "search": "Buscar auto"
+  },
+  "seasonCars": {
+    "title": "Clases de auto",
+    "help": "Los inscriptos solo pueden usar autos de estas clases. Sin clases: cualquier auto. Una votación de clases decidida las pone sola.",
+    "classes": "Autos de la clase {{list}}. Cada piloto elige su auto con «Cambiar auto».",
+    "anyCar": "Sin clase de auto: sirve cualquier auto.",
+    "cars_one": "{{count}} auto",
+    "cars_other": "{{count}} autos"
   }
 }

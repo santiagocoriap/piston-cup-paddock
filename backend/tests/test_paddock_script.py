@@ -319,3 +319,15 @@ def test_a_long_lap_with_a_crash_and_a_pit_stop_counts(key, code, round_, driver
     )
     assert response.json()["state"] == "league"
     assert TelemetryLap.objects.get().lap_time_ms == 300_000
+
+
+def test_public_url_goes_into_the_script_and_the_server_setup(
+    client, api, champ_admin, championship, settings
+):
+    # The game of every driver loads the script, so the address must be public, not the
+    # address that the admin has in the browser.
+    settings.PUBLIC_URL = "https://paddock.example.com"
+    body = client.get("/api/script/paddock.lua").content.decode()
+    assert "local PADDOCK_URL = 'https://paddock.example.com'" in body
+    setup = api(champ_admin).get(f"/championships/{championship.id}/script").json()
+    assert setup["script_url"] == "https://paddock.example.com/api/script/paddock.lua"

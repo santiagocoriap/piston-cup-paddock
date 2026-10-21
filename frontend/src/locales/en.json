@@ -174,7 +174,11 @@
       "calendar": "Calendar (.ics)",
       "csv": "{{name}} (CSV)"
     },
-    "roundLabel": "Round {{number}}"
+    "roundLabel": "Round {{number}}",
+    "noDriversTitle": "This season has no entered drivers.",
+    "noDriversAdmin": "Without entries there is no grid, no votes, and no results to assign.",
+    "noDriversDriver": "An admin still has to enter the drivers.",
+    "noDriversGo": "Enter drivers"
   },
   "leagues": {
     "title": "Leagues",
@@ -309,7 +313,7 @@
     "track_exists": "A track with this folder exists.",
     "layout_exists": "This track already has a layout with this folder.",
     "car_exists": "A car with this folder exists.",
-    "steam_guid_exists": "Another driver has this Steam GUID.",
+    "steam_guid_exists": "Another driver already has this Steam ID.",
     "account_has_profile": "This account is already linked to another driver.",
     "positions_not_continuous": "The positions must go up by 1, with no gaps and no repeats.",
     "position_required": "Each driver who finished or had a DNF needs a position.",
@@ -430,7 +434,8 @@
     "unknown_preset": "The collector does not have that Content Manager preset.",
     "delete_self": "You cannot delete your own account.",
     "last_admin": "This is the last platform admin: the app needs at least one.",
-    "own_platform_admin": "You cannot remove your own platform admin rights."
+    "own_platform_admin": "You cannot remove your own platform admin rights.",
+    "car_not_in_class": "This car is not in the classes of the season."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -613,7 +618,10 @@
       "car.preview_set": "{{actor}} uploaded the photo of the car {{name}}.",
       "car.badge_set": "{{actor}} uploaded the logo of the car {{name}}.",
       "car.preview_removed": "{{actor}} removed the photo of the car {{name}}.",
-      "car.badge_removed": "{{actor}} removed the logo of the car {{name}}."
+      "car.badge_removed": "{{actor}} removed the logo of the car {{name}}.",
+      "entry.auto_created": "{{actor}} entered {{driver}} in {{season}} with #{{number}} ({{car}}), when the class was decided.",
+      "entry.car_changed": "{{actor}} changed the car of {{driver}} in {{season}}.",
+      "season.car_classes_changed": "{{actor}} changed the car classes of {{season}}."
     },
     "fields": {
       "role": "Role",
@@ -1101,7 +1109,9 @@
     "settings": "Ballot settings",
     "goVote": "Vote",
     "goSee": "Open",
-    "settingsSaved": "Settings saved."
+    "settingsSaved": "Settings saved.",
+    "carCount_one": "{{count}} car",
+    "carCount_other": "{{count}} cars"
   },
   "calendar": {
     "fixed": "Reserve a fixed track",
@@ -1338,7 +1348,10 @@
     "makePlatformAdmin": "Make platform admin",
     "removePlatformAdmin": "Remove platform admin",
     "makePlatformAdminText": "{{name}} gets the same access as you: all leagues, championships, and accounts. {{name}} can also make and remove other platform admins.",
-    "removePlatformAdminText": "{{name}} stops being a platform admin and a league admin. The roles in the championships stay."
+    "removePlatformAdminText": "{{name}} stops being a platform admin and a league admin. The roles in the championships stay.",
+    "newDriver": "New driver, with the user name",
+    "steamId": "Steam ID (optional)",
+    "steamIdHelp": "The 17 digits of the Steam profile. With the Steam ID, the app finds the driver in the server results. You can add it later in Drivers."
   },
   "invite": {
     "title": "Choose your password",
@@ -1917,7 +1930,8 @@
       "protest.appealed": "New appeal in R{{number}} · {{track}}",
       "protest.appeal_decided": "Your appeal in R{{number}} has a decision",
       "import.blocked": "File to check: {{championship}} R{{number}} · {{track}}",
-      "collector.no_results": "No results: {{championship}} R{{number}} · {{track}}. The collector did not send the race file."
+      "collector.no_results": "No results: {{championship}} R{{number}} · {{track}}. The collector did not send the race file.",
+      "entry.auto_created": "You are entered in {{season}} with #{{number}} and a {{car}}. You can change the car on the season page."
     },
     "all": "All",
     "unread": "Unread",
@@ -2251,7 +2265,8 @@
     "send": "Send to the server",
     "warnings": {
       "no_guid": "{{name}} has no Steam ID: the slot is not booked.",
-      "weather_kept": "The announced weather is not an AC weather name: the server keeps its weather."
+      "weather_kept": "The announced weather is not an AC weather name: the server keeps its weather.",
+      "local_address": "The app address is local (localhost). The game of the other drivers cannot download the Paddock script, so their telemetry does not arrive. Open the app at its public address, or ask an admin to set PUBLIC_URL."
     },
     "status": {
       "pending": "Sent on {{date}}. Waits for the collector.",
@@ -2260,17 +2275,61 @@
       "failed": "Could not write on {{date}}.",
       "cancelled": "Replaced by a newer push."
     },
-    "errors": {
-      "server_running": "the server is running",
-      "writing_disabled": "the collector does not write: write_server_config = false",
-      "unknown_preset": "the collector does not have that preset",
-      "content_manager_open": "Content Manager is open. Close it: when it opens again, it reads the new files"
-    },
     "openSlots": "Open slots",
     "openSlotsHelp": "Empty: {{count}}, the number of the championship. Another number counts only for this push.",
     "preset": "Content Manager preset",
     "presetDefault": "The collector preset",
-    "presetHelp": "The collector writes to this preset and uses it from now on. Then start this preset in Content Manager."
+    "presetHelp": "The collector writes to this preset and uses it from now on. Then start this preset in Content Manager.",
+    "reasons": {
+      "server_running": {
+        "why": "The AC server is on. The collector writes the preset only while the server is off.",
+        "fix": "Stop the server in Content Manager. The collector writes by itself in less than a minute."
+      },
+      "content_manager_open": {
+        "why": "Content Manager is open. It saves its copy of the preset over the new files.",
+        "fix": "Close Content Manager. The collector writes by itself, and Content Manager reads the new files when it opens again."
+      },
+      "writing_disabled": {
+        "why": "The collector has preset writing turned off.",
+        "fix": "On the server PC, click the Paddock icon, then \"Configurar…\", and tick \"Permitir Enviar al servidor\"."
+      },
+      "unknown_preset": {
+        "why": "The collector cannot find the preset {{detail}}.",
+        "fix": "Pick another preset above, or check the preset folder in \"Configurar…\" of the collector."
+      },
+      "permission_denied": {
+        "why": "Windows does not let the collector write the file {{detail}}.",
+        "fix": "Close the programs that use the preset, for example a text editor. Then send again."
+      },
+      "file_missing": {
+        "why": "The file {{detail}} is missing in the preset.",
+        "fix": "Open the preset in Content Manager and save it one time: Content Manager makes the files. Then send again."
+      },
+      "bad_file": {
+        "why": "A file of the preset has a format that the collector cannot read.",
+        "fix": "Open the preset in Content Manager, save it, and send again."
+      },
+      "bad_setup": {
+        "why": "The data of the round does not work for the server ({{detail}}).",
+        "fix": "Check the cars of the entries and the track of the round. If it stays, send this text to an admin."
+      },
+      "write_failed": {
+        "why": "The collector could not write into the preset: {{detail}}.",
+        "fix": "Check that the disk has space and that the preset folder exists."
+      },
+      "unexpected": {
+        "why": "The collector had an unexpected error.",
+        "fix": "On the server PC, click the Paddock icon, then \"Abrir registro\", and send the last lines to an admin."
+      },
+      "collector_silent": {
+        "why": "The collector did not answer. It can be closed, or the server PC has no internet.",
+        "fix": "On the server PC, open \"Iniciar Paddock\". The collector takes the push when it starts."
+      }
+    },
+    "failedTitle": "The server setup failed ({{date}})",
+    "waitingTitle": "The push waits",
+    "whatToDo": "What to do:",
+    "collectorSeen": "The collector last connected on {{date}}."
   },
   "delete": {
     "league": "Delete the league {{name}} with its championships, seasons, rounds, and results? This cannot be undone.",
@@ -2545,5 +2604,20 @@
     "choose": "Choose skin",
     "title": "Skin for {{car}}",
     "help": "Choose the skin you will race with. With \"Automatic\" the server picks one."
+  },
+  "entryCar": {
+    "choose": "Change car",
+    "title": "Pick your car",
+    "helpClass": "Only the cars of the classes of the season. A new car sets the skin back to \"Auto\".",
+    "helpAny": "The season has no class: any car works. A new car sets the skin back to \"Auto\".",
+    "search": "Search car"
+  },
+  "seasonCars": {
+    "title": "Car classes",
+    "help": "The entries can only use cars of these classes. No class: any car. A decided class vote sets them.",
+    "classes": "Cars of the class {{list}}. Each driver picks a car with \"Change car\".",
+    "anyCar": "No car class: any car works.",
+    "cars_one": "{{count}} car",
+    "cars_other": "{{count}} cars"
   }
 }

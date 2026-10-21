@@ -182,3 +182,12 @@ def test_the_admin_picks_another_preset(api, champ_admin, key, round_, entries):
         content_type="application/json",
     )
     assert wrong.status_code == 422
+
+
+def test_a_local_address_gives_a_warning(api, champ_admin, round_, entries, settings):
+    settings.PUBLIC_URL = "http://localhost:8000"
+    setup = api(champ_admin).get(f"/rounds/{round_.id}/server-setup").json()
+    assert "local_address" in setup["warnings"]
+    settings.PUBLIC_URL = "https://paddock.example.com"
+    setup = api(champ_admin).get(f"/rounds/{round_.id}/server-setup").json()
+    assert "local_address" not in setup["warnings"]

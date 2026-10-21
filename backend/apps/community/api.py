@@ -7,6 +7,7 @@ from django.utils import timezone
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
+from apps.common.urls import public_url
 from apps.competition.models import Round, Season, SeasonEntry
 from apps.competition.permissions import can_view, visible_championships
 
@@ -98,7 +99,7 @@ def _ics_response(text: str, filename: str) -> HttpResponse:
 
 
 def _base_url(request) -> str:
-    return f"{request.scheme}://{request.get_host()}"
+    return public_url(request)
 
 
 @router.get("/seasons/{season_id}/calendar.ics")

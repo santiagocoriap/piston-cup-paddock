@@ -28,6 +28,17 @@ const show = (me = DRIVER as typeof DRIVER | undefined) =>
   renderPage(<BallotPage />, { path: '/ballots/:ballotId', url: '/ballots/7', me })
 
 describe('BallotPage', () => {
+  it('shows the cars of a class option: pictures and the number of cars', async () => {
+    const tc = {
+      id: 9, label: 'TC', track_layout_id: null, car_class_id: 4, selected: false, selected_by: '', votes: 0, voters: null,
+      image_url: '/a.jpg', images: ['/a.jpg', '/b.jpg', '/c.jpg'], car_count: 12,
+    }
+    mockApi({ 'GET /api/ballots/7': () => json(200, ballot({ kind: 'car_class', options: [tc] })) })
+    const { container } = show()
+    expect(await screen.findByText('12 autos')).toBeInTheDocument()
+    expect(container.querySelectorAll('.vote-media.collage img')).toHaveLength(3)
+  })
+
   it('explains the method, the power, and the live totals before the vote', async () => {
     mockApi({ 'GET /api/ballots/7': () => json(200, ballot()) })
     show()

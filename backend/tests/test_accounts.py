@@ -266,3 +266,27 @@ def test_only_a_platform_admin_deletes_a_platform_admin(api, owner, league_admin
     answer = api(league_admin).delete(f"/objects/user/{owner.id}")
     assert answer.status_code == 403
     assert User.objects.filter(pk=owner.pk).exists()
+
+
+def test_a_new_account_gets_a_driver_profile(api, league_admin):
+    made = api(league_admin).post(
+        "/accounts", {"username": "rookie", "steam_guid": "76561190000000077"}
+    )
+    assert made.status_code == 201
+    assert made.json()["account"]["driver_name"] == "rookie"
+    profile = DriverProfile.objects.get(user__username="rookie")
+    assert profile.steam_guid == "76561190000000077"
+
+
+def test_an_account_without_a_driver_when_asked(api, league_admin):
+    api(league_admin).post("/accounts", {"username": "viewer", "new_driver": False})
+    assert not DriverProfile.objects.filter(user__username="viewer").exists()
+
+
+def test_a_steam_id_of_another_driver_is_refused(api, league_admin):
+    DriverProfile.objects.create(display_name="Taken", steam_guid="76561190000000088")
+    answer = api(league_admin).post(
+        "/accounts", {"username": "copy", "steam_guid": "76561190000000088"}
+    )
+    assert answer.status_code == 422 and answer.json()["detail"] == "steam_guid_exists"
+    assert not User.objects.filter(username="copy").exists()

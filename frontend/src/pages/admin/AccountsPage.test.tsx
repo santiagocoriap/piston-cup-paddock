@@ -35,7 +35,7 @@ describe('AccountsPage', () => {
     expect(screen.getByRole('dialog', { name: 'Link listo' })).toHaveAttribute('open')
     expect(within(box).getByRole('textbox')).toHaveValue(`${window.location.origin}/invite#tok123`)
     expect(calls.find((c) => c.key === 'POST /api/accounts')!.body).toEqual({
-      username: 'bing', driver_id: 3, championship_id: 1, role: 'driver', platform_admin: false,
+      username: 'bing', driver_id: 3, new_driver: false, steam_guid: null, championship_id: 1, role: 'driver', platform_admin: false,
     })
   })
 

@@ -28,6 +28,7 @@ import { Avatar } from '../components/Avatar'
 import { DangerMenu } from '../components/DangerMenu'
 import { useRowDrag } from '../lib/useRowDrag'
 import { EntrySkinPicker } from './EntrySkinPicker'
+import { EntryCarPicker } from './EntryCarPicker'
 import { JoinRequestsPanel } from './JoinSeason'
 
 export function SeasonPage() {
@@ -174,6 +175,20 @@ export function SeasonPage() {
           </div>
         </dl>
       </header>
+      {data.entries.length === 0 && (
+        <div className="season-alert" role="status">
+          <Icon name="alert" small />
+          <p>
+            <b>{t('season.noDriversTitle')}</b>{' '}
+            {adminView ? t('season.noDriversAdmin') : t('season.noDriversDriver')}
+          </p>
+          {adminView && (
+            <a className="button-link" href="#entries">
+              {t('season.noDriversGo')}
+            </a>
+          )}
+        </div>
+      )}
 
       <div className="season-layout">
         <nav className="season-nav" aria-label={t('seasonNav.label')}>
@@ -452,6 +467,7 @@ export function SeasonPage() {
                       content: (close) => (
                         <AddEntryForm
                           seasonId={seasonId}
+                          carIds={data.car_ids}
                           entered={data.entries.map((entry) => entry.driver_id)}
                           onChange={season.reload}
                           onDone={close}
@@ -463,10 +479,29 @@ export function SeasonPage() {
                       label: t('teams.title'),
                       content: () => <TeamsPanel seasonId={seasonId} />,
                     },
+                    {
+                      id: 'classes',
+                      label: t('seasonCars.title'),
+                      content: (close) => (
+                        <SeasonClassesForm
+                          seasonId={seasonId}
+                          current={data.car_classes.map((item) => item.id)}
+                          onDone={() => {
+                            season.reload()
+                            close()
+                          }}
+                        />
+                      ),
+                    },
                   ]}
                 />
               )}
             </div>
+            <p className="muted season-classes">
+              {data.car_classes.length > 0
+                ? t('seasonCars.classes', { list: data.car_classes.map((item) => item.name).join(', ') })
+                : t('seasonCars.anyCar')}
+            </p>
             {adminView && <JoinRequestsPanel seasonId={seasonId} onChange={season.reload} />}
             {data.entries.length === 0 ? (
               <p>{t('season.noEntries')}</p>
@@ -481,6 +516,9 @@ export function SeasonPage() {
                         {entry.car_name}
                       </span>
                       {entry.team && <span className="entry-team">{entry.team}</span>}
+                      {(entry.mine || adminView) && (
+                        <EntryCarPicker entry={entry} carIds={data.car_ids} onChanged={season.reload} />
+                      )}
                       <EntrySkinPicker entry={entry} canChange={entry.mine || adminView} onChanged={season.reload} />
                     </span>
                     <span className="entry-number">{entry.number}</span>
@@ -668,7 +706,13 @@ function AddRoundForm({ seasonId, onChange, onDone }: FormProps) {
   )
 }
 
-function AddEntryForm({ seasonId, entered, onChange, onDone }: FormProps & { entered: number[] }) {
+function AddEntryForm({
+  seasonId,
+  entered,
+  carIds,
+  onChange,
+  onDone,
+}: FormProps & { entered: number[]; carIds: number[] | null | undefined }) {
   const { t } = useTranslation()
   const path = { season_id: seasonId }
   const cars = useLoad(() => api.GET('/api/catalog/cars'), [])
@@ -717,11 +761,13 @@ function AddEntryForm({ seasonId, entered, onChange, onDone }: FormProps & { ent
           <option value="" disabled>
             {t('common.select')}
           </option>
-          {cars.data?.map((car) => (
-            <option key={car.id} value={car.id}>
-              {car.name}
-            </option>
-          ))}
+          {cars.data
+            ?.filter((car) => !carIds || carIds.includes(car.id))
+            .map((car) => (
+              <option key={car.id} value={car.id}>
+                {car.name}
+              </option>
+            ))}
         </select>
       </label>
       <label>
@@ -804,3 +850,35 @@ function TeamsPanel({ seasonId }: { seasonId: number }) {
     </ActionForm>
   )
 }
+
+/** The car classes of the season. An entry can use only a car of these classes. None: any car. */
+function SeasonClassesForm({ seasonId, current, onDone }: { seasonId: number; current: number[]; onDone: () => void }) {
+  const { t } = useTranslation()
+  const classes = useLoad(() => api.GET('/api/catalog/classes'), [])
+  return (
+    <ActionForm
+      title={t('seasonCars.title')}
+      submitLabel={t('common.save')}
+      onDone={onDone}
+      onSubmit={async (form) => {
+        const { error } = await api.PUT('/api/seasons/{season_id}/car-classes', {
+          params: { path: { season_id: seasonId } },
+          body: { class_ids: form.getAll('class_ids').map(Number) },
+        })
+        return error
+      }}
+    >
+      <p className="muted">{t('seasonCars.help')}</p>
+      <fieldset className="checks">
+        <legend className="sr-only">{t('seasonCars.title')}</legend>
+        {classes.data?.map((item) => (
+          <label key={item.id} className="check">
+            <input type="checkbox" name="class_ids" value={item.id} defaultChecked={current.includes(item.id)} />
+            {item.name} <span className="muted">({t('seasonCars.cars', { count: item.car_ids.length })})</span>
+          </label>
+        ))}
+      </fieldset>
+    </ActionForm>
+  )
+}
+

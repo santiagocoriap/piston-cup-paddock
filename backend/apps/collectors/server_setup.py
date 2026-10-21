@@ -14,6 +14,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from apps.audit.services import record
+from apps.common.urls import is_local
 from apps.competition.models import Round
 from apps.handicaps.services import assigned_values
 from apps.telemetry import script
@@ -118,6 +119,9 @@ def build(round_: Round, base_url: str, open_slots: int | None = None) -> dict:
     weather = str(announced.get("weather") or "").strip()
     if weather and not WEATHER_ID.match(weather):
         warnings.append("weather_kept")
+    if is_local(base_url):
+        # The game of every other driver looks for the script on its own computer.
+        warnings.append("local_address")
     return {
         "round": {"id": round_.id, "number": round_.number},
         "track": {"key": _key(layout.track.key), "layout": _key(layout.key)},

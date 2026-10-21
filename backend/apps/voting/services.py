@@ -495,6 +495,8 @@ def _finish(ballot: Ballot, user) -> None:
         if parent.options.filter(selected=True).count() >= parent.slots:
             _finish(parent, user)
         return
+    if ballot.kind == Ballot.Kind.CAR_CLASS:
+        _set_classes(ballot, user)
     if ballot.kind == Ballot.Kind.TRACK:
         for option in ballot.options.filter(selected=True).select_related("track_layout"):
             Round.objects.create(
@@ -516,6 +518,19 @@ def _finish(ballot: Ballot, user) -> None:
             )
         ],
     )
+
+
+def _set_classes(ballot: Ballot, user) -> None:
+    """A decided car class vote sets the classes of the season. Each voter with a driver
+    profile and no entry gets an entry, with a random car of the winning classes."""
+    from apps.competition.cars import enter_voters
+
+    classes = [o.car_class for o in ballot.options.filter(selected=True, car_class__isnull=False)]
+    if not classes:
+        return  # A free text option names no class of the catalog.
+    season = ballot.season
+    season.car_classes.set(classes)
+    enter_voters(season, list(ballot.voters.values_list("user_id", flat=True)), user)
 
 
 def voted_counts(ballot: Ballot) -> tuple[int, int]:

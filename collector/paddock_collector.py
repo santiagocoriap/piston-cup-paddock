@@ -1067,8 +1067,7 @@ def setup_window(config: Path) -> bool:
     ttk.Label(
         top,
         text=(
-            "Para cambiar la clave: en la app, Colectores > Crear clave > Copiar clave. "
-            "Pegala acá."
+            "Para cambiar la clave: en la app, Colectores > Crear clave > Copiar clave. Pegala acá."
         ),
         foreground="#666",
     ).grid(row=2, column=1, sticky="w", padx=8)
@@ -1541,6 +1540,25 @@ def content_manager_open() -> bool:
     return any(process_running(name) for name in CONTENT_MANAGER)
 
 
+def push_error(error: Exception) -> str:
+    """A reason for the app, as "code:detail". The app shows a text and a fix for each code."""
+
+    def name(path) -> str:
+        return Path(str(path)).name if path else ""
+
+    if isinstance(error, PermissionError):
+        return f"permission_denied:{name(error.filename)}"
+    if isinstance(error, FileNotFoundError):
+        return f"file_missing:{name(error.filename)}"
+    if isinstance(error, configparser.Error):
+        return f"bad_file:{type(error).__name__}"
+    if isinstance(error, (KeyError, ValueError)):
+        return f"bad_setup:{str(error)[:60]}"
+    if isinstance(error, OSError):
+        return f"write_failed:{(error.strerror or type(error).__name__)[:60]}"
+    return f"unexpected:{type(error).__name__}"
+
+
 def handle_command(app: App, settings: Settings, reported: dict[int, str]) -> None:
     """Do the push that waits, if any. A step goes to the app one time only."""
     command = app.get_command()
@@ -1572,9 +1590,9 @@ def handle_command(app: App, settings: Settings, reported: dict[int, str]) -> No
         # The admin sets the free slots in the app. An old app sends no number.
         slots = content.get("open_slots", settings.open_slots)
         backup = write_setup(target, content, open_slots=int(slots))
-    except (OSError, ValueError, KeyError, configparser.Error) as error:
+    except Exception as error:  # Any failure goes to the app, with a reason the admin can act on.
         log.exception("Writing the race setup failed")
-        tell("failed", type(error).__name__)
+        tell("failed", push_error(error))
         return
     log.info(
         "Wrote the race setup of round %s into %s. Copy of the old files: %s",

@@ -16,8 +16,9 @@ The `media-data` volume keeps the uploaded result files.
 2. Set the environment variables from `.env.example` in Coolify. Use new random values for `DJANGO_SECRET_KEY` and `POSTGRES_PASSWORD`.
 3. Set `DJANGO_ALLOWED_HOSTS` to the domain and `localhost`, for example `paddock.example.com,localhost`. The health check of the `web` container calls `localhost`. Without it, the check fails and Coolify stops the deploy.
 4. Set `DJANGO_CSRF_TRUSTED_ORIGINS` to the full URL, for example `https://paddock.example.com`.
-5. Set `TRUSTED_PROXY_COUNT` to `1`. The login limit then uses the real client address behind the Coolify proxy.
-6. Give the `web` service the domain on port 8000. Coolify then gives HTTPS through its proxy.
+5. Set `PUBLIC_URL` to the full URL, for example `https://paddock.example.com`. The game of each driver loads the Paddock script from this address. Without it, the app uses the address in the browser of the admin, and `localhost` does not work for the other drivers.
+6. Set `TRUSTED_PROXY_COUNT` to `1`. The login limit then uses the real client address behind the Coolify proxy.
+7. Give the `web` service the domain on port 8000. Coolify then gives HTTPS through its proxy.
 
 After the first deploy, make the first admin account from the Coolify terminal of the `web` service:
 
@@ -35,6 +36,7 @@ python manage.py create_first_admin --username <name>
 | `DJANGO_CSRF_TRUSTED_ORIGINS` | Yes | Full URLs of the app, separated by commas |
 | `POSTGRES_DB`, `POSTGRES_USER` | No | Default `paddock` |
 | `POSTGRES_PASSWORD` | Yes | A long random value |
+| `PUBLIC_URL` | Yes for telemetry | The public URL of the app. The Paddock script, the collector download, and the calendar feeds use it |
 | `TRUSTED_PROXY_COUNT` | Yes behind a proxy | `1` behind Coolify. `0` with no proxy. A wrong value lets a client fake the address for the login limit |
 
 ## Login limit

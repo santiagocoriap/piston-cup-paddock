@@ -148,6 +148,9 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # The number of proxies in front of the app that add to X-Forwarded-For. Coolify: 1.
 # Keep 0 without a proxy, or a client can fake the address that the login limit uses.
 TRUSTED_PROXY_COUNT = int(env("TRUSTED_PROXY_COUNT", "0"))
+# The public address of the app, for example https://paddock.example.com. The game of each
+# driver loads the Paddock script from it. Empty: the address in the browser of the admin.
+PUBLIC_URL = env("PUBLIC_URL", "").rstrip("/")
 
 # AI race reports. LiteLLM reads the provider key, for example ANTHROPIC_API_KEY.
 # Without a key the app works, and report requests fail with "ai_not_configured".

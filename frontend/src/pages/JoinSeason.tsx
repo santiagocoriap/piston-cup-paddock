@@ -78,7 +78,9 @@ function JoinSeasonForm({ onDone }: { onDone: (status: string, season: string) =
       {chosen && <p className="muted">{t(free ? 'join.freeHelp' : 'join.requestHelp')}</p>}
       <Combobox
         label={t('season.car')}
-        options={(cars.data ?? []).map((car) => ({ value: String(car.id), label: car.name }))}
+        options={(cars.data ?? [])
+          .filter((car) => !chosen?.car_ids || chosen.car_ids.includes(car.id))
+          .map((car) => ({ value: String(car.id), label: car.name }))}
         value={carId}
         onChange={setCarId}
         emptyText={t('join.noCars')}
