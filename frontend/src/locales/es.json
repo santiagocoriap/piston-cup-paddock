@@ -174,7 +174,11 @@
       "calendar": "Calendario (.ics)",
       "csv": "{{name}} (CSV)"
     },
-    "roundLabel": "Fecha {{number}}"
+    "roundLabel": "Fecha {{number}}",
+    "noDriversTitle": "Esta temporada no tiene pilotos inscriptos.",
+    "noDriversAdmin": "Sin inscriptos no hay grilla, ni votaciones, ni resultados que asignar.",
+    "noDriversDriver": "Un admin todavía tiene que inscribir a los pilotos.",
+    "noDriversGo": "Inscribir pilotos"
   },
   "leagues": {
     "title": "Ligas",

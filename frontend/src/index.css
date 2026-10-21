@@ -10801,3 +10801,27 @@ button.danger {
 .push-status-fix b {
   margin-right: var(--space-1);
 }
+
+/* A season without entered drivers: a warning under the title. */
+.season-alert {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  margin: var(--space-3) 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--warning);
+  border-radius: var(--radius-md);
+  background: rgba(250, 204, 21, 0.08);
+  color: var(--ink);
+}
+
+.season-alert p {
+  flex: 1 1 260px;
+  margin: 0;
+}
+
+.season-alert > svg {
+  color: var(--warning);
+}
+

@@ -53,6 +53,13 @@ const show = (me = undefined as typeof DRIVER | undefined) =>
   renderPage(<SeasonPage />, { path: '/seasons/:seasonId', url: '/seasons/5', me })
 
 describe('SeasonPage', () => {
+  it('warns when the season has no entered drivers', async () => {
+    mockApi({ 'GET /api/seasons/5': () => json(200, { ...season(false), entries: [] }), ...standings })
+    show(DRIVER)
+    expect(await screen.findByText('Esta temporada no tiene pilotos inscriptos.')).toBeInTheDocument()
+    expect(screen.getByText(/Un admin todavía tiene que inscribir/)).toBeInTheDocument()
+  })
+
   it('lets the driver of an entry choose the skin, and nobody else', async () => {
     const mine = { ...season(false).entries[0], mine: true }
     const body = { ...season(false), entries: [mine, { ...mine, id: 2, driver_name: 'Rival', mine: false, number: 94 }] }

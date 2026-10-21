@@ -174,6 +174,20 @@ export function SeasonPage() {
           </div>
         </dl>
       </header>
+      {data.entries.length === 0 && (
+        <div className="season-alert" role="status">
+          <Icon name="alert" small />
+          <p>
+            <b>{t('season.noDriversTitle')}</b>{' '}
+            {adminView ? t('season.noDriversAdmin') : t('season.noDriversDriver')}
+          </p>
+          {adminView && (
+            <a className="button-link" href="#entries">
+              {t('season.noDriversGo')}
+            </a>
+          )}
+        </div>
+      )}
 
       <div className="season-layout">
         <nav className="season-nav" aria-label={t('seasonNav.label')}>

@@ -174,7 +174,11 @@
       "calendar": "Calendar (.ics)",
       "csv": "{{name}} (CSV)"
     },
-    "roundLabel": "Round {{number}}"
+    "roundLabel": "Round {{number}}",
+    "noDriversTitle": "This season has no entered drivers.",
+    "noDriversAdmin": "Without entries there is no grid, no votes, and no results to assign.",
+    "noDriversDriver": "An admin still has to enter the drivers.",
+    "noDriversGo": "Enter drivers"
   },
   "leagues": {
     "title": "Leagues",
