@@ -7,7 +7,7 @@ from ninja import Field, Router, Schema, Status
 from ninja.errors import HttpError
 from pydantic import AwareDatetime
 
-from apps.catalog.models import CarClass, TrackLayout
+from apps.catalog.models import Car, CarClass, TrackLayout
 from apps.competition.calendar import fixed_layout_ids
 from apps.competition.models import Season
 from apps.competition.permissions import can_manage, can_view
@@ -93,8 +93,11 @@ class OptionOut(Schema):
     selected_by: str
     votes: int | None  # None when the totals are hidden from this user.
     voters: list[str] | None  # None when the choices are hidden from this user.
-    # The picture of the track layout or the car class. None without a picture.
+    # The picture of the track layout, or of the first car of the class. None without a picture.
     image_url: str | None = None
+    # A car class: the pictures of up to 4 of its cars, and the number of cars in it today.
+    images: list[str] = []
+    car_count: int | None = None
     # The voters with their pictures. None when the choices are hidden from this user.
     voter_pictures: list["PersonOut"] | None = None
 
@@ -247,6 +250,7 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
         Vote.objects.filter(voter__ballot=ballot).values_list("voter_id", flat=True)
     )
     all_voters = list(ballot.voters.select_related("user"))
+    class_pictures = {o.id: _class_pictures(o.car_class_id) for o in ballot.options.all()}
     return BallotDetail(
         id=ballot.id,
         season_id=ballot.season_id,
@@ -309,6 +313,8 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
                 votes=counts[o.id] if totals_visible else None,
                 voters=sorted(names.get(o.id, [])) if choices_visible else None,
                 image_url=_option_image(o),
+                images=class_pictures[o.id][0],
+                car_count=class_pictures[o.id][1],
                 voter_pictures=sorted(pictures.get(o.id, []), key=lambda p: p.username)
                 if choices_visible
                 else None,
@@ -331,8 +337,39 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
 
 
 def _option_image(option) -> str | None:
-    """The picture of a track option. A car class has no picture."""
-    return option.track_layout.image_url("preview") if option.track_layout_id else None
+    """The picture of a track option, or of the first car with a picture of a class option."""
+    if option.track_layout_id:
+        return option.track_layout.image_url("preview")
+    pictures, _ = _class_pictures(option.car_class_id)
+    return pictures[0] if pictures else None
+
+
+def _class_candidate(car_class: CarClass, added: set[int]) -> "CandidateOut":
+    pictures, count = _class_pictures(car_class.id)
+    return CandidateOut(
+        id=car_class.id,
+        group="",
+        label=car_class.name,
+        image_url=pictures[0] if pictures else None,
+        images=pictures,
+        car_count=count,
+        status="added" if car_class.id in added else "ok",
+    )
+
+
+def _class_pictures(class_id: int | None) -> tuple[list[str], int | None]:
+    """Up to 4 car pictures of a car class, and the number of its cars today."""
+    if class_id is None:
+        return [], None
+    cars = list(
+        Car.objects.filter(
+            class_memberships__car_class_id=class_id, class_memberships__valid_to__isnull=True
+        )
+        .distinct()
+        .order_by("name")
+    )
+    pictures = [url for car in cars if (url := car.image_url("preview"))][:4]
+    return pictures, len(cars)
 
 
 def _settings(payload: BallotSettingsIn) -> dict:
@@ -428,6 +465,8 @@ class CandidateOut(Schema):
     group: str  # The track name, or "" for a car class.
     label: str
     image_url: str | None = None
+    images: list[str] = []  # A car class: up to 4 car pictures.
+    car_count: int | None = None
     # "ok", "added", "track_excluded", "layout_is_fixed", or "grid_too_small".
     status: str
 
@@ -455,10 +494,7 @@ def candidates(request, ballot_id: int):
             for layout in layouts
         ]
     added = set(ballot.options.values_list("car_class_id", flat=True))
-    return [
-        CandidateOut(id=c.id, group="", label=c.name, status="added" if c.id in added else "ok")
-        for c in CarClass.objects.order_by("name")
-    ]
+    return [_class_candidate(c, added) for c in CarClass.objects.order_by("name")]
 
 
 class SetOptionsIn(Schema):

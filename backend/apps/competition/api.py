@@ -11,13 +11,14 @@ from ninja.errors import HttpError
 from pydantic import AwareDatetime
 
 from apps.audit.services import change, record
-from apps.catalog.models import Car, CarSkin, TrackLayout
+from apps.catalog.models import Car, CarClass, CarSkin, TrackLayout
 from apps.common.api import conflict_on_duplicate, require
 from apps.common.timezones import DEFAULT_EVENT_TIMEZONE, is_timezone
 from apps.identity.models import DriverProfile, User
 from apps.rules.models import RulesVersion
 
 from .calendar import fixed_layout_ids, next_round_number, voted_slots
+from .cars import allowed_car_ids, require_allowed
 from .conditions import DrawError, draw
 from .models import (
     Championship,
@@ -253,6 +254,11 @@ class RoundOut(Schema):
     announced_conditions: dict
 
 
+class CarClassRef(Schema):
+    id: int
+    name: str
+
+
 class SeasonDetail(SeasonSummary):
     event_timezone: str
     championship_id: int
@@ -260,6 +266,17 @@ class SeasonDetail(SeasonSummary):
     can_manage: bool
     entries: list[EntryOut]
     rounds: list[RoundOut]
+    # The car classes of the season, and the cars that an entry can use. None: any car.
+    car_classes: list[CarClassRef]
+    car_ids: list[int] | None
+
+
+class CarClassesIn(Schema):
+    class_ids: list[int]
+
+
+class EntryCarIn(Schema):
+    car_id: int
 
 
 # Helpers
@@ -369,6 +386,8 @@ def _season_detail(user, season: Season) -> SeasonDetail:
         can_manage=can_manage(user, season.championship),
         entries=[_entry_out(e, user) for e in entries],
         rounds=[_round_out(r) for r in rounds],
+        car_classes=[CarClassRef(id=c.id, name=c.name) for c in season.car_classes.all()],
+        car_ids=allowed_car_ids(season),
     )
 
 
@@ -705,8 +724,10 @@ def update_entry(request, entry_id: int, payload: EntryPatchIn):
     changes = []
     if payload.car_id is not None and payload.car_id != entry.car_id:
         car = get_object_or_404(Car, pk=payload.car_id)
+        require_allowed(season, car)
         changes.append(change("car", entry.car.name, car.name))
         entry.car = car
+        entry.skin = None  # A skin belongs to the old car.
     if payload.number is not None and payload.number != entry.number:
         changes.append(change("number", entry.number, payload.number))
         entry.number = payload.number
@@ -735,6 +756,7 @@ def create_entry(request, season_id: int, payload: EntryIn):
     require(can_manage(request.user, season.championship))
     driver = get_object_or_404(DriverProfile, pk=payload.driver_id)
     car = get_object_or_404(Car, pk=payload.car_id)
+    require_allowed(season, car)
     payload.team = _team_for(season, payload.team)
     with conflict_on_duplicate("entry_exists"):
         entry = SeasonEntry.objects.create(
@@ -1211,6 +1233,53 @@ def _own_entry(user, entry_id: int) -> SeasonEntry:
         raise Http404
     require(entry.driver.user_id == user.id or can_manage(user, entry.season.championship))
     return entry
+
+
+@router.put("/entries/{entry_id}/car", response=EntryOut)
+def set_entry_car(request, entry_id: int, payload: EntryCarIn):
+    """The driver of the entry (or a manager) changes the car, within the classes of the
+    season. The skin goes back to the choice of the server."""
+    entry = _own_entry(request.user, entry_id)
+    season = entry.season
+    car = get_object_or_404(Car, pk=payload.car_id)
+    require_allowed(season, car)
+    if car.pk != entry.car_id:
+        old = entry.car.name
+        entry.car = car
+        entry.skin = None
+        entry.save(update_fields=["car", "skin"])
+        record(
+            request.user,
+            "entry.car_changed",
+            "season",
+            season.id,
+            championship=season.championship,
+            params={"season": season.name, "driver": entry.driver.display_name},
+            changes=[change("car", old, car.name)],
+        )
+    return _entry_out(entry, request.user)
+
+
+@router.put("/seasons/{season_id}/car-classes", response=SeasonDetail)
+def set_car_classes(request, season_id: int, payload: CarClassesIn):
+    """An admin sets the car classes of the season by hand. Empty: any car."""
+    season = _visible_season(request.user, season_id)
+    require(can_manage(request.user, season.championship))
+    classes = list(CarClass.objects.filter(pk__in=payload.class_ids))
+    before = sorted(c.name for c in season.car_classes.all())
+    season.car_classes.set(classes)
+    record(
+        request.user,
+        "season.car_classes_changed",
+        "season",
+        season.id,
+        championship=season.championship,
+        params={"season": season.name},
+        changes=[
+            change("car_classes", ", ".join(before), ", ".join(sorted(c.name for c in classes)))
+        ],
+    )
+    return get_season(request, season_id)
 
 
 @router.get("/entries/{entry_id}/skins", response=list[EntrySkinOut])

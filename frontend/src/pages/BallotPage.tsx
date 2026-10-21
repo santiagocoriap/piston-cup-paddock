@@ -303,14 +303,23 @@ function VoteGrid({ ballot, onVoted }: { ballot: Ballot; onVoted: () => void }) 
                 disabled={full}
                 onChange={() => toggle(option.id)}
               />
-              <span className="vote-media" aria-hidden="true">
-                {option.image_url ? <img src={option.image_url} alt="" loading="lazy" /> : <Icon name={ballot.kind === 'track' ? 'map' : 'layers'} />}
+              <span className={(option.images?.length ?? 0) > 1 ? 'vote-media collage' : 'vote-media'} aria-hidden="true">
+                {(option.images?.length ?? 0) > 1 ? (
+                  option.images!.slice(0, 4).map((url) => <img key={url} src={url} alt="" loading="lazy" />)
+                ) : option.image_url ? (
+                  <img src={option.image_url} alt="" loading="lazy" />
+                ) : (
+                  <Icon name={ballot.kind === 'track' ? 'map' : 'layers'} />
+                )}
                 <span className="vote-check">
                   <Icon name="check" small />
                 </span>
               </span>
               <span className="vote-text">
                 <b>{option.label}</b>
+                {option.car_count !== null && option.car_count !== undefined && (
+                  <span className="muted">{t('voting.carCount', { count: option.car_count })}</span>
+                )}
                 {option.votes !== null && option.votes !== undefined && (
                   <span className="muted">{t('voting.votes', { count: option.votes })}</span>
                 )}

@@ -434,7 +434,8 @@
     "unknown_preset": "The collector does not have that Content Manager preset.",
     "delete_self": "You cannot delete your own account.",
     "last_admin": "This is the last platform admin: the app needs at least one.",
-    "own_platform_admin": "You cannot remove your own platform admin rights."
+    "own_platform_admin": "You cannot remove your own platform admin rights.",
+    "car_not_in_class": "This car is not in the classes of the season."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -617,7 +618,10 @@
       "car.preview_set": "{{actor}} uploaded the photo of the car {{name}}.",
       "car.badge_set": "{{actor}} uploaded the logo of the car {{name}}.",
       "car.preview_removed": "{{actor}} removed the photo of the car {{name}}.",
-      "car.badge_removed": "{{actor}} removed the logo of the car {{name}}."
+      "car.badge_removed": "{{actor}} removed the logo of the car {{name}}.",
+      "entry.auto_created": "{{actor}} entered {{driver}} in {{season}} with #{{number}} ({{car}}), when the class was decided.",
+      "entry.car_changed": "{{actor}} changed the car of {{driver}} in {{season}}.",
+      "season.car_classes_changed": "{{actor}} changed the car classes of {{season}}."
     },
     "fields": {
       "role": "Role",
@@ -1105,7 +1109,9 @@
     "settings": "Ballot settings",
     "goVote": "Vote",
     "goSee": "Open",
-    "settingsSaved": "Settings saved."
+    "settingsSaved": "Settings saved.",
+    "carCount_one": "{{count}} car",
+    "carCount_other": "{{count}} cars"
   },
   "calendar": {
     "fixed": "Reserve a fixed track",
@@ -1924,7 +1930,8 @@
       "protest.appealed": "New appeal in R{{number}} · {{track}}",
       "protest.appeal_decided": "Your appeal in R{{number}} has a decision",
       "import.blocked": "File to check: {{championship}} R{{number}} · {{track}}",
-      "collector.no_results": "No results: {{championship}} R{{number}} · {{track}}. The collector did not send the race file."
+      "collector.no_results": "No results: {{championship}} R{{number}} · {{track}}. The collector did not send the race file.",
+      "entry.auto_created": "You are entered in {{season}} with #{{number}} and a {{car}}. You can change the car on the season page."
     },
     "all": "All",
     "unread": "Unread",
@@ -2597,5 +2604,20 @@
     "choose": "Choose skin",
     "title": "Skin for {{car}}",
     "help": "Choose the skin you will race with. With \"Automatic\" the server picks one."
+  },
+  "entryCar": {
+    "choose": "Change car",
+    "title": "Pick your car",
+    "helpClass": "Only the cars of the classes of the season. A new car sets the skin back to \"Auto\".",
+    "helpAny": "The season has no class: any car works. A new car sets the skin back to \"Auto\".",
+    "search": "Search car"
+  },
+  "seasonCars": {
+    "title": "Car classes",
+    "help": "The entries can only use cars of these classes. No class: any car. A decided class vote sets them.",
+    "classes": "Cars of the class {{list}}. Each driver picks a car with \"Change car\".",
+    "anyCar": "No car class: any car works.",
+    "cars_one": "{{count}} car",
+    "cars_other": "{{count}} cars"
   }
 }

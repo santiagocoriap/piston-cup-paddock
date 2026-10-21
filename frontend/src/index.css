@@ -10825,3 +10825,20 @@ button.danger {
   color: var(--warning);
 }
 
+/* A car class in a vote: up to 4 car pictures in a grid. */
+.vote-media.collage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+}
+
+.vote-media.collage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.season-classes {
+  margin: 0 0 var(--space-3);
+}
+

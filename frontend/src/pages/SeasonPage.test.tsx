@@ -14,6 +14,8 @@ function season(canManage: boolean) {
     championship_id: 1,
     championship_name: 'LMDh',
     can_manage: canManage,
+    car_classes: [],
+    car_ids: null,
     entries: [
       { id: 1, driver_id: 3, driver_name: 'Bing', car_id: 2, car_name: 'Acura', number: 93, team: 'MSR' },
     ],

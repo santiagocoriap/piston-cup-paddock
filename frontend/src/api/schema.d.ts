@@ -1069,6 +1069,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/entries/{entry_id}/car": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Entry Car
+         * @description The driver of the entry (or a manager) changes the car, within the classes of the
+         *     season. The skin goes back to the choice of the server.
+         */
+        put: operations["apps_competition_api_set_entry_car"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seasons/{season_id}/car-classes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Car Classes
+         * @description An admin sets the car classes of the season by hand. Empty: any car.
+         */
+        put: operations["apps_competition_api_set_car_classes"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/entries/{entry_id}/skins": {
         parameters: {
             query?: never;
@@ -3818,6 +3859,13 @@ export interface components {
              */
             protest_window_minutes?: number;
         };
+        /** CarClassRef */
+        CarClassRef: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+        };
         /** EntryOut */
         EntryOut: {
             /** Id */
@@ -3909,6 +3957,10 @@ export interface components {
             entries: components["schemas"]["EntryOut"][];
             /** Rounds */
             rounds: components["schemas"]["RoundOut"][];
+            /** Car Classes */
+            car_classes: components["schemas"]["CarClassRef"][];
+            /** Car Ids */
+            car_ids: number[] | null;
         };
         /** TrackChangeOut */
         TrackChangeOut: {
@@ -4106,6 +4158,16 @@ export interface components {
              */
             reason?: string;
         };
+        /** EntryCarIn */
+        EntryCarIn: {
+            /** Car Id */
+            car_id: number;
+        };
+        /** CarClassesIn */
+        CarClassesIn: {
+            /** Class Ids */
+            class_ids: number[];
+        };
         /** EntrySkinOut */
         EntrySkinOut: {
             /** Id */
@@ -4147,6 +4209,8 @@ export interface components {
             free_join: boolean;
             /** Mine */
             mine?: string | null;
+            /** Car Ids */
+            car_ids?: number[] | null;
         };
         /** JoinOut */
         JoinOut: {
@@ -5668,6 +5732,13 @@ export interface components {
             voters: string[] | null;
             /** Image Url */
             image_url?: string | null;
+            /**
+             * Images
+             * @default []
+             */
+            images?: string[];
+            /** Car Count */
+            car_count?: number | null;
             /** Voter Pictures */
             voter_pictures?: components["schemas"]["PersonOut"][] | null;
         };
@@ -5814,6 +5885,13 @@ export interface components {
             label: string;
             /** Image Url */
             image_url?: string | null;
+            /**
+             * Images
+             * @default []
+             */
+            images?: string[];
+            /** Car Count */
+            car_count?: number | null;
             /** Status */
             status: string;
         };
@@ -9309,6 +9387,58 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DrawOut"][];
+                };
+            };
+        };
+    };
+    apps_competition_api_set_entry_car: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EntryCarIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntryOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_set_car_classes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CarClassesIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonDetail"];
                 };
             };
         };

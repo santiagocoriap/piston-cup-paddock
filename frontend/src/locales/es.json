@@ -434,7 +434,8 @@
     "unknown_preset": "El colector no tiene esa plantilla de Content Manager.",
     "delete_self": "No podés borrar tu propia cuenta.",
     "last_admin": "Es el último admin de la plataforma: la app necesita al menos uno.",
-    "own_platform_admin": "No podés quitarte a vos mismo los permisos de admin de la plataforma."
+    "own_platform_admin": "No podés quitarte a vos mismo los permisos de admin de la plataforma.",
+    "car_not_in_class": "Ese auto no es de las clases de la temporada."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -617,7 +618,10 @@
       "car.preview_set": "{{actor}} subió la foto del auto {{name}}.",
       "car.badge_set": "{{actor}} subió el logo del auto {{name}}.",
       "car.preview_removed": "{{actor}} quitó la foto del auto {{name}}.",
-      "car.badge_removed": "{{actor}} quitó el logo del auto {{name}}."
+      "car.badge_removed": "{{actor}} quitó el logo del auto {{name}}.",
+      "entry.auto_created": "{{actor}} inscribió a {{driver}} en {{season}} con el #{{number}} ({{car}}), al decidir la clase.",
+      "entry.car_changed": "{{actor}} cambió el auto de {{driver}} en {{season}}.",
+      "season.car_classes_changed": "{{actor}} cambió las clases de auto de {{season}}."
     },
     "fields": {
       "role": "Rol",
@@ -1105,7 +1109,9 @@
     "settings": "Ajustes de la votación",
     "goVote": "Votar",
     "goSee": "Ver",
-    "settingsSaved": "Ajustes guardados."
+    "settingsSaved": "Ajustes guardados.",
+    "carCount_one": "{{count}} auto",
+    "carCount_other": "{{count}} autos"
   },
   "calendar": {
     "fixed": "Reservar pista fija",
@@ -1924,7 +1930,8 @@
       "protest.appealed": "Nueva apelación en R{{number}} · {{track}}",
       "protest.appeal_decided": "Tu apelación de R{{number}} tiene decisión",
       "import.blocked": "Archivo para revisar: {{championship}} R{{number}} · {{track}}",
-      "collector.no_results": "Sin resultados: {{championship}} R{{number}} · {{track}}. El colector no mandó el archivo de carrera."
+      "collector.no_results": "Sin resultados: {{championship}} R{{number}} · {{track}}. El colector no mandó el archivo de carrera.",
+      "entry.auto_created": "Te inscribimos en {{season}} con el #{{number}} y un {{car}}. Podés cambiar el auto en la temporada."
     },
     "all": "Todas",
     "unread": "Sin leer",
@@ -2597,5 +2604,20 @@
     "choose": "Elegir skin",
     "title": "Skin de {{car}}",
     "help": "Elige la skin con la que vas a correr. Con «Automático» el servidor elige una."
+  },
+  "entryCar": {
+    "choose": "Cambiar auto",
+    "title": "Elegí tu auto",
+    "helpClass": "Solo los autos de las clases de la temporada. Al cambiar de auto, el skin vuelve a «Auto».",
+    "helpAny": "La temporada no tiene clases: sirve cualquier auto. Al cambiar de auto, el skin vuelve a «Auto».",
+    "search": "Buscar auto"
+  },
+  "seasonCars": {
+    "title": "Clases de auto",
+    "help": "Los inscriptos solo pueden usar autos de estas clases. Sin clases: cualquier auto. Una votación de clases decidida las pone sola.",
+    "classes": "Autos de la clase {{list}}. Cada piloto elige su auto con «Cambiar auto».",
+    "anyCar": "Sin clase de auto: sirve cualquier auto.",
+    "cars_one": "{{count}} auto",
+    "cars_other": "{{count}} autos"
   }
 }

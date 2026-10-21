@@ -3062,6 +3062,102 @@
         ]
       }
     },
+    "/api/entries/{entry_id}/car": {
+      "put": {
+        "operationId": "apps_competition_api_set_entry_car",
+        "summary": "Set Entry Car",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entry_id",
+            "schema": {
+              "title": "Entry Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntryOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "The driver of the entry (or a manager) changes the car, within the classes of the\nseason. The skin goes back to the choice of the server.",
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntryCarIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seasons/{season_id}/car-classes": {
+      "put": {
+        "operationId": "apps_competition_api_set_car_classes",
+        "summary": "Set Car Classes",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "An admin sets the car classes of the season by hand. Empty: any car.",
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CarClassesIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/entries/{entry_id}/skins": {
       "get": {
         "operationId": "apps_competition_api_entry_skins",
@@ -10780,6 +10876,24 @@
         "title": "SeasonIn",
         "type": "object"
       },
+      "CarClassRef": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "CarClassRef",
+        "type": "object"
+      },
       "EntryOut": {
         "properties": {
           "id": {
@@ -10994,6 +11108,27 @@
             },
             "title": "Rounds",
             "type": "array"
+          },
+          "car_classes": {
+            "items": {
+              "$ref": "#/components/schemas/CarClassRef"
+            },
+            "title": "Car Classes",
+            "type": "array"
+          },
+          "car_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Car Ids"
           }
         },
         "required": [
@@ -11009,7 +11144,9 @@
           "championship_name",
           "can_manage",
           "entries",
-          "rounds"
+          "rounds",
+          "car_classes",
+          "car_ids"
         ],
         "title": "SeasonDetail",
         "type": "object"
@@ -11649,6 +11786,35 @@
         "title": "DrawIn",
         "type": "object"
       },
+      "EntryCarIn": {
+        "properties": {
+          "car_id": {
+            "title": "Car Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "car_id"
+        ],
+        "title": "EntryCarIn",
+        "type": "object"
+      },
+      "CarClassesIn": {
+        "properties": {
+          "class_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Class Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "class_ids"
+        ],
+        "title": "CarClassesIn",
+        "type": "object"
+      },
       "EntrySkinOut": {
         "properties": {
           "id": {
@@ -11760,6 +11926,20 @@
               }
             ],
             "title": "Mine"
+          },
+          "car_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Car Ids"
           }
         },
         "required": [
@@ -16423,6 +16603,25 @@
             ],
             "title": "Image Url"
           },
+          "images": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Images",
+            "type": "array"
+          },
+          "car_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Car Count"
+          },
           "voter_pictures": {
             "anyOf": [
               {
@@ -17094,6 +17293,25 @@
               }
             ],
             "title": "Image Url"
+          },
+          "images": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Images",
+            "type": "array"
+          },
+          "car_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Car Count"
           },
           "status": {
             "title": "Status",
