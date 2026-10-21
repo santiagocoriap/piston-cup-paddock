@@ -69,7 +69,11 @@ def create_account(
     championship_id: int | None,
     role: str | None,
     platform_admin: bool = False,
+    new_driver: bool = False,
+    steam_guid: str | None = None,
 ) -> tuple[User, str]:
+    """An account with a one-time link. new_driver: without driver_id, a new driver profile
+    with the user name (and the Steam ID, when given) goes with the account."""
     username = username.strip()
     if not username:
         raise AccountError("username_required")
@@ -85,6 +89,9 @@ def create_account(
         raise AccountError("championship_required")
     if User.objects.filter(username__iexact=username).exists():
         raise AccountError("username_exists")
+    steam_guid = (steam_guid or "").strip() or None
+    if steam_guid and DriverProfile.objects.filter(steam_guid=steam_guid).exists():
+        raise AccountError("steam_guid_exists")
     profile = None
     if driver_id is not None:
         profile = DriverProfile.objects.filter(pk=driver_id).first()
@@ -106,7 +113,12 @@ def create_account(
         changes = [change("username", None, username)]
         if platform_admin:
             changes.append(change("platform_admin", False, True))
-        if profile:
+        if profile is None and new_driver:
+            profile = DriverProfile.objects.create(
+                display_name=username, user=user, steam_guid=steam_guid
+            )
+            changes.append(change("driver", None, profile.display_name))
+        elif profile:
             profile.user = user
             profile.save(update_fields=["user"])
             changes.append(change("driver", None, profile.display_name))

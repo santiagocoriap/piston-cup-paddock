@@ -309,7 +309,7 @@
     "track_exists": "Ya existe una pista con esa carpeta.",
     "layout_exists": "Esa pista ya tiene un trazado con esa carpeta.",
     "car_exists": "Ya existe un auto con esa carpeta.",
-    "steam_guid_exists": "Otro piloto ya tiene ese Steam GUID.",
+    "steam_guid_exists": "Ese Steam ID ya es de otro piloto.",
     "account_has_profile": "Esa cuenta ya está vinculada a otro piloto.",
     "positions_not_continuous": "Las posiciones tienen que ir de 1 en 1, sin huecos ni repetidas.",
     "position_required": "Cada piloto que terminó o abandonó necesita una posición.",
@@ -1338,7 +1338,10 @@
     "makePlatformAdmin": "Hacer admin de la plataforma",
     "removePlatformAdmin": "Quitar admin de la plataforma",
     "makePlatformAdminText": "{{name}} va a tener el mismo acceso que vos: todas las ligas, los campeonatos y las cuentas. También va a poder hacer y quitar otros admins de la plataforma.",
-    "removePlatformAdminText": "{{name}} deja de ser admin de la plataforma y de la liga. Sus roles en los campeonatos quedan."
+    "removePlatformAdminText": "{{name}} deja de ser admin de la plataforma y de la liga. Sus roles en los campeonatos quedan.",
+    "newDriver": "Nuevo piloto, con el nombre de usuario",
+    "steamId": "Steam ID (opcional)",
+    "steamIdHelp": "Los 17 números del perfil de Steam. Con el Steam ID, la app reconoce al piloto en los resultados del servidor. Se puede poner después en Pilotos."
   },
   "invite": {
     "title": "Elegí tu contraseña",

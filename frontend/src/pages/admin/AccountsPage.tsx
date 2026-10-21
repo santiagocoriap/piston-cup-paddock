@@ -237,6 +237,8 @@ function NewAccountForm({
   const { t } = useTranslation()
   const [championship, setChampionship] = useState('')
   const [platform, setPlatform] = useState(false)
+  // "new": a new driver profile with the user name. "": no driver. Else the ID of a driver.
+  const [driver, setDriver] = useState('new')
   const roleLabel = useId()
   const roleHint = useId()
   return (
@@ -244,11 +246,13 @@ function NewAccountForm({
       title={t('accounts.new')}
       submitLabel={t('accounts.create')}
       onSubmit={async (form) => {
-        const driver = form.get('driver_id')
+        const steam = String(form.get('steam_guid') ?? '').trim()
         const { data, error } = await api.POST('/api/accounts', {
           body: {
             username: String(form.get('username') ?? '').trim(),
-            driver_id: driver ? Number(driver) : null,
+            driver_id: driver && driver !== 'new' ? Number(driver) : null,
+            new_driver: driver === 'new',
+            steam_guid: driver === 'new' && steam ? steam : null,
             championship_id: championship ? Number(championship) : null,
             role: championship ? (form.get('role') as 'driver' | 'admin') : null,
             platform_admin: platform,
@@ -264,7 +268,8 @@ function NewAccountForm({
       </label>
       <label>
         {t('accounts.driver')}
-        <select name="driver_id" defaultValue="">
+        <select name="driver_id" value={driver} onChange={(event) => setDriver(event.target.value)}>
+          <option value="new">{t('accounts.newDriver')}</option>
           <option value="">{t('accounts.noDriver')}</option>
           {drivers
             .filter((driver) => driver.user_id === null)
@@ -275,6 +280,13 @@ function NewAccountForm({
             ))}
         </select>
       </label>
+      {driver === 'new' && (
+        <label>
+          {t('accounts.steamId')}
+          <input name="steam_guid" inputMode="numeric" pattern="\d{17}" maxLength={17} autoComplete="off" />
+          <span className="field-hint">{t('accounts.steamIdHelp')}</span>
+        </label>
+      )}
       <label>
         {t('accounts.championship')}
         <select name="championship_id" value={championship} onChange={(e) => setChampionship(e.target.value)}>

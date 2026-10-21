@@ -37,6 +37,10 @@ class AccountIn(Schema):
     role: ChampionshipMember.Role | None = None
     # The rights of the original account. Only a platform admin can give them.
     platform_admin: bool = False
+    # Without driver_id: make a new driver profile with the user name. True by default, so each
+    # account can race.
+    new_driver: bool = True
+    steam_guid: str | None = Field(None, pattern=r"^(\d{17})?$")
 
 
 class PlatformAdminIn(Schema):
@@ -127,6 +131,8 @@ def create(request, payload: AccountIn):
             championship_id=payload.championship_id,
             role=payload.role,
             platform_admin=payload.platform_admin,
+            new_driver=payload.new_driver,
+            steam_guid=payload.steam_guid,
         )
     except AccountError as error:
         raise HttpError(403 if error.code == "forbidden" else 422, error.code) from error

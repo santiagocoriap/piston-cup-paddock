@@ -309,7 +309,7 @@
     "track_exists": "A track with this folder exists.",
     "layout_exists": "This track already has a layout with this folder.",
     "car_exists": "A car with this folder exists.",
-    "steam_guid_exists": "Another driver has this Steam GUID.",
+    "steam_guid_exists": "Another driver already has this Steam ID.",
     "account_has_profile": "This account is already linked to another driver.",
     "positions_not_continuous": "The positions must go up by 1, with no gaps and no repeats.",
     "position_required": "Each driver who finished or had a DNF needs a position.",
@@ -1338,7 +1338,10 @@
     "makePlatformAdmin": "Make platform admin",
     "removePlatformAdmin": "Remove platform admin",
     "makePlatformAdminText": "{{name}} gets the same access as you: all leagues, championships, and accounts. {{name}} can also make and remove other platform admins.",
-    "removePlatformAdminText": "{{name}} stops being a platform admin and a league admin. The roles in the championships stay."
+    "removePlatformAdminText": "{{name}} stops being a platform admin and a league admin. The roles in the championships stay.",
+    "newDriver": "New driver, with the user name",
+    "steamId": "Steam ID (optional)",
+    "steamIdHelp": "The 17 digits of the Steam profile. With the Steam ID, the app finds the driver in the server results. You can add it later in Drivers."
   },
   "invite": {
     "title": "Choose your password",

@@ -6296,6 +6296,13 @@ export interface components {
              * @default false
              */
             platform_admin?: boolean;
+            /**
+             * New Driver
+             * @default true
+             */
+            new_driver?: boolean;
+            /** Steam Guid */
+            steam_guid?: string | null;
         };
         /** PlatformAdminIn */
         PlatformAdminIn: {

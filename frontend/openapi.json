@@ -18587,6 +18587,23 @@
             "default": false,
             "title": "Platform Admin",
             "type": "boolean"
+          },
+          "new_driver": {
+            "default": true,
+            "title": "New Driver",
+            "type": "boolean"
+          },
+          "steam_guid": {
+            "anyOf": [
+              {
+                "pattern": "^(\\d{17})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Steam Guid"
           }
         },
         "required": [
