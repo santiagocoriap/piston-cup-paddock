@@ -10,6 +10,7 @@ from ninja.security import APIKeyHeader
 
 from apps.audit.services import record
 from apps.common.api import require
+from apps.common.urls import public_url
 from apps.competition.models import Championship
 from apps.competition.permissions import can_manage, can_view
 
@@ -33,7 +34,7 @@ class ScriptAuth(APIKeyHeader):
 
 
 def _base_url(request: HttpRequest) -> str:
-    return request.build_absolute_uri("/").rstrip("/")
+    return public_url(request)
 
 
 @router.get("/script/paddock.lua", auth=None, include_in_schema=False)

@@ -2251,7 +2251,8 @@
     "send": "Send to the server",
     "warnings": {
       "no_guid": "{{name}} has no Steam ID: the slot is not booked.",
-      "weather_kept": "The announced weather is not an AC weather name: the server keeps its weather."
+      "weather_kept": "The announced weather is not an AC weather name: the server keeps its weather.",
+      "local_address": "The app address is local (localhost). The game of the other drivers cannot download the Paddock script, so their telemetry does not arrive. Open the app at its public address, or ask an admin to set PUBLIC_URL."
     },
     "status": {
       "pending": "Sent on {{date}}. Waits for the collector.",

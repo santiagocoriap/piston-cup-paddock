@@ -24,7 +24,8 @@ function season(canManage: boolean) {
         track_layout_id: 4,
         track_name: 'Highlands',
         layout_name: 'Long',
-        scheduled_at: '2026-10-19T00:30:00Z',
+        // Always in the future, so the round is the next one.
+        scheduled_at: new Date(Date.now() + 7 * 86_400_000).toISOString(),
         origin: 'manual', cancelled: false, cancel_reason: '', track_changes: [],
       },
     ],

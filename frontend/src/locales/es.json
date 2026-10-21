@@ -2251,7 +2251,8 @@
     "send": "Enviar al servidor",
     "warnings": {
       "no_guid": "{{name}} no tiene Steam ID: su lugar no queda reservado.",
-      "weather_kept": "El clima anunciado no es un nombre de clima de AC: el servidor mantiene su clima."
+      "weather_kept": "El clima anunciado no es un nombre de clima de AC: el servidor mantiene su clima.",
+      "local_address": "La dirección de la app es local (localhost). El juego de los otros pilotos no puede bajar el script de Paddock, y su telemetría no llega. Abrí la app con su dirección pública, o pedile a un admin que configure PUBLIC_URL."
     },
     "status": {
       "pending": "Enviado el {{date}}. Espera al colector.",

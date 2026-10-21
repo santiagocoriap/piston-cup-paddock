@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from ninja import Field, Router, Schema
 from ninja.errors import HttpError
 
+from apps.common.urls import public_url
 from apps.competition.models import Round
 from apps.competition.permissions import can_manage, can_view
 
@@ -83,7 +84,7 @@ def _managed_round(request: HttpRequest, round_id: int) -> Round:
 
 
 def _base_url(request: HttpRequest) -> str:
-    return request.build_absolute_uri("/").rstrip("/")
+    return public_url(request)
 
 
 def _setup_out(request: HttpRequest, round_: Round) -> SetupOut:
