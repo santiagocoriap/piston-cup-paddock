@@ -238,6 +238,9 @@ def test_accounts_and_access_rights_stay_out_of_the_tools(admin_token, make_user
     assert tool(admin_token, "api_write", method="POST", path="/api/drivers/1/link", body={})[
         "error"
     ]
+    assert tool(admin_token, "api_write", method="POST", path="/api/drivers/1/merge", body={})[
+        "error"
+    ]
     other.refresh_from_db()
     assert not other.is_superuser
     found = tool(admin_token, "search_operations", query="accounts platform admin")["data"]
