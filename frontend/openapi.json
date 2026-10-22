@@ -990,8 +990,8 @@
     },
     "/api/catalog/classes/{class_id}": {
       "patch": {
-        "operationId": "apps_catalog_api_rename_class",
-        "summary": "Rename Class",
+        "operationId": "apps_catalog_api_edit_class",
+        "summary": "Edit Class",
         "parameters": [
           {
             "in": "path",
@@ -1015,6 +1015,7 @@
             }
           }
         },
+        "description": "Change the name, or the parent class.",
         "tags": [
           "catalog"
         ],
@@ -1022,7 +1023,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CarClassIn"
+                "$ref": "#/components/schemas/CarClassEditIn"
               }
             }
           },
@@ -10026,6 +10027,17 @@
             "title": "Name",
             "type": "string"
           },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
           "car_ids": {
             "items": {
               "type": "integer"
@@ -10044,6 +10056,7 @@
         "required": [
           "id",
           "name",
+          "parent_id",
           "car_ids",
           "history"
         ],
@@ -10099,12 +10112,53 @@
             "minLength": 1,
             "title": "Name",
             "type": "string"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
           }
         },
         "required": [
           "name"
         ],
         "title": "CarClassIn",
+        "type": "object"
+      },
+      "CarClassEditIn": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          }
+        },
+        "title": "CarClassEditIn",
         "type": "object"
       },
       "ClassCarsIn": {
@@ -16477,6 +16531,14 @@
             ],
             "title": "Voted Names"
           },
+          "class_rounds": {
+            "title": "Class Rounds",
+            "type": "boolean"
+          },
+          "stage": {
+            "title": "Stage",
+            "type": "string"
+          },
           "parent": {
             "anyOf": [
               {
@@ -16492,6 +16554,13 @@
               "$ref": "#/components/schemas/BallotLink"
             },
             "title": "Runoffs",
+            "type": "array"
+          },
+          "subclass_rounds": {
+            "items": {
+              "$ref": "#/components/schemas/BallotLink"
+            },
+            "title": "Subclass Rounds",
             "type": "array"
           },
           "can_manage": {
@@ -16596,8 +16665,11 @@
           "show_voter_names",
           "excluded_track_ids",
           "voted_names",
+          "class_rounds",
+          "stage",
           "parent",
           "runoffs",
+          "subclass_rounds",
           "can_manage",
           "can_vote",
           "my_power",
@@ -17082,6 +17154,17 @@
             ],
             "title": "Excluded Track Ids"
           },
+          "class_rounds": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Class Rounds"
+          },
           "kind": {
             "enum": [
               "track",
@@ -17373,6 +17456,17 @@
               }
             ],
             "title": "Excluded Track Ids"
+          },
+          "class_rounds": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Class Rounds"
           }
         },
         "title": "BallotSettingsIn",

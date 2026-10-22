@@ -435,7 +435,11 @@
     "delete_self": "No podés borrar tu propia cuenta.",
     "last_admin": "Es el último admin de la plataforma: la app necesita al menos uno.",
     "own_platform_admin": "No podés quitarte a vos mismo los permisos de admin de la plataforma.",
-    "car_not_in_class": "Ese auto no es de las clases de la temporada."
+    "car_not_in_class": "Ese auto no es de las clases de la temporada.",
+    "class_parent_is_subclass": "Una subclase no puede tener subclases.",
+    "class_has_subclasses": "Esta clase tiene subclases, así que no puede ser una subclase.",
+    "class_not_found": "No se encontró la clase.",
+    "subclass_in_class_rounds": "En dos rondas, la primera ronda tiene solo clases principales."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -623,7 +627,9 @@
       "entry.auto_created": "{{actor}} inscribió a {{driver}} en {{season}} con el #{{number}} ({{car}}), al decidir la clase.",
       "entry.car_changed": "{{actor}} cambió el auto de {{driver}} en {{season}}.",
       "season.car_classes_changed": "{{actor}} cambió las clases de auto de {{season}}.",
-      "account.connection_removed": "{{actor}} quitó el acceso de {{client}} a su cuenta."
+      "account.connection_removed": "{{actor}} quitó el acceso de {{client}} a su cuenta.",
+      "class.changed": "{{actor}} cambió la clase {{name}}.",
+      "ballot.subclass_round_started": "{{actor}} empezó una ronda de subclases en {{ballot}}."
     },
     "fields": {
       "role": "Rol",
@@ -1113,7 +1119,16 @@
     "goSee": "Ver",
     "settingsSaved": "Ajustes guardados.",
     "carCount_one": "{{count}} auto",
-    "carCount_other": "{{count}} autos"
+    "carCount_other": "{{count}} autos",
+    "classMode": "Clases y subclases",
+    "classModes": {
+      "one": "Una ronda: cada clase y subclase es una opción",
+      "two": "Dos rondas: primero la clase, después la subclase"
+    },
+    "subclassRounds": "Rondas de subclases",
+    "subclassOf": "Ronda de subclases de {{title}}",
+    "subclassNote": "Ganó una clase con subclases. Ahora se vota la subclase.",
+    "goSubclass": "Votar la subclase"
   },
   "calendar": {
     "fixed": "Reservar pista fija",
@@ -2014,7 +2029,13 @@
     "removeCar": "Quitar de la clase",
     "confirmRemove": "¿Quitar {{car}} de {{name}}? El historial guarda el cambio.",
     "carCount_one": "{{count}} auto",
-    "carCount_other": "{{count}} autos"
+    "carCount_other": "{{count}} autos",
+    "edit": "Editar clase",
+    "newSubclass": "Nueva subclase",
+    "parent": "Clase madre",
+    "noParent": "Ninguna (clase principal)",
+    "subclassCount_one": "{{count}} subclase",
+    "subclassCount_other": "{{count}} subclases"
   },
   "draw": {
     "button": "Sortear condiciones",

@@ -12,7 +12,7 @@ import { Tabs } from '../../components/Tabs'
 import { errorMessage } from '../../lib/errors'
 import { panelId, tabId } from '../../lib/tabs'
 import { useLoad } from '../../lib/useLoad'
-import { CarClassesSection } from './CarClassesSection'
+import { CarClassesSection, ParentSelect } from './CarClassesSection'
 import { CatalogEdit, MissingImage } from './CatalogEdit'
 import { CarDetails, SourceBadge } from './CarDetails'
 import { CarSheet, CarStats, LayoutSheet, LayoutStats } from './CatalogFacts'
@@ -369,7 +369,10 @@ export function CatalogPage() {
           title={t('classes.new')}
           submitLabel={t('common.create')}
           onSubmit={async (form) => {
-            const { error } = await api.POST('/api/catalog/classes', { body: { name: String(form.get('name')) } })
+            const parent = String(form.get('parent_id') ?? '')
+            const { error } = await api.POST('/api/catalog/classes', {
+              body: { name: String(form.get('name')), parent_id: parent ? Number(parent) : null },
+            })
             if (!error) {
               setCreating(null)
               classes.reload()
@@ -381,6 +384,7 @@ export function CatalogPage() {
             {t('classes.name')}
             <input name="name" required maxLength={60} />
           </label>
+          <ParentSelect parents={classes.data.filter((item) => item.parent_id === null)} value={null} />
         </ActionForm>
       </Dialog>
       <GameImportDialog

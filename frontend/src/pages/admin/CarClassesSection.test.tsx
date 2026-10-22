@@ -11,7 +11,7 @@ const cars = [
   carOf({ id: 2, key: 'cadillac', name: 'Cadillac' }),
 ]
 const gt = {
-  id: 5, name: 'LMDh', car_ids: [1],
+  id: 5, name: 'LMDh', parent_id: null, car_ids: [1],
   history: [{ car_id: 2, car_name: 'Cadillac', valid_from: '2026-01-01', valid_to: '2026-06-30', reason: 'BoP' }],
 }
 
@@ -51,18 +51,18 @@ describe('CarClassesSection', () => {
     await vi.waitFor(() => expect(onSaved).toHaveBeenCalled())
   })
 
-  it('renames the class', async () => {
+  it('edits the class name', async () => {
     const { log } = show({
       'PATCH /api/catalog/classes/5': () => json(200, { ...gt, name: 'Hypercar' }),
     })
     await userEvent.click(screen.getByRole('button', { name: 'Más opciones de LMDh' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Cambiar nombre' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Editar clase' }))
     const name = screen.getByLabelText('Nombre')
     await userEvent.clear(name)
     await userEvent.type(name, 'Hypercar')
     await userEvent.click(screen.getByRole('button', { name: 'Guardar' }))
     await vi.waitFor(() =>
-      expect(log.find((c) => c.key === 'PATCH /api/catalog/classes/5')!.body).toEqual({ name: 'Hypercar' }),
+      expect(log.find((c) => c.key === 'PATCH /api/catalog/classes/5')!.body).toEqual({ name: 'Hypercar', parent_id: null }),
     )
   })
 
@@ -75,6 +75,25 @@ describe('CarClassesSection', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Quitar de la clase' }))
     await vi.waitFor(() =>
       expect(log.find((c) => c.key === 'PUT /api/catalog/classes/5/cars')!.body).toEqual({ car_ids: [], reason: '' }),
+    )
+  })
+
+  it('shows a subclass inside its class and adds a new subclass', async () => {
+    const eighties = { id: 7, name: '80s F1', parent_id: 6, car_ids: [2], history: [] }
+    const f1 = { id: 6, name: 'F1', parent_id: null, car_ids: [], history: [] }
+    const log = mockApi({ 'POST /api/catalog/classes': () => json(201, { ...eighties, id: 8, name: 'Early F1' }) })
+    const { container } = renderPage(
+      <CarClassesSection cars={cars} classes={[f1, eighties]} onSaved={vi.fn()} onCarsChanged={vi.fn()} />,
+      { path: '/admin/catalog', url: '/admin/catalog' },
+    )
+    expect(await screen.findByText('0 autos · 1 subclase')).toBeInTheDocument()
+    expect(container.querySelector('.subclass-card h3')!.textContent).toContain('80s F1')
+    await userEvent.click(screen.getByRole('button', { name: 'Más opciones de F1' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Nueva subclase' }))
+    await userEvent.type(screen.getByLabelText('Nombre'), 'Early F1')
+    await userEvent.click(screen.getByRole('button', { name: 'Crear' }))
+    await vi.waitFor(() =>
+      expect(log.find((c) => c.key === 'POST /api/catalog/classes')!.body).toEqual({ name: 'Early F1', parent_id: 6 }),
     )
   })
 })

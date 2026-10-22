@@ -33,6 +33,7 @@ export function BallotPage() {
   const adminView = useAdminView(data?.can_manage ?? false)
   if (!data) return <Loading failed={ballot.failed} />
   const openRunoff = data.runoffs.find((runoff) => runoff.status === 'open')
+  const openRounds = data.subclass_rounds.filter((round) => round.status === 'open')
 
   return (
     <section className="ballot-page">
@@ -58,6 +59,19 @@ export function BallotPage() {
         </div>
       )}
 
+      {openRounds.map((round) => (
+        <div key={round.id} className="runoff-banner" role="status">
+          <Icon name="layers" />
+          <p>
+            <b>{t('voting.subclassNote')}</b>
+            <span>{round.title}</span>
+          </p>
+          <Link className="button-link" to={`/ballots/${round.id}`}>
+            {t('voting.goSubclass')}
+          </Link>
+        </div>
+      ))}
+
       {adminView && <TieCard ballot={data} onChange={ballot.reload} />}
 
       <RuleTiles ballot={data} />
@@ -78,6 +92,20 @@ export function BallotPage() {
               <li key={runoff.id}>
                 <Link to={`/ballots/${runoff.id}`}>{runoff.title}</Link>
                 <span className={`badge ballot-${runoff.status}`}>{t(`voting.status.${runoff.status}`)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {data.subclass_rounds.length > 0 && (
+        <section aria-labelledby="subclass-rounds">
+          <h2 id="subclass-rounds">{t('voting.subclassRounds')}</h2>
+          <ul className="runoff-cards">
+            {data.subclass_rounds.map((round) => (
+              <li key={round.id}>
+                <Link to={`/ballots/${round.id}`}>{round.title}</Link>
+                <span className={`badge ballot-${round.status}`}>{t(`voting.status.${round.status}`)}</span>
               </li>
             ))}
           </ul>
@@ -131,7 +159,9 @@ function BallotHeader({ ballot, adminView, onChange }: { ballot: Ballot; adminVi
         )}
         {ballot.parent && (
           <p>
-            <Link to={`/ballots/${ballot.parent.id}`}>{t('voting.parent', { title: ballot.parent.title })}</Link>
+            <Link to={`/ballots/${ballot.parent.id}`}>
+              {t(ballot.stage === 'subclass' ? 'voting.subclassOf' : 'voting.parent', { title: ballot.parent.title })}
+            </Link>
           </p>
         )}
         {ballot.status !== 'draft' && (

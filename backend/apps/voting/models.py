@@ -73,7 +73,17 @@ class Ballot(models.Model):
     # User ID to the number of options that the user can choose, when it is not the
     # selection limit of the ballot. For example 4 in place of 3 for some drivers.
     choice_overrides = models.JSONField(default=dict)
-    # Runoffs
+
+    class Stage(models.TextChoices):
+        MAIN = "main", _("Main vote")
+        RUNOFF = "runoff", _("Runoff")
+        SUBCLASS = "subclass", _("Subclass round")
+
+    # A car class ballot in 2 rounds: the voters choose among the classes with no parent. When a
+    # class with subclasses wins, a subclass round chooses one of its subclasses.
+    class_rounds = models.BooleanField(default=False)
+    # Runoffs and subclass rounds have a parent ballot. The stage tells which.
+    stage = models.CharField(max_length=10, choices=Stage.choices, default=Stage.MAIN)
     parent = models.ForeignKey(
         "self", null=True, blank=True, on_delete=models.CASCADE, related_name="runoffs"
     )
@@ -95,10 +105,17 @@ class Ballot(models.Model):
 
     def runoff_depth(self) -> int:
         depth, ballot = 0, self
-        while ballot.parent_id:
+        while ballot.stage == Ballot.Stage.RUNOFF:
             depth += 1
             ballot = ballot.parent
         return depth
+
+    def runoff_root(self) -> "Ballot":
+        """The ballot that the runoffs started from: a main vote or a subclass round."""
+        ballot = self
+        while ballot.stage == Ballot.Stage.RUNOFF:
+            ballot = ballot.parent
+        return ballot
 
 
 class BallotOption(models.Model):

@@ -138,6 +138,15 @@ function NewBallotForm({
           </label>
         )}
       </div>
+      {kind === 'car_class' && (
+        <label>
+          {t('voting.classMode')}
+          <select name="class_rounds" defaultValue={"one"}>
+            <option value="one">{t('voting.classModes.one')}</option>
+            <option value="two">{t('voting.classModes.two')}</option>
+          </select>
+        </label>
+      )}
     </>
   )
 
@@ -252,6 +261,7 @@ function NewBallotForm({
             method,
             selection_limit: Number(form.get('selection_limit') || 1),
             slots: kind === 'car_class' ? Number(form.get('slots') || 1) : undefined,
+            class_rounds: kind === 'car_class' ? form.get('class_rounds') === 'two' : undefined,
             totals_visibility: form.get('totals_visibility') as BallotIn['totals_visibility'],
             choice_visibility: form.get('choice_visibility') as BallotIn['choice_visibility'],
             allow_vote_changes: form.get('allow_vote_changes') === 'on',

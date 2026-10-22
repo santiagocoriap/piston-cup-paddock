@@ -9,7 +9,7 @@ from django.db.models import QuerySet
 from ninja.errors import HttpError
 
 from apps.audit.services import change, record
-from apps.catalog.models import Car
+from apps.catalog.models import Car, with_subclasses
 
 from .models import Season, SeasonEntry
 
@@ -19,6 +19,7 @@ def allowed_cars(season: Season) -> QuerySet[Car]:
     class_ids = list(season.car_classes.values_list("id", flat=True))
     if not class_ids:
         return Car.objects.all()
+    class_ids = with_subclasses(class_ids)
     return Car.objects.filter(
         class_memberships__car_class_id__in=class_ids,
         class_memberships__valid_to__isnull=True,
