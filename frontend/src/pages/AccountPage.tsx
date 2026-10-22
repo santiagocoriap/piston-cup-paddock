@@ -10,6 +10,7 @@ import { useMe, useUpdateMe } from '../session'
 import { TelemetryCard } from './TelemetryCard'
 import { CalendarFeedCard } from './CalendarFeedCard'
 import { Breadcrumbs } from '../components/Breadcrumbs'
+import { ConnectionsCard } from './ConnectionsCard'
 
 type Me = components['schemas']['Me']
 
@@ -57,6 +58,7 @@ export function AccountPage() {
       <PreferencesForm />
       <CalendarFeedCard />
       <TelemetryCard />
+      <ConnectionsCard />
       <PasswordForm />
     </section>
   )

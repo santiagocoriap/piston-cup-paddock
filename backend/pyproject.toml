@@ -6,6 +6,7 @@ requires-python = ">=3.13"
 dependencies = [
     "django>=6.1.2",
     "django-ninja>=1.7.1",
+    "django-oauth-toolkit>=3.0.1",
     "gunicorn>=26.2.0",
     "litellm>=1.80",
     "pillow>=12.3.0",

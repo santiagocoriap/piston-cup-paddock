@@ -61,6 +61,9 @@ INSTALLED_APPS = [
     "apps.collectors",
     "apps.telemetry",
     "apps.community",
+    # Before oauth2_provider: its consent page template replaces the default one.
+    "apps.mcp",
+    "oauth2_provider",
 ]
 
 MIDDLEWARE = [
@@ -162,3 +165,16 @@ AI_DISABLED = env("AI_DISABLED", "").lower() in ("1", "true", "yes")
 ANTHROPIC_WORKSPACE_ID = env("ANTHROPIC_WORKSPACE_ID", "")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# The MCP server (/mcp) for Claude. A client signs in with OAuth: the person logs in to the app
+# and allows the access on a consent page. See apps/mcp.
+LOGIN_URL = "/sign-in"
+OAUTH2_PROVIDER = {
+    "SCOPES": {"mcp": "Use Piston Cup Paddock from Claude, with the rights of the account"},
+    "DEFAULT_SCOPES": ["mcp"],
+    "PKCE_REQUIRED": True,
+    "ACCESS_TOKEN_EXPIRE_SECONDS": 3600,
+    "REFRESH_TOKEN_EXPIRE_SECONDS": 60 * 60 * 24 * 30,
+    "ROTATE_REFRESH_TOKEN": True,
+    "ALLOWED_REDIRECT_URI_SCHEMES": ["https", "http"],
+}

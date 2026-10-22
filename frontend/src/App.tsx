@@ -46,6 +46,13 @@ export default function App() {
     if (session.status === 'signed-in') void i18n.changeLanguage(session.me.language)
   }, [session, i18n])
 
+  // The OAuth sign-in of Claude sends the person to /sign-in?next=/oauth/authorize/...
+  // After the login, the consent page of the server comes next.
+  const oauthNext = oauthReturn()
+  useEffect(() => {
+    if (session.status === 'signed-in' && oauthNext) window.location.assign(oauthNext)
+  }, [session, oauthNext])
+
   async function signOut() {
     await api.POST('/api/auth/logout')
     setSession({ status: 'anonymous' })
@@ -177,3 +184,12 @@ function LoginForm({ onSignedIn }: { onSignedIn: (me: Me) => void }) {
     </form>
   )
 }
+
+/** The OAuth page to go back to after the login, or null. Only a path of the app server
+ * that starts with /oauth/, so a link cannot send the person to another site. */
+export function oauthReturn(): string | null {
+  if (window.location.pathname !== '/sign-in') return null
+  const next = new URLSearchParams(window.location.search).get('next') ?? ''
+  return next.startsWith('/oauth/') ? next : null
+}
+
