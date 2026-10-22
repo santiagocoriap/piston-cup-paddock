@@ -198,6 +198,16 @@ def test_a_fake_claude_client_is_marked_on_the_consent_page(make_user):
     assert "https://evil.example.com/cb" in page
 
 
+def test_a_client_with_any_name_and_another_address_is_marked(db):
+    answer = Client().post(
+        "/oauth/register",
+        # The name has a Cyrillic "а", which looks like a Latin "a".
+        json.dumps({"redirect_uris": ["https://evil.example.com/cb"], "client_name": "Clаude"}),
+        content_type="application/json",
+    )
+    assert answer.json()["client_name"].endswith("(no verificado)")
+
+
 def test_the_real_claude_client_keeps_its_name(db):
     answer = Client().post(
         "/oauth/register",
@@ -221,6 +231,9 @@ def test_accounts_and_access_rights_stay_out_of_the_tools(admin_token, make_user
     assert tool(admin_token, "api_write", method="DELETE", path=f"/api/objects/user/{other.id}")[
         "error"
     ]
+    assert tool(admin_token, "api_read", path="/api/championships/1/members")["error"]
+    assert tool(admin_token, "api_write", method="PUT", path="/api/roles/1", body={})["error"]
+    assert tool(admin_token, "api_write", method="POST", path="/api/collectors/1/revoke")["error"]
     other.refresh_from_db()
     assert not other.is_superuser
     found = tool(admin_token, "search_operations", query="accounts platform admin")["data"]
