@@ -1128,7 +1128,10 @@
     "subclassRounds": "Subclass rounds",
     "subclassOf": "Subclass round of {{title}}",
     "subclassNote": "A class with subclasses won. Now the voters choose the subclass.",
-    "goSubclass": "Vote for the subclass"
+    "goSubclass": "Vote for the subclass",
+    "seeCars_one": "See the car",
+    "seeCars_other": "See the {{count}} cars",
+    "carsOf": "Cars of {{name}}"
   },
   "calendar": {
     "fixed": "Reserve a fixed track",

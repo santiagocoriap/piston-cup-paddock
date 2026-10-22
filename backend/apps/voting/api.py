@@ -512,6 +512,50 @@ def candidates(request, ballot_id: int):
     return [_class_candidate(c, added) for c in rows]
 
 
+class OptionCarOut(Schema):
+    id: int
+    name: str
+    brand: str
+    year: int | None
+    image_url: str | None
+
+
+class CarGroupOut(Schema):
+    # None: the cars of the class itself. Else the name of a subclass.
+    subclass: str | None
+    cars: list[OptionCarOut]
+
+
+@router.get("/ballots/{ballot_id}/options/{option_id}/cars", response=list[CarGroupOut])
+def option_cars(request, ballot_id: int, option_id: int):
+    """Every car of a car class option today: the cars of the class, then the cars of each
+    subclass. Each person who can see the ballot can see them."""
+    ballot = _ballot(request.user, ballot_id)
+    option = get_object_or_404(ballot.options.select_related("car_class"), pk=option_id)
+    if option.car_class is None:
+        return []
+    classes = [option.car_class, *option.car_class.subclasses.order_by("name")]
+    groups = []
+    for car_class in classes:
+        cars = Car.objects.filter(
+            class_memberships__car_class=car_class, class_memberships__valid_to__isnull=True
+        ).order_by("name")
+        rows = [
+            OptionCarOut(
+                id=car.id,
+                name=car.name,
+                brand=car.brand,
+                year=car.year,
+                image_url=car.image_url("preview"),
+            )
+            for car in cars.distinct()
+        ]
+        if rows:
+            subclass = None if car_class.id == option.car_class_id else car_class.name
+            groups.append(CarGroupOut(subclass=subclass, cars=rows))
+    return groups
+
+
 class SetOptionsIn(Schema):
     ids: list[int] = Field(max_length=500)
 
