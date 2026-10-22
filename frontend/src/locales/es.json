@@ -621,7 +621,8 @@
       "car.badge_removed": "{{actor}} quitó el logo del auto {{name}}.",
       "entry.auto_created": "{{actor}} inscribió a {{driver}} en {{season}} con el #{{number}} ({{car}}), al decidir la clase.",
       "entry.car_changed": "{{actor}} cambió el auto de {{driver}} en {{season}}.",
-      "season.car_classes_changed": "{{actor}} cambió las clases de auto de {{season}}."
+      "season.car_classes_changed": "{{actor}} cambió las clases de auto de {{season}}.",
+      "account.connection_removed": "{{actor}} quitó el acceso de {{client}} a su cuenta."
     },
     "fields": {
       "role": "Rol",
@@ -2619,5 +2620,19 @@
     "anyCar": "Sin clase de auto: sirve cualquier auto.",
     "cars_one": "{{count}} auto",
     "cars_other": "{{count}} autos"
+  },
+  "connections": {
+    "title": "Conexión con Claude",
+    "help": "Claude (claude.ai, el teléfono o Claude Code) puede usar la app con tus permisos: ver datos y hacer cambios por vos. Cada cambio queda en el registro con tu nombre.",
+    "address": "Dirección del servidor MCP",
+    "step1": "En Claude, abrí Configuración → Conectores → Agregar conector personalizado.",
+    "step2": "Pegá esta dirección y guardá.",
+    "step3": "Claude abre esta app: iniciá sesión y tocá «Permitir».",
+    "none": "Todavía no conectaste ningún cliente.",
+    "since": "Conectado el {{date}}",
+    "last": "último acceso el {{date}}",
+    "expired": "Vencido",
+    "remove": "Quitar acceso",
+    "confirmRemove": "¿Quitar el acceso de {{name}}? Va a tener que iniciar sesión de nuevo."
   }
 }

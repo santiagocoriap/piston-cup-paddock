@@ -22,6 +22,7 @@ from apps.identity.accounts_api import router as accounts_router
 from apps.identity.api import router as auth_router
 from apps.identity.drivers_api import router as drivers_router
 from apps.imports.api import router as imports_router
+from apps.mcp.api import router as connections_router
 from apps.records.api import router as records_router
 from apps.reports.api import router as reports_router
 from apps.restarts.api import router as restarts_router
@@ -62,3 +63,4 @@ api.add_router("/", rules_router)
 api.add_router("/", community_router)
 api.add_router("/", script_router)
 api.add_router("/", server_setup_router)
+api.add_router("/", connections_router)

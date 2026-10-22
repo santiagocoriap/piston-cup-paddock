@@ -3114,6 +3114,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/connections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Connections */
+        get: operations["apps_mcp_api_connections"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/connections/{application_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove Connection
+         * @description Remove the access of one client to this account. The client must sign in again.
+         */
+        delete: operations["apps_mcp_api_remove_connection"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -7550,6 +7587,25 @@ export interface components {
              * @default
              */
             error?: string;
+        };
+        /** ConnectionOut */
+        ConnectionOut: {
+            /** Application Id */
+            application_id: number;
+            /** Name */
+            name: string;
+            /**
+             * Connected At
+             * Format: date-time
+             */
+            connected_at: string;
+            /**
+             * Last Access At
+             * Format: date-time
+             */
+            last_access_at: string;
+            /** Active */
+            active: boolean;
         };
     };
     responses: never;
@@ -12414,6 +12470,46 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PushOut"];
                 };
+            };
+        };
+    };
+    apps_mcp_api_connections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConnectionOut"][];
+                };
+            };
+        };
+    };
+    apps_mcp_api_remove_connection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

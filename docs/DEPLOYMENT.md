@@ -39,6 +39,16 @@ python manage.py create_first_admin --username <name>
 | `PUBLIC_URL` | Yes for telemetry | The public URL of the app. The Paddock script, the collector download, and the calendar feeds use it |
 | `TRUSTED_PROXY_COUNT` | Yes behind a proxy | `1` behind Coolify. `0` with no proxy. A wrong value lets a client fake the address for the login limit |
 
+## MCP server for Claude
+
+The app has an MCP server at `/mcp`. Claude (claude.ai, the phone app, and Claude Code) uses it to read and change the app as a signed-in person, with the rights of that person.
+
+1. In Claude, open Settings, then Connectors, then "Add custom connector".
+2. Paste `https://<your domain>/mcp`.
+3. Claude opens the app. Sign in, then click "Permitir" on the consent page.
+
+The sign-in is OAuth 2.1 with PKCE and Dynamic Client Registration (`/oauth/register`). An access token works for 1 hour, and the client renews it with a refresh token for up to 30 days. A person removes the access of a client in "Mi cuenta", "Conexión con Claude". `PUBLIC_URL` must be set, so the discovery documents give the public address.
+
 ## Login limit
 
 After 5 wrong passwords for one username in 15 minutes, the login refuses that username for 15 minutes. After 20 wrong passwords from one address in 15 minutes, the login refuses that address for 15 minutes. A correct login clears the count of the username.

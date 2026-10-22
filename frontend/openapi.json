@@ -8384,6 +8384,68 @@
           }
         ]
       }
+    },
+    "/api/me/connections": {
+      "get": {
+        "operationId": "apps_mcp_api_connections",
+        "summary": "Connections",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ConnectionOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "connections"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/me/connections/{application_id}": {
+      "delete": {
+        "operationId": "apps_mcp_api_remove_connection",
+        "summary": "Remove Connection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "application_id",
+            "schema": {
+              "title": "Application Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "description": "Remove the access of one client to this account. The client must sign in again.",
+        "tags": [
+          "connections"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -22202,6 +22264,41 @@
           "status"
         ],
         "title": "CommandReportIn",
+        "type": "object"
+      },
+      "ConnectionOut": {
+        "properties": {
+          "application_id": {
+            "title": "Application Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "connected_at": {
+            "format": "date-time",
+            "title": "Connected At",
+            "type": "string"
+          },
+          "last_access_at": {
+            "format": "date-time",
+            "title": "Last Access At",
+            "type": "string"
+          },
+          "active": {
+            "title": "Active",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "application_id",
+          "name",
+          "connected_at",
+          "last_access_at",
+          "active"
+        ],
+        "title": "ConnectionOut",
         "type": "object"
       }
     },
