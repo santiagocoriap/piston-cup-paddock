@@ -603,6 +603,7 @@
       "protest.appeal_decided": "{{actor}} decided the appeal of protest {{protest}}: {{outcome}}.",
       "class.created": "{{actor}} created the class {{name}}.",
       "class.cars_changed": "{{actor}} changed the cars of the class {{name}}.",
+      "class.renamed": "{{actor}} renamed the class to {{name}}.",
       "round.conditions_drawn": "{{actor}} drew the conditions of round {{number}} ({{track}}).",
       "round.conditions_redrawn": "{{actor}} drew the conditions of round {{number}} ({{track}}) again.",
       "season.conditions_pool": "{{actor}} changed the conditions pool of {{season}}.",
@@ -2008,7 +2009,12 @@
     "reason": "Reason for the change",
     "history": "History",
     "today": "today",
-    "emptyText": "A class groups similar cars, for example LMDh or GT3."
+    "emptyText": "A class groups similar cars, for example LMDh or GT3.",
+    "rename": "Rename",
+    "removeCar": "Remove from the class",
+    "confirmRemove": "Remove {{car}} from {{name}}? The history keeps the change.",
+    "carCount_one": "{{count}} car",
+    "carCount_other": "{{count}} cars"
   },
   "draw": {
     "button": "Draw conditions",

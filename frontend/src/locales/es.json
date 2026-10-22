@@ -603,6 +603,7 @@
       "protest.appeal_decided": "{{actor}} decidió la apelación de la protesta {{protest}}: {{outcome}}.",
       "class.created": "{{actor}} creó la clase {{name}}.",
       "class.cars_changed": "{{actor}} cambió los autos de la clase {{name}}.",
+      "class.renamed": "{{actor}} cambió el nombre de la clase a {{name}}.",
       "round.conditions_drawn": "{{actor}} sorteó las condiciones de la fecha {{number}} ({{track}}).",
       "round.conditions_redrawn": "{{actor}} volvió a sortear las condiciones de la fecha {{number}} ({{track}}).",
       "season.conditions_pool": "{{actor}} cambió el pool de condiciones de {{season}}.",
@@ -2008,7 +2009,12 @@
     "reason": "Motivo del cambio",
     "history": "Historial",
     "today": "hoy",
-    "emptyText": "Una clase agrupa autos parecidos, por ejemplo LMDh o GT3."
+    "emptyText": "Una clase agrupa autos parecidos, por ejemplo LMDh o GT3.",
+    "rename": "Cambiar nombre",
+    "removeCar": "Quitar de la clase",
+    "confirmRemove": "¿Quitar {{car}} de {{name}}? El historial guarda el cambio.",
+    "carCount_one": "{{count}} auto",
+    "carCount_other": "{{count}} autos"
   },
   "draw": {
     "button": "Sortear condiciones",

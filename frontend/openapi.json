@@ -988,6 +988,53 @@
         ]
       }
     },
+    "/api/catalog/classes/{class_id}": {
+      "patch": {
+        "operationId": "apps_catalog_api_rename_class",
+        "summary": "Rename Class",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "class_id",
+            "schema": {
+              "title": "Class Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarClassOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "catalog"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CarClassIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/catalog/classes/{class_id}/cars": {
       "put": {
         "operationId": "apps_catalog_api_set_class_cars",

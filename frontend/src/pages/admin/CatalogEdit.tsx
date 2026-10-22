@@ -79,6 +79,8 @@ type Props = {
   onChange: () => void
   /** With it, the menu ends with a red delete. */
   deleteTarget?: DeleteTarget
+  /** More actions of the menu, before the delete. */
+  items?: MenuItem[]
 }
 
 /** Send a request with the CSRF token. A picture goes as a form, a name as JSON. */
@@ -94,7 +96,7 @@ async function send(method: string, url: string, body?: FormData | object) {
 }
 
 /** The edit menu of a catalog item: change the name, and upload or remove each picture. */
-export function CatalogEdit({ name, country, fields, base, images = [], onChange, deleteTarget }: Props) {
+export function CatalogEdit({ name, country, fields, base, images = [], onChange, deleteTarget, items: more = [] }: Props) {
   const { t } = useTranslation()
   const [renaming, setRenaming] = useState(false)
   const [deleting, setDeleting] = useState<DeleteTarget | null>(null)
@@ -139,6 +141,7 @@ export function CatalogEdit({ name, country, fields, base, images = [], onChange
       { label: t(`catalogEdit.upload.${kind}`), onSelect: () => pick(kind) },
       ...(set ? [{ label: t(`catalogEdit.remove.${kind}`), onSelect: () => remove(kind) }] : []),
     ]),
+    ...more,
     ...(deleteTarget
       ? [{ label: t(`deletion.delete.${deleteTarget.kind}`), danger: true, onSelect: () => setDeleting(deleteTarget) }]
       : []),

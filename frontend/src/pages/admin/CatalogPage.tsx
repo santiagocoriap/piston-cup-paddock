@@ -295,7 +295,15 @@ export function CatalogPage() {
               {createButton('classes')}
             </EmptyState>
           ) : (
-            <CarClassesSection cars={cars.data} classes={classes.data} onSaved={classes.reload} />
+            <CarClassesSection
+              cars={cars.data}
+              classes={classes.data}
+              onSaved={classes.reload}
+              onCarsChanged={() => {
+                cars.reload()
+                classes.reload()
+              }}
+            />
           ))}
 
         {tab === 'images' && (

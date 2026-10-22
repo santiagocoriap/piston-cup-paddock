@@ -35,6 +35,16 @@ def test_class_change_keeps_the_history(api, champ_admin, cars):
     assert classes_of(cars[0].id, timezone.localdate()) == []
 
 
+def test_rename_a_class(api, champ_admin, driver_user):
+    client = api(champ_admin)
+    gt3 = client.post("/catalog/classes", {"name": "GT3"}).json()
+    client.post("/catalog/classes", {"name": "GT4"})
+    renamed = client.patch(f"/catalog/classes/{gt3['id']}", {"name": "GT3 Pro"})
+    assert renamed.json()["name"] == "GT3 Pro"
+    assert client.patch(f"/catalog/classes/{gt3['id']}", {"name": "GT4"}).status_code == 409
+    assert api(driver_user).patch(f"/catalog/classes/{gt3['id']}", {"name": "X"}).status_code == 403
+
+
 def test_driver_cannot_change_classes(api, driver_user):
     assert api(driver_user).post("/catalog/classes", {"name": "GT3"}).status_code == 403
 

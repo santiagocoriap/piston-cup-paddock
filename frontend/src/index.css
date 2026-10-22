@@ -6580,6 +6580,7 @@ td.pos.medal-3 {
 }
 
 .catalog-title h3,
+.catalog-title h4,
 .track-name {
   min-width: 0;
   margin: 0;
@@ -9367,6 +9368,31 @@ button.danger:hover:not(:disabled) {
 
 .class-head h3 {
   margin: 0;
+}
+
+.class-count {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* The cars of a class: smaller cards than the car tab, so more fit in a row. */
+.catalog-grid.class-cars {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.class-car .catalog-body {
+  padding: var(--space-2) var(--space-3);
+}
+
+.class-car .catalog-body p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.class-car h4 {
+  font-size: 15px;
 }
 
 /* The red of a delete. The theme danger color is orange, for warnings. */
