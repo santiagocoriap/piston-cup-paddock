@@ -508,6 +508,25 @@ def create_class(request, payload: CarClassIn):
     return Status(201, _class_out(item))
 
 
+@router.patch("/classes/{class_id}", response=CarClassOut)
+def rename_class(request, class_id: int, payload: CarClassIn):
+    require(manages_any_championship(request.user))
+    item = get_object_or_404(CarClass, pk=class_id)
+    old = item.name
+    with conflict_on_duplicate("class_exists"):
+        item.name = payload.name
+        item.save(update_fields=["name"])
+        record(
+            request.user,
+            "class.renamed",
+            "car_class",
+            item.id,
+            params={"name": item.name},
+            changes=[change("name", old, item.name)] if old != item.name else [],
+        )
+    return _class_out(item)
+
+
 @router.put("/classes/{class_id}/cars", response=CarClassOut)
 def set_class_cars(request, class_id: int, payload: ClassCarsIn):
     """Set the cars of the class from today. Old rows stay in the history."""
