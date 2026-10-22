@@ -95,6 +95,10 @@ def build(round_: Round, base_url: str, open_slots: int | None = None) -> dict:
     entries = []
     warnings = []
     for entry in round_.season.entries.select_related("driver", "car", "skin").order_by("number"):
+        if entry.car is None:
+            # No car yet: the server cannot load the driver. The preview shows the warning.
+            warnings.append(f"no_car:{_clean(entry.driver.display_name)}")
+            continue
         ballast, restrictor = values.get(entry.id, (0, 0))
         guid = entry.driver.steam_guid or ""
         if not STEAM_ID.match(guid):

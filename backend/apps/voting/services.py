@@ -601,7 +601,7 @@ def _set_classes(ballot: Ballot, user) -> None:
     """A decided car class vote sets the classes of the season. A winning class with a subclass
     round counts as the winner of that round. Each voter with a driver profile and no entry gets
     an entry, with a random car of the winning classes."""
-    from apps.competition.cars import enter_voters
+    from apps.competition.cars import enter_voters, give_missing_cars
 
     rounds = {}
     for round_ in ballot.runoffs.filter(stage=Ballot.Stage.SUBCLASS):
@@ -619,6 +619,7 @@ def _set_classes(ballot: Ballot, user) -> None:
         return  # A free text option names no class of the catalog.
     season = ballot.season
     season.car_classes.set(classes)
+    give_missing_cars(season, user)
     enter_voters(season, list(ballot.voters.values_list("user_id", flat=True)), user)
 
 

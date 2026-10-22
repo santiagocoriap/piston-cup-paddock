@@ -188,7 +188,7 @@ class RoleOut(Schema):
 
 class EntryIn(Schema):
     driver_id: int
-    car_id: int
+    car_id: int | None = None  # None: the driver or an admin chooses the car later.
     number: int = Field(ge=1, le=999)
     team: str = Field("", max_length=100)
 
@@ -198,7 +198,7 @@ class EntryOut(Schema):
     driver_id: int
     driver_name: str
     avatar_url: str | None = None
-    car_id: int
+    car_id: int | None  # None: no car yet.
     car_name: str
     number: int
     team: str
@@ -324,7 +324,7 @@ def _entry_out(entry: SeasonEntry, user=None) -> EntryOut:
         driver_name=entry.driver.display_name,
         avatar_url=entry.driver.avatar_url(),
         car_id=entry.car_id,
-        car_name=entry.car.name,
+        car_name=entry.car_name,
         number=entry.number,
         team=entry.team,
     )
@@ -725,7 +725,7 @@ def update_entry(request, entry_id: int, payload: EntryPatchIn):
     if payload.car_id is not None and payload.car_id != entry.car_id:
         car = get_object_or_404(Car, pk=payload.car_id)
         require_allowed(season, car)
-        changes.append(change("car", entry.car.name, car.name))
+        changes.append(change("car", entry.car_name or None, car.name))
         entry.car = car
         entry.skin = None  # A skin belongs to the old car.
     if payload.number is not None and payload.number != entry.number:
@@ -755,8 +755,10 @@ def create_entry(request, season_id: int, payload: EntryIn):
     season = _visible_season(request.user, season_id)
     require(can_manage(request.user, season.championship))
     driver = get_object_or_404(DriverProfile, pk=payload.driver_id)
-    car = get_object_or_404(Car, pk=payload.car_id)
-    require_allowed(season, car)
+    car = None
+    if payload.car_id is not None:
+        car = get_object_or_404(Car, pk=payload.car_id)
+        require_allowed(season, car)
     payload.team = _team_for(season, payload.team)
     with conflict_on_duplicate("entry_exists"):
         entry = SeasonEntry.objects.create(
@@ -772,7 +774,7 @@ def create_entry(request, season_id: int, payload: EntryIn):
                 "season": season.name,
                 "driver": driver.display_name,
                 "number": entry.number,
-                "car": car.name,
+                "car": car.name if car else "",
             },
             changes=[change("number", None, entry.number), change("team", None, entry.team)],
         )
@@ -1244,7 +1246,7 @@ def set_entry_car(request, entry_id: int, payload: EntryCarIn):
     car = get_object_or_404(Car, pk=payload.car_id)
     require_allowed(season, car)
     if car.pk != entry.car_id:
-        old = entry.car.name
+        old = entry.car_name or None
         entry.car = car
         entry.skin = None
         entry.save(update_fields=["car", "skin"])
@@ -1312,7 +1314,7 @@ def set_entry_skin(request, entry_id: int, payload: SkinChoiceIn):
             params={
                 "season": season.name,
                 "driver": entry.driver.display_name,
-                "car": entry.car.name,
+                "car": entry.car_name,
             },
             changes=[change("skin", old, skin.key if skin else None)],
         )

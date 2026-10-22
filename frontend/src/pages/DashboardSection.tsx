@@ -309,7 +309,7 @@ function NextRace({
         {next.car_image_url && <img className="hero-car" src={next.car_image_url} alt={card.car_name} />}
         <div>
           <dt>{t('dashboard.carLabel')}</dt>
-          <dd>{t('dashboard.car', { number: card.entry_number, car: card.car_name })}</dd>
+          <dd>{t('dashboard.car', { number: card.entry_number, car: card.car_name || t('season.noCar') })}</dd>
         </div>
         <div>
           <dt>{t('dashboard.handicap')}</dt>

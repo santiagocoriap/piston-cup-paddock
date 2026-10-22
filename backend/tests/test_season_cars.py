@@ -128,3 +128,41 @@ def test_an_admin_sets_the_classes_by_hand(api, champ_admin, season, classes):
         .json()
     )
     assert sorted(c["name"] for c in detail["car_classes"]) == ["GT3", "TC"]
+
+
+def test_an_admin_enters_a_driver_with_no_car_and_the_vote_gives_one(
+    api, champ_admin, season, classes, racers
+):
+    tc, gt3, cars = classes
+    profile = DriverProfile.objects.get(user=racers[0])
+    answer = api(champ_admin).post(
+        f"/seasons/{season.id}/entries", {"driver_id": profile.id, "number": 5}
+    )
+    assert answer.status_code == 201
+    assert (answer.json()["car_id"], answer.json()["car_name"]) == (None, "")
+    decide_class(api, champ_admin, season, racers, tc, gt3)
+    entry = SeasonEntry.objects.get(season=season, driver=profile)
+    assert entry.number == 5
+    assert entry.car.key in {"camry", "mustang", "torino"}
+
+
+def test_a_driver_with_no_car_stays_out_of_the_server_entry_list(season, classes):
+    from django.utils import timezone
+
+    from apps.catalog.models import Track, TrackLayout
+    from apps.collectors.server_setup import build
+    from apps.competition.models import Round
+
+    _, _, cars = classes
+    ana = DriverProfile.objects.create(display_name="Ana", steam_guid="76561190000000001")
+    bob = DriverProfile.objects.create(display_name="Bob", steam_guid="76561190000000002")
+    SeasonEntry.objects.create(season=season, driver=ana, car=cars["camry"], number=1)
+    SeasonEntry.objects.create(season=season, driver=bob, number=2)
+    track = Track.objects.create(key="ks_vallelunga", name="Vallelunga")
+    layout = TrackLayout.objects.create(track=track, key="club", name="Club")
+    round_ = Round.objects.create(
+        season=season, number=1, track_layout=layout, scheduled_at=timezone.now()
+    )
+    content = build(round_, "https://paddock.example.com")
+    assert [e["name"] for e in content["entries"]] == ["Ana"]
+    assert "no_car:Bob" in content["warnings"]

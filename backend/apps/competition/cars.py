@@ -87,3 +87,36 @@ def enter_voters(season: Season, user_ids: list[int], actor) -> list[SeasonEntry
                 f"/seasons/{season.id}#entries",
             )
     return made
+
+
+def give_missing_cars(season: Season, actor) -> list[SeasonEntry]:
+    """An entry with no car gets a random allowed car, for example after the car class vote.
+    The driver can change it later."""
+    from apps.community.services import notify
+
+    cars = list(allowed_cars(season))
+    if not cars:
+        return []
+    given = []
+    with transaction.atomic():
+        for entry in season.entries.filter(car__isnull=True).select_related("driver"):
+            entry.car = random.choice(cars)
+            entry.save(update_fields=["car"])
+            given.append(entry)
+            record(
+                actor,
+                "entry.car_changed",
+                "season",
+                season.id,
+                championship=season.championship,
+                params={"season": season.name, "driver": entry.driver.display_name},
+                changes=[change("car", None, entry.car.name)],
+            )
+            if entry.driver.user_id:
+                notify(
+                    [entry.driver.user_id],
+                    "entry.auto_created",
+                    {"season": season.name, "car": entry.car.name, "number": entry.number},
+                    f"/seasons/{season.id}#entries",
+                )
+    return given

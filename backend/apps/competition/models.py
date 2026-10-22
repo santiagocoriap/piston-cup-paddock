@@ -124,7 +124,10 @@ class Season(models.Model):
 class SeasonEntry(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="entries")
     driver = models.ForeignKey(DriverProfile, on_delete=models.PROTECT, related_name="entries")
-    car = models.ForeignKey(Car, on_delete=models.PROTECT, related_name="entries")
+    # Empty until the driver or an admin chooses a car, for example before the car class vote.
+    car = models.ForeignKey(
+        Car, null=True, blank=True, on_delete=models.PROTECT, related_name="entries"
+    )
     number = models.PositiveSmallIntegerField()
     team = models.CharField(max_length=100, blank=True)
     # The skin that the driver chose for the car. Empty: the server picks one. The skin must be
@@ -143,6 +146,10 @@ class SeasonEntry(models.Model):
     def __str__(self):
         return f"#{self.number} {self.driver}"
 
+    @property
+    def car_name(self) -> str:
+        return self.car.name if self.car_id else ""
+
 
 class JoinRequest(models.Model):
     """A driver asks to enter a season that has no free join. An admin approves or declines."""
@@ -156,7 +163,7 @@ class JoinRequest(models.Model):
     driver = models.ForeignKey(
         DriverProfile, on_delete=models.CASCADE, related_name="join_requests"
     )
-    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="+")
+    car = models.ForeignKey(Car, null=True, blank=True, on_delete=models.CASCADE, related_name="+")
     number = models.PositiveSmallIntegerField()
     team = models.CharField(max_length=100, blank=True)
     note = models.CharField(max_length=300, blank=True)

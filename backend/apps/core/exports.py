@@ -73,7 +73,7 @@ def export_results(request, season_id: int):
                     line.status,
                     line.entry.number,
                     line.entry.driver.display_name,
-                    line.entry.car.name,
+                    line.entry.car_name,
                     line.points,
                 ]
             )
@@ -104,7 +104,7 @@ def export_standings(request, season_id: int):
             row.rank,
             entries[row.entry_id].number,
             entries[row.entry_id].driver.display_name,
-            entries[row.entry_id].car.name,
+            entries[row.entry_id].car_name,
             entries[row.entry_id].team,
             row.points,
             row.wins,
@@ -178,7 +178,7 @@ def export_records(request):
                 [
                     round_.track_layout.track.name,
                     round_.track_layout.name,
-                    lap.entry.car.name,
+                    lap.entry.car_name,
                     board.category,
                     board.record_ms,
                     holder.driver_name,

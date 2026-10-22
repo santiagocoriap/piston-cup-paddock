@@ -94,7 +94,7 @@ export function Briefing({ round }: { round: RoundDetail }) {
         </div>
 
         <TrackPanel layoutId={round.track_layout_id} trackName={round.track_name} />
-        {mine && <MyCarPanel carId={mine.car_id} />}
+        {mine && mine.car_id !== null && mine.car_id !== undefined && <MyCarPanel carId={mine.car_id} />}
         <WeatherPanel announced={String((conditions as Record<string, unknown>).weather ?? '')} />
 
         <div className="card">

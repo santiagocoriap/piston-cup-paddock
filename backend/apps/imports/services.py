@@ -119,7 +119,7 @@ def preview(result_import: ResultImport) -> Preview:
         )
         if driver.result_guid and driver.result_guid != driver.guid:
             row.warnings.append("guid_differs_in_result")
-        if entry and entry.car.key.lower() != driver.car_model.lower():
+        if entry and entry.car and entry.car.key.lower() != driver.car_model.lower():
             row.warnings.append("car_differs")
         if entry and parsed.session_type == "race":
             expected = assigned.get(entry.id)

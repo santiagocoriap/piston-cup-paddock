@@ -19,7 +19,7 @@ async function fill(request: boolean) {
   await userEvent.click(screen.getByRole('button', { name: 'Unirme a una temporada' }))
   const dialog = await screen.findByRole('dialog', { name: 'Unirme a una temporada' })
   await userEvent.selectOptions(await within(dialog).findByRole('combobox', { name: 'Temporada' }), '9')
-  await userEvent.click(within(dialog).getByRole('combobox', { name: 'Auto' }))
+  await userEvent.click(within(dialog).getByRole('combobox', { name: /^Auto/ }))
   await userEvent.click(await within(dialog).findByRole('option', { name: 'Cadillac' }))
   await userEvent.type(within(dialog).getByLabelText('Número'), '7')
   if (request) await userEvent.type(within(dialog).getByLabelText('Nota para el admin (opcional)'), 'Hola')

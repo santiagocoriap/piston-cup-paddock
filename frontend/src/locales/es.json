@@ -178,7 +178,9 @@
     "noDriversTitle": "Esta temporada no tiene pilotos inscriptos.",
     "noDriversAdmin": "Sin inscriptos no hay grilla, ni votaciones, ni resultados que asignar.",
     "noDriversDriver": "Un admin todavía tiene que inscribir a los pilotos.",
-    "noDriversGo": "Inscribir pilotos"
+    "noDriversGo": "Inscribir pilotos",
+    "noCar": "Sin auto todavía",
+    "carLater": "Sin auto: se elige después"
   },
   "leagues": {
     "title": "Ligas",
@@ -2297,7 +2299,8 @@
     "warnings": {
       "no_guid": "{{name}} no tiene Steam ID: su lugar no queda reservado.",
       "weather_kept": "El clima anunciado no es un nombre de clima de AC: el servidor mantiene su clima.",
-      "local_address": "La dirección de la app es local (localhost). El juego de los otros pilotos no puede bajar el script de Paddock, y su telemetría no llega. Abrí la app con su dirección pública, o pedile a un admin que configure PUBLIC_URL."
+      "local_address": "La dirección de la app es local (localhost). El juego de los otros pilotos no puede bajar el script de Paddock, y su telemetría no llega. Abrí la app con su dirección pública, o pedile a un admin que configure PUBLIC_URL.",
+      "no_car": "A {{name}} le falta el auto: queda afuera de la lista del servidor."
     },
     "status": {
       "pending": "Enviado el {{date}}. Espera al colector.",
@@ -2489,7 +2492,8 @@
     "requests_one": "{{count}} pedido para unirse",
     "requests_other": "{{count}} pedidos para unirse",
     "approve": "Aprobar",
-    "decline": "Rechazar"
+    "decline": "Rechazar",
+    "carOptional": "Auto (opcional: lo podés elegir después)"
   },
   "picker": {
     "available": "Disponibles",

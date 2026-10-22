@@ -45,11 +45,11 @@ function JoinSeasonForm({ onDone }: { onDone: (status: string, season: string) =
       title={t('join.title')}
       submitLabel={free ? t('join.submitFree') : t('join.submitRequest')}
       onSubmit={async (form) => {
-        if (!seasonId || !carId) return { detail: 'join_incomplete' }
+        if (!seasonId) return { detail: 'join_incomplete' }
         const { data, error } = await api.POST('/api/seasons/{season_id}/join', {
           params: { path: { season_id: Number(seasonId) } },
           body: {
-            car_id: Number(carId),
+            car_id: carId ? Number(carId) : null,
             number: Number(form.get('number')),
             note: String(form.get('note') ?? ''),
           },
@@ -77,7 +77,7 @@ function JoinSeasonForm({ onDone }: { onDone: (status: string, season: string) =
       </label>
       {chosen && <p className="muted">{t(free ? 'join.freeHelp' : 'join.requestHelp')}</p>}
       <Combobox
-        label={t('season.car')}
+        label={t('join.carOptional')}
         options={(cars.data ?? [])
           .filter((car) => !chosen?.car_ids || chosen.car_ids.includes(car.id))
           .map((car) => ({ value: String(car.id), label: car.name }))}
@@ -131,7 +131,7 @@ export function JoinRequestsPanel({ seasonId, onChange }: { seasonId: number; on
           <li key={request.id}>
             <span>
               <b>{request.driver_name}</b>
-              <span className="muted">{request.car_name}</span>
+              <span className="muted">{request.car_name || t('season.noCar')}</span>
               {request.note && <span className="muted">«{request.note}»</span>}
             </span>
             <label className="join-number">

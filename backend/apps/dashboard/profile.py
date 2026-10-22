@@ -128,7 +128,7 @@ def seasons(user, driver: DriverProfile) -> list[SeasonRow]:
                 podiums=sum(1 for s in scores if s.position and s.position <= 3),
                 starts=sum(1 for s in scores if s.status != "dns"),
                 number=entry.number,
-                car_name=entry.car.name,
+                car_name=entry.car_name,
                 team=entry.team,
                 history=[
                     RecentResult(
@@ -268,7 +268,7 @@ def records(user, driver: DriverProfile) -> list[RecordRow]:
             rows.append(
                 RecordRow(
                     track=str(lap.result_import.round.track_layout),
-                    car=lap.entry.car.name,
+                    car=lap.entry.car_name,
                     category=board.category,
                     lap_time_ms=holder.lap_time_ms,
                     round_id=holder.round_id,
