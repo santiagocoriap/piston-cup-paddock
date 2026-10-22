@@ -435,7 +435,11 @@
     "delete_self": "You cannot delete your own account.",
     "last_admin": "This is the last platform admin: the app needs at least one.",
     "own_platform_admin": "You cannot remove your own platform admin rights.",
-    "car_not_in_class": "This car is not in the classes of the season."
+    "car_not_in_class": "This car is not in the classes of the season.",
+    "class_parent_is_subclass": "A subclass cannot have subclasses.",
+    "class_has_subclasses": "This class has subclasses, so it cannot be a subclass.",
+    "class_not_found": "The class was not found.",
+    "subclass_in_class_rounds": "In two rounds, the first round has only main classes."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -623,7 +627,9 @@
       "entry.auto_created": "{{actor}} entered {{driver}} in {{season}} with #{{number}} ({{car}}), when the class was decided.",
       "entry.car_changed": "{{actor}} changed the car of {{driver}} in {{season}}.",
       "season.car_classes_changed": "{{actor}} changed the car classes of {{season}}.",
-      "account.connection_removed": "{{actor}} removed the access of {{client}} to the account."
+      "account.connection_removed": "{{actor}} removed the access of {{client}} to the account.",
+      "class.changed": "{{actor}} changed the class {{name}}.",
+      "ballot.subclass_round_started": "{{actor}} started a subclass round in {{ballot}}."
     },
     "fields": {
       "role": "Role",
@@ -1113,7 +1119,16 @@
     "goSee": "Open",
     "settingsSaved": "Settings saved.",
     "carCount_one": "{{count}} car",
-    "carCount_other": "{{count}} cars"
+    "carCount_other": "{{count}} cars",
+    "classMode": "Classes and subclasses",
+    "classModes": {
+      "one": "One round: each class and subclass is an option",
+      "two": "Two rounds: first the class, then the subclass"
+    },
+    "subclassRounds": "Subclass rounds",
+    "subclassOf": "Subclass round of {{title}}",
+    "subclassNote": "A class with subclasses won. Now the voters choose the subclass.",
+    "goSubclass": "Vote for the subclass"
   },
   "calendar": {
     "fixed": "Reserve a fixed track",
@@ -2014,7 +2029,13 @@
     "removeCar": "Remove from the class",
     "confirmRemove": "Remove {{car}} from {{name}}? The history keeps the change.",
     "carCount_one": "{{count}} car",
-    "carCount_other": "{{count}} cars"
+    "carCount_other": "{{count}} cars",
+    "edit": "Edit class",
+    "newSubclass": "New subclass",
+    "parent": "Parent class",
+    "noParent": "None (main class)",
+    "subclassCount_one": "{{count}} subclass",
+    "subclassCount_other": "{{count}} subclasses"
   },
   "draw": {
     "button": "Draw conditions",

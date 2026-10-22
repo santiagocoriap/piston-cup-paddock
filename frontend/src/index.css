@@ -9375,6 +9375,23 @@ button.danger:hover:not(:disabled) {
   font-weight: 400;
 }
 
+/* The subclasses of a class show inside its card, with a line on the left. */
+.subclass-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.class-card.subclass-card {
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--accent);
+  background: var(--surface-2);
+  box-shadow: none;
+}
+
+.subclass-card .class-head h3 {
+  font-size: 16px;
+}
+
 /* The cars of a class: smaller cards than the car tab, so more fit in a row. */
 .catalog-grid.class-cars {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));

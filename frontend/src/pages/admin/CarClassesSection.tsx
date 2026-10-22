@@ -6,6 +6,7 @@ import { ActionForm } from '../../components/ActionForm'
 import { DangerMenu } from '../../components/DangerMenu'
 import { Dialog } from '../../components/Dialog'
 import { DualPicker, type PickItem } from '../../components/DualPicker'
+import type { MenuItem } from '../../components/RowMenu'
 import { CatalogEdit } from './CatalogEdit'
 import { CarStats } from './CatalogFacts'
 import { carFields } from './catalogFields'
@@ -13,7 +14,8 @@ import { carFields } from './catalogFields'
 type CarClass = components['schemas']['CarClassOut']
 type Car = components['schemas']['CarOut']
 
-/** Car classes and their cars. A change keeps the old rows in the history.
+/** Car classes and their cars. A class can hold subclasses, one level deep: each subclass card
+ * shows inside its class. A change of the cars keeps the old rows in the history.
  * onSaved: a class changed. onCarsChanged: a car changed (its name, picture, or a delete). */
 export function CarClassesSection({
   cars,
@@ -27,31 +29,44 @@ export function CarClassesSection({
   onCarsChanged: () => void
 }) {
   const { t } = useTranslation()
+  const ids = new Set(classes.map((item) => item.id))
+  // A subclass whose parent is not in the list shows as a main class.
+  const mains = classes.filter((item) => item.parent_id === null || !ids.has(item.parent_id))
   return (
     <section aria-label={t('classes.title')} className="class-list">
-      {classes.map((item) => (
-        <ClassCard key={item.id} item={item} cars={cars} onSaved={onSaved} onCarsChanged={onCarsChanged} />
+      {mains.map((item) => (
+        <ClassCard
+          key={item.id}
+          item={item}
+          classes={classes}
+          cars={cars}
+          onSaved={onSaved}
+          onCarsChanged={onCarsChanged}
+        />
       ))}
     </section>
   )
 }
 
-function ClassCard({
-  item,
-  cars,
-  onSaved,
-  onCarsChanged,
-}: {
+type CardProps = {
   item: CarClass
+  classes: CarClass[]
   cars: Car[]
   onSaved: () => void
   onCarsChanged: () => void
-}) {
+}
+
+function ClassCard({ item, classes, cars, onSaved, onCarsChanged }: CardProps) {
   const { t } = useTranslation()
   const [editing, setEditing] = useState(false)
-  const [renaming, setRenaming] = useState(false)
+  const [changing, setChanging] = useState(false)
+  const [adding, setAdding] = useState(false)
   const [picked, setPicked] = useState(item.car_ids)
   const [error, setError] = useState<string | null>(null)
+  const subclasses = classes.filter((other) => other.parent_id === item.id)
+  const isSub = item.parent_id !== null
+  // Only a main class with no subclasses of its own can move under another main class.
+  const parents = classes.filter((other) => other.parent_id === null && other.id !== item.id)
   const pickItems: PickItem[] = cars.map((car) => ({
     id: car.id,
     title: car.name,
@@ -82,26 +97,31 @@ function ClassCard({
     if (problem) setError(t('errors.generic'))
   }
 
+  const menu: MenuItem[] = [
+    { label: t('classes.edit'), onSelect: () => setEditing(true) },
+    ...(isSub ? [] : [{ label: t('classes.newSubclass'), onSelect: () => setAdding(true) }]),
+    {
+      label: t('classes.editCars'),
+      onSelect: () => {
+        setPicked(item.car_ids)
+        setChanging(true)
+      },
+    },
+  ]
+
   return (
-    <div className="card class-card">
+    <div className={isSub ? 'card class-card subclass-card' : 'card class-card'}>
       <div className="class-head">
         <h3>
-          {item.name} <span className="muted class-count">{t('classes.carCount', { count: members.length })}</span>
+          {item.name}{' '}
+          <span className="muted class-count">
+            {[
+              t('classes.carCount', { count: members.length }),
+              ...(subclasses.length > 0 ? [t('classes.subclassCount', { count: subclasses.length })] : []),
+            ].join(' · ')}
+          </span>
         </h3>
-        <DangerMenu
-          target={{ kind: 'car_class', id: item.id, name: item.name }}
-          onDeleted={onSaved}
-          items={[
-            { label: t('classes.rename'), onSelect: () => setRenaming(true) },
-            {
-              label: t('classes.editCars'),
-              onSelect: () => {
-                setPicked(item.car_ids)
-                setEditing(true)
-              },
-            },
-          ]}
-        />
+        <DangerMenu target={{ kind: 'car_class', id: item.id, name: item.name }} onDeleted={onSaved} items={menu} />
       </div>
       {error && (
         <p role="alert" className="error">
@@ -115,16 +135,16 @@ function ClassCard({
           ))}
         </ul>
       ) : (
-        <p className="muted">{t('classes.noCars')}</p>
+        subclasses.length === 0 && <p className="muted">{t('classes.noCars')}</p>
       )}
-      {editing && (
+      {changing && (
         <ActionForm
           title={t('classes.carsOf', { name: item.name })}
           submitLabel={t('common.save')}
-          onDone={() => setEditing(false)}
+          onDone={() => setChanging(false)}
           onSubmit={async (form) => {
             const problem = await saveCars(form.getAll('car_ids').map(Number), String(form.get('reason') ?? ''))
-            if (!problem) setEditing(false)
+            if (!problem) setChanging(false)
             return problem
           }}
         >
@@ -135,19 +155,37 @@ function ClassCard({
           </label>
         </ActionForm>
       )}
-      <Dialog open={renaming} title={t('classes.rename')} onClose={() => setRenaming(false)}>
-        {renaming && (
+      {subclasses.length > 0 && (
+        <div className="subclass-list">
+          {subclasses.map((sub) => (
+            <ClassCard
+              key={sub.id}
+              item={sub}
+              classes={classes}
+              cars={cars}
+              onSaved={onSaved}
+              onCarsChanged={onCarsChanged}
+            />
+          ))}
+        </div>
+      )}
+      <Dialog open={editing} title={t('classes.edit')} onClose={() => setEditing(false)}>
+        {editing && (
           <ActionForm
-            title={t('classes.rename')}
+            title={t('classes.edit')}
             submitLabel={t('common.save')}
-            onDone={() => setRenaming(false)}
+            onDone={() => setEditing(false)}
             onSubmit={async (form) => {
+              const parent = String(form.get('parent_id') ?? '')
               const { error } = await api.PATCH('/api/catalog/classes/{class_id}', {
                 params: { path: { class_id: item.id } },
-                body: { name: String(form.get('name') ?? '') },
+                body: {
+                  name: String(form.get('name') ?? ''),
+                  ...(subclasses.length === 0 ? { parent_id: parent ? Number(parent) : null } : {}),
+                },
               })
               if (!error) {
-                setRenaming(false)
+                setEditing(false)
                 onSaved()
               }
               return error
@@ -156,6 +194,33 @@ function ClassCard({
             <label>
               {t('classes.name')}
               <input name="name" defaultValue={item.name} required maxLength={60} />
+            </label>
+            {subclasses.length === 0 && (
+              <ParentSelect parents={parents} value={item.parent_id} />
+            )}
+          </ActionForm>
+        )}
+      </Dialog>
+      <Dialog open={adding} title={t('classes.newSubclass')} onClose={() => setAdding(false)}>
+        {adding && (
+          <ActionForm
+            title={t('classes.newSubclass')}
+            submitLabel={t('common.create')}
+            onDone={() => setAdding(false)}
+            onSubmit={async (form) => {
+              const { error } = await api.POST('/api/catalog/classes', {
+                body: { name: String(form.get('name') ?? ''), parent_id: item.id },
+              })
+              if (!error) {
+                setAdding(false)
+                onSaved()
+              }
+              return error
+            }}
+          >
+            <label>
+              {t('classes.name')}
+              <input name="name" required maxLength={60} />
             </label>
           </ActionForm>
         )}
@@ -174,6 +239,24 @@ function ClassCard({
         </details>
       )}
     </div>
+  )
+}
+
+/** The parent class of a class: none (a main class), or one of the main classes. */
+export function ParentSelect({ parents, value }: { parents: CarClass[]; value: number | null }) {
+  const { t } = useTranslation()
+  return (
+    <label>
+      {t('classes.parent')}
+      <select name="parent_id" defaultValue={value === null ? '' : String(value)}>
+        <option value="">{t('classes.noParent')}</option>
+        {parents.map((parent) => (
+          <option key={parent.id} value={parent.id}>
+            {parent.name}
+          </option>
+        ))}
+      </select>
+    </label>
   )
 }
 

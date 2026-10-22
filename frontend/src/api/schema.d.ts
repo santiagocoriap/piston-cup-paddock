@@ -377,8 +377,11 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Rename Class */
-        patch: operations["apps_catalog_api_rename_class"];
+        /**
+         * Edit Class
+         * @description Change the name, or the parent class.
+         */
+        patch: operations["apps_catalog_api_edit_class"];
         trace?: never;
     };
     "/api/catalog/classes/{class_id}/cars": {
@@ -3601,6 +3604,8 @@ export interface components {
             id: number;
             /** Name */
             name: string;
+            /** Parent Id */
+            parent_id: number | null;
             /** Car Ids */
             car_ids: number[];
             /** History */
@@ -3626,6 +3631,15 @@ export interface components {
         CarClassIn: {
             /** Name */
             name: string;
+            /** Parent Id */
+            parent_id?: number | null;
+        };
+        /** CarClassEditIn */
+        CarClassEditIn: {
+            /** Name */
+            name?: string | null;
+            /** Parent Id */
+            parent_id?: number | null;
         };
         /** ClassCarsIn */
         ClassCarsIn: {
@@ -5732,9 +5746,15 @@ export interface components {
             excluded_track_ids: number[];
             /** Voted Names */
             voted_names: string[] | null;
+            /** Class Rounds */
+            class_rounds: boolean;
+            /** Stage */
+            stage: string;
             parent: components["schemas"]["BallotLink"] | null;
             /** Runoffs */
             runoffs: components["schemas"]["BallotLink"][];
+            /** Subclass Rounds */
+            subclass_rounds: components["schemas"]["BallotLink"][];
             /** Can Manage */
             can_manage: boolean;
             /** Can Vote */
@@ -5864,6 +5884,8 @@ export interface components {
             show_voter_names?: boolean | null;
             /** Excluded Track Ids */
             excluded_track_ids?: number[] | null;
+            /** Class Rounds */
+            class_rounds?: boolean | null;
             /**
              * Kind
              * @enum {string}
@@ -5928,6 +5950,8 @@ export interface components {
             show_voter_names?: boolean | null;
             /** Excluded Track Ids */
             excluded_track_ids?: number[] | null;
+            /** Class Rounds */
+            class_rounds?: boolean | null;
         };
         /** CandidateOut */
         CandidateOut: {
@@ -8290,7 +8314,7 @@ export interface operations {
             };
         };
     };
-    apps_catalog_api_rename_class: {
+    apps_catalog_api_edit_class: {
         parameters: {
             query?: never;
             header?: never;
@@ -8301,7 +8325,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CarClassIn"];
+                "application/json": components["schemas"]["CarClassEditIn"];
             };
         };
         responses: {

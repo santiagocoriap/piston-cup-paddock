@@ -7,7 +7,7 @@ from ninja import Field, Router, Schema, Status
 from ninja.errors import HttpError
 from pydantic import AwareDatetime
 
-from apps.catalog.models import Car, CarClass, TrackLayout
+from apps.catalog.models import Car, CarClass, TrackLayout, with_subclasses
 from apps.competition.calendar import fixed_layout_ids
 from apps.competition.models import Season
 from apps.competition.permissions import can_manage, can_view
@@ -57,6 +57,7 @@ class BallotSettingsIn(Schema):
     low_participation_action: Literal["admin", "count"] | None = None
     show_voter_names: bool | None = None
     excluded_track_ids: list[int] | None = None
+    class_rounds: bool | None = None
 
 
 class BallotIn(BallotSettingsIn):
@@ -177,8 +178,11 @@ class BallotDetail(Schema):
     show_voter_names: bool
     excluded_track_ids: list[int]
     voted_names: list[str] | None  # Who voted, when the ballot shows names, and for admins.
+    class_rounds: bool
+    stage: str  # "main", "runoff", or "subclass".
     parent: BallotLink | None
     runoffs: list[BallotLink]
+    subclass_rounds: list[BallotLink]
     can_manage: bool
     can_vote: bool
     my_power: int
@@ -292,8 +296,11 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
         voted_names=sorted(v.user.username for v in all_voters if v.id in voters_with_votes)
         if manager or ballot.show_voter_names
         else None,
+        class_rounds=ballot.class_rounds,
+        stage=ballot.stage,
         parent=_link(ballot.parent) if ballot.parent else None,
-        runoffs=[_link(r) for r in ballot.runoffs.all()],
+        runoffs=[_link(r) for r in ballot.runoffs.filter(stage=Ballot.Stage.RUNOFF)],
+        subclass_rounds=[_link(r) for r in ballot.runoffs.filter(stage=Ballot.Stage.SUBCLASS)],
         can_manage=manager,
         can_vote=bool(me and me.power > 0 and ballot.status == Ballot.State.OPEN),
         my_power=me.power if me else 0,
@@ -348,7 +355,7 @@ def _class_candidate(car_class: CarClass, added: set[int]) -> "CandidateOut":
     pictures, count = _class_pictures(car_class.id)
     return CandidateOut(
         id=car_class.id,
-        group="",
+        group=car_class.parent.name if car_class.parent_id else "",
         label=car_class.name,
         image_url=pictures[0] if pictures else None,
         images=pictures,
@@ -363,7 +370,8 @@ def _class_pictures(class_id: int | None) -> tuple[list[str], int | None]:
         return [], None
     cars = list(
         Car.objects.filter(
-            class_memberships__car_class_id=class_id, class_memberships__valid_to__isnull=True
+            class_memberships__car_class_id__in=with_subclasses([class_id]),
+            class_memberships__valid_to__isnull=True,
         )
         .distinct()
         .order_by("name")
@@ -494,7 +502,14 @@ def candidates(request, ballot_id: int):
             for layout in layouts
         ]
     added = set(ballot.options.values_list("car_class_id", flat=True))
-    return [_class_candidate(c, added) for c in CarClass.objects.order_by("name")]
+    classes = CarClass.objects.select_related("parent")
+    if ballot.class_rounds:
+        classes = classes.filter(parent__isnull=True)  # The subclasses come in the 2nd round.
+    # A class, then its subclasses.
+    rows = sorted(
+        classes, key=lambda c: (c.parent.name if c.parent_id else c.name, c.parent_id or 0, c.name)
+    )
+    return [_class_candidate(c, added) for c in rows]
 
 
 class SetOptionsIn(Schema):

@@ -157,9 +157,16 @@ class CarSkin(models.Model):
 
 
 class CarClass(models.Model):
-    """A group of cars, for example GT3 or LMDh. Ballots, entries, and records use it."""
+    """A group of cars, for example GT3 or LMDh. Ballots, entries, and records use it.
+
+    A class can be a subclass of one other class, for example "80s F1" in "F1". Only one level:
+    a subclass has no subclasses. The cars of a class with subclasses are its own cars and the
+    cars of its subclasses."""
 
     name = models.CharField(max_length=60, unique=True)
+    parent = models.ForeignKey(
+        "self", null=True, blank=True, on_delete=models.SET_NULL, related_name="subclasses"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -167,6 +174,17 @@ class CarClass(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def label(self) -> str:
+        """The name, with the parent class first for a subclass: "F1 › 80s F1"."""
+        return f"{self.parent.name} › {self.name}" if self.parent_id else self.name
+
+
+def with_subclasses(class_ids) -> set[int]:
+    """These classes and their subclasses."""
+    ids = set(class_ids)
+    return ids | set(CarClass.objects.filter(parent_id__in=ids).values_list("id", flat=True))
 
 
 class CarClassMembership(models.Model):
@@ -194,7 +212,12 @@ def classes_of(car_id: int, day) -> list[int]:
     rows = CarClassMembership.objects.filter(car_id=car_id, valid_from__lte=day).filter(
         models.Q(valid_to__isnull=True) | models.Q(valid_to__gte=day)
     )
-    return list(rows.values_list("car_class_id", flat=True))
+    ids = list(rows.values_list("car_class_id", flat=True))
+    # A car of a subclass is also in the parent class.
+    parents = CarClass.objects.filter(id__in=ids, parent__isnull=False).values_list(
+        "parent_id", flat=True
+    )
+    return ids + sorted(set(parents) - set(ids))
 
 
 class WeatherPreset(models.Model):

@@ -35,7 +35,10 @@ export function BallotSettingsForm({ ballot, onDone }: { ballot: Ballot; onDone:
           min_participation_pct: Number(text('min_participation_pct') || 0),
           low_participation_action: text('low_participation_action') as 'admin' | 'count',
         }
-        if (ballot.kind === 'car_class') body.slots = Number(text('slots') || 1)
+        if (ballot.kind === 'car_class') {
+          body.slots = Number(text('slots') || 1)
+          body.class_rounds = text('class_rounds') === 'two'
+        }
         if (opens) body.opens_at = localInputToIso(opens)
         if (closes) body.closes_at = localInputToIso(closes)
         if (runoffs) body.max_runoffs = Number(runoffs)
@@ -71,6 +74,15 @@ export function BallotSettingsForm({ ballot, onDone }: { ballot: Ballot; onDone:
           </label>
         )}
       </div>
+      {ballot.kind === 'car_class' && (
+        <label>
+          {t('voting.classMode')}
+          <select name="class_rounds" defaultValue={ballot.class_rounds ? 'two' : 'one'}>
+            <option value="one">{t('voting.classModes.one')}</option>
+            <option value="two">{t('voting.classModes.two')}</option>
+          </select>
+        </label>
+      )}
       <div className="field-row">
         <label>
           {t('voting.totalsLabel')}

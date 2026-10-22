@@ -462,12 +462,20 @@ class MembershipOut(Schema):
 class CarClassOut(Schema):
     id: int
     name: str
+    parent_id: int | None  # The parent class of a subclass.
     car_ids: list[int]  # The cars in the class today.
     history: list[MembershipOut]
 
 
 class CarClassIn(Schema):
     name: str = Field(min_length=1, max_length=60)
+    parent_id: int | None = None
+
+
+class CarClassEditIn(Schema):
+    name: str | None = Field(None, min_length=1, max_length=60)
+    # Send null to make a subclass a class with no parent.
+    parent_id: int | None = None
 
 
 class ClassCarsIn(Schema):
@@ -480,6 +488,7 @@ def _class_out(item: CarClass) -> CarClassOut:
     return CarClassOut(
         id=item.id,
         name=item.name,
+        parent_id=item.parent_id,
         car_ids=sorted(r.car_id for r in rows if r.valid_to is None),
         history=[
             MembershipOut(
@@ -499,30 +508,61 @@ def list_classes(request):
     return [_class_out(c) for c in CarClass.objects.prefetch_related("memberships__car")]
 
 
+def _parent(item: CarClass | None, parent_id: int | None) -> CarClass | None:
+    """The parent class for a new or changed class. Only one level: the parent has no parent,
+    and a class with subclasses cannot be a subclass."""
+    if parent_id is None:
+        return None
+    parent = CarClass.objects.filter(pk=parent_id).first()
+    if parent is None:
+        raise HttpError(404, "class_not_found")
+    if parent.parent_id is not None or (item is not None and parent.id == item.id):
+        raise HttpError(422, "class_parent_is_subclass")
+    if item is not None and item.subclasses.exists():
+        raise HttpError(422, "class_has_subclasses")
+    return parent
+
+
 @router.post("/classes", response={201: CarClassOut})
 def create_class(request, payload: CarClassIn):
     require(manages_any_championship(request.user))
+    parent = _parent(None, payload.parent_id)
     with conflict_on_duplicate("class_exists"):
-        item = CarClass.objects.create(name=payload.name)
-        record(request.user, "class.created", "car_class", item.id, params={"name": item.name})
+        item = CarClass.objects.create(name=payload.name, parent=parent)
+        record(
+            request.user,
+            "class.created",
+            "car_class",
+            item.id,
+            params={"name": item.label},
+        )
     return Status(201, _class_out(item))
 
 
 @router.patch("/classes/{class_id}", response=CarClassOut)
-def rename_class(request, class_id: int, payload: CarClassIn):
+def edit_class(request, class_id: int, payload: CarClassEditIn):
+    """Change the name, or the parent class."""
     require(manages_any_championship(request.user))
-    item = get_object_or_404(CarClass, pk=class_id)
-    old = item.name
-    with conflict_on_duplicate("class_exists"):
+    item = get_object_or_404(CarClass.objects.select_related("parent"), pk=class_id)
+    changes = []
+    if payload.name is not None and payload.name != item.name:
+        changes.append(change("name", item.name, payload.name))
         item.name = payload.name
-        item.save(update_fields=["name"])
+    if "parent_id" in payload.model_fields_set and payload.parent_id != item.parent_id:
+        parent = _parent(item, payload.parent_id)
+        changes.append(
+            change("parent", item.parent.name if item.parent else None, parent and parent.name)
+        )
+        item.parent = parent
+    with conflict_on_duplicate("class_exists"):
+        item.save(update_fields=["name", "parent"])
         record(
             request.user,
-            "class.renamed",
+            "class.changed",
             "car_class",
             item.id,
             params={"name": item.name},
-            changes=[change("name", old, item.name)] if old != item.name else [],
+            changes=changes,
         )
     return _class_out(item)
 

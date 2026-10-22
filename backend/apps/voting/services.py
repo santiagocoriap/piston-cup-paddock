@@ -68,6 +68,7 @@ SETTINGS = (
     "low_participation_action",
     "show_voter_names",
     "excluded_track_ids",
+    "class_rounds",
 )
 
 
@@ -114,6 +115,10 @@ def update_ballot(ballot: Ballot, user, settings: dict) -> Ballot:
     with transaction.atomic():
         ballot.save()
         _audit(user, "ballot.changed", ballot, changes=changes)
+        if ballot.class_rounds:
+            # The subclasses come in the 2nd round, so they leave the 1st round.
+            for option in ballot.options.filter(car_class__parent__isnull=False):
+                remove_option(option, user)
     return ballot
 
 
@@ -175,9 +180,11 @@ def add_option(
     layout = None
     car_class = None
     if ballot.kind == Ballot.Kind.CAR_CLASS and car_class_id is not None:
-        car_class = CarClass.objects.filter(pk=car_class_id).first()
+        car_class = CarClass.objects.select_related("parent").filter(pk=car_class_id).first()
         _require(car_class is not None, "class_required")
-        label = car_class.name
+        # In 2 rounds, the first round has only the classes with no parent.
+        _require(not (ballot.class_rounds and car_class.parent_id), "subclass_in_class_rounds")
+        label = car_class.label
     if ballot.kind == Ballot.Kind.TRACK:
         _require(layout_id is not None, "layout_required")
         layout = TrackLayout.objects.select_related("track").filter(pk=layout_id).first()
@@ -419,9 +426,7 @@ def start_runoff(ballot: Ballot, user) -> Ballot:
         not ballot.runoffs.filter(status__in=["draft", "open", "closed"]).exists(), "runoff_exists"
     )
     depth = ballot.runoff_depth() + 1
-    root = ballot
-    while root.parent_id:
-        root = root.parent
+    root = ballot.runoff_root()
     _require(root.max_runoffs is None or depth <= root.max_runoffs, "runoff_limit_reached")
     with transaction.atomic():
         runoff = Ballot.objects.create(
@@ -437,6 +442,7 @@ def start_runoff(ballot: Ballot, user) -> Ballot:
             allow_vote_changes=ballot.allow_vote_changes,
             eligible_roles=ballot.eligible_roles,
             power_overrides=ballot.power_overrides,
+            stage=Ballot.Stage.RUNOFF,
             parent=ballot,
             max_runoffs=ballot.max_runoffs,
             opened_at=timezone.now(),
@@ -444,7 +450,11 @@ def start_runoff(ballot: Ballot, user) -> Ballot:
         )
         for option in tied:
             BallotOption.objects.create(
-                ballot=runoff, label=option.label, track_layout=option.track_layout, origin=option
+                ballot=runoff,
+                label=option.label,
+                track_layout=option.track_layout,
+                car_class=option.car_class,
+                origin=option,
             )
         BallotVoter.objects.bulk_create(
             BallotVoter(ballot=runoff, user_id=v.user_id, power=v.power)
@@ -484,18 +494,26 @@ def decide_manually(ballot: Ballot, user, option_ids: list[int], reason: str) ->
 
 
 def _finish(ballot: Ballot, user) -> None:
-    """Mark the ballot as decided. A runoff passes its winners to the parent ballot.
-    A decided track ballot adds the winners to the calendar as voted rounds."""
+    """Mark the ballot as decided. A runoff passes its winners to the ballot that it started
+    from. A decided track ballot adds the winners to the calendar as voted rounds. A decided car
+    class ballot sets the classes of the season, after its subclass rounds."""
     ballot.status = Ballot.State.DECIDED
     ballot.save(update_fields=["status"])
-    if ballot.parent_id:
+    if ballot.stage == Ballot.Stage.RUNOFF:
         parent = ballot.parent
         winners = [o.origin for o in ballot.options.filter(selected=True) if o.origin]
         _select(winners, BallotOption.Source.RUNOFF)
         if parent.options.filter(selected=True).count() >= parent.slots:
             _finish(parent, user)
         return
-    if ballot.kind == Ballot.Kind.CAR_CLASS:
+    if ballot.stage == Ballot.Stage.SUBCLASS:
+        _audit_decided(ballot, user)
+        main = ballot.parent
+        rounds = main.runoffs.filter(stage=Ballot.Stage.SUBCLASS)
+        if not rounds.exclude(status=Ballot.State.DECIDED).exists():
+            _set_classes(main, user)
+        return
+    if ballot.kind == Ballot.Kind.CAR_CLASS and not _start_subclass_rounds(ballot, user):
         _set_classes(ballot, user)
     if ballot.kind == Ballot.Kind.TRACK:
         for option in ballot.options.filter(selected=True).select_related("track_layout"):
@@ -506,6 +524,10 @@ def _finish(ballot: Ballot, user) -> None:
                 scheduled_at=None,
                 origin=Round.Origin.VOTED,
             )
+    _audit_decided(ballot, user)
+
+
+def _audit_decided(ballot: Ballot, user) -> None:
     _audit(
         user,
         "ballot.decided",
@@ -520,12 +542,79 @@ def _finish(ballot: Ballot, user) -> None:
     )
 
 
+def _start_subclass_rounds(ballot: Ballot, user) -> bool:
+    """In a car class ballot in 2 rounds: for each winning class with subclasses, open a round
+    among its subclasses, with the same voters and rules. False when no round starts."""
+    if not ballot.class_rounds:
+        return False
+    selected = ballot.options.filter(selected=True, car_class__isnull=False)
+    winners = [o for o in selected.select_related("car_class") if o.car_class.subclasses.exists()]
+    if not winners:
+        return False
+    now = timezone.now()
+    duration = None
+    if ballot.closes_at and ballot.opened_at and ballot.closes_at > ballot.opened_at:
+        duration = ballot.closes_at - ballot.opened_at
+    for option in winners:
+        subclasses = list(option.car_class.subclasses.order_by("name"))
+        round_ = Ballot.objects.create(
+            season=ballot.season,
+            kind=ballot.kind,
+            title=f"{ballot.title} · {option.car_class.name}",
+            status=Ballot.State.OPEN,
+            method=ballot.method,
+            selection_limit=min(ballot.selection_limit, len(subclasses)),
+            slots=1,
+            choice_visibility=ballot.choice_visibility,
+            totals_visibility=ballot.totals_visibility,
+            allow_vote_changes=ballot.allow_vote_changes,
+            eligible_roles=ballot.eligible_roles,
+            power_overrides=ballot.power_overrides,
+            choice_overrides=ballot.choice_overrides,
+            stage=Ballot.Stage.SUBCLASS,
+            parent=ballot,
+            max_runoffs=ballot.max_runoffs,
+            opened_at=now,
+            closes_at=now + duration if duration else None,
+            remind_hours_before=ballot.remind_hours_before,
+            created_by=user,
+        )
+        for subclass in subclasses:
+            BallotOption.objects.create(
+                ballot=round_, label=subclass.name, car_class=subclass, origin=option
+            )
+        BallotVoter.objects.bulk_create(
+            BallotVoter(ballot=round_, user_id=v.user_id, power=v.power)
+            for v in ballot.voters.all()
+        )
+        _audit(
+            user,
+            "ballot.subclass_round_started",
+            ballot,
+            changes=[change("subclass_round", None, round_.title)],
+        )
+        _notify_voters(round_, round_.voters.values_list("user_id", flat=True))
+    return True
+
+
 def _set_classes(ballot: Ballot, user) -> None:
-    """A decided car class vote sets the classes of the season. Each voter with a driver
-    profile and no entry gets an entry, with a random car of the winning classes."""
+    """A decided car class vote sets the classes of the season. A winning class with a subclass
+    round counts as the winner of that round. Each voter with a driver profile and no entry gets
+    an entry, with a random car of the winning classes."""
     from apps.competition.cars import enter_voters
 
-    classes = [o.car_class for o in ballot.options.filter(selected=True, car_class__isnull=False)]
+    rounds = {}
+    for round_ in ballot.runoffs.filter(stage=Ballot.Stage.SUBCLASS):
+        first = round_.options.first()
+        if first is not None:
+            rounds[first.origin_id] = round_
+    classes = []
+    for option in ballot.options.filter(selected=True, car_class__isnull=False):
+        round_ = rounds.get(option.id)
+        if round_ is None:
+            classes.append(option.car_class)
+        else:
+            classes += [o.car_class for o in round_.options.filter(selected=True) if o.car_class]
     if not classes:
         return  # A free text option names no class of the catalog.
     season = ballot.season

@@ -12,7 +12,7 @@ function ballot(extra: Record<string, unknown> = {}) {
     status: 'open', method: 'multiple', selection_limit: 2, slots: 6, choice_visibility: 'hidden',
     totals_visibility: 'live', allow_vote_changes: true, closes_at: null, eligible_roles: ['driver', 'admin'],
     prior_season_id: null, min_prior_starts: 0, max_runoffs: null, power_exceptions: [{ username: 'santi', power: 2, voted: false }],
-    power_overrides: { 1: 2 }, closed_early: false, close_reason: '', parent: null, runoffs: [], can_manage: false,
+    power_overrides: { 1: 2 }, closed_early: false, close_reason: '', class_rounds: false, stage: 'main', parent: null, runoffs: [], subclass_rounds: [], can_manage: false,
     can_vote: true, my_power: 1, my_choices: [], voted_count: 1, voter_count: 5, totals_visible: true,
     choices_visible: false, tie: null, voters: null,
     options: [
