@@ -20,6 +20,8 @@
       font-weight: 700; cursor: pointer; background: transparent; color: #f2f2f2; }
     button.allow { background: #e10600; border-color: #e10600; color: #fff; }
     .error { color: #ff8f8f; }
+    .dest { word-break: break-all; }
+    .hint { font-size: 14px; }
   </style>
 </head>
 <body>
@@ -28,6 +30,8 @@
   {% if not error %}
     <h1>¿Permitir el acceso a {{ application.name }}?</h1>
     <div class="who">Cuenta: <b>{{ request.user.username }}</b></div>
+    <div class="who">El acceso se envía a: <b class="dest">{{ form.redirect_uri.value }}</b></div>
+    <p class="hint">Permití solo si pegaste la dirección de esta app en Claude, y si esta dirección es de Claude (claude.ai) o de tu computadora (localhost).</p>
     <p>{{ application.name }} va a poder:</p>
     <ul>
       <li>Ver todo lo que ves en la app.</li>
