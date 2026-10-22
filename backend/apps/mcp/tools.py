@@ -17,10 +17,12 @@ from django.urls import Resolver404, resolve
 # connections. Text from other people comes back in the tool answers, and it could try to steer
 # Claude: a change of who has access stays a click of the person in the app.
 # Sign-in, accounts, and access rights stay in the app UI: text in the app data must not be
-# able to make Claude give access to a person. Collector keys are access rights too.
+# able to make Claude give access to a person. Collector and script keys are access rights
+# too, and so is the link between a driver and an account.
 HIDDEN = re.compile(
     r"^/api/(auth/|collector/|script/|avatars/|accounts|me/connections|objects/user/"
-    r"|championships/[^/]+/(members|roles|collectors)|roles/|collectors/)"
+    r"|championships/[^/]+/(members|roles|collectors|script)|roles/|collectors/"
+    r"|drivers/[^/]+/link)"
 )
 MAX_TEXT = 60_000
 
