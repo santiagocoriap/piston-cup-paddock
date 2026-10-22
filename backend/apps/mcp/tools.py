@@ -12,8 +12,13 @@ from django.test import RequestFactory
 from django.urls import Resolver404, resolve
 
 # Operations that the tools do not offer: the sign-in itself, the collector and the game script
-# (they use their own keys), and file uploads (a tool cannot send a file).
-HIDDEN = re.compile(r"^/api/(auth/|collector/|script/|avatars/)")
+# (they use their own keys), and file uploads (a tool cannot send a file). Also the accounts and
+# the access rights: accounts, invite links, platform admins, deleted accounts, and the Claude
+# connections. Text from other people comes back in the tool answers, and it could try to steer
+# Claude: a change of who has access stays a click of the person in the app.
+HIDDEN = re.compile(
+    r"^/api/(auth/|collector/|script/|avatars/|accounts|me/connections|objects/user/)"
+)
 MAX_TEXT = 60_000
 
 

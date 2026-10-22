@@ -78,7 +78,10 @@ def tool(token: str, name: str, **arguments) -> dict:
     answer = rpc(token, "tools/call", {"name": name, "arguments": arguments})
     assert answer.status_code == 200
     result = answer.json()["result"]
-    return {"error": result["isError"], "data": json.loads(result["content"][0]["text"])}
+    text = result["content"][0]["text"]
+    if text.startswith("App data below."):
+        text = text.partition(chr(10))[2]
+    return {"error": result["isError"], "data": json.loads(text)}
 
 
 def test_the_discovery_documents(db):
@@ -169,3 +172,63 @@ def test_the_person_sees_and_removes_a_connection(api, make_user):
     assert [r["name"] for r in rows] == ["Claude"] and rows[0]["active"]
     assert api(user).delete(f"/me/connections/{rows[0]['application_id']}").status_code == 204
     assert rpc(token, "tools/list").status_code == 401
+
+
+def test_a_fake_claude_client_is_marked_on_the_consent_page(make_user):
+    client = Client()
+    answer = client.post(
+        "/oauth/register",
+        json.dumps({"redirect_uris": ["https://evil.example.com/cb"], "client_name": "Claude"}),
+        content_type="application/json",
+    )
+    assert answer.json()["client_name"] == "Claude (no verificado)"
+    client.force_login(make_user("victim"))
+    page = client.get(
+        "/oauth/authorize/",
+        {
+            "response_type": "code",
+            "client_id": answer.json()["client_id"],
+            "redirect_uri": "https://evil.example.com/cb",
+            "scope": "mcp",
+            "code_challenge": CHALLENGE,
+            "code_challenge_method": "S256",
+        },
+    ).content.decode()
+    assert "Claude (no verificado)" in page
+    assert "https://evil.example.com/cb" in page
+
+
+def test_the_real_claude_client_keeps_its_name(db):
+    answer = Client().post(
+        "/oauth/register",
+        json.dumps({"redirect_uris": [REDIRECT], "client_name": "Claude"}),
+        content_type="application/json",
+    )
+    assert answer.json()["client_name"] == "Claude"
+
+
+def test_accounts_and_access_rights_stay_out_of_the_tools(admin_token, make_user):
+    other = make_user("other")
+    assert tool(admin_token, "api_read", path="/api/accounts")["error"]
+    answer = tool(
+        admin_token,
+        "api_write",
+        method="PUT",
+        path=f"/api/accounts/{other.id}/platform-admin",
+        body={"on": True},
+    )
+    assert answer["error"]
+    assert tool(admin_token, "api_write", method="DELETE", path=f"/api/objects/user/{other.id}")[
+        "error"
+    ]
+    other.refresh_from_db()
+    assert not other.is_superuser
+    found = tool(admin_token, "search_operations", query="accounts platform admin")["data"]
+    assert not any(
+        "/api/accounts" in op["path"] for op in (found if isinstance(found, list) else [])
+    )
+
+
+def test_app_data_comes_with_a_data_note(admin_token):
+    answer = rpc(admin_token, "tools/call", {"name": "overview", "arguments": {}}).json()
+    assert answer["result"]["content"][0]["text"].startswith("App data below.")
