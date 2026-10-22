@@ -1906,6 +1906,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/ballots/{ballot_id}/options/{option_id}/cars": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Option Cars
+         * @description Every car of a car class option today: the cars of the class, then the cars of each
+         *     subclass. Each person who can see the ballot can see them.
+         */
+        get: operations["apps_voting_api_option_cars"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/ballots/{ballot_id}/options": {
         parameters: {
             query?: never;
@@ -5972,6 +5993,26 @@ export interface components {
             car_count?: number | null;
             /** Status */
             status: string;
+        };
+        /** CarGroupOut */
+        CarGroupOut: {
+            /** Subclass */
+            subclass: string | null;
+            /** Cars */
+            cars: components["schemas"]["OptionCarOut"][];
+        };
+        /** OptionCarOut */
+        OptionCarOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Brand */
+            brand: string;
+            /** Year */
+            year: number | null;
+            /** Image Url */
+            image_url: string | null;
         };
         /** SetOptionsIn */
         SetOptionsIn: {
@@ -10733,6 +10774,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CandidateOut"][];
+                };
+            };
+        };
+    };
+    apps_voting_api_option_cars: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+                option_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarGroupOut"][];
                 };
             };
         };

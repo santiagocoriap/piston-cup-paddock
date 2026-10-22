@@ -5406,6 +5406,57 @@
         ]
       }
     },
+    "/api/ballots/{ballot_id}/options/{option_id}/cars": {
+      "get": {
+        "operationId": "apps_voting_api_option_cars",
+        "summary": "Option Cars",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "option_id",
+            "schema": {
+              "title": "Option Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CarGroupOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "Every car of a car class option today: the cars of the class, then the cars of each\nsubclass. Each person who can see the ballot can see them.",
+        "tags": [
+          "voting"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/ballots/{ballot_id}/options": {
       "put": {
         "operationId": "apps_voting_api_put_options",
@@ -17528,6 +17579,81 @@
           "status"
         ],
         "title": "CandidateOut",
+        "type": "object"
+      },
+      "CarGroupOut": {
+        "properties": {
+          "subclass": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subclass"
+          },
+          "cars": {
+            "items": {
+              "$ref": "#/components/schemas/OptionCarOut"
+            },
+            "title": "Cars",
+            "type": "array"
+          }
+        },
+        "required": [
+          "subclass",
+          "cars"
+        ],
+        "title": "CarGroupOut",
+        "type": "object"
+      },
+      "OptionCarOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "brand": {
+            "title": "Brand",
+            "type": "string"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "brand",
+          "year",
+          "image_url"
+        ],
+        "title": "OptionCarOut",
         "type": "object"
       },
       "SetOptionsIn": {

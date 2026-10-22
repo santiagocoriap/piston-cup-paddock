@@ -33,10 +33,24 @@ describe('BallotPage', () => {
       id: 9, label: 'TC', track_layout_id: null, car_class_id: 4, selected: false, selected_by: '', votes: 0, voters: null,
       image_url: '/a.jpg', images: ['/a.jpg', '/b.jpg', '/c.jpg'], car_count: 12,
     }
-    mockApi({ 'GET /api/ballots/7': () => json(200, ballot({ kind: 'car_class', options: [tc] })) })
+    mockApi({
+      'GET /api/ballots/7': () => json(200, ballot({ kind: 'car_class', options: [tc] })),
+      'GET /api/ballots/7/options/9/cars': () =>
+        json(200, [
+          { subclass: null, cars: [{ id: 1, name: 'Torino', brand: 'IKA', year: 2025, image_url: null }] },
+          { subclass: 'TC 2005', cars: [{ id: 2, name: 'Falcon', brand: 'Ford', year: 2005, image_url: '/f.jpg' }] },
+        ]),
+    })
     const { container } = show()
-    expect(await screen.findByText('12 autos')).toBeInTheDocument()
+    const button = await screen.findByRole('button', { name: 'Ver los 12 autos' })
     expect(container.querySelectorAll('.vote-media.collage img')).toHaveLength(3)
+    await userEvent.click(button)
+    expect(await screen.findByText('Falcon')).toBeInTheDocument()
+    expect(screen.getByText('Torino')).toBeInTheDocument()
+    expect(screen.getByText('TC 2005')).toBeInTheDocument()
+    expect(screen.getByText('Ford · 2005')).toBeInTheDocument()
+    // The button opens the list: it does not choose the option.
+    expect(container.querySelector('.vote-card input')).not.toBeChecked()
   })
 
   it('explains the method, the power, and the live totals before the vote', async () => {

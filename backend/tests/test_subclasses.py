@@ -164,3 +164,36 @@ def test_a_tie_in_a_subclass_round_goes_to_a_runoff(
     vote_and_close(api, champ_admin, runoff, "2000s F1", racers)
     assert Ballot.objects.get(pk=round_["id"]).status == "decided"
     assert list(season.car_classes.all()) == [modern]
+
+
+def test_a_voter_sees_every_car_of_a_class_option_by_subclass(
+    api,
+    champ_admin,
+    season,
+    f1,
+    racers,  # noqa: F811
+):
+    parent, _, _, gt3 = f1
+    detail = class_ballot(api(champ_admin), season, [parent.id, gt3.id], class_rounds=True)
+    option = next(o for o in detail["options"] if o["label"] == "F1")
+    groups = api(racers[0]).get(f"/ballots/{detail['id']}/options/{option['id']}/cars").json()
+    assert [(g["subclass"], [c["name"] for c in g["cars"]]) for g in groups] == [
+        ("2000s F1", ["F2004"]),
+        ("80s F1", ["MP4"]),
+    ]
+    gt3_option = next(o for o in detail["options"] if o["label"] == "GT3")
+    groups = api(racers[0]).get(f"/ballots/{detail['id']}/options/{gt3_option['id']}/cars").json()
+    assert groups == [
+        {
+            "subclass": None,
+            "cars": [
+                {
+                    "id": groups[0]["cars"][0]["id"],
+                    "name": "AUDI",
+                    "brand": "",
+                    "year": None,
+                    "image_url": None,
+                }
+            ],
+        }
+    ]

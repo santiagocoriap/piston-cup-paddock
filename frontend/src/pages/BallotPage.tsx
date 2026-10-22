@@ -17,6 +17,7 @@ import { useAdminView } from '../session'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { DangerMenu } from '../components/DangerMenu'
 import { BallotSettingsForm } from './BallotSettingsForm'
+import { OptionCars } from './OptionCars'
 
 type Ballot = components['schemas']['BallotDetail']
 type Option = Ballot['options'][number]
@@ -347,8 +348,8 @@ function VoteGrid({ ballot, onVoted }: { ballot: Ballot; onVoted: () => void }) 
               </span>
               <span className="vote-text">
                 <b>{option.label}</b>
-                {option.car_count !== null && option.car_count !== undefined && (
-                  <span className="muted">{t('voting.carCount', { count: option.car_count })}</span>
+                {option.car_class_id !== null && option.car_class_id !== undefined && (option.car_count ?? 0) > 0 && (
+                  <OptionCars ballotId={ballot.id} optionId={option.id} label={option.label} count={option.car_count ?? 0} />
                 )}
                 {option.votes !== null && option.votes !== undefined && (
                   <span className="muted">{t('voting.votes', { count: option.votes })}</span>
@@ -411,6 +412,7 @@ function Results({ ballot }: { ballot: Ballot }) {
             share={counted && total ? Math.round(((option.votes ?? 0) / total) * 100) : null}
             leader={counted && top > 0 && option.votes === top}
             mine={ballot.my_choices.includes(option.id)}
+            ballotId={ballot.id}
           />
         ))}
       </ul>
@@ -418,7 +420,19 @@ function Results({ ballot }: { ballot: Ballot }) {
   )
 }
 
-function ResultBar({ option, share, leader, mine }: { option: Option; share: number | null; leader: boolean; mine: boolean }) {
+function ResultBar({
+  option,
+  share,
+  leader,
+  mine,
+  ballotId,
+}: {
+  option: Option
+  share: number | null
+  leader: boolean
+  mine: boolean
+  ballotId: number
+}) {
   const { t } = useTranslation()
   const won = option.selected
   return (
@@ -438,6 +452,9 @@ function ResultBar({ option, share, leader, mine }: { option: Option; share: num
           )}
           {mine && <span className="badge">{t('voting.myChoice')}</span>}
         </span>
+        {option.car_class_id !== null && option.car_class_id !== undefined && (option.car_count ?? 0) > 0 && (
+          <OptionCars ballotId={ballotId} optionId={option.id} label={option.label} count={option.car_count ?? 0} />
+        )}
       </span>
       {option.voter_pictures && option.voter_pictures.length > 0 && (
         <span className="avatar-stack" aria-label={option.voter_pictures.map((person) => person.username).join(', ')}>

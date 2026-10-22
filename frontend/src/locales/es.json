@@ -1128,7 +1128,10 @@
     "subclassRounds": "Rondas de subclases",
     "subclassOf": "Ronda de subclases de {{title}}",
     "subclassNote": "Ganó una clase con subclases. Ahora se vota la subclase.",
-    "goSubclass": "Votar la subclase"
+    "goSubclass": "Votar la subclase",
+    "seeCars_one": "Ver el auto",
+    "seeCars_other": "Ver los {{count}} autos",
+    "carsOf": "Autos de {{name}}"
   },
   "calendar": {
     "fixed": "Reservar pista fija",
