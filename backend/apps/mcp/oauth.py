@@ -68,16 +68,11 @@ def _redirect_ok(uri: str) -> bool:
 
 # The callback hosts of Claude. Claude Code uses an address on the same computer.
 TRUSTED_HOSTS = {"claude.ai", "claude.com"}
-TRUSTED_NAMES = ("claude", "anthropic")
 
 
 def _trusted_host(uri: str) -> bool:
     host = urlparse(uri).hostname or ""
     return host in TRUSTED_HOSTS or is_local(uri)
-
-
-def _claims_trusted_name(name: str) -> bool:
-    return any(word in name.lower() for word in TRUSTED_NAMES)
 
 
 @csrf_exempt
@@ -100,9 +95,9 @@ def register(request: HttpRequest) -> JsonResponse:
             {"error": "invalid_redirect_uri", "error_description": "use https"}, status=400
         )
     name = str(data.get("client_name") or "MCP client")[:180]
-    if _claims_trusted_name(name) and not all(_trusted_host(u) for u in uris):
-        # Anyone can register a client. A name that says Claude, with an address that is not
-        # of Claude, could fool the person on the consent page.
+    if not all(_trusted_host(u) for u in uris):
+        # Anyone can register a client, with any name (also a name with look-alike letters).
+        # Each client that sends the access to an address that is not of Claude gets the label.
         name = f"{name} (no verificado)"
     application = get_application_model().objects.create(
         name=name,
