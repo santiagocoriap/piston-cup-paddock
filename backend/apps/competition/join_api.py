@@ -38,7 +38,7 @@ class JoinOptionsOut(Schema):
 
 
 class JoinIn(Schema):
-    car_id: int
+    car_id: int | None = None  # None: the driver chooses the car later.
     number: int = Field(ge=1, le=999)
     team: str = Field("", max_length=100)
     note: str = Field("", max_length=300)
@@ -54,7 +54,7 @@ class JoinOut(Schema):
 class JoinRequestOut(Schema):
     id: int
     driver_name: str
-    car_id: int
+    car_id: int | None
     car_name: str
     number: int
     team: str
@@ -91,7 +91,7 @@ def _notify(user_ids, kind: str, season: Season, driver: DriverProfile) -> None:
 
 
 def _enter(
-    season: Season, driver: DriverProfile, car: Car, number: int, team: str, actor
+    season: Season, driver: DriverProfile, car: Car | None, number: int, team: str, actor
 ) -> SeasonEntry:
     """Create the entry, make the driver a driver of the championship, and write the audit."""
     if season.entries.filter(number=number).exists():
@@ -119,7 +119,7 @@ def _enter(
             "season": season.name,
             "driver": driver.display_name,
             "number": entry.number,
-            "car": car.name,
+            "car": car.name if car else "",
         },
         changes=[change("number", None, entry.number), change("team", None, entry.team)],
     )
@@ -168,8 +168,10 @@ def join_season(request, season_id: int, payload: JoinIn):
         raise HttpError(422, "no_driver_profile")
     if season.entries.filter(driver=profile).exists():
         raise HttpError(409, "entry_exists")
-    car = get_object_or_404(Car, pk=payload.car_id)
-    require_allowed(season, car)
+    car = None
+    if payload.car_id is not None:
+        car = get_object_or_404(Car, pk=payload.car_id)
+        require_allowed(season, car)
     team = _team_for(season, payload.team)
     if season.free_join:
         entry = _enter(season, profile, car, payload.number, team, request.user)
@@ -195,7 +197,7 @@ def join_season(request, season_id: int, payload: JoinIn):
                 "season": season.name,
                 "driver": profile.display_name,
                 "number": join.number,
-                "car": car.name,
+                "car": car.name if car else "",
             },
         )
         _notify(_managers(season), "join.requested", season, profile)
@@ -214,7 +216,7 @@ def join_requests(request, season_id: int):
             id=r.id,
             driver_name=r.driver.display_name,
             car_id=r.car_id,
-            car_name=r.car.name,
+            car_name=r.car.name if r.car else "",
             number=r.number,
             team=r.team,
             note=r.note,

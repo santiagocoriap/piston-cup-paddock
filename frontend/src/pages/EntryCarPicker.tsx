@@ -21,7 +21,7 @@ export function EntryCarPicker({
 }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
-  const [chosen, setChosen] = useState<number>(entry.car_id)
+  const [chosen, setChosen] = useState<number | null>(entry.car_id ?? null)
   const [query, setQuery] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -34,6 +34,7 @@ export function EntryCarPicker({
   }, [cars.data, carIds, query])
 
   async function save() {
+    if (chosen === null) return
     setBusy(true)
     const { error: failed } = await api.PUT('/api/entries/{entry_id}/car', {
       params: { path: { entry_id: entry.id } },
@@ -51,7 +52,7 @@ export function EntryCarPicker({
         type="button"
         className="secondary small"
         onClick={() => {
-          setChosen(entry.car_id)
+          setChosen(entry.car_id ?? null)
           setError(null)
           setOpen(true)
         }}
@@ -99,7 +100,7 @@ export function EntryCarPicker({
           </p>
         )}
         <div className="settings-actions">
-          <button type="button" onClick={save} disabled={busy || chosen === entry.car_id}>
+          <button type="button" onClick={save} disabled={busy || chosen === null || chosen === entry.car_id}>
             {t('common.save')}
           </button>
         </div>

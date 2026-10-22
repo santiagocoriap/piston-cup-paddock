@@ -3966,7 +3966,7 @@ export interface components {
             /** Avatar Url */
             avatar_url?: string | null;
             /** Car Id */
-            car_id: number;
+            car_id: number | null;
             /** Car Name */
             car_name: string;
             /** Number */
@@ -4093,7 +4093,7 @@ export interface components {
             /** Driver Id */
             driver_id: number;
             /** Car Id */
-            car_id: number;
+            car_id?: number | null;
             /** Number */
             number: number;
             /**
@@ -4313,7 +4313,7 @@ export interface components {
         /** JoinIn */
         JoinIn: {
             /** Car Id */
-            car_id: number;
+            car_id?: number | null;
             /** Number */
             number: number;
             /**
@@ -4334,7 +4334,7 @@ export interface components {
             /** Driver Name */
             driver_name: string;
             /** Car Id */
-            car_id: number;
+            car_id: number | null;
             /** Car Name */
             car_name: string;
             /** Number */

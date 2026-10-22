@@ -432,7 +432,7 @@ def _round_detail(user, round_: Round) -> RoundDetail:
                 driver_id=e.driver_id,
                 number=e.number,
                 driver_name=e.driver.display_name,
-                car_name=e.car.name,
+                car_name=e.car_name,
             )
             for e in entries
         ],
@@ -676,7 +676,7 @@ def get_standings(request, season_id: int):
             number=entries[row.entry_id].number,
             driver_id=entries[row.entry_id].driver_id,
             driver_name=entries[row.entry_id].driver.display_name,
-            car_name=entries[row.entry_id].car.name,
+            car_name=entries[row.entry_id].car_name,
             team=entries[row.entry_id].team,
             points=row.points,
             wins=row.wins,

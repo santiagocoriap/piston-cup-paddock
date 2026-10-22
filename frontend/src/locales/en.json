@@ -178,7 +178,9 @@
     "noDriversTitle": "This season has no entered drivers.",
     "noDriversAdmin": "Without entries there is no grid, no votes, and no results to assign.",
     "noDriversDriver": "An admin still has to enter the drivers.",
-    "noDriversGo": "Enter drivers"
+    "noDriversGo": "Enter drivers",
+    "noCar": "No car yet",
+    "carLater": "No car: choose it later"
   },
   "leagues": {
     "title": "Leagues",
@@ -2297,7 +2299,8 @@
     "warnings": {
       "no_guid": "{{name}} has no Steam ID: the slot is not booked.",
       "weather_kept": "The announced weather is not an AC weather name: the server keeps its weather.",
-      "local_address": "The app address is local (localhost). The game of the other drivers cannot download the Paddock script, so their telemetry does not arrive. Open the app at its public address, or ask an admin to set PUBLIC_URL."
+      "local_address": "The app address is local (localhost). The game of the other drivers cannot download the Paddock script, so their telemetry does not arrive. Open the app at its public address, or ask an admin to set PUBLIC_URL.",
+      "no_car": "{{name}} has no car: the server list leaves this driver out."
     },
     "status": {
       "pending": "Sent on {{date}}. Waits for the collector.",
@@ -2489,7 +2492,8 @@
     "requests_one": "{{count}} request to join",
     "requests_other": "{{count}} requests to join",
     "approve": "Approve",
-    "decline": "Decline"
+    "decline": "Decline",
+    "carOptional": "Car (optional: you can choose it later)"
   },
   "picker": {
     "available": "Available",

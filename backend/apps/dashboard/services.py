@@ -157,7 +157,7 @@ def driver_dashboard(user) -> list[SeasonCard]:
             season_name=season.name,
             championship_name=season.championship.name,
             entry_number=entry.number,
-            car_name=entry.car.name,
+            car_name=entry.car_name,
             rank=row.rank,
             entries=len(table),
             points=row.points,
@@ -215,7 +215,7 @@ def driver_dashboard(user) -> list[SeasonCard]:
                 conditions=_announced(next_round),
                 track_outline_url=next_round.track_layout.image_url("outline"),
                 track_preview_url=next_round.track_layout.image_url("preview"),
-                car_image_url=entry.car.image_url("preview"),
+                car_image_url=entry.car.image_url("preview") if entry.car else None,
                 ballast_cap=rules.ballast_cap,
                 restrictor_cap=rules.restrictor_cap,
                 track_country=next_round.track_layout.track.country
@@ -274,10 +274,10 @@ def my_handicap(user, round_: Round) -> MyHandicap | None:
     used = UsedHandicap.objects.filter(round=round_, entry=entry).first()
     if used:
         return MyHandicap(
-            entry.number, entry.car_id, entry.car.name, used.ballast_kg, used.restrictor_pct, "used"
+            entry.number, entry.car_id, entry.car_name, used.ballast_kg, used.restrictor_pct, "used"
         )
     values = season_handicaps(round_.season, before_round=round_)
     mine = next(e for e in values.entries if e.entry_id == entry.id)
     return MyHandicap(
-        entry.number, entry.car_id, entry.car.name, mine.next_kg, mine.next_pct, "assigned"
+        entry.number, entry.car_id, entry.car_name, mine.next_kg, mine.next_pct, "assigned"
     )

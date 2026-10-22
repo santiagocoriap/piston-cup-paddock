@@ -11134,8 +11134,15 @@
             "title": "Avatar Url"
           },
           "car_id": {
-            "title": "Car Id",
-            "type": "integer"
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Car Id"
           },
           "car_name": {
             "title": "Car Name",
@@ -11488,8 +11495,15 @@
             "type": "integer"
           },
           "car_id": {
-            "title": "Car Id",
-            "type": "integer"
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Car Id"
           },
           "number": {
             "maximum": 999,
@@ -11506,7 +11520,6 @@
         },
         "required": [
           "driver_id",
-          "car_id",
           "number"
         ],
         "title": "EntryIn",
@@ -12204,8 +12217,15 @@
       "JoinIn": {
         "properties": {
           "car_id": {
-            "title": "Car Id",
-            "type": "integer"
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Car Id"
           },
           "number": {
             "maximum": 999,
@@ -12227,7 +12247,6 @@
           }
         },
         "required": [
-          "car_id",
           "number"
         ],
         "title": "JoinIn",
@@ -12244,8 +12263,15 @@
             "type": "string"
           },
           "car_id": {
-            "title": "Car Id",
-            "type": "integer"
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Car Id"
           },
           "car_name": {
             "title": "Car Name",

@@ -513,7 +513,7 @@ export function SeasonPage() {
                     <span>
                       <b title={entry.driver_name}>{entry.driver_name}</b>
                       <span className="muted" title={entry.car_name}>
-                        {entry.car_name}
+                        {entry.car_name || t('season.noCar')}
                       </span>
                       {entry.team && <span className="entry-team">{entry.team}</span>}
                       {(entry.mine || adminView) && (
@@ -730,7 +730,7 @@ function AddEntryForm({
           params: { path },
           body: {
             driver_id: Number(form.get('driver_id')),
-            car_id: Number(form.get('car_id')),
+            car_id: form.get('car_id') ? Number(form.get('car_id')) : null,
             number: Number(form.get('number')),
             team: team === NEW_TEAM ? String(form.get('team_new') ?? '') : team,
           },
@@ -757,10 +757,8 @@ function AddEntryForm({
       </label>
       <label>
         {t('season.car')}
-        <select name="car_id" required defaultValue="">
-          <option value="" disabled>
-            {t('common.select')}
-          </option>
+        <select name="car_id" defaultValue="">
+          <option value="">{t('season.carLater')}</option>
           {cars.data
             ?.filter((car) => !carIds || carIds.includes(car.id))
             .map((car) => (

@@ -77,7 +77,7 @@ def _info(lap: ImportedLap, telemetry: str) -> LapInfo:
         lap_time_ms=lap.lap_time_ms,
         valid=_valid(lap),
         sectors_ms=list(lap.sectors_ms or []),
-        car=lap.entry.car.name,
+        car=lap.entry.car_name,
         ballast_kg=lap.ballast_kg,
         restrictor=lap.restrictor,
         tyre=lap.tyre,
