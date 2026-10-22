@@ -18,11 +18,11 @@ from django.urls import Resolver404, resolve
 # Claude: a change of who has access stays a click of the person in the app.
 # Sign-in, accounts, and access rights stay in the app UI: text in the app data must not be
 # able to make Claude give access to a person. Collector and script keys are access rights
-# too, and so is the link between a driver and an account.
+# too, and so is the link between a driver and an account (a merge moves that link).
 HIDDEN = re.compile(
     r"^/api/(auth/|collector/|script/|avatars/|accounts|me/connections|objects/user/"
     r"|championships/[^/]+/(members|roles|collectors|script)|roles/|collectors/"
-    r"|drivers/[^/]+/link)"
+    r"|drivers/[^/]+/(link|merge))"
 )
 MAX_TEXT = 60_000
 
