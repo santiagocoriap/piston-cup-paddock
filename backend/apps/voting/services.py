@@ -245,6 +245,50 @@ def eligible_voters(ballot: Ballot) -> dict[int, int]:
     return {user_id: overrides.get(user_id, 1) for user_id in sorted(user_ids)}
 
 
+def voter_candidates(ballot: Ballot) -> dict[int, bool]:
+    """The people who can join an open ballot: the members of the championship and the
+    drivers of the season with an account, who are not voters yet. True: the rules of the
+    ballot accept them (roles, prior starts)."""
+    members = set(
+        ChampionshipMember.objects.filter(championship=ballot.season.championship).values_list(
+            "user_id", flat=True
+        )
+    )
+    drivers = set(
+        ballot.season.entries.filter(driver__user__isnull=False).values_list(
+            "driver__user_id", flat=True
+        )
+    )
+    voters = set(ballot.voters.values_list("user_id", flat=True))
+    eligible = set(eligible_voters(ballot))
+    return {u: u in eligible for u in sorted((members | drivers) - voters)}
+
+
+def add_voters(ballot: Ballot, user, user_ids: list[int]) -> list[BallotVoter]:
+    """An admin adds voters to an open ballot, for example a driver who entered after the
+    opening. Each new voter gets the power of the ballot for that user (1 by default)."""
+    _require(ballot.status == Ballot.State.OPEN, "ballot_not_open")
+    candidates = voter_candidates(ballot)
+    wanted = [u for u in dict.fromkeys(user_ids) if u in candidates]
+    _require(len(wanted) == len(set(user_ids)) and bool(wanted), "not_a_candidate")
+    overrides = {int(k): int(v) for k, v in ballot.power_overrides.items()}
+    with transaction.atomic():
+        added = BallotVoter.objects.bulk_create(
+            BallotVoter(ballot=ballot, user_id=u, power=overrides.get(u, 1)) for u in wanted
+        )
+        names = BallotVoter.objects.filter(ballot=ballot, user_id__in=wanted).values_list(
+            "user__username", flat=True
+        )
+        _audit(
+            user,
+            "ballot.voters_added",
+            ballot,
+            changes=[change("voters", None, ", ".join(sorted(names)))],
+        )
+        _notify_voters(ballot, wanted)
+    return added
+
+
 def open_ballot(ballot: Ballot, user) -> Ballot:
     _require(ballot.status == Ballot.State.DRAFT, "ballot_not_draft")
     if ballot.kind == Ballot.Kind.TRACK and ballot.parent_id is None:

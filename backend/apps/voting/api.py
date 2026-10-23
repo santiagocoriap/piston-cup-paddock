@@ -16,6 +16,7 @@ from .models import Ballot, BallotOption, BallotVoter, Vote
 from .services import (
     BallotError,
     add_option,
+    add_voters,
     cast_vote,
     choice_limit,
     close_ballot,
@@ -31,6 +32,7 @@ from .services import (
     totals,
     update_ballot,
     voted_counts,
+    voter_candidates,
 )
 
 router = Router(tags=["voting"])
@@ -554,6 +556,45 @@ def option_cars(request, ballot_id: int, option_id: int):
             subclass = None if car_class.id == option.car_class_id else car_class.name
             groups.append(CarGroupOut(subclass=subclass, cars=rows))
     return groups
+
+
+class VoterCandidateOut(Schema):
+    id: int
+    username: str
+    avatar_url: str | None
+    # True: the rules of the ballot (roles, prior starts) accept this person.
+    eligible: bool
+
+
+@router.get("/ballots/{ballot_id}/voter-candidates", response=list[VoterCandidateOut])
+def voter_candidate_list(request, ballot_id: int):
+    """The people that an admin can add to an open ballot: the eligible ones first."""
+    from django.contrib.auth import get_user_model
+
+    ballot = _ballot(request.user, ballot_id)
+    _manager(request.user, ballot)
+    candidates = voter_candidates(ballot)
+    users = get_user_model().objects.filter(id__in=candidates).order_by("username")
+    rows = [
+        VoterCandidateOut(
+            id=u.id, username=u.username, avatar_url=u.avatar_url(), eligible=candidates[u.id]
+        )
+        for u in users
+    ]
+    return sorted(rows, key=lambda row: not row.eligible)
+
+
+class AddVotersIn(Schema):
+    user_ids: list[int] = Field(min_length=1, max_length=200)
+
+
+@router.post("/ballots/{ballot_id}/voters", response=BallotDetail)
+def post_voters(request, ballot_id: int, payload: AddVotersIn):
+    """Add voters to an open ballot. They get a notification."""
+    ballot = _ballot(request.user, ballot_id)
+    _manager(request.user, ballot)
+    _run(lambda: add_voters(ballot, request.user, payload.user_ids))
+    return _detail(request.user, ballot)
 
 
 class SetOptionsIn(Schema):

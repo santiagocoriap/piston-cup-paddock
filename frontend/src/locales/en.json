@@ -441,7 +441,8 @@
     "class_parent_is_subclass": "A subclass cannot have subclasses.",
     "class_has_subclasses": "This class has subclasses, so it cannot be a subclass.",
     "class_not_found": "The class was not found.",
-    "subclass_in_class_rounds": "In two rounds, the first round has only main classes."
+    "subclass_in_class_rounds": "In two rounds, the first round has only main classes.",
+    "not_a_candidate": "That person already votes, or is not in the championship."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -631,7 +632,8 @@
       "season.car_classes_changed": "{{actor}} changed the car classes of {{season}}.",
       "account.connection_removed": "{{actor}} removed the access of {{client}} to the account.",
       "class.changed": "{{actor}} changed the class {{name}}.",
-      "ballot.subclass_round_started": "{{actor}} started a subclass round in {{ballot}}."
+      "ballot.subclass_round_started": "{{actor}} started a subclass round in {{ballot}}.",
+      "ballot.voters_added": "{{actor}} added voters to {{ballot}}."
     },
     "fields": {
       "role": "Role",
@@ -1133,7 +1135,11 @@
     "goSubclass": "Vote for the subclass",
     "seeCars_one": "See the car",
     "seeCars_other": "See the {{count}} cars",
-    "carsOf": "Cars of {{name}}"
+    "carsOf": "Cars of {{name}}",
+    "addVoters": "Add voters",
+    "addVotersHelp": "New voters can vote at once and get a notification. The people that the rules accept start checked.",
+    "noVoterCandidates": "All members and drivers of the championship already vote.",
+    "outsideRules": "outside the rules of the vote"
   },
   "calendar": {
     "fixed": "Reserve a fixed track",

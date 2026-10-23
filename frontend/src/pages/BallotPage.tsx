@@ -575,6 +575,7 @@ function BallotAdmin({ ballot, onChange }: { ballot: Ballot; onChange: () => voi
   }
   if (ballot.status === 'open') {
     actions.push(
+      { id: 'voters', label: t('voting.addVoters'), content: (close) => <AddVotersForm ballot={ballot} onDone={() => { onChange(); close() }} /> },
       { id: 'remind', label: t('voting.remindNow'), content: (close) => <RemindPanel ballot={ballot} onDone={() => { onChange(); close() }} /> },
       {
         id: 'close',
@@ -610,6 +611,42 @@ function BallotAdmin({ ballot, onChange }: { ballot: Ballot; onChange: () => voi
     })
   }
   return <AdminActions actions={actions} />
+}
+
+/** An admin adds voters to an open ballot: the members and drivers who are not voters yet.
+ * The people that the rules accept come first and start checked. */
+function AddVotersForm({ ballot, onDone }: { ballot: Ballot; onDone: () => void }) {
+  const { t } = useTranslation()
+  const path = { ballot_id: ballot.id }
+  const candidates = useLoad(() => api.GET('/api/ballots/{ballot_id}/voter-candidates', { params: { path } }), [ballot.id])
+  if (!candidates.data) return <Loading failed={candidates.failed} />
+  if (candidates.data.length === 0) return <p className="muted">{t('voting.noVoterCandidates')}</p>
+  return (
+    <ActionForm
+      title={t('voting.addVoters')}
+      submitLabel={t('voting.addVoters')}
+      onDone={onDone}
+      onSubmit={async (form) => {
+        const ids = form.getAll('user_id').map(Number)
+        if (ids.length === 0) return { detail: 'choice_required' }
+        const { error } = await api.POST('/api/ballots/{ballot_id}/voters', { params: { path }, body: { user_ids: ids } })
+        return error
+      }}
+    >
+      <p className="muted">{t('voting.addVotersHelp')}</p>
+      <fieldset className="voter-candidates">
+        <legend className="sr-only">{t('voting.addVoters')}</legend>
+        {candidates.data.map((person) => (
+          <label key={person.id} className="check">
+            <input type="checkbox" name="user_id" value={person.id} defaultChecked={person.eligible} />
+            <Avatar name={person.username} url={person.avatar_url} />
+            {person.username}
+            {!person.eligible && <span className="muted"> · {t('voting.outsideRules')}</span>}
+          </label>
+        ))}
+      </fieldset>
+    </ActionForm>
+  )
 }
 
 function RemindPanel({ ballot, onDone }: { ballot: Ballot; onDone: () => void }) {

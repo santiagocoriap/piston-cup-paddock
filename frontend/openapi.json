@@ -5457,6 +5457,96 @@
         ]
       }
     },
+    "/api/ballots/{ballot_id}/voter-candidates": {
+      "get": {
+        "operationId": "apps_voting_api_voter_candidate_list",
+        "summary": "Voter Candidate List",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VoterCandidateOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "The people that an admin can add to an open ballot: the eligible ones first.",
+        "tags": [
+          "voting"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/ballots/{ballot_id}/voters": {
+      "post": {
+        "operationId": "apps_voting_api_post_voters",
+        "summary": "Post Voters",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "Add voters to an open ballot. They get a notification.",
+        "tags": [
+          "voting"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddVotersIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/ballots/{ballot_id}/options": {
       "put": {
         "operationId": "apps_voting_api_put_options",
@@ -17680,6 +17770,59 @@
           "image_url"
         ],
         "title": "OptionCarOut",
+        "type": "object"
+      },
+      "VoterCandidateOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          },
+          "eligible": {
+            "title": "Eligible",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "avatar_url",
+          "eligible"
+        ],
+        "title": "VoterCandidateOut",
+        "type": "object"
+      },
+      "AddVotersIn": {
+        "properties": {
+          "user_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "User Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "user_ids"
+        ],
+        "title": "AddVotersIn",
         "type": "object"
       },
       "SetOptionsIn": {

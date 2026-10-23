@@ -8268,6 +8268,21 @@ form.card > label.wide {
   min-width: 0;
 }
 
+/* The people that an admin can add to an open ballot. */
+.voter-candidates {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.voter-candidates label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 /* "See the N cars" on a car class option, and the list of cars that it opens. */
 .option-cars-button {
   display: inline-flex;

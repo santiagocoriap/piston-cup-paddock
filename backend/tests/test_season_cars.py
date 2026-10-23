@@ -166,3 +166,33 @@ def test_a_driver_with_no_car_stays_out_of_the_server_entry_list(season, classes
     content = build(round_, "https://paddock.example.com")
     assert [e["name"] for e in content["entries"]] == ["Ana"]
     assert "no_car:Bob" in content["warnings"]
+
+
+def test_an_admin_adds_a_voter_to_an_open_vote(api, champ_admin, season, classes, racers):
+    tc, gt3, _ = classes
+    client = api(champ_admin)
+    detail = client.post(
+        f"/seasons/{season.id}/ballots", {"kind": "car_class", "title": "Clase", "slots": 1}
+    ).json()
+    client.put(f"/ballots/{detail['id']}/options", {"ids": [tc.id, gt3.id]})
+    detail = client.post(f"/ballots/{detail['id']}/open").json()
+    voters = {v["username"] for v in detail["voters"]}
+    # A driver who joins the championship after the opening is not a voter yet.
+    late = racers[0].__class__.objects.create_user("late")
+    ChampionshipMember.objects.create(
+        championship=season.championship, user=late, role=ChampionshipMember.Role.DRIVER
+    )
+    candidates = client.get(f"/ballots/{detail['id']}/voter-candidates").json()
+    assert [(c["username"], c["eligible"]) for c in candidates] == [("late", True)]
+    assert "late" not in voters
+    added = client.post(f"/ballots/{detail['id']}/voters", {"user_ids": [late.id]}).json()
+    assert "late" in {v["username"] for v in added["voters"]}
+    assert Notification.objects.filter(user=late, kind="ballot.open").exists()
+    option = added["options"][0]["id"]
+    assert (
+        api(late).put(f"/ballots/{detail['id']}/vote", {"option_ids": [option]}).status_code == 200
+    )
+    again = client.post(f"/ballots/{detail['id']}/voters", {"user_ids": [late.id]})
+    assert again.json()["detail"] == "not_a_candidate"
+    driver = api(racers[1]).post(f"/ballots/{detail['id']}/voters", {"user_ids": [late.id]})
+    assert driver.status_code == 403

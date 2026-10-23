@@ -441,7 +441,8 @@
     "class_parent_is_subclass": "Una subclase no puede tener subclases.",
     "class_has_subclasses": "Esta clase tiene subclases, así que no puede ser una subclase.",
     "class_not_found": "No se encontró la clase.",
-    "subclass_in_class_rounds": "En dos rondas, la primera ronda tiene solo clases principales."
+    "subclass_in_class_rounds": "En dos rondas, la primera ronda tiene solo clases principales.",
+    "not_a_candidate": "Esa persona ya vota, o no es del campeonato."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -631,7 +632,8 @@
       "season.car_classes_changed": "{{actor}} cambió las clases de auto de {{season}}.",
       "account.connection_removed": "{{actor}} quitó el acceso de {{client}} a su cuenta.",
       "class.changed": "{{actor}} cambió la clase {{name}}.",
-      "ballot.subclass_round_started": "{{actor}} empezó una ronda de subclases en {{ballot}}."
+      "ballot.subclass_round_started": "{{actor}} empezó una ronda de subclases en {{ballot}}.",
+      "ballot.voters_added": "{{actor}} agregó votantes a {{ballot}}."
     },
     "fields": {
       "role": "Rol",
@@ -1133,7 +1135,11 @@
     "goSubclass": "Votar la subclase",
     "seeCars_one": "Ver el auto",
     "seeCars_other": "Ver los {{count}} autos",
-    "carsOf": "Autos de {{name}}"
+    "carsOf": "Autos de {{name}}",
+    "addVoters": "Agregar votantes",
+    "addVotersHelp": "Los votantes nuevos pueden votar ya y reciben un aviso. Los que cumplen las reglas de la votación vienen marcados.",
+    "noVoterCandidates": "Todos los miembros y pilotos del campeonato ya son votantes.",
+    "outsideRules": "no cumple las reglas de la votación"
   },
   "calendar": {
     "fixed": "Reservar pista fija",

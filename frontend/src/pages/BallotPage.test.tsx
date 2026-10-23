@@ -146,4 +146,28 @@ describe('BallotPage extras', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Enviar recordatorio' }))
     await vi.waitFor(() => expect(calls.some((c) => c.key === 'POST /api/ballots/7/remind')).toBe(true))
   })
+
+  it('adds a voter to an open vote, with the eligible people checked', async () => {
+    const data = ballot({ can_manage: true, status: 'open' })
+    const calls = mockApi({
+      'GET /api/ballots/7': () => json(200, data),
+      'GET /api/ballots/7/voter-candidates': () =>
+        json(200, [
+          { id: 4, username: 'late', avatar_url: null, eligible: true },
+          { id: 5, username: 'guest', avatar_url: null, eligible: false },
+        ]),
+      'POST /api/ballots/7/voters': () => json(200, data),
+      'GET /api/catalog/tracks': () => json(200, []),
+      'GET /api/users': () => json(200, []),
+    })
+    show(ADMIN)
+    await userEvent.click(await screen.findByRole('button', { name: 'Administrar' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Agregar votantes' }))
+    expect(await screen.findByRole('checkbox', { name: /late/ })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: /guest/ })).not.toBeChecked()
+    await userEvent.click(screen.getAllByRole('button', { name: 'Agregar votantes' }).at(-1)!)
+    await vi.waitFor(() =>
+      expect(calls.find((c) => c.key === 'POST /api/ballots/7/voters')!.body).toEqual({ user_ids: [4] }),
+    )
+  })
 })
