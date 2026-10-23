@@ -1927,6 +1927,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/ballots/{ballot_id}/voter-candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Voter Candidate List
+         * @description The people that an admin can add to an open ballot: the eligible ones first.
+         */
+        get: operations["apps_voting_api_voter_candidate_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/ballots/{ballot_id}/voters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post Voters
+         * @description Add voters to an open ballot. They get a notification.
+         */
+        post: operations["apps_voting_api_post_voters"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/ballots/{ballot_id}/options": {
         parameters: {
             query?: never;
@@ -6013,6 +6053,22 @@ export interface components {
             year: number | null;
             /** Image Url */
             image_url: string | null;
+        };
+        /** VoterCandidateOut */
+        VoterCandidateOut: {
+            /** Id */
+            id: number;
+            /** Username */
+            username: string;
+            /** Avatar Url */
+            avatar_url: string | null;
+            /** Eligible */
+            eligible: boolean;
+        };
+        /** AddVotersIn */
+        AddVotersIn: {
+            /** User Ids */
+            user_ids: number[];
         };
         /** SetOptionsIn */
         SetOptionsIn: {
@@ -10797,6 +10853,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CarGroupOut"][];
+                };
+            };
+        };
+    };
+    apps_voting_api_voter_candidate_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoterCandidateOut"][];
+                };
+            };
+        };
+    };
+    apps_voting_api_post_voters: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddVotersIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
                 };
             };
         };
