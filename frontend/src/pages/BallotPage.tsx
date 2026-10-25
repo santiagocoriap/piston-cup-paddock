@@ -489,6 +489,7 @@ function TieCard({ ballot, onChange }: { ballot: Ballot; onChange: () => void })
       <p>
         <b>{t('voting.tie', { count: ballot.tie.option_ids.length, slots: ballot.tie.open_slots })}</b>
         <span className="muted">{t('voting.tieHelp')}</span>
+        <span className="muted">{t('voting.tieRights')}</span>
       </p>
       <button
         type="button"
@@ -575,6 +576,7 @@ function BallotAdmin({ ballot, onChange }: { ballot: Ballot; onChange: () => voi
   }
   if (ballot.status === 'open') {
     actions.push(
+      { id: 'rights', label: t('voting.rights'), content: (close) => <VotingRightsForm ballot={ballot} onDone={() => { onChange(); close() }} /> },
       { id: 'voters', label: t('voting.addVoters'), content: (close) => <AddVotersForm ballot={ballot} onDone={() => { onChange(); close() }} /> },
       { id: 'remind', label: t('voting.remindNow'), content: (close) => <RemindPanel ballot={ballot} onDone={() => { onChange(); close() }} /> },
       {
@@ -611,6 +613,115 @@ function BallotAdmin({ ballot, onChange }: { ballot: Ballot; onChange: () => voi
     })
   }
   return <AdminActions actions={actions} />
+}
+
+/** An admin changes the votes of an open ballot, for example in a runoff: the method and the
+ * options for everybody, and the power and the options of each voter. A voter who already voted
+ * keeps the rights of that vote, so the row is locked. */
+function VotingRightsForm({ ballot, onDone }: { ballot: Ballot; onDone: () => void }) {
+  const { t } = useTranslation()
+  const [method, setMethod] = useState(ballot.method as 'multiple' | 'single')
+  // The fields that the admin changed. The other fields follow the general setting.
+  const [touched, setTouched] = useState<Set<string>>(new Set())
+  const touch = (name: string) => setTouched((old) => new Set(old).add(name))
+  const voters = ballot.voters ?? []
+  return (
+    <ActionForm
+      title={t('voting.rights')}
+      submitLabel={t('common.save')}
+      onDone={onDone}
+      onSubmit={async (form) => {
+        const changed = voters
+          .filter((voter) => !voter.voted && voter.user_id)
+          .map((voter) => {
+            const power = `power_${voter.user_id}`
+            const choices = `choices_${voter.user_id}`
+            return {
+              user_id: voter.user_id!,
+              ...(touched.has(power) ? { power: Number(form.get(power)) } : {}),
+              ...(touched.has(choices) && method === 'multiple' ? { choices: Number(form.get(choices)) } : {}),
+            }
+          })
+          .filter((row) => Object.keys(row).length > 1)
+        const { error } = await api.PUT('/api/ballots/{ballot_id}/voting-rights', {
+          params: { path: { ballot_id: ballot.id } },
+          body: {
+            method,
+            selection_limit: method === 'multiple' ? Number(form.get('selection_limit') || 1) : 1,
+            voters: changed,
+          },
+        })
+        return error
+      }}
+    >
+      <p className="muted">{t('voting.rightsHelp')}</p>
+      <div className="field-row">
+        <label>
+          {t('voting.methodLabel')}
+          <select value={method} onChange={(event) => setMethod(event.target.value as 'multiple' | 'single')}>
+            <option value="multiple">{t('voting.multipleShort')}</option>
+            <option value="single">{t('voting.method.single')}</option>
+          </select>
+        </label>
+        {method === 'multiple' && (
+          <label>
+            {t('voting.limit')}
+            <input name="selection_limit" type="number" min={1} max={50} defaultValue={ballot.selection_limit} required />
+          </label>
+        )}
+      </div>
+      <div className="table-wrap">
+        <table className="rights-table">
+          <thead>
+            <tr>
+              <th scope="col">{t('voting.user')}</th>
+              <th scope="col" className="num">{t('voting.power')}</th>
+              {method === 'multiple' && <th scope="col" className="num">{t('voting.limit')}</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {voters.map((voter) => (
+              <tr key={voter.username}>
+                <td>
+                  <span className="person">
+                    <Avatar name={voter.username} url={voter.avatar_url} />
+                    {voter.username}
+                    {voter.voted && <span className="muted"> · {t('voting.alreadyVoted')}</span>}
+                  </span>
+                </td>
+                <td className="num">
+                  <input
+                    name={`power_${voter.user_id}`}
+                    type="number"
+                    min={0}
+                    max={100}
+                    defaultValue={voter.power}
+                    disabled={voter.voted}
+                    onChange={() => touch(`power_${voter.user_id}`)}
+                    aria-label={t('voting.powerOf', { name: voter.username })}
+                  />
+                </td>
+                {method === 'multiple' && (
+                  <td className="num">
+                    <input
+                      name={`choices_${voter.user_id}`}
+                      type="number"
+                      min={1}
+                      max={50}
+                      defaultValue={voter.choices ?? ballot.selection_limit}
+                      disabled={voter.voted}
+                      onChange={() => touch(`choices_${voter.user_id}`)}
+                      aria-label={t('voting.choicesOf', { name: voter.username })}
+                    />
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </ActionForm>
+  )
 }
 
 /** An admin adds voters to an open ballot: the members and drivers who are not voters yet.

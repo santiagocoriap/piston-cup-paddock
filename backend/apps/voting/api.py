@@ -27,6 +27,7 @@ from .services import (
     remind,
     remove_option,
     set_options,
+    set_voting_rights,
     start_runoff,
     tie,
     totals,
@@ -115,6 +116,8 @@ class VoterOut(Schema):
     power: int
     voted: bool
     avatar_url: str | None = None
+    user_id: int | None = None
+    choices: int | None = None  # The options that this voter can choose.
 
 
 class TieOut(Schema):
@@ -337,6 +340,8 @@ def _detail(user, ballot: Ballot) -> BallotDetail:
                 power=v.power,
                 voted=v.id in voters_with_votes,
                 avatar_url=v.user.avatar_url(),
+                user_id=v.user_id,
+                choices=choice_limit(ballot, v.user),
             )
             for v in all_voters
         ]
@@ -582,6 +587,37 @@ def voter_candidate_list(request, ballot_id: int):
         for u in users
     ]
     return sorted(rows, key=lambda row: not row.eligible)
+
+
+class VoterRightsIn(Schema):
+    user_id: int
+    # A field left out keeps its value (the options follow the general number).
+    power: int | None = Field(None, ge=0, le=100)
+    choices: int | None = Field(None, ge=1, le=50)
+
+
+class VotingRightsIn(Schema):
+    method: Ballot.Method | None = None
+    selection_limit: int | None = Field(None, ge=1, le=50)
+    voters: list[VoterRightsIn] = Field(default_factory=list, max_length=500)
+
+
+@router.put("/ballots/{ballot_id}/voting-rights", response=BallotDetail)
+def put_voting_rights(request, ballot_id: int, payload: VotingRightsIn):
+    """Change the votes of an open ballot (a runoff, for example). A voter who already voted
+    keeps the rights of that vote."""
+    ballot = _ballot(request.user, ballot_id)
+    _manager(request.user, ballot)
+    _run(
+        lambda: set_voting_rights(
+            ballot,
+            request.user,
+            method=payload.method,
+            selection_limit=payload.selection_limit,
+            voters=[v.dict(exclude_none=True) for v in payload.voters],
+        )
+    )
+    return _detail(request.user, ballot)
 
 
 class AddVotersIn(Schema):

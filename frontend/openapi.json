@@ -5499,6 +5499,54 @@
         ]
       }
     },
+    "/api/ballots/{ballot_id}/voting-rights": {
+      "put": {
+        "operationId": "apps_voting_api_put_voting_rights",
+        "summary": "Put Voting Rights",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ballot_id",
+            "schema": {
+              "title": "Ballot Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BallotDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "Change the votes of an open ballot (a runoff, for example). A voter who already voted\nkeeps the rights of that vote.",
+        "tags": [
+          "voting"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VotingRightsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/ballots/{ballot_id}/voters": {
       "post": {
         "operationId": "apps_voting_api_post_voters",
@@ -17067,6 +17115,28 @@
               }
             ],
             "title": "Avatar Url"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "choices": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Choices"
           }
         },
         "required": [
@@ -17805,6 +17875,82 @@
           "eligible"
         ],
         "title": "VoterCandidateOut",
+        "type": "object"
+      },
+      "VoterRightsIn": {
+        "properties": {
+          "user_id": {
+            "title": "User Id",
+            "type": "integer"
+          },
+          "power": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power"
+          },
+          "choices": {
+            "anyOf": [
+              {
+                "maximum": 50,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Choices"
+          }
+        },
+        "required": [
+          "user_id"
+        ],
+        "title": "VoterRightsIn",
+        "type": "object"
+      },
+      "VotingRightsIn": {
+        "properties": {
+          "method": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Method"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "selection_limit": {
+            "anyOf": [
+              {
+                "maximum": 50,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selection Limit"
+          },
+          "voters": {
+            "items": {
+              "$ref": "#/components/schemas/VoterRightsIn"
+            },
+            "maxItems": 500,
+            "title": "Voters",
+            "type": "array"
+          }
+        },
+        "title": "VotingRightsIn",
         "type": "object"
       },
       "AddVotersIn": {

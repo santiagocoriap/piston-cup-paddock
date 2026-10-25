@@ -196,3 +196,55 @@ def test_an_admin_adds_a_voter_to_an_open_vote(api, champ_admin, season, classes
     assert again.json()["detail"] == "not_a_candidate"
     driver = api(racers[1]).post(f"/ballots/{detail['id']}/voters", {"user_ids": [late.id]})
     assert driver.status_code == 403
+
+
+def test_an_admin_changes_the_votes_of_an_open_vote(api, champ_admin, season, classes, racers):
+    tc, gt3, _ = classes
+    client = api(champ_admin)
+    detail = client.post(
+        f"/seasons/{season.id}/ballots",
+        {"kind": "car_class", "title": "Clase", "method": "single", "slots": 1},
+    ).json()
+    client.put(f"/ballots/{detail['id']}/options", {"ids": [tc.id, gt3.id]})
+    detail = client.post(f"/ballots/{detail['id']}/open").json()
+    options = [o["id"] for o in detail["options"]]
+    ana, bruno, carla = racers
+    api(ana).put(f"/ballots/{detail['id']}/vote", {"option_ids": [options[0]]})
+    path = f"/ballots/{detail['id']}/voting-rights"
+    # 2 options for everybody, and power 3 with 1 option for Bruno.
+    rights = {
+        "method": "multiple",
+        "selection_limit": 2,
+        "voters": [{"user_id": bruno.id, "power": 3, "choices": 1}],
+    }
+    changed = client.put(path, rights).json()
+    by_name = {v["username"]: v for v in changed["voters"]}
+    assert (by_name["ana"]["choices"], by_name["ana"]["power"]) == (1, 1)  # Ana voted already.
+    assert (by_name["bruno"]["choices"], by_name["bruno"]["power"]) == (1, 3)
+    assert by_name["carla"]["choices"] == 2
+    vote = api(carla).put(f"/ballots/{detail['id']}/vote", {"option_ids": options})
+    assert vote.status_code == 200
+    # Ana voted: her rights stay.
+    refused = client.put(path, {"voters": [{"user_id": ana.id, "power": 2, "choices": 1}]})
+    assert refused.json()["detail"] == "voter_already_voted"
+
+
+def test_a_voter_with_no_own_options_follows_the_general_number(
+    api, champ_admin, season, classes, racers
+):
+    tc, gt3, _ = classes
+    client = api(champ_admin)
+    detail = client.post(
+        f"/seasons/{season.id}/ballots",
+        {"kind": "car_class", "title": "Clase", "method": "single", "slots": 1},
+    ).json()
+    client.put(f"/ballots/{detail['id']}/options", {"ids": [tc.id, gt3.id]})
+    detail = client.post(f"/ballots/{detail['id']}/open").json()
+    rights = {
+        "method": "multiple",
+        "selection_limit": 2,
+        "voters": [{"user_id": racers[1].id, "power": 3}],
+    }
+    changed = client.put(f"/ballots/{detail['id']}/voting-rights", rights).json()
+    bruno = next(v for v in changed["voters"] if v["username"] == "bruno")
+    assert (bruno["power"], bruno["choices"]) == (3, 2)
