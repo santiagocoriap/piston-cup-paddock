@@ -442,7 +442,8 @@
     "class_has_subclasses": "Esta clase tiene subclases, así que no puede ser una subclase.",
     "class_not_found": "No se encontró la clase.",
     "subclass_in_class_rounds": "En dos rondas, la primera ronda tiene solo clases principales.",
-    "not_a_candidate": "Esa persona ya vota, o no es del campeonato."
+    "not_a_candidate": "Esa persona ya vota, o no es del campeonato.",
+    "voter_already_voted": "Esa persona ya votó: sus votos no cambian."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -633,7 +634,8 @@
       "account.connection_removed": "{{actor}} quitó el acceso de {{client}} a su cuenta.",
       "class.changed": "{{actor}} cambió la clase {{name}}.",
       "ballot.subclass_round_started": "{{actor}} empezó una ronda de subclases en {{ballot}}.",
-      "ballot.voters_added": "{{actor}} agregó votantes a {{ballot}}."
+      "ballot.voters_added": "{{actor}} agregó votantes a {{ballot}}.",
+      "ballot.rights_changed": "{{actor}} ajustó los votos de {{ballot}}."
     },
     "fields": {
       "role": "Rol",
@@ -1139,7 +1141,13 @@
     "addVoters": "Agregar votantes",
     "addVotersHelp": "Los votantes nuevos pueden votar ya y reciben un aviso. Los que cumplen las reglas de la votación vienen marcados.",
     "noVoterCandidates": "Todos los miembros y pilotos del campeonato ya son votantes.",
-    "outsideRules": "no cumple las reglas de la votación"
+    "outsideRules": "no cumple las reglas de la votación",
+    "rights": "Ajustar votos",
+    "rightsHelp": "Cambiá los votos aunque la votación esté abierta, por ejemplo en un desempate. Quien ya votó mantiene lo que tenía.",
+    "alreadyVoted": "ya votó",
+    "powerOf": "Valor del voto de {{name}}",
+    "choicesOf": "Opciones de {{name}}",
+    "tieRights": "En el desempate podés cambiar los votos con «Administrar» → «Ajustar votos»."
   },
   "calendar": {
     "fixed": "Reservar pista fija",

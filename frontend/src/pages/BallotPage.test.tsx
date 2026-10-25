@@ -170,4 +170,39 @@ describe('BallotPage extras', () => {
       expect(calls.find((c) => c.key === 'POST /api/ballots/7/voters')!.body).toEqual({ user_ids: [4] }),
     )
   })
+
+  it('adjusts the votes of an open vote, and locks the voters who voted', async () => {
+    const data = ballot({
+      can_manage: true, status: 'open', method: 'single', selection_limit: 1,
+      voters: [
+        { username: 'ana', power: 1, voted: true, avatar_url: null, user_id: 1, choices: 1 },
+        { username: 'bruno', power: 1, voted: false, avatar_url: null, user_id: 2, choices: 1 },
+      ],
+    })
+    const calls = mockApi({
+      'GET /api/ballots/7': () => json(200, data),
+      'PUT /api/ballots/7/voting-rights': () => json(200, data),
+      'GET /api/catalog/tracks': () => json(200, []),
+      'GET /api/users': () => json(200, []),
+    })
+    show(ADMIN)
+    await userEvent.click(await screen.findByRole('button', { name: 'Administrar' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Ajustar votos' }))
+    await userEvent.selectOptions(await screen.findByLabelText('Método'), 'multiple')
+    const limit = screen.getByLabelText('Opciones por piloto')
+    await userEvent.clear(limit)
+    await userEvent.type(limit, '2')
+    expect(screen.getByLabelText('Valor del voto de ana')).toBeDisabled()
+    const power = screen.getByLabelText('Valor del voto de bruno')
+    await userEvent.clear(power)
+    await userEvent.type(power, '3')
+    await userEvent.click(screen.getByRole('button', { name: 'Guardar' }))
+    await vi.waitFor(() =>
+      expect(calls.find((c) => c.key === 'PUT /api/ballots/7/voting-rights')!.body).toEqual({
+        method: 'multiple',
+        selection_limit: 2,
+        voters: [{ user_id: 2, power: 3 }],
+      }),
+    )
+  })
 })

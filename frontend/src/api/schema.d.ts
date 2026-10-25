@@ -1947,6 +1947,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/ballots/{ballot_id}/voting-rights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Put Voting Rights
+         * @description Change the votes of an open ballot (a runoff, for example). A voter who already voted
+         *     keeps the rights of that vote.
+         */
+        put: operations["apps_voting_api_put_voting_rights"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/ballots/{ballot_id}/voters": {
         parameters: {
             query?: never;
@@ -5901,6 +5922,10 @@ export interface components {
             voted: boolean;
             /** Avatar Url */
             avatar_url?: string | null;
+            /** User Id */
+            user_id?: number | null;
+            /** Choices */
+            choices?: number | null;
         };
         /** BallotIn */
         BallotIn: {
@@ -6064,6 +6089,23 @@ export interface components {
             avatar_url: string | null;
             /** Eligible */
             eligible: boolean;
+        };
+        /** VoterRightsIn */
+        VoterRightsIn: {
+            /** User Id */
+            user_id: number;
+            /** Power */
+            power?: number | null;
+            /** Choices */
+            choices?: number | null;
+        };
+        /** VotingRightsIn */
+        VotingRightsIn: {
+            method?: components["schemas"]["Method"] | null;
+            /** Selection Limit */
+            selection_limit?: number | null;
+            /** Voters */
+            voters?: components["schemas"]["VoterRightsIn"][];
         };
         /** AddVotersIn */
         AddVotersIn: {
@@ -10875,6 +10917,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VoterCandidateOut"][];
+                };
+            };
+        };
+    };
+    apps_voting_api_put_voting_rights: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ballot_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VotingRightsIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BallotDetail"];
                 };
             };
         };

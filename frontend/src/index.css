@@ -8268,6 +8268,11 @@ form.card > label.wide {
   min-width: 0;
 }
 
+/* The power and options of each voter, in the rights form of an open ballot. */
+.rights-table input {
+  width: 5.5em;
+}
+
 /* The people that an admin can add to an open ballot. */
 .voter-candidates {
   display: grid;

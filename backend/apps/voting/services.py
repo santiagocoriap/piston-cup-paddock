@@ -122,6 +122,63 @@ def update_ballot(ballot: Ballot, user, settings: dict) -> Ballot:
     return ballot
 
 
+def set_voting_rights(
+    ballot: Ballot,
+    user,
+    *,
+    method: str | None = None,
+    selection_limit: int | None = None,
+    voters: list[dict] | None = None,
+) -> Ballot:
+    """Change the votes of an open ballot, for example in a runoff: the method, the number of
+    options for each voter, and the power and options of single voters. A voter who already
+    voted keeps the rights of the vote: a general change does not touch that voter."""
+    _require(ballot.status == Ballot.State.OPEN, "ballot_not_open")
+    method = method or ballot.method
+    _require(method in Ballot.Method.values, "bad_method")
+    limit = selection_limit if selection_limit is not None else ballot.selection_limit
+    _require(1 <= limit <= 50, "selection_limit_too_small")
+    rows = {v.user_id: v for v in ballot.voters.select_related("user")}
+    voted = set(Vote.objects.filter(voter__ballot=ballot).values_list("voter__user_id", flat=True))
+    powers = {str(k): int(v) for k, v in ballot.power_overrides.items()}
+    choices = {str(k): int(v) for k, v in ballot.choice_overrides.items()}
+    changes = []
+    if method != ballot.method or limit != ballot.selection_limit:
+        # The voters who voted keep the number of options that they had.
+        for user_id in voted:
+            choices.setdefault(str(user_id), choice_limit(ballot, rows[user_id].user))
+        changes.append(change("method", ballot.method, method))
+        changes.append(change("selection_limit", ballot.selection_limit, limit))
+    for item in voters or []:
+        voter = rows.get(int(item["user_id"]))
+        _require(voter is not None, "not_a_voter")
+        power = int(item.get("power", voter.power))
+        options = int(item.get("choices", choices.get(str(voter.user_id), limit)))
+        _require(0 <= power <= 100 and 1 <= options <= 50, "bad_power")
+        old_options = choice_limit(ballot, voter.user)
+        if power == voter.power and options == old_options:
+            continue
+        _require(voter.user_id not in voted, "voter_already_voted")
+        powers[str(voter.user_id)] = power
+        choices[str(voter.user_id)] = options
+        changes.append(
+            change(voter.user.username, f"x{voter.power}, {old_options}", f"x{power}, {options}")
+        )
+        voter.power = power
+    with transaction.atomic():
+        ballot.method = method
+        ballot.selection_limit = 1 if method == Ballot.Method.SINGLE else limit
+        ballot.power_overrides = powers
+        ballot.choice_overrides = choices
+        ballot.save(
+            update_fields=["method", "selection_limit", "power_overrides", "choice_overrides"]
+        )
+        for voter in rows.values():
+            voter.save(update_fields=["power"])
+        _audit(user, "ballot.rights_changed", ballot, changes=changes)
+    return ballot
+
+
 def _plain(value):
     return value.isoformat() if hasattr(value, "isoformat") else value
 
@@ -486,6 +543,7 @@ def start_runoff(ballot: Ballot, user) -> Ballot:
             allow_vote_changes=ballot.allow_vote_changes,
             eligible_roles=ballot.eligible_roles,
             power_overrides=ballot.power_overrides,
+            choice_overrides=ballot.choice_overrides,
             stage=Ballot.Stage.RUNOFF,
             parent=ballot,
             max_runoffs=ballot.max_runoffs,
