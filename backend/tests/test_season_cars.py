@@ -248,3 +248,23 @@ def test_a_voter_with_no_own_options_follows_the_general_number(
     changed = client.put(f"/ballots/{detail['id']}/voting-rights", rights).json()
     bruno = next(v for v in changed["voters"] if v["username"] == "bruno")
     assert (bruno["power"], bruno["choices"]) == (3, 2)
+
+
+def test_a_voter_who_voted_keeps_one_option_after_a_change_to_multiple(
+    api, champ_admin, season, classes, racers
+):
+    tc, gt3, _ = classes
+    client = api(champ_admin)
+    detail = client.post(
+        f"/seasons/{season.id}/ballots",
+        {"kind": "car_class", "title": "Clase", "method": "single", "slots": 1},
+    ).json()
+    ana = racers[0]
+    # A saved number of options that the single choice method does not use.
+    client.patch(f"/ballots/{detail['id']}", {"choice_overrides": {str(ana.id): 3}})
+    client.put(f"/ballots/{detail['id']}/options", {"ids": [tc.id, gt3.id]})
+    detail = client.post(f"/ballots/{detail['id']}/open").json()
+    api(ana).put(f"/ballots/{detail['id']}/vote", {"option_ids": [detail["options"][0]["id"]]})
+    rights = {"method": "multiple", "selection_limit": 2}
+    changed = client.put(f"/ballots/{detail['id']}/voting-rights", rights).json()
+    assert next(v for v in changed["voters"] if v["username"] == "ana")["choices"] == 1
