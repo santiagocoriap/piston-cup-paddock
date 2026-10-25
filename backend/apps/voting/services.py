@@ -146,7 +146,9 @@ def set_voting_rights(
     if method != ballot.method or limit != ballot.selection_limit:
         # The voters who voted keep the number of options that they had.
         for user_id in voted:
-            choices.setdefault(str(user_id), choice_limit(ballot, rows[user_id].user))
+            # The limit that the voter really had, with the old method (a single choice
+            # ballot ignores the saved options of a voter).
+            choices[str(user_id)] = choice_limit(ballot, rows[user_id].user)
         changes.append(change("method", ballot.method, method))
         changes.append(change("selection_limit", ballot.selection_limit, limit))
     for item in voters or []:
