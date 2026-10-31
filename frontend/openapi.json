@@ -1633,6 +1633,54 @@
         ]
       }
     },
+    "/api/drivers/{driver_id}": {
+      "patch": {
+        "operationId": "apps_identity_drivers_api_edit_driver",
+        "summary": "Edit Driver",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "driver_id",
+            "schema": {
+              "title": "Driver Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriverOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "An admin changes the name or the Steam ID of a driver. The server entry list and the\nresult import use the new Steam ID from the next push.",
+        "tags": [
+          "drivers"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DriverEditIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/drivers/{driver_id}/link": {
       "post": {
         "operationId": "apps_identity_drivers_api_link_driver",
@@ -10594,6 +10642,37 @@
           "display_name"
         ],
         "title": "DriverIn",
+        "type": "object"
+      },
+      "DriverEditIn": {
+        "properties": {
+          "display_name": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "steam_guid": {
+            "anyOf": [
+              {
+                "pattern": "^(\\d{17})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Steam Guid"
+          }
+        },
+        "title": "DriverEditIn",
         "type": "object"
       },
       "LinkIn": {

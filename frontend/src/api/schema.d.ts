@@ -559,6 +559,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/drivers/{driver_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit Driver
+         * @description An admin changes the name or the Steam ID of a driver. The server entry list and the
+         *     result import use the new Steam ID from the next push.
+         */
+        patch: operations["apps_identity_drivers_api_edit_driver"];
+        trace?: never;
+    };
     "/api/drivers/{driver_id}/link": {
         parameters: {
             query?: never;
@@ -3795,6 +3816,13 @@ export interface components {
         DriverIn: {
             /** Display Name */
             display_name: string;
+            /** Steam Guid */
+            steam_guid?: string | null;
+        };
+        /** DriverEditIn */
+        DriverEditIn: {
+            /** Display Name */
+            display_name?: string | null;
             /** Steam Guid */
             steam_guid?: string | null;
         };
@@ -8814,6 +8842,32 @@ export interface operations {
         responses: {
             /** @description Created */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DriverOut"];
+                };
+            };
+        };
+    };
+    apps_identity_drivers_api_edit_driver: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                driver_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DriverEditIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -26,6 +26,7 @@ export function DriversPage() {
   const [adding, setAdding] = useState(false)
   const [linking, setLinking] = useState<number | null>(null)
   const [merging, setMerging] = useState<number | null>(null)
+  const [editing, setEditing] = useState<number | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
 
   const addButton = (
@@ -42,6 +43,7 @@ export function DriversPage() {
     : list
   const linkTarget = list.find((d) => d.id === linking)
   const mergeTarget = list.find((d) => d.id === merging)
+  const editTarget = list.find((d) => d.id === editing)
 
   return (
     <section>
@@ -125,6 +127,7 @@ export function DriversPage() {
                           onDeleted={drivers.reload}
                           label={t('drivers.actions', { name: driver.display_name })}
                           items={[
+                            { label: t('drivers.edit'), onSelect: () => setEditing(driver.id) },
                             { label: t('drivers.linkAccount'), onSelect: () => setLinking(driver.id) },
                             ...(list.length > 1 ? [{ label: t('drivers.mergeWith'), onSelect: () => setMerging(driver.id) }] : []),
                           ]}
@@ -164,6 +167,40 @@ export function DriversPage() {
             <input name="steam_guid" inputMode="numeric" pattern="\d{17}" />
           </label>
         </ActionForm>
+      </Dialog>
+
+      <Dialog open={editTarget !== undefined} title={t('drivers.edit')} onClose={() => setEditing(null)}>
+        {editTarget && (
+          <ActionForm
+            key={editTarget.id}
+            title={t('drivers.editTitle', { name: editTarget.display_name })}
+            submitLabel={t('common.save')}
+            onSubmit={async (form) => {
+              const { error } = await api.PATCH('/api/drivers/{driver_id}', {
+                params: { path: { driver_id: editTarget.id } },
+                body: {
+                  display_name: String(form.get('display_name') ?? ''),
+                  steam_guid: String(form.get('steam_guid') ?? '').trim(),
+                },
+              })
+              if (!error) {
+                setEditing(null)
+                drivers.reload()
+              }
+              return error
+            }}
+          >
+            <label>
+              {t('drivers.displayName')}
+              <input name="display_name" required maxLength={100} defaultValue={editTarget.display_name} />
+            </label>
+            <label>
+              {t('drivers.steamGuid')}
+              <input name="steam_guid" inputMode="numeric" pattern="\d{17}" defaultValue={editTarget.steam_guid ?? ''} />
+            </label>
+            <p className="muted">{t('drivers.editHelp')}</p>
+          </ActionForm>
+        )}
       </Dialog>
 
       <Dialog
