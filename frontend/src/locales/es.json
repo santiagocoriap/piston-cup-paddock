@@ -242,7 +242,7 @@
     "actionsColumn": "Acciones",
     "edit": "Editar nombre y Steam ID",
     "editTitle": "Editar a {{name}}",
-    "editHelp": "El Steam ID tiene 17 números. Vacío: el piloto queda sin Steam ID. El servidor usa el Steam ID nuevo desde el próximo «Enviar al servidor»."
+    "editHelp": "El Steam ID tiene 17 números. Solo un admin de la liga cambia o borra un Steam ID que ya existe. El servidor usa el Steam ID nuevo desde el próximo «Enviar al servidor»."
   },
   "catalog": {
     "title": "Pistas y autos",

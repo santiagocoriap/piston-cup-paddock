@@ -242,7 +242,7 @@
     "actionsColumn": "Actions",
     "edit": "Edit name and Steam ID",
     "editTitle": "Edit {{name}}",
-    "editHelp": "A Steam ID has 17 digits. Empty: the driver has no Steam ID. The server uses the new Steam ID from the next \"Enviar al servidor\"."
+    "editHelp": "A Steam ID has 17 digits. Only a league admin changes or removes a Steam ID that exists. The server uses the new Steam ID from the next \"Enviar al servidor\"."
   },
   "catalog": {
     "title": "Tracks and cars",
