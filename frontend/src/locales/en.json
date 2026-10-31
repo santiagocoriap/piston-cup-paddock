@@ -239,7 +239,10 @@
     "pickKept": "Pick the profile that stays.",
     "mergeConfirm": "I understand that the profile “{{name}}” is deleted and that this cannot be undone.",
     "merged": "“{{old}}” was merged into “{{kept}}”.",
-    "actionsColumn": "Actions"
+    "actionsColumn": "Actions",
+    "edit": "Edit name and Steam ID",
+    "editTitle": "Edit {{name}}",
+    "editHelp": "A Steam ID has 17 digits. Empty: the driver has no Steam ID. The server uses the new Steam ID from the next \"Enviar al servidor\"."
   },
   "catalog": {
     "title": "Tracks and cars",
@@ -635,7 +638,8 @@
       "class.changed": "{{actor}} changed the class {{name}}.",
       "ballot.subclass_round_started": "{{actor}} started a subclass round in {{ballot}}.",
       "ballot.voters_added": "{{actor}} added voters to {{ballot}}.",
-      "ballot.rights_changed": "{{actor}} adjusted the votes of {{ballot}}."
+      "ballot.rights_changed": "{{actor}} adjusted the votes of {{ballot}}.",
+      "driver.changed": "{{actor}} changed the data of the driver {{driver}}."
     },
     "fields": {
       "role": "Role",

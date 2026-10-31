@@ -45,6 +45,27 @@ async function openMenu(name: string) {
 }
 
 describe('DriversPage', () => {
+  it('changes the name and the Steam ID of a driver', async () => {
+    const calls = mockApi(routes({ 'PATCH /api/drivers/2': () => json(200, drivers[1]) }))
+    renderPage(<DriversPage />, { path: '/admin/drivers', url: '/admin/drivers' })
+    await openMenu('Juan')
+    await userEvent.click(screen.getByRole('button', { name: 'Editar nombre y Steam ID' }))
+    // The closed "new driver" form has a name field too: take the field with the name.
+    const name = screen.getAllByLabelText('Nombre visible').find((el) => (el as HTMLInputElement).value === 'Juan')!
+    await userEvent.clear(name)
+    await userEvent.type(name, 'Juan Gómez')
+    const guid = screen.getAllByLabelText(/Steam/).find((el) => (el as HTMLInputElement).value === '76561190000000002')!
+    await userEvent.clear(guid)
+    await userEvent.type(guid, '76561190000000099')
+    await userEvent.click(screen.getByRole('button', { name: 'Guardar' }))
+    await vi.waitFor(() =>
+      expect(calls.find((c) => c.key === 'PATCH /api/drivers/2')!.body).toEqual({
+        display_name: 'Juan Gómez',
+        steam_guid: '76561190000000099',
+      }),
+    )
+  })
+
   it('shows each driver with a profile link and an account badge', async () => {
     mockApi(routes())
     renderPage(<DriversPage />, { path: '/admin/drivers', url: '/admin/drivers' })

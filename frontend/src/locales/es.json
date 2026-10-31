@@ -239,7 +239,10 @@
     "pickKept": "Elegí el perfil que queda.",
     "mergeConfirm": "Entiendo que el perfil «{{name}}» se borra y que esto no se puede deshacer.",
     "merged": "«{{old}}» se unió a «{{kept}}».",
-    "actionsColumn": "Acciones"
+    "actionsColumn": "Acciones",
+    "edit": "Editar nombre y Steam ID",
+    "editTitle": "Editar a {{name}}",
+    "editHelp": "El Steam ID tiene 17 números. Vacío: el piloto queda sin Steam ID. El servidor usa el Steam ID nuevo desde el próximo «Enviar al servidor»."
   },
   "catalog": {
     "title": "Pistas y autos",
@@ -635,7 +638,8 @@
       "class.changed": "{{actor}} cambió la clase {{name}}.",
       "ballot.subclass_round_started": "{{actor}} empezó una ronda de subclases en {{ballot}}.",
       "ballot.voters_added": "{{actor}} agregó votantes a {{ballot}}.",
-      "ballot.rights_changed": "{{actor}} ajustó los votos de {{ballot}}."
+      "ballot.rights_changed": "{{actor}} ajustó los votos de {{ballot}}.",
+      "driver.changed": "{{actor}} cambió los datos del piloto {{driver}}."
     },
     "fields": {
       "role": "Rol",

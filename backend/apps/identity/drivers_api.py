@@ -67,6 +67,42 @@ def create_driver(request, payload: DriverIn):
     return Status(201, profile)
 
 
+class DriverEditIn(Schema):
+    display_name: str | None = Field(None, min_length=1, max_length=100)
+    # 17 digits, or "" to remove the Steam ID.
+    steam_guid: str | None = Field(None, pattern=r"^(\d{17})?$")
+
+
+@router.patch("/drivers/{driver_id}", response=DriverOut)
+def edit_driver(request, driver_id: int, payload: DriverEditIn):
+    """An admin changes the name or the Steam ID of a driver. The server entry list and the
+    result import use the new Steam ID from the next push."""
+    require(manages_any_championship(request.user))
+    profile = get_object_or_404(DriverProfile.objects.select_related("user"), pk=driver_id)
+    changes = []
+    if payload.display_name is not None and payload.display_name.strip() != profile.display_name:
+        name = payload.display_name.strip()
+        changes.append(change("display_name", profile.display_name, name))
+        profile.display_name = name
+    if payload.steam_guid is not None:
+        guid = payload.steam_guid or None
+        if guid != profile.steam_guid:
+            changes.append(change("steam_guid", profile.steam_guid, guid))
+            profile.steam_guid = guid
+    with conflict_on_duplicate("steam_guid_exists"):
+        profile.save(update_fields=["display_name", "steam_guid"])
+        if changes:
+            record(
+                request.user,
+                "driver.changed",
+                "driver",
+                profile.id,
+                params={"driver": profile.display_name},
+                changes=changes,
+            )
+    return profile
+
+
 @router.post("/drivers/{driver_id}/link", response=DriverOut)
 def link_driver(request, driver_id: int, payload: LinkIn):
     """Link a driver profile to an account, or remove the link with user_id null."""
