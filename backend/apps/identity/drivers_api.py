@@ -76,7 +76,9 @@ class DriverEditIn(Schema):
 @router.patch("/drivers/{driver_id}", response=DriverOut)
 def edit_driver(request, driver_id: int, payload: DriverEditIn):
     """An admin changes the name or the Steam ID of a driver. The server entry list and the
-    result import use the new Steam ID from the next push."""
+    result import use the new Steam ID from the next push. The Steam ID is the identity of the
+    driver on the server: only a league admin changes or removes one, like a link to an
+    account. A championship admin can give a Steam ID to a driver who has none."""
     require(manages_any_championship(request.user))
     profile = get_object_or_404(DriverProfile.objects.select_related("user"), pk=driver_id)
     changes = []
@@ -87,6 +89,7 @@ def edit_driver(request, driver_id: int, payload: DriverEditIn):
     if payload.steam_guid is not None:
         guid = payload.steam_guid or None
         if guid != profile.steam_guid:
+            require(profile.steam_guid is None or is_league_admin(request.user))
             changes.append(change("steam_guid", profile.steam_guid, guid))
             profile.steam_guid = guid
     with conflict_on_duplicate("steam_guid_exists"):
