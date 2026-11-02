@@ -45,11 +45,15 @@ def test_a_driver_with_two_steam_accounts(api, league_admin, champ_admin):
     vice = DriverProfile.objects.create(display_name="Vice", steam_guid="76561190000000001")
     DriverProfile.objects.create(display_name="Bob", steam_guid="76561190000000002")
     client = api(champ_admin)
-    added = client.post(f"/drivers/{vice.id}/steam-ids", {"guid": "76561190000000003"})
+    # A second Steam ID is like a change of the Steam ID: only a league admin.
+    refused = client.post(f"/drivers/{vice.id}/steam-ids", {"guid": "76561190000000003"})
+    assert refused.status_code == 403
+    admin = api(league_admin)
+    added = admin.post(f"/drivers/{vice.id}/steam-ids", {"guid": "76561190000000003"})
     assert added.json()["extra_guids"] == ["76561190000000003"]
     assert driver_for_guid("76561190000000003") == vice
     # The Steam ID of another driver, as main or extra, is taken.
-    taken = client.post(f"/drivers/{vice.id}/steam-ids", {"guid": "76561190000000002"})
+    taken = admin.post(f"/drivers/{vice.id}/steam-ids", {"guid": "76561190000000002"})
     assert taken.status_code == 409
     new = client.post("/drivers", {"display_name": "X", "steam_guid": "76561190000000003"})
     assert new.status_code == 409

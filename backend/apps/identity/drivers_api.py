@@ -129,6 +129,8 @@ def add_steam_id(request, driver_id: int, payload: ExtraGuidIn):
     profile = get_object_or_404(DriverProfile.objects.select_related("user"), pk=driver_id)
     if payload.guid in profile.guids():
         return profile
+    # A second Steam ID is like a change of the Steam ID: only a league admin.
+    require(profile.steam_guid is None or is_league_admin(request.user))
     if guid_in_use(payload.guid):
         raise HttpError(409, "steam_guid_exists")
     with conflict_on_duplicate("steam_guid_exists"):

@@ -11,6 +11,7 @@ from django.utils import timezone
 from apps.audit.services import change, record
 from apps.competition.attempts import current_attempt, race_session
 from apps.competition.models import Round, SeasonEntry, Session
+from apps.competition.permissions import is_league_admin
 from apps.handicaps.services import assigned_values
 from apps.identity.models import DriverSteamId, by_guid, guid_in_use
 from apps.results.services import save_result
@@ -147,7 +148,8 @@ def preview(result_import: ResultImport) -> Preview:
 
 
 def link_guid(result_import: ResultImport, guid: str, entry_id: int, user) -> None:
-    """Give a driver profile the Steam GUID from the file. Only a profile without a GUID."""
+    """Give a driver profile the Steam GUID from the file. A driver with a GUID gets it as an
+    extra Steam ID, and only a league admin can do that."""
     if not is_steam_guid(guid):
         raise ResultFileError("bad_guid")
     entry = (
@@ -162,6 +164,9 @@ def link_guid(result_import: ResultImport, guid: str, entry_id: int, user) -> No
         raise ResultFileError("guid_belongs_to_other_driver")
     if guid in profile.guids():
         return
+    # A second Steam ID is like a change of the Steam ID: only a league admin.
+    if profile.steam_guid and not is_league_admin(user):
+        raise ResultFileError("driver_has_other_guid")
     with transaction.atomic():
         if profile.steam_guid:
             # The driver races with another Steam account too.
