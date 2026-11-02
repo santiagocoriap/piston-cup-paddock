@@ -27,6 +27,7 @@ export function DriversPage() {
   const [linking, setLinking] = useState<number | null>(null)
   const [merging, setMerging] = useState<number | null>(null)
   const [editing, setEditing] = useState<number | null>(null)
+  const [adding_id, setAddingId] = useState<number | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
 
   const addButton = (
@@ -39,11 +40,14 @@ export function DriversPage() {
   const list = drivers.data ?? []
   const needle = query.trim().toLowerCase()
   const shown = needle
-    ? list.filter((d) => [d.display_name, d.steam_guid ?? '', d.username ?? ''].some((text) => text.toLowerCase().includes(needle)))
+    ? list.filter((d) =>
+        [d.display_name, d.steam_guid ?? '', ...(d.extra_guids ?? []), d.username ?? ''].some((text) => text.toLowerCase().includes(needle)),
+      )
     : list
   const linkTarget = list.find((d) => d.id === linking)
   const mergeTarget = list.find((d) => d.id === merging)
   const editTarget = list.find((d) => d.id === editing)
+  const guidTarget = list.find((d) => d.id === adding_id)
 
   return (
     <section>
@@ -112,7 +116,14 @@ export function DriversPage() {
                           </span>
                         </span>
                       </td>
-                      <td className="mono">{driver.steam_guid ?? '—'}</td>
+                      <td className="mono">
+                        {driver.steam_guid ?? '—'}
+                        {(driver.extra_guids ?? []).map((guid) => (
+                          <span key={guid} className="extra-guid" title={t('drivers.extraGuid')}>
+                            + {guid}
+                          </span>
+                        ))}
+                      </td>
                       <td>
                         {driver.username ? (
                           <span className="badge account-badge">@{driver.username}</span>
@@ -128,6 +139,7 @@ export function DriversPage() {
                           label={t('drivers.actions', { name: driver.display_name })}
                           items={[
                             { label: t('drivers.edit'), onSelect: () => setEditing(driver.id) },
+                            { label: t('drivers.addGuid'), onSelect: () => setAddingId(driver.id) },
                             { label: t('drivers.linkAccount'), onSelect: () => setLinking(driver.id) },
                             ...(list.length > 1 ? [{ label: t('drivers.mergeWith'), onSelect: () => setMerging(driver.id) }] : []),
                           ]}
@@ -199,6 +211,36 @@ export function DriversPage() {
               <input name="steam_guid" inputMode="numeric" pattern="\d{17}" defaultValue={editTarget.steam_guid ?? ''} />
             </label>
             <p className="muted">{t('drivers.editHelp')}</p>
+            {(editTarget.extra_guids ?? []).length > 0 && (
+              <ExtraGuids driver={editTarget} onChange={drivers.reload} />
+            )}
+          </ActionForm>
+        )}
+      </Dialog>
+
+      <Dialog open={guidTarget !== undefined} title={t('drivers.addGuid')} onClose={() => setAddingId(null)}>
+        {guidTarget && (
+          <ActionForm
+            key={guidTarget.id}
+            title={t('drivers.addGuidTitle', { name: guidTarget.display_name })}
+            submitLabel={t('common.add')}
+            onSubmit={async (form) => {
+              const { error } = await api.POST('/api/drivers/{driver_id}/steam-ids', {
+                params: { path: { driver_id: guidTarget.id } },
+                body: { guid: String(form.get('guid') ?? '').trim() },
+              })
+              if (!error) {
+                setAddingId(null)
+                drivers.reload()
+              }
+              return error
+            }}
+          >
+            <label>
+              {t('drivers.steamGuid')}
+              <input name="guid" inputMode="numeric" pattern="\d{17}" required />
+            </label>
+            <p className="muted">{t('drivers.addGuidHelp')}</p>
           </ActionForm>
         )}
       </Dialog>
@@ -228,6 +270,43 @@ export function DriversPage() {
         )}
       </Dialog>
     </section>
+  )
+}
+
+/** The extra Steam IDs of a driver, each with a button to remove it (league admins only). */
+function ExtraGuids({ driver, onChange }: { driver: Driver; onChange: () => void }) {
+  const { t } = useTranslation()
+  const [error, setError] = useState<string | null>(null)
+  return (
+    <div className="extra-guids">
+      <p>{t('drivers.extraGuids')}</p>
+      <ul>
+        {(driver.extra_guids ?? []).map((guid) => (
+          <li key={guid}>
+            <span className="mono">{guid}</span>
+            <button
+              type="button"
+              className="secondary small"
+              onClick={async () => {
+                setError(null)
+                const { error: failed } = await api.DELETE('/api/drivers/{driver_id}/steam-ids/{guid}', {
+                  params: { path: { driver_id: driver.id, guid } },
+                })
+                if (failed) setError(errorMessage(t, failed))
+                else onChange()
+              }}
+            >
+              {t('drivers.removeGuid')}
+            </button>
+          </li>
+        ))}
+      </ul>
+      {error && (
+        <p role="alert" className="error">
+          {error}
+        </p>
+      )}
+    </div>
   )
 }
 

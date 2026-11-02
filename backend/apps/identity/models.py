@@ -59,6 +59,64 @@ class DriverProfile(models.Model):
         """The picture of the account that owns the profile. Load the profile with its user."""
         return self.user.avatar_url() if self.user_id else None
 
+    def guids(self) -> list[str]:
+        """Every Steam ID of the driver: the main one first, then the extra ones."""
+        extra = list(self.extra_guids.values_list("guid", flat=True))
+        return ([self.steam_guid] if self.steam_guid else []) + extra
+
+
+class DriverSteamId(models.Model):
+    """An extra Steam ID of a driver, for a driver who races with more than one Steam account.
+    The server entry list books the main Steam ID. Results, penalties, telemetry, and the other
+    server data find the driver by any of the Steam IDs."""
+
+    driver = models.ForeignKey(DriverProfile, on_delete=models.CASCADE, related_name="extra_guids")
+    guid = models.CharField(max_length=17, unique=True, validators=[steam_guid_validator])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+
+    def __str__(self):
+        return f"{self.driver} ({self.guid})"
+
+
+def guid_in_use(guid: str, exclude: DriverProfile | None = None) -> bool:
+    """True when a driver (other than exclude) has this Steam ID, as main or extra."""
+    main = DriverProfile.objects.filter(steam_guid=guid)
+    extra = DriverSteamId.objects.filter(guid=guid)
+    if exclude is not None:
+        main = main.exclude(pk=exclude.pk)
+        extra = extra.exclude(driver=exclude)
+    return main.exists() or extra.exists()
+
+
+def driver_for_guid(guid: str) -> DriverProfile | None:
+    """The driver with this Steam ID, as main or extra."""
+    if not guid:
+        return None
+    found = DriverProfile.objects.filter(steam_guid=guid).first()
+    if found:
+        return found
+    extra = DriverSteamId.objects.select_related("driver").filter(guid=guid).first()
+    return extra.driver if extra else None
+
+
+def by_guid(rows, driver_of=lambda row: row.driver) -> dict:
+    """A map from each Steam ID (main and extra) to its row. rows: entries or profiles."""
+    rows = list(rows)
+    found = {}
+    by_driver = {}
+    for row in rows:
+        driver = driver_of(row)
+        by_driver[driver.pk] = row
+        if driver.steam_guid:
+            found[driver.steam_guid] = row
+    extra = DriverSteamId.objects.filter(driver_id__in=by_driver).values_list("driver_id", "guid")
+    for driver_id, guid in extra:
+        found.setdefault(guid, by_driver[driver_id])
+    return found
+
 
 class LoginFailure(models.Model):
     """One wrong password. The login limit counts these rows. The password is never stored."""

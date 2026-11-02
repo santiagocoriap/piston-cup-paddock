@@ -1660,7 +1660,7 @@
             }
           }
         },
-        "description": "An admin changes the name or the Steam ID of a driver. The server entry list and the\nresult import use the new Steam ID from the next push.",
+        "description": "An admin changes the name or the Steam ID of a driver. The server entry list and the\nresult import use the new Steam ID from the next push. The Steam ID is the identity of the\ndriver on the server: only a league admin changes or removes one, like a link to an\naccount. A championship admin can give a Steam ID to a driver who has none.",
         "tags": [
           "drivers"
         ],
@@ -1674,6 +1674,101 @@
           },
           "required": true
         },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/drivers/{driver_id}/steam-ids": {
+      "post": {
+        "operationId": "apps_identity_drivers_api_add_steam_id",
+        "summary": "Add Steam Id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "driver_id",
+            "schema": {
+              "title": "Driver Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriverOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Add a Steam account to a driver who races with more than one. The Steam ID must be free:\nno driver has it.",
+        "tags": [
+          "drivers"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtraGuidIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/drivers/{driver_id}/steam-ids/{guid}": {
+      "delete": {
+        "operationId": "apps_identity_drivers_api_remove_steam_id",
+        "summary": "Remove Steam Id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "driver_id",
+            "schema": {
+              "title": "Driver Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "guid",
+            "schema": {
+              "title": "Guid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriverOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Remove an extra Steam ID. Only a league admin, like a change of the main Steam ID.",
+        "tags": [
+          "drivers"
+        ],
         "security": [
           {
             "SessionAuth": []
@@ -10579,6 +10674,14 @@
             ],
             "title": "Steam Guid"
           },
+          "extra_guids": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Extra Guids",
+            "type": "array"
+          },
           "user_id": {
             "anyOf": [
               {
@@ -10673,6 +10776,20 @@
           }
         },
         "title": "DriverEditIn",
+        "type": "object"
+      },
+      "ExtraGuidIn": {
+        "properties": {
+          "guid": {
+            "pattern": "^\\d{17}$",
+            "title": "Guid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "guid"
+        ],
+        "title": "ExtraGuidIn",
         "type": "object"
       },
       "LinkIn": {

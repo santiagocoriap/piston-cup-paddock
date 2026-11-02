@@ -13,7 +13,7 @@ from apps.audit.services import change, record
 from apps.competition.models import Championship, ChampionshipMember
 from apps.competition.permissions import can_manage, is_league_admin
 
-from .models import AccountLink, DriverProfile, User
+from .models import AccountLink, DriverProfile, User, guid_in_use
 
 LINK_LIFETIME = timedelta(days=7)
 
@@ -90,7 +90,7 @@ def create_account(
     if User.objects.filter(username__iexact=username).exists():
         raise AccountError("username_exists")
     steam_guid = (steam_guid or "").strip() or None
-    if steam_guid and DriverProfile.objects.filter(steam_guid=steam_guid).exists():
+    if steam_guid and guid_in_use(steam_guid):
         raise AccountError("steam_guid_exists")
     profile = None
     if driver_id is not None:

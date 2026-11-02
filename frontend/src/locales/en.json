@@ -242,7 +242,13 @@
     "actionsColumn": "Actions",
     "edit": "Edit name and Steam ID",
     "editTitle": "Edit {{name}}",
-    "editHelp": "A Steam ID has 17 digits. Only a league admin changes or removes a Steam ID that exists. The server uses the new Steam ID from the next \"Enviar al servidor\"."
+    "editHelp": "A Steam ID has 17 digits. Only a league admin changes or removes a Steam ID that exists. The server uses the new Steam ID from the next \"Enviar al servidor\".",
+    "addGuid": "Add another Steam account",
+    "addGuidTitle": "Another Steam account of {{name}}",
+    "addGuidHelp": "For a driver who races with more than one Steam account. Results, penalties, and telemetry find the driver with any of them. The server books the slot with the main Steam ID.",
+    "extraGuid": "Another Steam account of the driver",
+    "extraGuids": "Other Steam accounts",
+    "removeGuid": "Remove"
   },
   "catalog": {
     "title": "Tracks and cars",
@@ -639,7 +645,9 @@
       "ballot.subclass_round_started": "{{actor}} started a subclass round in {{ballot}}.",
       "ballot.voters_added": "{{actor}} added voters to {{ballot}}.",
       "ballot.rights_changed": "{{actor}} adjusted the votes of {{ballot}}.",
-      "driver.changed": "{{actor}} changed the data of the driver {{driver}}."
+      "driver.changed": "{{actor}} changed the data of the driver {{driver}}.",
+      "driver.steam_id_added": "{{actor}} added a Steam account to {{driver}}.",
+      "driver.steam_id_removed": "{{actor}} removed a Steam account from {{driver}}."
     },
     "fields": {
       "role": "Role",

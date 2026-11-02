@@ -575,9 +575,52 @@ export interface paths {
         /**
          * Edit Driver
          * @description An admin changes the name or the Steam ID of a driver. The server entry list and the
-         *     result import use the new Steam ID from the next push.
+         *     result import use the new Steam ID from the next push. The Steam ID is the identity of the
+         *     driver on the server: only a league admin changes or removes one, like a link to an
+         *     account. A championship admin can give a Steam ID to a driver who has none.
          */
         patch: operations["apps_identity_drivers_api_edit_driver"];
+        trace?: never;
+    };
+    "/api/drivers/{driver_id}/steam-ids": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Steam Id
+         * @description Add a Steam account to a driver who races with more than one. The Steam ID must be free:
+         *     no driver has it.
+         */
+        post: operations["apps_identity_drivers_api_add_steam_id"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/drivers/{driver_id}/steam-ids/{guid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove Steam Id
+         * @description Remove an extra Steam ID. Only a league admin, like a change of the main Steam ID.
+         */
+        delete: operations["apps_identity_drivers_api_remove_steam_id"];
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/drivers/{driver_id}/link": {
@@ -3802,6 +3845,11 @@ export interface components {
             display_name: string;
             /** Steam Guid */
             steam_guid: string | null;
+            /**
+             * Extra Guids
+             * @default []
+             */
+            extra_guids?: string[];
             /** User Id */
             user_id: number | null;
             /** Username */
@@ -3825,6 +3873,11 @@ export interface components {
             display_name?: string | null;
             /** Steam Guid */
             steam_guid?: string | null;
+        };
+        /** ExtraGuidIn */
+        ExtraGuidIn: {
+            /** Guid */
+            guid: string;
         };
         /** LinkIn */
         LinkIn: {
@@ -8865,6 +8918,55 @@ export interface operations {
                 "application/json": components["schemas"]["DriverEditIn"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DriverOut"];
+                };
+            };
+        };
+    };
+    apps_identity_drivers_api_add_steam_id: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                driver_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExtraGuidIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DriverOut"];
+                };
+            };
+        };
+    };
+    apps_identity_drivers_api_remove_steam_id: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                driver_id: number;
+                guid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {

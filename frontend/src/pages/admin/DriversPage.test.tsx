@@ -66,6 +66,33 @@ describe('DriversPage', () => {
     )
   })
 
+  it('adds another Steam account to a driver', async () => {
+    const calls = mockApi(routes({ 'POST /api/drivers/2/steam-ids': () => json(200, drivers[1]) }))
+    renderPage(<DriversPage />, { path: '/admin/drivers', url: '/admin/drivers' })
+    await openMenu('Juan')
+    await userEvent.click(screen.getByRole('button', { name: 'Agregar otra cuenta de Steam' }))
+    const dialog = screen.getByRole('dialog', { name: 'Agregar otra cuenta de Steam' })
+    await userEvent.type(within(dialog).getByRole('textbox'), '76561190000000077')
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Agregar' }))
+    await vi.waitFor(() =>
+      expect(calls.find((c) => c.key === 'POST /api/drivers/2/steam-ids')!.body).toEqual({ guid: '76561190000000077' }),
+    )
+  })
+
+  it('shows and removes the extra Steam accounts of a driver', async () => {
+    const two = { ...drivers[1], extra_guids: ['76561190000000077'] }
+    const calls = mockApi(routes({
+      'GET /api/drivers': () => json(200, [drivers[0], two, drivers[2]]),
+      'DELETE /api/drivers/2/steam-ids/76561190000000077': () => json(200, drivers[1]),
+    }))
+    renderPage(<DriversPage />, { path: '/admin/drivers', url: '/admin/drivers' })
+    expect(await screen.findByText('+ 76561190000000077')).toBeInTheDocument()
+    await openMenu('Juan')
+    await userEvent.click(screen.getByRole('button', { name: 'Editar nombre y Steam ID' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Quitar' }))
+    await vi.waitFor(() => expect(calls.some((c) => c.key === 'DELETE /api/drivers/2/steam-ids/76561190000000077')).toBe(true))
+  })
+
   it('shows each driver with a profile link and an account badge', async () => {
     mockApi(routes())
     renderPage(<DriversPage />, { path: '/admin/drivers', url: '/admin/drivers' })

@@ -21,6 +21,7 @@ from django.utils import timezone
 from apps.audit.services import record
 from apps.competition.attempts import race_session
 from apps.competition.models import Round, Session
+from apps.identity.models import by_guid
 from apps.restarts.models import Restart
 from apps.restarts.services import insert_abandoned_starts
 from apps.results.models import Penalty, RaceResult
@@ -105,11 +106,7 @@ class PenaltyPreview:
 
 
 def _entries_by_guid(round_: Round) -> dict[str, object]:
-    return {
-        e.driver.steam_guid: e
-        for e in round_.season.entries.select_related("driver")
-        if e.driver.steam_guid
-    }
+    return by_guid(round_.season.entries.select_related("driver"))
 
 
 def _planned(item: LogPenalty, kind: str, sha: str, entries, known: set[str]) -> PlannedPenalty:
