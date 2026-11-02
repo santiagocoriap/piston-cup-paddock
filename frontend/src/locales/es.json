@@ -242,7 +242,13 @@
     "actionsColumn": "Acciones",
     "edit": "Editar nombre y Steam ID",
     "editTitle": "Editar a {{name}}",
-    "editHelp": "El Steam ID tiene 17 números. Solo un admin de la liga cambia o borra un Steam ID que ya existe. El servidor usa el Steam ID nuevo desde el próximo «Enviar al servidor»."
+    "editHelp": "El Steam ID tiene 17 números. Solo un admin de la liga cambia o borra un Steam ID que ya existe. El servidor usa el Steam ID nuevo desde el próximo «Enviar al servidor».",
+    "addGuid": "Agregar otra cuenta de Steam",
+    "addGuidTitle": "Otra cuenta de Steam de {{name}}",
+    "addGuidHelp": "Para un piloto que corre con más de una cuenta de Steam. Los resultados, las penalizaciones y la telemetría lo encuentran con cualquiera. El servidor reserva el lugar con el Steam ID principal.",
+    "extraGuid": "Otra cuenta de Steam del piloto",
+    "extraGuids": "Otras cuentas de Steam",
+    "removeGuid": "Quitar"
   },
   "catalog": {
     "title": "Pistas y autos",
@@ -639,7 +645,9 @@
       "ballot.subclass_round_started": "{{actor}} empezó una ronda de subclases en {{ballot}}.",
       "ballot.voters_added": "{{actor}} agregó votantes a {{ballot}}.",
       "ballot.rights_changed": "{{actor}} ajustó los votos de {{ballot}}.",
-      "driver.changed": "{{actor}} cambió los datos del piloto {{driver}}."
+      "driver.changed": "{{actor}} cambió los datos del piloto {{driver}}.",
+      "driver.steam_id_added": "{{actor}} agregó una cuenta de Steam a {{driver}}.",
+      "driver.steam_id_removed": "{{actor}} quitó una cuenta de Steam de {{driver}}."
     },
     "fields": {
       "role": "Rol",

@@ -12,6 +12,7 @@ from ninja import Router, Schema
 
 from apps.competition.models import Round
 from apps.competition.permissions import can_view
+from apps.identity.models import by_guid
 
 from .incident_api import WINDOW, collisions
 from .incidents import group
@@ -84,9 +85,8 @@ def replay(request, round_id: int, attempt: int | None = None):
     end = later[0].occurred_at if later else None
 
     names = {
-        e.driver.steam_guid: e.driver.display_name
-        for e in round_.season.entries.select_related("driver")
-        if e.driver.steam_guid
+        guid: e.driver.display_name
+        for guid, e in by_guid(round_.season.entries.select_related("driver")).items()
     }
     tracks: dict[str, CarTrackOut] = {}
     for event in events:

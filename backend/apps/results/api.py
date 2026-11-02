@@ -358,8 +358,8 @@ def _lines(version: ResultVersion) -> list[LineOut]:
             gap_ms=gap(r)[0],
             laps_down=gap(r)[1],
             incidents=(
-                counts.get(r.entry.driver.steam_guid, 0)
-                if counts is not None and r.entry.driver.steam_guid
+                sum(counts.get(g, 0) for g in r.entry.driver.guids())
+                if counts is not None and r.entry.driver.guids()
                 else None
             ),
         )

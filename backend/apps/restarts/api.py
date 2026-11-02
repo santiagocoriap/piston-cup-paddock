@@ -6,6 +6,7 @@ from ninja.errors import HttpError
 from apps.competition.attempts import race_session
 from apps.competition.models import Round
 from apps.competition.permissions import can, can_view
+from apps.identity.models import by_guid
 
 from .models import Restart
 from .services import RestartError, record_restart, summarize, update_responsibility
@@ -137,11 +138,7 @@ def _collector_evidence(round_: Round) -> dict[int, tuple[list, list]]:
     found, names, _ = collisions(round_, "race")
     if not found:
         return {}
-    entries = {
-        e.driver.steam_guid: e
-        for e in round_.season.entries.select_related("driver")
-        if e.driver.steam_guid
-    }
+    entries = by_guid(round_.season.entries.select_related("driver"))
     starts = _start_times(round_)
     evidence: dict[int, tuple[list, list]] = {}
     for attempt in sorted({c.attempt for c in found}):

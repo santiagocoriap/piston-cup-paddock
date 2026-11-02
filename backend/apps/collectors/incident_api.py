@@ -14,6 +14,7 @@ from pydantic import Field
 from apps.audit.services import record
 from apps.competition.models import Round
 from apps.competition.permissions import can, can_view
+from apps.identity.models import by_guid
 
 from .incidents import GAP_SECONDS, Collision, Incident, group
 from .models import CollectorEvent, IncidentReview
@@ -41,9 +42,8 @@ def collisions(round_: Round, session: str) -> tuple[list[Collision], dict[str, 
         occurred_at__lte=round_.scheduled_at + WINDOW,
     ).order_by("occurred_at", "token_id", "run_id", "seq")
     names: dict[str, str] = {
-        e.driver.steam_guid: e.driver.display_name
-        for e in round_.season.entries.select_related("driver")
-        if e.driver.steam_guid
+        guid: e.driver.display_name
+        for guid, e in by_guid(round_.season.entries.select_related("driver")).items()
     }
     found: list[Collision] = []
     current = ""

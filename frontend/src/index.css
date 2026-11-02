@@ -8268,6 +8268,27 @@ form.card > label.wide {
   min-width: 0;
 }
 
+/* The extra Steam accounts of a driver, under the main Steam ID. */
+.extra-guid {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.extra-guids ul {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.extra-guids li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 /* The power and options of each voter, in the rights form of an open ballot. */
 .rights-table input {
   width: 5.5em;

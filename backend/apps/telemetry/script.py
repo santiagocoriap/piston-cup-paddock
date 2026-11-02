@@ -27,7 +27,7 @@ from django.utils import timezone
 from apps.collectors.incident_api import AC_SESSION_TYPES
 from apps.collectors.models import CollectorEvent
 from apps.competition.models import Championship, Round, SeasonEntry
-from apps.identity.models import DriverProfile
+from apps.identity.models import driver_for_guid
 from apps.imports.ac_results import track_key
 
 from .models import ScriptCode, TelemetryLap
@@ -242,7 +242,7 @@ def match(lap: TelemetryLap) -> str:
     """Link a pending lap to its session. Gives "league", "pending", or "rejected". A rejected
     lap is deleted."""
     line = timeline(lap.championship, lap.recorded_at)
-    guid = lap.driver.steam_guid or ""
+    guids = set(lap.driver.guids())
     for span in line.spans:
         if not _inside(span.started_at, span.ended_at, lap.recorded_at):
             continue
@@ -250,7 +250,7 @@ def match(lap: TelemetryLap) -> str:
             p
             for p in line.presences
             if (p.token_id, p.run_id) == (span.token_id, span.run_id)
-            and p.guid == guid
+            and p.guid in guids
             and _inside(p.started_at, p.ended_at, lap.recorded_at)
         ]
         same_car = [p for p in connected if p.car_model.lower() == lap.car.lower()]
@@ -260,7 +260,7 @@ def match(lap: TelemetryLap) -> str:
             server_lap
             for server_lap in line.laps
             if (server_lap.token_id, server_lap.run_id) == (span.token_id, span.run_id)
-            and server_lap.guid == guid
+            and server_lap.guid in guids
             and abs(server_lap.lap_ms - lap.lap_time_ms) <= LAP_TIME_TOLERANCE_MS
             and abs(server_lap.at - lap.recorded_at) <= TOLERANCE
         ]
@@ -286,7 +286,7 @@ def match(lap: TelemetryLap) -> str:
             other
             for other in line.laps
             if (other.token_id, other.run_id, other.guid)
-            == (server_lap.token_id, server_lap.run_id, guid)
+            == (server_lap.token_id, server_lap.run_id, server_lap.guid)
             and span.started_at <= other.at <= server_lap.at
         ]
         lap.lap_number = len(session_laps)
@@ -352,7 +352,7 @@ def receive_lap(championship: Championship, payload: dict) -> tuple[TelemetryLap
     """Store one lap of the script and match it. Gives the lap (None when rejected) and the
     state: "league", "pending", "rejected", or "known" for a lap that came before."""
     guid = str(payload.get("steam_id", ""))
-    driver = DriverProfile.objects.filter(steam_guid=guid).first() if guid else None
+    driver = driver_for_guid(guid)
     if driver is None:
         raise TelemetryError("unknown_driver")
     if not SeasonEntry.objects.filter(season__championship=championship, driver=driver).exists():

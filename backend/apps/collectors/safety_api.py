@@ -100,8 +100,8 @@ def season_ratings(season: Season) -> list[tuple[object, object]]:
     by_round = [_round_inputs(r) for r in rounds]
     rows = []
     for entry in season.entries.select_related("driver").order_by("number"):
-        guid = entry.driver.steam_guid
-        rows.append((entry, rate([i[guid] for i in by_round if guid and guid in i])))
+        guids = entry.driver.guids()
+        rows.append((entry, rate([i[g] for i in by_round for g in guids if g in i])))
     return rows
 
 

@@ -9,7 +9,7 @@ from django.db import transaction
 
 from apps.audit.services import change, record
 
-from .models import DriverProfile
+from .models import DriverProfile, DriverSteamId
 
 
 class MergeError(ValueError):
@@ -29,8 +29,6 @@ def check(old: DriverProfile, kept: DriverProfile) -> None:
         raise MergeError("same_driver")
     if old.user_id and kept.user_id:
         raise MergeError("both_have_accounts")
-    if old.steam_guid and kept.steam_guid and old.steam_guid != kept.steam_guid:
-        raise MergeError("different_steam_ids")
     old_seasons = set(old.entries.values_list("season_id", flat=True))
     if old_seasons & set(kept.entries.values_list("season_id", flat=True)):
         raise MergeError("both_in_season")
@@ -51,9 +49,12 @@ def merge(old: DriverProfile, kept: DriverProfile, user, reason: str) -> DriverP
             if count:
                 moved[f"{model.__name__}.{field}"] = count
         old_name, old_user = old.display_name, old.user
-        if old.steam_guid and not kept.steam_guid:
-            kept.steam_guid = old.steam_guid
+        old_guid = old.steam_guid
         old.delete()
+        if old_guid and not kept.steam_guid:
+            kept.steam_guid = old_guid
+        elif old_guid and old_guid != kept.steam_guid:
+            DriverSteamId.objects.create(driver=kept, guid=old_guid)
         if old_user and not kept.user_id:
             kept.user = old_user
         kept.save()

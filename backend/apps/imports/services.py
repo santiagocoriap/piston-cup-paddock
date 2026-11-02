@@ -12,7 +12,7 @@ from apps.audit.services import change, record
 from apps.competition.attempts import current_attempt, race_session
 from apps.competition.models import Round, SeasonEntry, Session
 from apps.handicaps.services import assigned_values
-from apps.identity.models import DriverProfile
+from apps.identity.models import DriverSteamId, by_guid, guid_in_use
 from apps.results.services import save_result
 from apps.rules.scoring import Line, ResultError, Status
 
@@ -94,11 +94,7 @@ class Preview:
 def preview(result_import: ResultImport) -> Preview:
     round_ = result_import.round
     parsed = read_file(result_import)
-    entries = {
-        e.driver.steam_guid: e
-        for e in round_.season.entries.select_related("driver", "car")
-        if e.driver.steam_guid
-    }
+    entries = by_guid(round_.season.entries.select_related("driver", "car"))
     leader_laps = parsed.drivers[0].laps if parsed.drivers else 0
     assigned = assigned_values(round_) if parsed.session_type == "race" else {}
     matched, unmatched = [], []
@@ -162,13 +158,17 @@ def link_guid(result_import: ResultImport, guid: str, entry_id: int, user) -> No
     if entry is None:
         raise ResultFileError("entry_not_in_season")
     profile = entry.driver
-    if profile.steam_guid and profile.steam_guid != guid:
-        raise ResultFileError("driver_has_other_guid")
-    if DriverProfile.objects.filter(steam_guid=guid).exclude(pk=profile.pk).exists():
+    if guid_in_use(guid, exclude=profile):
         raise ResultFileError("guid_belongs_to_other_driver")
+    if guid in profile.guids():
+        return
     with transaction.atomic():
-        profile.steam_guid = guid
-        profile.save(update_fields=["steam_guid"])
+        if profile.steam_guid:
+            # The driver races with another Steam account too.
+            DriverSteamId.objects.create(driver=profile, guid=guid)
+        else:
+            profile.steam_guid = guid
+            profile.save(update_fields=["steam_guid"])
         record(
             user,
             "driver.guid_linked",

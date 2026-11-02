@@ -268,3 +268,13 @@ def test_a_voter_who_voted_keeps_one_option_after_a_change_to_multiple(
     rights = {"method": "multiple", "selection_limit": 2}
     changed = client.put(f"/ballots/{detail['id']}/voting-rights", rights).json()
     assert next(v for v in changed["voters"] if v["username"] == "ana")["choices"] == 1
+
+
+def test_a_result_matches_the_extra_steam_id_of_a_driver(api, champ_admin, season, classes):
+    from apps.identity.models import DriverSteamId, by_guid
+
+    ana = DriverProfile.objects.create(display_name="Ana", steam_guid="76561190000000001")
+    DriverSteamId.objects.create(driver=ana, guid="76561190000000009")
+    entry = SeasonEntry.objects.create(season=season, driver=ana, number=1)
+    found = by_guid(season.entries.select_related("driver"))
+    assert found == {"76561190000000001": entry, "76561190000000009": entry}
