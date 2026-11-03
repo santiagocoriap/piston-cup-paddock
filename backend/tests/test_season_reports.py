@@ -5,19 +5,18 @@ from django.core.management import call_command
 
 from apps.competition.models import ChampionshipMember, Round, SeasonEntry
 from apps.identity.models import DriverProfile
-from apps.reports import services
 from apps.reports.models import RaceReport
 from apps.reports.prompt import SEASON_PROMPT_VERSION
 from apps.reports.services import generate
 from apps.restarts.models import Restart
 
-from .test_reports import FakeAI
+from .test_reports import FakeAI, use_fake_ai
 
 
 @pytest.fixture
 def ai(monkeypatch):
     fake = FakeAI(text="Temporada de locos.")
-    monkeypatch.setattr(services, "litellm", fake)
+    use_fake_ai(monkeypatch, fake)
     return fake
 
 

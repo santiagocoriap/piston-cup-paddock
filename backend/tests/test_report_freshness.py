@@ -9,18 +9,17 @@ from django.core.management import call_command
 from apps.collectors.models import CollectorEvent
 from apps.collectors.services import create_token
 from apps.competition.models import Round
-from apps.reports import services
 from apps.reports.models import RaceReport
 from apps.reports.services import generate
 
 from .test_penalty_logs import NIGHT
-from .test_reports import FakeAI
+from .test_reports import FakeAI, use_fake_ai
 
 
 @pytest.fixture
 def ai(monkeypatch):
     fake = FakeAI()
-    monkeypatch.setattr(services, "litellm", fake)
+    use_fake_ai(monkeypatch, fake)
     return fake
 
 

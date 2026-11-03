@@ -5,8 +5,8 @@ and standings never wait for a report.
 """
 
 import logging
+import os
 
-import litellm
 from django.conf import settings
 from django.db import transaction
 from django.db.models import Max
@@ -21,6 +21,15 @@ from .prompt import PROMPT_VERSION, SEASON_PROMPT_VERSION, messages
 
 logger = logging.getLogger(__name__)
 
+# The key of each usual provider. With this list, the web processes check the key and do not
+# load litellm, which takes 140 MB in each process.
+PROVIDER_KEYS = {
+    "anthropic": "ANTHROPIC_API_KEY",
+    "openai": "OPENAI_API_KEY",
+    "gemini": "GEMINI_API_KEY",
+    "openrouter": "OPENROUTER_API_KEY",
+}
+
 # The cost limit of one report. The model also uses part of it to think before it writes.
 MAX_TOKENS = 4000
 
@@ -33,7 +42,12 @@ def ai_configured() -> bool:
     """True when the provider key of the report model is set, and AI_DISABLED is not on."""
     if settings.AI_DISABLED:
         return False
+    provider = settings.AI_REPORT_MODEL.partition("/")[0]
+    if provider in PROVIDER_KEYS:
+        return bool(os.environ.get(PROVIDER_KEYS[provider]))
     try:
+        import litellm
+
         check = litellm.validate_environment(model=settings.AI_REPORT_MODEL)
     except Exception:  # An unknown model counts as not configured.
         return False
@@ -182,6 +196,8 @@ def generate(report_id: int) -> RaceReport:
     if not ai_configured():
         return _fail(report, "ai_not_configured")
     try:
+        import litellm
+
         response = litellm.completion(
             model=report.model,
             messages=messages(
