@@ -45,6 +45,8 @@ The app shows track maps and car pictures from the Assetto Corsa files. The imag
 2. On a PC with the game, run `python tools/pack_game_images.py --needed paddock-needed.json`. The script finds the usual Steam folders. Use `--game` for another folder.
 3. Upload `paddock-images.zip` in the same panel.
 
+To update only the track maps, run `python tools/pack_game_images.py --maps-only`, and upload `paddock-maps.zip` in the same panel. "Importar desde el juego" also sends the map points of the tracks that you choose.
+
 On a PC that runs the app and the game, one command does all three steps: `cd backend && uv run python manage.py import_game_images "<assettocorsa folder>"`.
 
 ## Deploy, backup, and restore

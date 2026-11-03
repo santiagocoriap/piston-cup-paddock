@@ -40,7 +40,8 @@ const game = folder('assettocorsa', {
     },
     tracks: {
       ks_highlands: { ui: { layout_long: { 'ui_track.json': '{"name": "Highlands Long"}', 'outline.png': 'o' }, layout_short: { 'ui_track.json': '{"name": "Highlands Short"}' } } },
-      magione: { ui: { 'ui_track.json': '{"name": "Magione"}', 'preview.png': 'p' } },
+      // A line of 1 point: 16 bytes of header, 20 bytes of the point, and AI data after them.
+      magione: { ui: { 'ui_track.json': '{"name": "Magione"}', 'preview.png': 'p' }, ai: { 'fast_lane.ai': `\x07\0\0\0\x01\0\0\0${'h'.repeat(8)}${'p'.repeat(20)}${'x'.repeat(50)}` } },
     },
   },
 })
@@ -67,10 +68,12 @@ describe('gameFolder', () => {
       'cars/bmw_m3_e30/skins/red/preview.jpg',
       'cars/bmw_m3_e30/ui/badge.png',
       'cars/bmw_m3_e30/ui/ui_car.json',
+      'tracks/magione/ai/fast_lane.ai',
       'tracks/magione/ui/preview.png',
       'tracks/magione/ui/ui_track.json',
     ])
     expect(strFromU8(files['tracks/magione/ui/preview.png'])).toBe('p')
+    expect(files['tracks/magione/ai/fast_lane.ai'].length).toBe(36)
   })
 
   it('packs the data, the DLC marker, and every skin of a car', async () => {

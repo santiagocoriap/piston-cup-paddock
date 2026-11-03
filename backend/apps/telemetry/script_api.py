@@ -58,6 +58,8 @@ class ScriptLapIn(Schema):
     ended_at: int  # Seconds, from the clock of the driver PC.
     sent_at: int  # Seconds, from the same clock.
     samples: list[list[float]]
+    # The second block: tyres, fuel, and suspension. An older script does not send it.
+    vehicle: list[list[float]] = []
 
 
 class ScriptLapOut(Schema):

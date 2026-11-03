@@ -14,6 +14,8 @@ local PADDOCK_URL = '__PADDOCK_URL__'
 local SAMPLE_EVERY = 0.05 -- seconds, so 20 samples each second
 local MAX_QUEUE = 30 -- laps that wait when the internet is down
 local RETRY_AFTER = 15 -- seconds
+local VEHICLE_EVERY = 0.2 -- seconds, so 5 samples each second of the tyres, fuel, and suspension
+local MAX_VEHICLE = 6000 -- A lap of 20 minutes. A longer lap keeps its first samples only.
 
 local car = ac.getCar(0)
 local sim = ac.getSim()
@@ -23,6 +25,9 @@ local headers = { ['Content-Type'] = 'application/json', ['X-Paddock-Code'] = se
 
 local samples = {}
 local lastSamples = {} -- The samples before the timer last went back.
+local vehicle = {}
+local lastVehicle = {}
+local sinceVehicle = 0
 local LAP_END_SLACK = 2000 -- ms between the last sample of a lap and the lap time.
 local sinceSample = 0
 local lastLapTime = 0
@@ -83,9 +88,35 @@ local function pump()
   end)
 end
 
+local function round(value, digits)
+  local scale = 10 ^ digits
+  return math.floor((value or 0) * scale + 0.5) / scale
+end
+
+-- One row of the second block. The server reads the columns in this order (VEHICLE_CHANNELS).
+local function vehicleRow()
+  local row = {
+    car.lapTimeMs,
+    math.floor(car.splinePosition * 100000) / 100000,
+    (car.isInPitlane or car.isInPit) and 1 or 0,
+    round(car.fuel, 3),
+  }
+  for _, field in ipairs({ 'tyreCoreTemperature', 'tyreInsideTemperature', 'tyreMiddleTemperature', 'tyreOutsideTemperature' }) do
+    for wheel = 0, 3 do row[#row + 1] = round(car.wheels[wheel][field], 1) end
+  end
+  for wheel = 0, 3 do row[#row + 1] = round(car.wheels[wheel].tyrePressure, 2) end
+  for wheel = 0, 3 do row[#row + 1] = round(car.wheels[wheel].tyreWear, 4) end
+  for wheel = 0, 3 do row[#row + 1] = round(car.wheels[wheel].ndSlip, 3) end
+  for wheel = 0, 3 do row[#row + 1] = round(car.wheels[wheel].suspensionTravel, 4) end
+  return row
+end
+
 askNow()
 ac.onSessionStart(function()
   samples = {}
+  vehicle = {}
+  lastSamples = {}
+  lastVehicle = {}
   askNow()
 end)
 
@@ -93,12 +124,15 @@ ac.onLapCompleted(0, function(carIndex, lapTime, valid, cuts, lapCount)
   -- Online, this event can come some time after the timer goes back at the line. The samples
   -- of the lap are then in lastSamples, and samples already has the start of the next lap.
   local lap = samples
+  local lapVehicle = vehicle
   local last = lastSamples[#lastSamples]
   local late = last ~= nil and math.abs(last[1] - lapTime) <= LAP_END_SLACK
   if late then
     lap = lastSamples
+    lapVehicle = lastVehicle
   end
   lastSamples = {}
+  lastVehicle = {}
   if #lap > 0 then
     if #queue >= MAX_QUEUE then table.remove(queue, 1) end
     table.insert(queue, {
@@ -112,10 +146,12 @@ ac.onLapCompleted(0, function(carIndex, lapTime, valid, cuts, lapCount)
       cuts = cuts,
       ended_at = os.time(),
       samples = lap,
+      vehicle = lapVehicle,
     })
   end
   if not late then
     samples = {}
+    vehicle = {}
     lastLapTime = 0
   end
 end)
@@ -127,7 +163,9 @@ function script.update(dt)
   -- practice), the next time that the timer goes back replaces them.
   if car.lapTimeMs + 1000 < lastLapTime then
     lastSamples = samples
+    lastVehicle = vehicle
     samples = {}
+    vehicle = {}
   end
   lastLapTime = car.lapTimeMs
   sinceSample = sinceSample + dt
@@ -142,7 +180,20 @@ function script.update(dt)
       math.floor(car.steer * 10) / 10,
       car.gear,
       math.floor(car.rpm),
+      math.floor(car.position.x * 100) / 100,
+      math.floor(car.position.z * 100) / 100,
+      math.floor(car.acceleration.x * 100) / 100,
+      math.floor(car.acceleration.z * 100) / 100,
     }
+  end
+  sinceVehicle = sinceVehicle + dt
+  if sinceVehicle >= VEHICLE_EVERY then
+    sinceVehicle = 0
+    if #vehicle < MAX_VEHICLE then
+      -- A field that this CSP version does not have must not stop the lap samples.
+      local ok, row = pcall(vehicleRow)
+      if ok then vehicle[#vehicle + 1] = row end
+    end
   end
   pump()
 end

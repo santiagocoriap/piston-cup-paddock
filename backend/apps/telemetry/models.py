@@ -78,6 +78,8 @@ class TelemetryLap(models.Model):
     recorded_at = models.DateTimeField()
     sample_hz = models.PositiveSmallIntegerField()
     samples = models.FileField(upload_to=telemetry_path)
+    # The numbers of the lap for the analysis pages, without a read of the file. See script.py.
+    summary = models.JSONField(default=dict, blank=True)
     # The size of the samples file, for the storage limit of the laps that do not count.
     samples_bytes = models.PositiveIntegerField(default=0)
     uploaded_at = models.DateTimeField(auto_now_add=True)

@@ -28,6 +28,12 @@ This file lists each requested graph and its state. The code is in `backend/apps
 - All formulas are in `backend/apps/analytics/metrics.py`.
 - The season data stays in the cache for 10 minutes. A new result gives a new cache key.
 
+## New data
+
+- **New script (`paddock.lua`):** world position and G-forces at 20 samples each second. Tyre temperature, pressure, wear, slip, suspension, fuel, and pit state at 5 samples each second. Only laps after the next server join have this data.
+- **Collector positions:** overtakes and battles come from the place on the lap of each car, on the data of past races too. The collector needs `request_positions`.
+- **Game file:** the corners of `fast_lane.ai` give the track type.
+
 ## Race
 
 | # | Graph | State | Note |
@@ -44,17 +50,17 @@ This file lists each requested graph and its state. The code is in `backend/apps
 | 10 | Lap time heatmap | Built | |
 | 11 | Pace trend | Built | Rolling median. |
 | 12 | Performance delta | Built | In graph 8, in seconds and percent. |
-| 13 | Overtaking leaderboard | Needs data | "Places gained at the line" is a replacement. It does not verify overtakes. |
-| 14 | Battle timeline | Not built | The heatmap shows pits, incidents, and invalid laps by lap. |
+| 13 | Overtaking leaderboard | Built | From collector positions. Excludes slow and stopped cars. |
+| 14 | Battle timeline | Built | "Events by lap". |
 | 15 | Time in traffic | Derived | Laps at the line, not time on the track. |
 | 16 | First-lap performance | Derived | |
-| 17 | Overtake and incident map | Elsewhere | The Incidents tab has the incident map. No overtakes. |
+| 17 | Overtake and incident map | Built | Overtakes here. Incidents in the Incidents tab. |
 | 18 | Tyre strategy timeline | Built | Stops need a Real Penalty log. |
-| 19 | Stint pace comparison | Needs data | Needs stints with different tyres. |
-| 20 | Pit stop time | Needs data | |
-| 21 | Tyre degradation | Needs data | |
-| 22 | Undercut and overcut | Needs data | Needs a model too. |
-| 23 | Fuel evolution | Needs data | |
+| 19 | Stint pace comparison | Built | Clean laps by stint. |
+| 20 | Pit stop time | Derived | In-lap and out-lap against 2 normal laps. The new script adds the pit lane time. |
+| 21 | Tyre degradation | Model | A straight line by stint, with at least 4 clean laps. It includes the effect of fuel. |
+| 22 | Undercut and overcut | Model | The gap before and after the stops. |
+| 23 | Fuel evolution | Built | Needs laps from the new script. |
 
 ## Lap
 
@@ -74,20 +80,20 @@ This file lists each requested graph and its state. The code is in `backend/apps
 | 12 | Gear | Elsewhere | Telemetry tab. |
 | 13 | RPM | Elsewhere | Telemetry tab. |
 | 14 | Steering | Elsewhere | Telemetry tab. |
-| 15 | Acceleration and braking G | Needs data | The script does not send G values. |
-| 16 | G-G diagram | Needs data | |
-| 17 | Racing line comparison | Needs data | The script sends the place on the lap, not x and z. |
+| 15 | Acceleration and braking G | Built | Needs laps from the new script. |
+| 16 | G-G diagram | Built | Needs laps from the new script. |
+| 17 | Racing line comparison | Built | Needs laps from the new script. |
 | 18 | Corner speed | Elsewhere | Engineer tab. |
 | 19 | Braking point | Elsewhere | Engineer tab. |
 | 20 | Corner time loss | Elsewhere | Telemetry tab map and Engineer tab. |
-| 21 | Corner exit performance | Not built | |
-| 22 | Steering smoothness | Not built | |
-| 23 | Tyre temperature | Needs data | |
-| 24 | Tyre pressure | Needs data | |
-| 25 | Wheel slip | Needs data | |
-| 26 | Suspension | Needs data | |
-| 27 | Fuel per lap | Needs data | |
-| 28 | Channel correlation | Not built | |
+| 21 | Corner exit performance | Built | The speed 2 and 5 seconds after each low point of the speed. |
+| 22 | Steering smoothness | Built |  |
+| 23 | Tyre temperature | Built | Needs laps from the new script. |
+| 24 | Tyre pressure | Built | Needs laps from the new script. No operating range. |
+| 25 | Wheel slip | Built | Needs laps from the new script. |
+| 26 | Suspension | Built | Needs laps from the new script. |
+| 27 | Fuel per lap | Built | In the Race view. Needs laps from the new script. |
+| 28 | Channel correlation | Built | Choose X and Y. |
 
 ## Season
 
@@ -99,63 +105,63 @@ This file lists each requested graph and its state. The code is in `backend/apps
 | 4 | Gap evolution | Built | |
 | 5 | Points contribution | Built | |
 | 6 | Momentum | Built | Mean of 3 rounds. |
-| 7 | Position change heatmap | Not built | Graph 2 shows the same data. |
+| 7 | Position change heatmap | Built |  |
 | 8 | Finish position distribution | Built | |
 | 9 | Qualifying heatmap | Derived | |
 | 10 | Qualifying against race | Derived | |
 | 11 | Positions gained | Derived | |
 | 12 | Pace heatmap | Built | |
 | 13 | Consistency ranking | Built | Lap deviation only. |
-| 14 | Circuit performance | Not built | Graph 12 shows each round. No circuit metadata. |
+| 14 | Circuit performance | Derived | By track type, from the game file. Needs the map ZIP. |
 | 15 | Field spread | Built | |
 | 16 | Wins, podiums, poles | Built | Stacked bars, not grouped bars. |
-| 17 | Milestone progression | Not built | |
+| 17 | Milestone progression | Built |  |
 | 18 | Records leaderboard | Elsewhere | Records page. |
 | 19 | Finish frequency | Built | |
 | 20 | Result calendar | Built | |
-| 21 | Rivalry network | Needs data | |
+| 21 | Rivalry network | Built | From battles in the collector positions. |
 | 22 | Title probability | Model | A value now, not an area over the season. Needs 3 rounds. |
-| 23 | Scenario simulator | Not built | The title section shows the point scenarios. |
+| 23 | Scenario simulator | Built | One position for all remaining rounds. |
 | 24 | Mathematical contention | Built | No tie-break, no bonus points. |
 | 25 | Predicted standings | Model | Needs 3 rounds. |
-| 26 | Performance forecast | Not built | |
+| 26 | Performance forecast | Model | Pace only. Needs 4 rounds. |
 
 ## Driver
 
 | # | Graph | State | Note |
 |---|---|---|---|
 | 1 | Performance radar | Built | Against one rival. |
-| 2 | Performance evolution | Not built | Graphs 10 and 11 show the parts. |
+| 2 | Performance evolution | Built |  |
 | 3 | Pace against consistency | Built | |
 | 4 | Driver form | Built | Finish position only. |
 | 5 | Average finish | Built | In graph 4. |
-| 6 | Personal best progression | Not built | Records page has the best laps. |
-| 7 | Improvement by circuit | Not built | Needs repeated visits. |
-| 8 | Performance by circuit type | Needs data | |
+| 6 | Personal best progression | Built | In "Progress by track". Needs 2 visits to a track. |
+| 7 | Improvement by circuit | Built | In "Progress by track", as lines. Needs 2 visits to a track. |
+| 8 | Performance by circuit type | Derived | From the game file. Needs the map ZIP. |
 | 9 | Qualifying against race | Derived | Two lines, not connected dots. |
 | 10 | Qualifying history | Derived | |
 | 11 | Race pace history | Built | |
 | 12 | Finish histogram | Built | |
 | 13 | Positions gained | Derived | |
-| 14 | Consistency across races | Not built | |
+| 14 | Consistency across races | Built | Standard deviation by round, not a box. |
 | 15 | Fastest lap against pace | Built | Bars, not a dumbbell. |
 | 16 | Head-to-head results | Built | |
 | 17 | Head-to-head qualifying | Derived | Wins only, no time gaps. |
 | 18 | Head-to-head pace | Built | |
 | 19 | Head-to-head points | Built | |
 | 20 | Strengths comparison | Built | In graph 1. |
-| 21 | Sector comparison | Not built | |
-| 22 | Rivalry history | Not built | |
-| 23 | Overtaking | Needs data | |
-| 24 | Battle performance | Needs data | |
-| 25 | Incident frequency | Not built | The data exists. |
+| 21 | Sector comparison | Built |  |
+| 22 | Rivalry history | Built | Places ahead by round. |
+| 23 | Overtaking | Built | Against the mean of the field. |
+| 24 | Battle performance | Built |  |
+| 25 | Incident frequency | Built | By race. |
 | 26 | Finish reliability | Built | Stacked bar. |
 | 27 | Result consistency | Elsewhere | Season graph 8. |
 | 28 | Elo rating | Built | One season. No uncertainty band. |
-| 29 | Expected against actual | Not built | |
-| 30 | Performance decomposition | Not built | The radar shows the parts. |
-| 31 | Development forecast | Needs data | Needs more rounds. |
-| 32 | Driver similarity | Not built | |
+| 29 | Expected against actual | Model | The expected finish is the start position. |
+| 30 | Performance decomposition | Built | Equal weights. |
+| 31 | Development forecast | Model | Needs 4 rounds. |
+| 32 | Driver similarity | Built | A ranked list of the distance, not a 2D plot. |
 
 ## Shared tools
 

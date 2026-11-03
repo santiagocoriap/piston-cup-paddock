@@ -1,6 +1,7 @@
 /** Read the cars and the tracks of an Assetto Corsa folder in the browser, and pack the files
  * of the chosen ones into a ZIP with the paths of the content folder. The browser reads only
- * the small files: the JSON data, the badges, the maps, and one preview for each car. */
+ * the small files: the JSON data, the badges, the maps, the track map points, and one preview
+ * for each car. */
 import { zipSync } from 'fflate'
 
 /** The part of the File System Access API that the import uses. */
@@ -15,7 +16,7 @@ export type FileHandle = { kind: 'file'; name: string; getFile: () => Promise<Fi
 
 export type GameCar = { key: string; name: string; brand: string; dir: DirHandle }
 export type GameLayout = { key: string; name: string; dir: DirHandle }
-export type GameTrack = { key: string; name: string; layouts: GameLayout[] }
+export type GameTrack = { key: string; name: string; layouts: GameLayout[]; dir: DirHandle }
 export type GameWeather = { key: string; name: string; dir: DirHandle }
 
 const KEY = /^[A-Za-z0-9_.-]{1,100}$/
@@ -175,7 +176,7 @@ export async function scanTracks(content: DirHandle, onCount?: (n: number) => vo
       if (info) layouts.push({ key: sub.name, name: String(info.name || sub.name).trim(), dir: sub })
     }
     if (layouts.length === 0) continue
-    tracks.push({ key: dir.name, name: commonName(layouts.map((l) => l.name)) || dir.name, layouts })
+    tracks.push({ key: dir.name, name: commonName(layouts.map((l) => l.name)) || dir.name, layouts, dir })
     onCount?.(tracks.length)
   }
   return tracks
@@ -230,6 +231,17 @@ export async function weatherFolderInfo(
 async function bytes(dir: DirHandle, name: string, limit = 5 * 1024 * 1024): Promise<Uint8Array | null> {
   const found = await file(dir, name)
   return found && found.size <= limit ? new Uint8Array(await found.arrayBuffer()) : null
+}
+
+/** The part of ai/fast_lane.ai that the track map uses: a header of 4 integers (the second is the
+ * point count), then 20 bytes for each point. The rest is most of the file, and the map does not
+ * use it. */
+async function linePoints(ai: DirHandle): Promise<Uint8Array | null> {
+  const found = await file(ai, 'fast_lane.ai')
+  if (!found || found.size < 16) return null
+  const count = new DataView(await found.slice(0, 16).arrayBuffer()).getInt32(4, true)
+  const size = 16 + count * 20
+  return count > 0 && found.size >= size ? new Uint8Array(await found.slice(0, size).arrayBuffer()) : null
 }
 
 const SKIN_SIDE = 640
@@ -297,6 +309,9 @@ export async function packSelection(cars: GameCar[], tracks: GameTrack[], weathe
       for (const name of ['ui_track.json', 'outline.png', 'preview.png']) {
         put(`${base}/${name}`, await bytes(layout.dir, name))
       }
+      const home = layout.key ? await child(track.dir, layout.key) : track.dir
+      const ai = home ? await child(home, 'ai') : null
+      if (ai) put(`tracks/${track.key}/${layout.key ? `${layout.key}/` : ''}ai/fast_lane.ai`, await linePoints(ai))
     }
   }
   for (const preset of weather) {

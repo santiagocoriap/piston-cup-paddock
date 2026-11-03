@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../../api/client'
 import { formatLapTime } from '../../lib/format'
 import { useLoad } from '../../lib/useLoad'
-import { BarChart, ChartCard, ChartGroup, driverColor, LineChart, NeedsData, RadarChart, ScatterChart, StackChart, type LineSeries } from './charts'
-import { type Season, type SeasonDriver } from './SeasonAnalysis'
+import { BarChart, ChartCard, ChartGroup, driverColor, HeatMap, LineChart, RadarChart, ScatterChart, StackChart, type LineSeries } from './charts'
+import { forecastSeries, type Season, type SeasonDriver } from './SeasonAnalysis'
 
 type Cell = SeasonDriver['cells'][number]
 
@@ -67,6 +67,8 @@ export function DriverAnalysis({ driverId }: { driverId: number }) {
         <PaceConsistency season={season} me={me} />
         <FormChart me={me} />
         <EloChart me={me} rival={rival} />
+        <EvolutionChart me={me} />
+        <CircuitTypes season={season} me={me} />
       </ChartGroup>
       <ChartGroup title={t('analysis.groups.qualifyingRace')}>
         <GridFinish me={me} />
@@ -75,18 +77,30 @@ export function DriverAnalysis({ driverId }: { driverId: number }) {
         <FinishHistogram me={me} />
         <GainedPerRace me={me} />
         <BestVsTypical me={me} />
+        <ConsistencyByRace me={me} />
+        <ExpectedActual season={season} me={me} />
       </ChartGroup>
       {rival && (
         <ChartGroup title={t('analysis.groups.headToHead')}>
           <HeadToHead me={me} rival={rival} />
           <PointsDuel me={me} rival={rival} />
           <PaceDuel me={me} rival={rival} />
+          <SectorDuel me={me} rival={rival} />
+          <RivalryHistory me={me} rival={rival} />
         </ChartGroup>
       )}
       <ChartGroup title={t('analysis.groups.reliability')}>
         <Reliability me={me} />
+        <OvertakesByRace season={season} me={me} />
+        <BattlesByRace me={me} />
+        <IncidentsByRace me={me} />
       </ChartGroup>
-      <NeedsData items={['overtakes', 'battles', 'circuitType', 'forecast'].map((key) => t(`analysis.needs.${key}`))} />
+      <ChartGroup title={t('analysis.groups.advanced')}>
+        <Forecast me={me} />
+        <Decomposition me={me} />
+        <Similarity season={season} me={me} />
+        <TrackHistory seasons={seasons} driverId={driverId} />
+      </ChartGroup>
     </section>
   )
 }
@@ -164,6 +178,214 @@ function EloChart({ me, rival }: { me: SeasonDriver; rival: SeasonDriver | null 
   return (
     <ChartCard title={t('analysis.elo.title')} help={t('analysis.elo.help')} missing={series[0].points.length === 0 ? t('analysis.fewRounds', { count: 1 }) : null}>
       <LineChart series={series} xLabel={t('analysis.round')} yLabel={t('analysis.elo.title')} formatY={(v) => String(Math.round(v))} />
+    </ChartCard>
+  )
+}
+
+function EvolutionChart({ me }: { me: SeasonDriver }) {
+  const { t } = useTranslation()
+  const rows = raced(me)
+  const series: LineSeries[] = [
+    { key: 'race', label: t('analysis.evolution.race'), color: driverColor(me.driver_id), points: rows.map((c) => ({ x: c.number, y: c.pace_pct ?? null })) },
+    { key: 'qualifying', label: t('analysis.evolution.qualifying'), color: 'var(--ink-2)', dashed: true, points: rows.map((c) => ({ x: c.number, y: c.qualifying_pct ?? null })) },
+  ]
+  return (
+    <ChartCard title={t('analysis.evolution.title')} help={t('analysis.evolution.help')} missing={rows.length < FEW ? t('analysis.fewRounds', { count: FEW }) : null}>
+      <LineChart series={series} xLabel={t('analysis.round')} yLabel={t('analysis.evolution.title')} invert formatY={(v) => `+${v.toFixed(2)} %`} />
+    </ChartCard>
+  )
+}
+
+function CircuitTypes({ season, me }: { season: Season; me: SeasonDriver }) {
+  const { t } = useTranslation()
+  const rows = (['high_speed', 'mixed', 'technical'] as const).flatMap((kind) => {
+    const numbers = season.rounds.filter((r) => r.circuit_type === kind).map((r) => r.number)
+    const values = me.cells.filter((c) => numbers.includes(c.number) && c.pace_pct !== null && c.pace_pct !== undefined).map((c) => c.pace_pct as number)
+    const value = mean(values)
+    return value === null ? [] : [{ key: kind, label: t(`analysis.circuitType.${kind}`), value, color: driverColor(me.driver_id), note: `n=${values.length}` }]
+  })
+  return (
+    <ChartCard title={t('analysis.circuitType.title')} help={t('analysis.circuitType.help')} missing={rows.length === 0 ? t('analysis.circuitType.none') : null}>
+      <BarChart rows={rows} label={t('analysis.circuitType.title')} format={(v) => `+${v.toFixed(2)} %`} />
+    </ChartCard>
+  )
+}
+
+function ConsistencyByRace({ me }: { me: SeasonDriver }) {
+  const { t } = useTranslation()
+  const rows = me.cells.filter((c) => c.stdev_ms !== null && c.stdev_ms !== undefined)
+  return (
+    <ChartCard title={t('analysis.consistencyByRace.title')} help={t('analysis.consistency.help')} missing={rows.length === 0 ? t('analysis.noLaps') : null}>
+      <BarChart rows={rows.map((c) => ({ key: c.number, label: `${c.number} · ${c.track}`, value: (c.stdev_ms as number) / 1000, color: driverColor(me.driver_id) }))} label={t('analysis.consistencyByRace.title')} format={(v) => `${v.toFixed(3)} s`} />
+    </ChartCard>
+  )
+}
+
+/** The expected finish is the start position. So a point above the line is a race with places won. */
+function ExpectedActual({ season, me }: { season: Season; me: SeasonDriver }) {
+  const { t } = useTranslation()
+  void season
+  const points = me.cells.filter((c) => c.grid && c.finish).map((c) => ({ key: c.number, label: `${c.number}`, x: c.grid as number, y: c.finish as number, color: driverColor(me.driver_id) }))
+  return (
+    <ChartCard title={t('analysis.expected.title')} help={t('analysis.expected.help')} missing={points.length === 0 ? t('analysis.noGrid') : null}>
+      <ScatterChart points={points} diagonal invertY xLabel={t('analysis.expected.x')} yLabel={t('analysis.expected.y')} formatX={(v) => `P${Math.round(v)}`} formatY={(v) => `P${Math.round(v)}`} />
+    </ChartCard>
+  )
+}
+
+function SectorDuel({ me, rival }: { me: SeasonDriver; rival: SeasonDriver }) {
+  const { t } = useTranslation()
+  const rounds = shared(me, rival).filter(([a, b]) => a.sectors_ms.length && b.sectors_ms.length)
+  const count = Math.max(0, ...rounds.map(([a]) => a.sectors_ms.length))
+  return (
+    <ChartCard title={t('analysis.sectorDuel.title')} help={t('analysis.sectorDuel.help', { a: me.name, b: rival.name })} missing={rounds.length === 0 ? t('analysis.noSectorsShared') : null}>
+      <HeatMap
+        label={t('analysis.sectorDuel.title')}
+        columns={Array.from({ length: count }, (_, i) => `S${i + 1}`)}
+        low={-500}
+        high={500}
+        rows={rounds.map(([a, b]) => ({
+          key: a.number,
+          label: `${a.number} · ${a.track}`,
+          cells: Array.from({ length: count }, (_, i) => {
+            const [mine, theirs] = [a.sectors_ms[i], b.sectors_ms[i]]
+            if (!mine || !theirs) return { value: null }
+            const gap = mine - theirs
+            return { value: gap, text: `${gap > 0 ? '+' : ''}${(gap / 1000).toFixed(2)}` }
+          }),
+        }))}
+      />
+    </ChartCard>
+  )
+}
+
+function RivalryHistory({ me, rival }: { me: SeasonDriver; rival: SeasonDriver }) {
+  const { t } = useTranslation()
+  const rows = shared(me, rival).filter(([a, b]) => a.finish && b.finish)
+  return (
+    <ChartCard title={t('analysis.rivalryHistory.title')} help={t('analysis.rivalryHistory.help', { a: me.name, b: rival.name })} missing={rows.length === 0 ? t('analysis.noShared') : null}>
+      <BarChart
+        rows={rows.map(([a, b]) => {
+          const value = (b.finish as number) - (a.finish as number)
+          return { key: a.number, label: `${a.number} · ${a.track}`, value, color: driverColor(value >= 0 ? me.driver_id : rival.driver_id), note: `P${a.finish} / P${b.finish}` }
+        })}
+        label={t('analysis.rivalryHistory.title')}
+        format={(v) => (v > 0 ? `+${v}` : String(v))}
+      />
+    </ChartCard>
+  )
+}
+
+function OvertakesByRace({ season, me }: { season: Season; me: SeasonDriver }) {
+  const { t } = useTranslation()
+  const rows = me.cells.filter((c) => c.overtakes !== null && c.overtakes !== undefined)
+  const average = (number: number) => mean(season.drivers.flatMap((d) => d.cells.filter((c) => c.number === number && c.overtakes !== null && c.overtakes !== undefined).map((c) => c.overtakes as number)))
+  return (
+    <ChartCard title={t('analysis.overtakes.title')} help={t('analysis.overtakes.help')} missing={rows.length === 0 ? t('analysis.noPositions') : null}>
+      <BarChart rows={rows.map((c) => ({ key: c.number, label: `${c.number} · ${c.track}`, value: c.overtakes as number, color: driverColor(me.driver_id), note: t('analysis.overtakes.field', { value: (average(c.number) ?? 0).toFixed(1) }) }))} label={t('analysis.overtakes.title')} />
+    </ChartCard>
+  )
+}
+
+function BattlesByRace({ me }: { me: SeasonDriver }) {
+  const { t } = useTranslation()
+  const rows = me.cells.filter((c) => c.attacks !== null && c.attacks !== undefined)
+  const parts = [
+    ['attackWon', '#4ade80', (c: Cell) => c.attacks_won ?? 0],
+    ['attackLost', '#166534', (c: Cell) => (c.attacks ?? 0) - (c.attacks_won ?? 0)],
+    ['defenseWon', '#38bdf8', (c: Cell) => c.defenses_won ?? 0],
+    ['defenseLost', '#1e3a8a', (c: Cell) => (c.defenses ?? 0) - (c.defenses_won ?? 0)],
+  ] as const
+  return (
+    <ChartCard title={t('analysis.battles.title')} help={t('analysis.battles.help')} missing={rows.length === 0 ? t('analysis.noPositions') : null}>
+      <StackChart
+        label={t('analysis.battles.title')}
+        legend={parts.map(([key, color]) => ({ label: t(`analysis.battles.${key}`), color }))}
+        rows={rows.map((c) => ({ key: c.number, label: `${c.number} · ${c.track}`, parts: parts.map(([key, color, value]) => ({ key, label: t(`analysis.battles.${key}`), value: value(c), color })) }))}
+      />
+    </ChartCard>
+  )
+}
+
+function IncidentsByRace({ me }: { me: SeasonDriver }) {
+  const { t } = useTranslation()
+  const rows = me.cells.filter((c) => c.status && c.incidents !== null && c.incidents !== undefined)
+  return (
+    <ChartCard title={t('analysis.incidents.title')} help={t('analysis.incidents.help')} missing={rows.length === 0 ? t('analysis.noPositions') : null}>
+      <BarChart rows={rows.map((c) => ({ key: c.number, label: `${c.number} · ${c.track}`, value: c.incidents as number, color: 'var(--danger)' }))} label={t('analysis.incidents.title')} />
+    </ChartCard>
+  )
+}
+
+function Forecast({ me }: { me: SeasonDriver }) {
+  const { t } = useTranslation()
+  return (
+    <ChartCard title={t('analysis.forecast.title')} help={t('analysis.forecast.helpDriver')} missing={me.pace_forecast.length === 0 ? t('analysis.fewRounds', { count: 4 }) : null}>
+      <LineChart series={forecastSeries(me)} xLabel={t('analysis.round')} yLabel={t('analysis.forecast.title')} invert formatY={(v) => `${v > 0 ? '+' : ''}${v.toFixed(2)} %`} />
+    </ChartCard>
+  )
+}
+
+/** The overall score is the mean of the parts of the radar, each with the same weight. */
+function Decomposition({ me }: { me: SeasonDriver }) {
+  const { t } = useTranslation()
+  const known = RADAR.filter((key) => me.scores[key] !== null && me.scores[key] !== undefined)
+  const total = known.reduce((sum, key) => sum + (me.scores[key] as number), 0) / Math.max(known.length, 1)
+  return (
+    <ChartCard title={t('analysis.decomposition.title')} help={t('analysis.decomposition.help', { value: Math.round(total) })} missing={known.length === 0 ? t('analysis.radar.few') : null}>
+      <BarChart rows={known.map((key) => ({ key, label: t(`analysis.radar.${key}`), value: me.scores[key] as number, color: driverColor(me.driver_id) }))} label={t('analysis.decomposition.title')} />
+    </ChartCard>
+  )
+}
+
+/** The distance between 2 drivers across all the parts of the radar. A part that one of them does
+ * not have does not count. */
+function Similarity({ season, me }: { season: Season; me: SeasonDriver }) {
+  const { t } = useTranslation()
+  const rows = season.drivers
+    .filter((d) => d.driver_id !== me.driver_id)
+    .flatMap((d) => {
+      const shared = RADAR.filter((key) => me.scores[key] !== null && me.scores[key] !== undefined && d.scores[key] !== null && d.scores[key] !== undefined)
+      if (shared.length < 2) return []
+      const sum = shared.reduce((all, key) => all + ((me.scores[key] as number) - (d.scores[key] as number)) ** 2, 0)
+      return [{ key: d.driver_id, label: d.name, value: Math.round(Math.sqrt(sum / shared.length)), color: driverColor(d.driver_id) }]
+    })
+    .sort((a, b) => a.value - b.value)
+  return (
+    <ChartCard title={t('analysis.similarity.title')} help={t('analysis.similarity.help')} missing={rows.length === 0 ? t('analysis.radar.few') : null}>
+      <BarChart rows={rows} label={t('analysis.similarity.title')} />
+    </ChartCard>
+  )
+}
+
+/** The best lap of the driver on each track that the driver raced more than one time. A line goes
+ * down when the driver gets faster. */
+function TrackHistory({ seasons, driverId }: { seasons: Season[]; driverId: number }) {
+  const { t } = useTranslation()
+  const visits = new Map<string, number[]>()
+  for (const season of [...seasons].reverse()) {
+    for (const cell of season.drivers.find((d) => d.driver_id === driverId)?.cells ?? []) {
+      if (cell.best_ms) visits.set(cell.track, [...(visits.get(cell.track) ?? []), cell.best_ms])
+    }
+  }
+  const repeated = [...visits].filter(([, laps]) => laps.length > 1)
+  const palette = (index: number) => `hsl(${(index * 67) % 360} 65% 60%)`
+  const series: LineSeries[] = repeated.map(([track, laps], index) => {
+    let best = Infinity
+    return {
+      key: track,
+      label: track,
+      color: palette(index),
+      points: laps.map((ms, visit) => {
+        const improved = ms < best
+        best = Math.min(best, ms)
+        return { x: visit + 1, y: (ms / laps[0] - 1) * 100, mark: improved }
+      }),
+    }
+  })
+  return (
+    <ChartCard title={t('analysis.trackHistory.title')} help={t('analysis.trackHistory.help')} missing={series.length === 0 ? t('analysis.trackHistory.none') : null}>
+      <LineChart series={series} xLabel={t('analysis.trackHistory.visit')} yLabel={t('analysis.trackHistory.title')} invert zero formatY={(v) => `${v > 0 ? '+' : ''}${v.toFixed(2)} %`} />
     </ChartCard>
   )
 }

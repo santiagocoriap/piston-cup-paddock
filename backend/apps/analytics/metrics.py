@@ -14,6 +14,7 @@ MIN_LAPS_FOR_SPREAD = 3
 TRIM_SHARE = 0.1  # The trimmed mean leaves out this share of laps at each end.
 # At the line, a car this close behind another car is "attacking" it, or "defending" from it.
 BATTLE_GAP_MS = 1000
+MIN_TREND_POINTS = 4
 ELO_START = 1500.0
 ELO_K = 24.0
 
@@ -190,6 +191,23 @@ def predict(
         )
         for key in keys
     }
+
+
+def trend(values: list[tuple[float, float]]) -> tuple[float, float, float] | None:
+    """A straight line through (x, y) points: (slope, value at x = 0, standard error of a point).
+    None with fewer than MIN_TREND_POINTS points."""
+    if len(values) < MIN_TREND_POINTS:
+        return None
+    xs = [x for x, _ in values]
+    ys = [y for _, y in values]
+    mean_x, mean_y = statistics.fmean(xs), statistics.fmean(ys)
+    bottom = sum((x - mean_x) ** 2 for x in xs)
+    if bottom == 0:
+        return None
+    slope = sum((x - mean_x) * (y - mean_y) for x, y in values) / bottom
+    start = mean_y - slope * mean_x
+    errors = [(y - (start + slope * x)) ** 2 for x, y in values]
+    return slope, start, math.sqrt(sum(errors) / (len(values) - 2))
 
 
 def scale(values: dict[object, float | None], *, lower_is_better: bool) -> dict[object, int | None]:

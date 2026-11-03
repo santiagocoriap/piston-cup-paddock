@@ -6,6 +6,7 @@ the time of the lap before. A chart then draws a line back across the whole lap.
 keeps only the samples of the lap itself, in time order.
 """
 
+import gzip
 import json
 
 SLACK_MS = 200  # A sample can come a little after the lap time.
@@ -31,6 +32,17 @@ def trim_to_lap(channels: dict[str, list], lap_time_ms: int) -> dict[str, list]:
     return {name: [values[i] for i in run] for name, values in channels.items()}
 
 
+def read_samples(handle) -> dict[str, list]:
+    """The channels of a stored file. A new file has gzip compression, and an old file has none."""
+    data = handle.read()
+    return json.loads(gzip.decompress(data) if data[:2] == b"\x1f\x8b" else data)
+
+
+def pack_samples(channels: dict[str, list]) -> bytes:
+    content = json.dumps(channels, separators=(",", ":"), sort_keys=True).encode()
+    return gzip.compress(content, mtime=0)
+
+
 def covers_lap(channels: dict[str, list], lap_time_ms: int) -> bool:
     """False for a lap with samples of only a part of the lap time."""
     times = channels.get("t_ms") or []
@@ -44,7 +56,7 @@ def trim_stored_laps(lap_model) -> None:
     for lap in lap_model.objects.all().iterator():
         try:
             with lap.samples.open("rb") as handle:
-                channels = json.loads(handle.read())
+                channels = read_samples(handle)
         except (OSError, ValueError):
             continue  # A missing file stays missing.
         if "t_ms" not in channels:
@@ -52,6 +64,5 @@ def trim_stored_laps(lap_model) -> None:
         clean = trim_to_lap(channels, lap.lap_time_ms)
         if len(clean["t_ms"]) < 2 or clean == channels:
             continue
-        content = json.dumps(clean, separators=(",", ":"), sort_keys=True).encode()
-        lap.samples.save("samples.json", ContentFile(content), save=False)
+        lap.samples.save("samples.json", ContentFile(pack_samples(clean)), save=False)
         lap.save(update_fields=["samples"])
