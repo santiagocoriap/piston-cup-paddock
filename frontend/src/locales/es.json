@@ -506,7 +506,8 @@
       "restarts": "Reinicios",
       "telemetry": "Telemetría",
       "engineer": "Ingeniero",
-      "report": "Reporte"
+      "report": "Reporte",
+      "analysis": "Análisis"
     },
     "beforeRace": "Antes de la carrera: briefing y asistencia",
     "adminTools": "Herramientas de administración",
@@ -1694,6 +1695,14 @@
       "different_handicaps": "Los lastres o restrictores son distintos. La diferencia no es solo de manejo.",
       "different_cars": "Los autos son distintos. La diferencia no es solo de manejo.",
       "different_tyres": "Los neumáticos son distintos."
+    },
+    "conditionNames": {
+      "grip": "Grip",
+      "air_temp_c": "Aire",
+      "track_temp_c": "Pista",
+      "time_of_day": "Hora",
+      "weather": "Clima",
+      "notes": "Notas"
     }
   },
   "health": {
@@ -1747,8 +1756,8 @@
     "attempt": "Largada",
     "kindLabel": "Tipo",
     "kind": {
-      "car": "contra auto",
-      "env": "contra muro"
+      "car": "Contra auto",
+      "env": "Contra muro"
     },
     "minSpeed": "Impacto mínimo: {{value}} km/h",
     "outcomeLabel": "Revisión",
@@ -1769,7 +1778,12 @@
     "saveReview": "Guardar revisión",
     "lap": "Vuelta",
     "mapHelpNoTrack": "Cada punto es un incidente, en su posición en la pista. Las zonas rojas muestran dónde hay muchos. Sin posiciones grabadas, el mapa no dibuja la pista.",
-    "beforeRestart": "Antes del reinicio"
+    "beforeRestart": "Antes del reinicio",
+    "many": "Revisar varios incidentes",
+    "mark": "Marcar el incidente de {{cars}}, vuelta {{lap}}",
+    "markAll": "Marcar todos los de la lista ({{count}})",
+    "applyMany_one": "Aplicar a {{count}} incidente",
+    "applyMany_other": "Aplicar a {{count}} incidentes"
   },
   "engineer": {
     "title": "Ingeniero de carrera",
@@ -2128,7 +2142,8 @@
     "handicaps": "Lastre",
     "ballots": "Votaciones",
     "rules": "Reglamento",
-    "report": "Reporte"
+    "report": "Reporte",
+    "analysis": "Análisis"
   },
   "seasonStats": {
     "rounds": "Fechas corridas",
@@ -2725,7 +2740,334 @@
       "not_connected": "El servidor no vio al piloto conectado",
       "other_car": "Otro auto",
       "no_server_lap": "El servidor no tiene esta vuelta",
-      "duplicate": "Vuelta repetida"
+      "duplicate": "Vuelta repetida",
+      "partial_samples": "La vuelta tiene datos de solo una parte"
+    }
+  },
+  "analysis": {
+    "title": "Análisis de datos",
+    "fullscreen": "Pantalla completa: {{title}}",
+    "exportSvg": "Descargar SVG: {{title}}",
+    "exportCsv": "Descargar CSV: {{title}}",
+    "driversOnGraphs": "Pilotos en los gráficos",
+    "resetZoom": "Ver todo",
+    "needsData_one": "{{count}} gráfico necesita más datos",
+    "needsData_other": "{{count}} gráficos necesitan más datos",
+    "views": {
+      "race": "Carrera",
+      "laps": "Vueltas y sectores"
+    },
+    "session": "Sesión",
+    "season": "Temporada",
+    "rival": "Rival",
+    "driver": "Piloto",
+    "lap": "Vuelta",
+    "round": "Fecha",
+    "lapNumber": "Vuelta {{number}}",
+    "lapsCount_one": "{{count}} vuelta",
+    "lapsCount_other": "{{count}} vueltas",
+    "onlyRace": "Este gráfico es solo para la carrera.",
+    "twoDrivers": "Hacen falta 2 pilotos con datos.",
+    "noGrid": "Sin datos de clasificación: no hay posición de largada.",
+    "noLaps": "Sin vueltas para este gráfico.",
+    "noSectors": "Este archivo no tiene sectores.",
+    "fewLaps": "Hacen falta al menos {{count}} vueltas limpias.",
+    "fewRounds_one": "Hace falta al menos {{count}} fecha con resultado.",
+    "fewRounds_other": "Hacen falta al menos {{count}} fechas con resultado.",
+    "noResults": "Todavía no hay resultados en esta temporada.",
+    "noDriverResults": "Este piloto todavía no tiene resultados.",
+    "noShared": "Los 2 pilotos no tienen fechas en común.",
+    "telemetryTab": "Velocidad, acelerador, freno, marcha, RPM, volante, delta por distancia y mapa: están en la pestaña Telemetría.",
+    "groups": {
+      "progression": "Progreso y posiciones",
+      "pace": "Ritmo de carrera",
+      "racecraft": "Duelos",
+      "strategy": "Estrategia y neumáticos",
+      "lapSector": "Vueltas y sectores",
+      "championship": "Campeonato",
+      "competitiveness": "Competitividad",
+      "records": "Récords y estadísticas",
+      "predictions": "Predicciones",
+      "overview": "Resumen",
+      "qualifyingRace": "Clasificación y carrera",
+      "headToHead": "Mano a mano",
+      "reliability": "Fiabilidad"
+    },
+    "status": {
+      "finished": "Terminó",
+      "dnf": "Abandonó",
+      "dns": "No largó",
+      "dsq": "Descalificado"
+    },
+    "needs": {
+      "overtakes": "Sobrepasos verificados: el colector solo ve el orden en la línea, no el sobrepaso en la pista.",
+      "battles": "Ataques y defensas: necesita eventos de sobrepaso verificados.",
+      "tyres": "Desgaste y ritmo por neumático: necesita más de un compuesto y datos de pits en cada carrera.",
+      "pitTime": "Tiempo de pits: necesita la hora de entrada y salida de cada parada.",
+      "fuel": "Combustible: el script no lo manda todavía.",
+      "undercut": "Undercut y overcut: necesita un modelo de estimación.",
+      "gforce": "Fuerzas G y diagrama G-G: el script no las manda todavía.",
+      "tyreTemp": "Temperatura de neumáticos: el script no la manda todavía.",
+      "tyrePressure": "Presión de neumáticos: el script no la manda todavía.",
+      "wheelSlip": "Deslizamiento de ruedas: el script no lo manda todavía.",
+      "suspension": "Suspensión: el script no la manda todavía.",
+      "fuelLap": "Combustible por vuelta: el script no lo manda todavía.",
+      "rivalry": "Red de rivalidades: necesita duelos verificados.",
+      "scenario": "Simulador de escenarios: falta construirlo.",
+      "circuitType": "Tipo de circuito: las pistas no tienen esta clasificación.",
+      "forecast": "Pronóstico de desarrollo: necesita más fechas."
+    },
+    "position": {
+      "title": "Posición por vuelta",
+      "help": "Orden en la línea, calculado con la suma de los tiempos de vuelta. Punto grande: incidente. Punto hueco: vuelta inválida."
+    },
+    "gap": {
+      "title": "Diferencia con el líder",
+      "help": "En cada vuelta, contra quien lideraba esa vuelta. Un piloto doblado cuenta solo en las vueltas que completó."
+    },
+    "duel": {
+      "title": "Duelo entre 2 pilotos",
+      "help": "B menos A. Arriba de cero, B va detrás. Cuando la línea cruza el cero, cambia el orden entre los 2."
+    },
+    "gained": {
+      "title": "Posiciones ganadas y perdidas",
+      "help": "Posición de largada menos posición final. La largada es el orden de las mejores vueltas válidas de la clasificación."
+    },
+    "firstLap": {
+      "title": "Primera vuelta",
+      "help": "Posiciones ganadas entre la largada y el final de la vuelta 1."
+    },
+    "leaderboard": {
+      "title": "Clasificación vuelta por vuelta",
+      "help": "Mové la barra para ver el orden y las diferencias al final de cada vuelta."
+    },
+    "lapTimes": {
+      "title": "Tiempos de vuelta",
+      "help": "Punto grande: incidente. Punto hueco: vuelta inválida. Las vueltas de más de {{limit}} quedan en la línea de arriba."
+    },
+    "heat": {
+      "title": "Mapa de calor de vueltas",
+      "help": "Verde: cerca de la mejor vuelta de la sesión. Rojo: 8 % o más lejos. P: pits. !: incidente. ×: inválida."
+    },
+    "distribution": {
+      "title": "Distribución del ritmo",
+      "help": "Solo vueltas limpias. La caja tiene la mitad central de las vueltas, y la línea es la mediana. Los círculos son vueltas fuera de lo normal."
+    },
+    "ranking": {
+      "title": "Ritmo de carrera",
+      "help": "Diferencia con el más rápido, solo con vueltas limpias.",
+      "measure": "Medida",
+      "median": "Mediana",
+      "mean": "Promedio",
+      "trimmed": "Promedio recortado (sin el 10 % de cada punta)"
+    },
+    "consistency": {
+      "title": "Consistencia",
+      "help": "Desviación estándar de las vueltas limpias: más bajo es más consistente. n es la cantidad de vueltas. Con pocas vueltas, la comparación es menos segura."
+    },
+    "trend": {
+      "title": "Tendencia del ritmo",
+      "help": "Mediana de las últimas {{count}} vueltas limpias.",
+      "window": "Vueltas"
+    },
+    "traffic": {
+      "title": "Aire limpio y tráfico",
+      "help": "Calculado en la línea, no en toda la vuelta. A 1 s o menos del auto de adelante: atacando. Con un auto a 1 s o menos detrás: defendiendo.",
+      "attacking": "Atacando",
+      "defending": "Defendiendo",
+      "clean_air": "Aire limpio"
+    },
+    "changes": {
+      "title": "Posiciones ganadas en la línea",
+      "help": "Suma de las posiciones ganadas de una vuelta a la otra. No son sobrepasos verificados: incluye paradas y abandonos de otros."
+    },
+    "stints": {
+      "title": "Neumáticos y tandas",
+      "help": "Una barra por tanda, con el largo en vueltas. Una parada empieza una tanda nueva.",
+      "noPits": "Sin registro de Real Penalty: no se ven las paradas, solo el neumático de cada vuelta.",
+      "pits_one": "{{count}} parada",
+      "pits_other": "{{count}} paradas"
+    },
+    "bestLaps": {
+      "title": "Mejor vuelta",
+      "help": "Diferencia con la mejor vuelta válida de la sesión."
+    },
+    "sectors": {
+      "title": "Mejores sectores",
+      "help": "Diferencia con el mejor tiempo de cada sector. ★: el mejor."
+    },
+    "waterfall": {
+      "title": "Diferencia por sector",
+      "help": "Mejor vuelta de {{b}} contra la mejor vuelta de {{a}}. Σ es la suma hasta ese sector.",
+      "total": "Total"
+    },
+    "theoretical": {
+      "title": "Vuelta teórica",
+      "help": "Tiempo que falta entre la mejor vuelta real y la suma de los mejores sectores. Los sectores pueden ser de vueltas distintas.",
+      "short": "Teórica",
+      "real": "Real"
+    },
+    "sectorSpread": {
+      "title": "Consistencia por sector",
+      "help": "Tiempo por encima del mejor sector, en vueltas limpias. Una caja ancha es un sector irregular.",
+      "best": "Mejor"
+    },
+    "improvement": {
+      "title": "Mejora de la vuelta personal",
+      "help": "La mejor vuelta válida hasta cada vuelta. El punto grande es un nuevo récord personal."
+    },
+    "points": {
+      "title": "Puntos acumulados",
+      "help": "Los puntos de cada piloto después de cada fecha."
+    },
+    "rank": {
+      "title": "Posición en el campeonato",
+      "help": "La posición después de cada fecha."
+    },
+    "gapPoints": {
+      "title": "Diferencia de puntos con el líder",
+      "help": "Puntos detrás del líder después de cada fecha."
+    },
+    "contribution": {
+      "title": "Puntos por fecha",
+      "help": "De qué fecha viene cada punto."
+    },
+    "momentum": {
+      "title": "Momento",
+      "help": "Promedio de puntos en las últimas {{count}} fechas."
+    },
+    "contention": {
+      "title": "Pelea por el título",
+      "help": "Puntos detrás del líder. Quedan {{rounds}} fechas y cada una da hasta {{points}} puntos sin bonos. No cuenta los desempates.",
+      "out": "Sin chances",
+      "max": "Máximo {{points}}"
+    },
+    "calendar": {
+      "title": "Calendario de resultados",
+      "help": "La posición final en cada fecha."
+    },
+    "finishBox": {
+      "title": "Distribución de posiciones",
+      "help": "La caja tiene la mitad central de los resultados, y la línea es la mediana."
+    },
+    "paceHeat": {
+      "title": "Ritmo por fecha",
+      "help": "Mediana de vueltas limpias contra la mejor mediana de la fecha, en porcentaje. 0 es el más rápido."
+    },
+    "qualifyingHeat": {
+      "title": "Clasificación por fecha",
+      "help": "Mejor vuelta de clasificación contra la pole, en porcentaje. El texto es la posición."
+    },
+    "qualifyingScatter": {
+      "title": "Clasificación contra carrera",
+      "help": "Debajo de la diagonal, el piloto termina peor de lo que larga. Arriba, mejor.",
+      "x": "Posición media de largada",
+      "y": "Posición media final"
+    },
+    "seasonGained": {
+      "title": "Posiciones ganadas en la temporada",
+      "help": "Suma de largada menos final en todas las fechas."
+    },
+    "seasonConsistency": {
+      "title": "Consistencia en la temporada",
+      "help": "Promedio de la desviación estándar de las vueltas limpias de cada carrera."
+    },
+    "fieldSpread": {
+      "title": "Diferencia de ritmo entre pilotos",
+      "help": "El más lento contra el más rápido en cada fecha, con la mediana de vueltas limpias. Más bajo es una carrera más pareja."
+    },
+    "honours": {
+      "title": "Victorias, podios, poles y vueltas rápidas",
+      "help": "Los totales de la temporada.",
+      "wins": "Victorias",
+      "podiums": "Podios",
+      "poles": "Poles",
+      "fastest_laps": "Vueltas rápidas"
+    },
+    "frequency": {
+      "title": "Frecuencia de resultados",
+      "help": "Cuántas veces terminó cada piloto en cada grupo de posiciones."
+    },
+    "prediction": {
+      "title": "Probabilidad de título",
+      "help": "Estimación, no un dato. {{runs}} simulaciones: en cada fecha que falta, cada piloto repite por azar los puntos de una fecha suya. No evita que 2 pilotos saquen el mismo puesto.",
+      "over": "La temporada no tiene fechas por correr."
+    },
+    "predictedRank": {
+      "title": "Posición final estimada",
+      "help": "Estimación con las mismas simulaciones: la chance de cada posición final."
+    },
+    "radar": {
+      "title": "Perfil del piloto",
+      "help": "De 0 a 100 contra los demás pilotos de la temporada: ritmo (ritmo medio), consistencia (desviación de vueltas), clasificación (largada media), resultados (puntos medios), duelos (posiciones ganadas), fiabilidad (carreras terminadas).",
+      "few": "Hacen falta más pilotos o más datos.",
+      "pace": "Ritmo",
+      "consistency": "Consistencia",
+      "qualifying": "Clasificación",
+      "results": "Resultados",
+      "racecraft": "Duelos",
+      "reliability": "Fiabilidad"
+    },
+    "paceConsistency": {
+      "title": "Ritmo contra consistencia",
+      "help": "Abajo a la izquierda es rápido y consistente. El punto grande es este piloto.",
+      "x": "Ritmo contra el mejor",
+      "y": "Desviación de las vueltas"
+    },
+    "form": {
+      "title": "Forma",
+      "help": "La posición final de cada fecha y su promedio móvil.",
+      "finish": "Posición",
+      "rolling": "Promedio de {{count}}"
+    },
+    "elo": {
+      "title": "Rating Elo",
+      "help": "Empieza en 1500. Cada carrera es un duelo contra cada otro piloto, con K = 24 repartido entre los duelos. Solo esta temporada."
+    },
+    "gridFinish": {
+      "title": "Largada y llegada",
+      "help": "La posición de largada y la posición final de cada fecha.",
+      "grid": "Largada",
+      "finish": "Llegada"
+    },
+    "qualifyingHistory": {
+      "title": "Historial de clasificación",
+      "help": "Diferencia con la pole en cada fecha."
+    },
+    "paceHistory": {
+      "title": "Historial de ritmo",
+      "help": "Mediana de vueltas limpias contra la mejor mediana de la fecha."
+    },
+    "histogram": {
+      "title": "Posiciones finales",
+      "help": "Cuántas veces terminó en cada posición.",
+      "out": "No terminó"
+    },
+    "gainedPerRace": {
+      "title": "Posiciones ganadas por fecha"
+    },
+    "bestTypical": {
+      "title": "Mejor vuelta contra ritmo normal",
+      "help": "Diferencia entre la mejor vuelta y la mediana de la carrera. Muestra velocidad a una vuelta contra ritmo sostenido."
+    },
+    "headToHead": {
+      "title": "{{a}} contra {{b}}",
+      "help": "Solo fechas que corrieron los 2.",
+      "races": "Carrera",
+      "qualifying": "Clasificación",
+      "pace": "Ritmo"
+    },
+    "pointsDuel": {
+      "title": "Puntos de los 2 pilotos",
+      "help": "Puntos acumulados después de cada fecha."
+    },
+    "paceDuel": {
+      "title": "Diferencia de ritmo",
+      "help": "Mediana de {{a}} menos mediana de {{b}}. Negativo: {{a}} fue más rápido."
+    },
+    "reliability": {
+      "title": "Fiabilidad",
+      "help": "Cómo terminó cada carrera de la temporada."
     }
   }
 }

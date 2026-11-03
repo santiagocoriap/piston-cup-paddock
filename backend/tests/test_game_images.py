@@ -1,12 +1,16 @@
 import io
+import struct
 import zipfile
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 
-from apps.catalog.game_images import GameImagesError, import_game_images, open_source
+from apps.catalog.game_images import GameImagesError, _put, import_game_images, open_source
 from apps.catalog.models import Car, Track, TrackLayout
+from apps.catalog.track_line import line_bytes, read_line
+from apps.competition.models import Round
+from apps.telemetry.track_map import track_map
 
 PNG = b"\x89PNG\r\n\x1a\n" + b"png-body"
 JPEG = b"\xff\xd8\xff" + b"jpeg-body"
@@ -157,3 +161,34 @@ def test_command_imports_a_folder(layout, content, capsys):
 @pytest.fixture
 def me_driver(make_user):
     return make_user("driver")
+
+
+def _ai_line(count=100):
+    points = b"".join(
+        struct.pack("<4fi", float(i), 1.0, float(i * 2), i * 10.0, i) for i in range(count)
+    )
+    return struct.pack("<4i", 7, count, 0, 0) + points
+
+
+def test_the_track_map_comes_from_the_game_file(layout, season):
+    assert read_line(b"not a line") is None
+    line = read_line(_ai_line())
+    assert line["length_m"] == 990
+    assert line["spline"][0] == 0 and line["spline"][-1] == 1
+    assert (line["x"][3], line["z"][3]) == (3.0, 6.0)
+    round_ = Round.objects.create(season=season, number=9, track_layout=layout)
+    assert track_map(round_) == []
+    _put(layout.line, "line.json", line_bytes(line))
+    layout.save()
+    assert track_map(round_)[3][1:] == (3.0, 6.0)
+
+
+def test_the_import_reads_the_ai_file(layout, tmp_path):
+    folder = tmp_path / "tracks" / layout.track.key / layout.key / "ai"
+    folder.mkdir(parents=True)
+    (folder / "fast_lane.ai").write_bytes(_ai_line())
+    (tmp_path / "cars").mkdir()
+    import_game_images(open_source(tmp_path))
+    layout.refresh_from_db()
+    assert layout.line
+    assert layout.length_m

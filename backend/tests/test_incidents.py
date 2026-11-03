@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 import pytest
 
 from apps.collectors.incidents import Collision, group
-from apps.collectors.models import CollectorEvent
+from apps.collectors.models import CollectorEvent, IncidentReview
 from apps.collectors.services import create_token
 from apps.competition.models import ChampionshipMember, Round, SeasonEntry
 from apps.identity.models import DriverProfile
@@ -170,3 +170,27 @@ def test_a_crash_only_in_the_first_start_does_not_count(champ_admin, night):
     CollectorEvent.objects.filter(kind="collision_env").delete()
     incidents, _, has_events = accepted_race_incidents(night)
     assert has_events and incidents == []
+
+
+def test_steward_reviews_many_incidents_in_one_step(api, make_user, championship, night):
+    steward = make_user("steward2")
+    ChampionshipMember.objects.create(
+        user=steward, championship=championship, role=ChampionshipMember.Role.STEWARD
+    )
+    client = api(steward)
+    keys = [i["key"] for i in client.get(f"/rounds/{night.id}/incidents").json()["incidents"]]
+    answer = client.put(
+        f"/rounds/{night.id}/incidents/review",
+        {"keys": keys, "outcome": "racing_incident", "note": "Todo junto"},
+    ).json()
+    assert {i["review"]["outcome"] for i in answer["incidents"]} == {"racing_incident"}
+    assert {i["review"]["note"] for i in answer["incidents"]} == {"Todo junto"}
+    # A key that does not exist stops all of them.
+    wrong = client.put(
+        f"/rounds/{night.id}/incidents/review", {"keys": [*keys, 999_999], "outcome": "open"}
+    )
+    assert wrong.status_code == 404
+    assert IncidentReview.objects.exclude(outcome="racing_incident").count() == 0
+    assert api(make_user("nobody")).put(
+        f"/rounds/{night.id}/incidents/review", {"keys": keys, "outcome": "open"}
+    ).status_code in (403, 404)

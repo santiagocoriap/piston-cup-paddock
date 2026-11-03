@@ -78,6 +78,8 @@ class TelemetryLap(models.Model):
     recorded_at = models.DateTimeField()
     sample_hz = models.PositiveSmallIntegerField()
     samples = models.FileField(upload_to=telemetry_path)
+    # The size of the samples file, for the storage limit of the laps that do not count.
+    samples_bytes = models.PositiveIntegerField(default=0)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, related_name="+"

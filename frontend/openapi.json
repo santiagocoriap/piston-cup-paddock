@@ -8054,6 +8054,54 @@
         ]
       }
     },
+    "/api/rounds/{round_id}/incidents/review": {
+      "put": {
+        "operationId": "apps_collectors_incident_api_review_many_incidents",
+        "summary": "Review Many Incidents",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentsOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "The same review for many incidents, in one step.",
+        "tags": [
+          "incidents"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManyReviewsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/rounds/{round_id}/incidents/{key}/review": {
       "put": {
         "operationId": "apps_collectors_incident_api_review_incident",
@@ -8139,6 +8187,137 @@
         },
         "tags": [
           "safety"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/rounds/{round_id}/analysis": {
+      "get": {
+        "operationId": "apps_analytics_api_get_round_analysis",
+        "summary": "Get Round Analysis",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "session",
+            "schema": {
+              "default": "race",
+              "enum": [
+                "race",
+                "qualifying",
+                "practice"
+              ],
+              "title": "Session",
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundAnalysisOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "analytics"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seasons/{season_id}/analysis": {
+      "get": {
+        "operationId": "apps_analytics_api_get_season_analysis",
+        "summary": "Get Season Analysis",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonAnalysisOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "analytics"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/drivers/{driver_id}/analysis": {
+      "get": {
+        "operationId": "apps_analytics_api_get_driver_analysis",
+        "summary": "Get Driver Analysis",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "driver_id",
+            "schema": {
+              "title": "Driver Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SeasonAnalysisOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "The analysis of each season of the driver that the viewer can see. The driver page shows\nthe row of the driver and the field around it. A rival comes from the same seasons.",
+        "tags": [
+          "analytics"
         ],
         "security": [
           {
@@ -22055,6 +22234,41 @@
         "title": "ReviewOut",
         "type": "object"
       },
+      "ManyReviewsIn": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "open",
+              "no_action",
+              "racing_incident",
+              "penalty"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "note": {
+            "default": "",
+            "maxLength": 1000,
+            "title": "Note",
+            "type": "string"
+          },
+          "keys": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 1000,
+            "minItems": 1,
+            "title": "Keys",
+            "type": "array"
+          }
+        },
+        "required": [
+          "outcome",
+          "keys"
+        ],
+        "title": "ManyReviewsIn",
+        "type": "object"
+      },
       "ReviewIn": {
         "properties": {
           "outcome": {
@@ -22219,6 +22433,880 @@
           "drivers"
         ],
         "title": "SafetyOut",
+        "type": "object"
+      },
+      "LapPointOut": {
+        "properties": {
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "ms": {
+            "title": "Ms",
+            "type": "integer"
+          },
+          "sectors_ms": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Sectors Ms",
+            "type": "array"
+          },
+          "valid": {
+            "title": "Valid",
+            "type": "boolean"
+          },
+          "clean": {
+            "title": "Clean",
+            "type": "boolean"
+          },
+          "pit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pit"
+          },
+          "contact": {
+            "title": "Contact",
+            "type": "boolean"
+          },
+          "tyre": {
+            "title": "Tyre",
+            "type": "string"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "gap_to_leader_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gap To Leader Ms"
+          },
+          "ahead_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ahead Ms"
+          }
+        },
+        "required": [
+          "number",
+          "ms",
+          "sectors_ms",
+          "valid",
+          "clean",
+          "pit",
+          "contact",
+          "tyre",
+          "position",
+          "gap_to_leader_ms",
+          "ahead_ms"
+        ],
+        "title": "LapPointOut",
+        "type": "object"
+      },
+      "LapSpreadOut": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean"
+          },
+          "median": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median"
+          },
+          "trimmed": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trimmed"
+          },
+          "stdev": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stdev"
+          },
+          "mad": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mad"
+          },
+          "q1": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Q1"
+          },
+          "q3": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Q3"
+          },
+          "low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Low"
+          },
+          "high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "High"
+          },
+          "outliers": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Outliers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "count",
+          "mean",
+          "median",
+          "trimmed",
+          "stdev",
+          "mad",
+          "q1",
+          "q3",
+          "low",
+          "high",
+          "outliers"
+        ],
+        "title": "LapSpreadOut",
+        "type": "object"
+      },
+      "RoundAnalysisOut": {
+        "properties": {
+          "session": {
+            "title": "Session",
+            "type": "string"
+          },
+          "sessions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sessions",
+            "type": "array"
+          },
+          "has_sectors": {
+            "title": "Has Sectors",
+            "type": "boolean"
+          },
+          "has_pit_data": {
+            "title": "Has Pit Data",
+            "type": "boolean"
+          },
+          "clean_rules": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Clean Rules",
+            "type": "array"
+          },
+          "drivers": {
+            "items": {
+              "$ref": "#/components/schemas/RoundDriverOut"
+            },
+            "title": "Drivers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "session",
+          "sessions",
+          "has_sectors",
+          "has_pit_data",
+          "clean_rules",
+          "drivers"
+        ],
+        "title": "RoundAnalysisOut",
+        "type": "object"
+      },
+      "RoundDriverOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "driver_id": {
+            "title": "Driver Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "grid": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid"
+          },
+          "finish": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finish"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "points": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Points"
+          },
+          "best_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Ms"
+          },
+          "best_lap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Lap"
+          },
+          "theoretical_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Theoretical Ms"
+          },
+          "best_sectors_ms": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Best Sectors Ms",
+            "type": "array"
+          },
+          "spread": {
+            "$ref": "#/components/schemas/LapSpreadOut"
+          },
+          "battle": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Battle"
+          },
+          "laps": {
+            "items": {
+              "$ref": "#/components/schemas/LapPointOut"
+            },
+            "title": "Laps",
+            "type": "array"
+          }
+        },
+        "required": [
+          "entry_id",
+          "driver_id",
+          "name",
+          "number",
+          "grid",
+          "finish",
+          "status",
+          "points",
+          "best_ms",
+          "best_lap",
+          "theoretical_ms",
+          "best_sectors_ms",
+          "spread",
+          "battle",
+          "laps"
+        ],
+        "title": "RoundDriverOut",
+        "type": "object"
+      },
+      "RoundCellOut": {
+        "properties": {
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "track": {
+            "title": "Track",
+            "type": "string"
+          },
+          "grid": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grid"
+          },
+          "finish": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finish"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "total_points": {
+            "title": "Total Points",
+            "type": "integer"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "gap_to_leader": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gap To Leader"
+          },
+          "pole": {
+            "title": "Pole",
+            "type": "boolean"
+          },
+          "fastest_lap": {
+            "title": "Fastest Lap",
+            "type": "boolean"
+          },
+          "best_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Ms"
+          },
+          "median_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median Ms"
+          },
+          "stdev_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stdev Ms"
+          },
+          "pace_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pace Pct"
+          },
+          "qualifying_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qualifying Pct"
+          },
+          "elo": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elo"
+          }
+        },
+        "required": [
+          "round_id",
+          "number",
+          "track",
+          "grid",
+          "finish",
+          "status",
+          "points",
+          "total_points",
+          "rank",
+          "gap_to_leader",
+          "pole",
+          "fastest_lap",
+          "best_ms",
+          "median_ms",
+          "stdev_ms",
+          "pace_pct",
+          "qualifying_pct",
+          "elo"
+        ],
+        "title": "RoundCellOut",
+        "type": "object"
+      },
+      "SeasonAnalysisOut": {
+        "properties": {
+          "season_id": {
+            "title": "Season Id",
+            "type": "integer"
+          },
+          "season_name": {
+            "title": "Season Name",
+            "type": "string"
+          },
+          "championship_name": {
+            "title": "Championship Name",
+            "type": "string"
+          },
+          "planned_rounds": {
+            "title": "Planned Rounds",
+            "type": "integer"
+          },
+          "remaining_rounds": {
+            "title": "Remaining Rounds",
+            "type": "integer"
+          },
+          "points_by_position": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Points By Position",
+            "type": "array"
+          },
+          "rounds": {
+            "items": {
+              "$ref": "#/components/schemas/SeasonRoundOut"
+            },
+            "title": "Rounds",
+            "type": "array"
+          },
+          "drivers": {
+            "items": {
+              "$ref": "#/components/schemas/SeasonDriverOut"
+            },
+            "title": "Drivers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "season_id",
+          "season_name",
+          "championship_name",
+          "planned_rounds",
+          "remaining_rounds",
+          "points_by_position",
+          "rounds",
+          "drivers"
+        ],
+        "title": "SeasonAnalysisOut",
+        "type": "object"
+      },
+      "SeasonDriverOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "driver_id": {
+            "title": "Driver Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "wins": {
+            "title": "Wins",
+            "type": "integer"
+          },
+          "podiums": {
+            "title": "Podiums",
+            "type": "integer"
+          },
+          "poles": {
+            "title": "Poles",
+            "type": "integer"
+          },
+          "fastest_laps": {
+            "title": "Fastest Laps",
+            "type": "integer"
+          },
+          "finishes": {
+            "title": "Finishes",
+            "type": "integer"
+          },
+          "dnfs": {
+            "title": "Dnfs",
+            "type": "integer"
+          },
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/RoundCellOut"
+            },
+            "title": "Cells",
+            "type": "array"
+          },
+          "scores": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Scores",
+            "type": "object"
+          },
+          "average_pace_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Pace Pct"
+          },
+          "average_stdev_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Stdev Ms"
+          },
+          "max_points": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Points"
+          },
+          "can_win": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Can Win"
+          },
+          "win_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Win Pct"
+          },
+          "expected_rank": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Rank"
+          },
+          "rank_odds": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank Odds"
+          }
+        },
+        "required": [
+          "entry_id",
+          "driver_id",
+          "name",
+          "number",
+          "rank",
+          "points",
+          "wins",
+          "podiums",
+          "poles",
+          "fastest_laps",
+          "finishes",
+          "dnfs",
+          "cells",
+          "scores",
+          "average_pace_pct",
+          "average_stdev_ms",
+          "max_points",
+          "can_win",
+          "win_pct",
+          "expected_rank",
+          "rank_odds"
+        ],
+        "title": "SeasonDriverOut",
+        "type": "object"
+      },
+      "SeasonRoundOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "track": {
+            "title": "Track",
+            "type": "string"
+          },
+          "has_result": {
+            "title": "Has Result",
+            "type": "boolean"
+          },
+          "field_spread_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field Spread Pct"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "track",
+          "has_result",
+          "field_spread_pct"
+        ],
+        "title": "SeasonRoundOut",
         "type": "object"
       },
       "CarTrackOut": {

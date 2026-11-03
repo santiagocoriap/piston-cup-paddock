@@ -15,6 +15,7 @@ import { ImportSection } from './ImportSection'
 import { EngineerSection } from './EngineerSection'
 import { IncidentsSection } from './IncidentsSection'
 import { LapsSection } from './LapsSection'
+import { RoundAnalysis } from './analysis/RoundAnalysis'
 import { PenaltyLogsSection } from './PenaltyLogsSection'
 import { ReplaySection } from './ReplaySection'
 import { ReportSection } from './ReportSection'
@@ -35,7 +36,7 @@ type Row = { status: Status | 'absent'; position: string; pole: boolean; fastest
 
 const STATUSES: (Status | 'absent')[] = ['absent', 'finished', 'dnf', 'dns', 'dsq']
 
-const TABS = ['race', 'laps', 'incidents', 'replay', 'restarts', 'telemetry', 'engineer', 'report'] as const
+const TABS = ['race', 'laps', 'analysis', 'incidents', 'replay', 'restarts', 'telemetry', 'engineer', 'report'] as const
 type Tab = (typeof TABS)[number]
 type Counts = components['schemas']['TabCountsOut']
 /** The tabs with a count. "race" and "engineer" have none: the race always has content, and the
@@ -283,6 +284,7 @@ export function RoundPage() {
       )}
 
       {tab === 'laps' && <LapsSection key={`${imports}-${saves}`} roundId={data.id} />}
+      {tab === 'analysis' && <RoundAnalysis roundId={data.id} />}
       {tab === 'incidents' && <IncidentsSection roundId={data.id} />}
       {tab === 'replay' && <ReplaySection roundId={data.id} />}
       {tab === 'restarts' && (

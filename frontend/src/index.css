@@ -3423,7 +3423,66 @@ tr.invalid-lap td:nth-last-child(-n + 3) {
 }
 
 .lap-chart {
-  margin: var(--space-4) 0;
+  margin: var(--space-5) 0;
+}
+
+.lap-chart figcaption {
+  margin-top: var(--space-3);
+  line-height: 1.6;
+}
+
+/* The lap tables of the drivers: one closed line for each, with a gap. */
+.lap-driver {
+  display: block;
+  margin-top: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+}
+
+.lap-driver > summary {
+  cursor: pointer;
+}
+
+.lap-driver[open] > summary {
+  margin-bottom: var(--space-4);
+}
+
+/* A note under a table that fills its card. */
+.compare-footer {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+/* The review of many incidents, above the list. */
+.incident-many {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.incident-many-all {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+  margin-right: auto;
+}
+
+.incident-list li.with-mark {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.incident-list li.with-mark .incident-row {
+  flex: 1;
+  min-width: 0;
 }
 
 .lap-chart svg {
@@ -9771,6 +9830,13 @@ button.danger {
   align-items: center;
 }
 
+/* A line between the laps of two drivers. */
+.tm-driver + .tm-driver {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
 .tm-laps {
   display: flex;
   flex-wrap: wrap;
@@ -11023,3 +11089,245 @@ button.danger {
   flex: 1 1 220px;
 }
 
+/* ---------- Data analysis ---------- */
+.analysis {
+  min-width: 0;
+}
+
+.analysis-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+
+.chart-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chart-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  color: var(--ink-3);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.chart-chip.on {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+
+.chart-swatch {
+  display: inline-block;
+  flex: none;
+  width: 10px;
+  height: 10px;
+  margin-right: 4px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+}
+
+.chart-group {
+  margin-top: var(--space-4);
+}
+
+.chart-group > summary {
+  padding: var(--space-2) 0;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  border-bottom: 1px solid var(--line);
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-4);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.chart-wide {
+  grid-column: 1 / -1;
+}
+
+.chart-card:fullscreen {
+  overflow: auto;
+  background: var(--bg);
+}
+
+.chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.chart-head h4 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.chart-tools {
+  display: flex;
+  flex: none;
+  gap: 4px;
+}
+
+.chart-tool {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  color: var(--ink-3);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.chart-tool:hover {
+  color: var(--ink);
+  border-color: var(--ink-3);
+}
+
+.chart-missing {
+  margin: 0;
+  padding: var(--space-5) 0;
+  text-align: center;
+}
+
+.chart-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.chart-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chart-plot {
+  position: relative;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+.chart-radar {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.chart-scroll {
+  overflow-x: auto;
+}
+
+.chart-grid-line {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.chart-zero {
+  stroke: var(--ink-3);
+  stroke-width: 1;
+}
+
+.chart-cursor {
+  stroke: var(--ink-3);
+  stroke-dasharray: 3 3;
+}
+
+.chart-drag {
+  fill: var(--ink-3);
+  fill-opacity: 0.2;
+}
+
+.chart-axis {
+  fill: var(--ink-2);
+  font-size: 12px;
+}
+
+.chart-label {
+  fill: var(--ink);
+  font-size: 13px;
+}
+
+.chart-value {
+  fill: var(--ink-2);
+  font-size: 12px;
+}
+
+.chart-cell {
+  fill: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.chart-tip {
+  position: absolute;
+  top: 4px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 260px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-1);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  font-size: 12px;
+  transform: translateX(12px);
+  pointer-events: none;
+}
+
+.chart-reset {
+  position: absolute;
+  top: 4px;
+  right: 16px;
+  padding: 2px 8px;
+  font-size: 12px;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.chart-needs {
+  margin-top: var(--space-5);
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.chart-needs > summary {
+  cursor: pointer;
+}

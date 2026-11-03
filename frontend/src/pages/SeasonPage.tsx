@@ -22,6 +22,7 @@ import { RulesSection } from './RulesSection'
 import { SafetySection } from './SafetySection'
 import { TitleSection } from './TitleSection'
 import { HandicapsSection } from './HandicapsSection'
+import { SeasonAnalysis } from './analysis/SeasonAnalysis'
 import { ConditionsPoolForm } from './ConditionsDraw'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { Avatar } from '../components/Avatar'
@@ -73,6 +74,7 @@ export function SeasonPage() {
     standings: t('standings.title'),
     title: t('seasonNav.title'),
     safety: t('seasonNav.safety'),
+    analysis: t('seasonNav.analysis'),
     handicaps: t('seasonNav.handicaps'),
     calendar: t('season.calendar'),
     ballots: t('seasonNav.ballots'),
@@ -302,6 +304,10 @@ export function SeasonPage() {
               <SafetySection seasonId={seasonId} />
             </section>
           </div>
+
+          <section id="analysis" className="season-block">
+            <SeasonAnalysis seasonId={seasonId} />
+          </section>
 
           <section id="handicaps" className="season-block">
             <HandicapsSection seasonId={seasonId} rounds={data.rounds} adminView={adminView} />
@@ -542,7 +548,7 @@ export function SeasonPage() {
 type FormProps = { seasonId: number; onChange: () => void; onDone: () => void }
 
 /** The sections of the page, in order. The side navigation links to them. */
-const SECTIONS = ['standings', 'title', 'safety', 'handicaps', 'calendar', 'ballots', 'rules', 'report', 'entries'] as const
+const SECTIONS = ['standings', 'title', 'safety', 'analysis', 'handicaps', 'calendar', 'ballots', 'rules', 'report', 'entries'] as const
 
 /** The section for the side navigation, and a function that scrolls to a section on a click.
  *

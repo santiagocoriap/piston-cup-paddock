@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { formatLapTime } from '../lib/format'
@@ -144,12 +145,18 @@ function Details({ data, a, b }: { data: Comparison; a: Lap; b: Lap }) {
         </tbody>
       </table>
       {conditions.length > 0 && (
-        <p className="muted">
-          {t('compare.conditions')}: {conditions.map(([key, value]) => `${key.replace(/_/g, ' ')} ${value}`).join(' · ')}
+        <p className="muted compare-footer">
+          {t('compare.conditions')}: {conditions.map(([key, value]) => conditionText(t, key, value)).join(' · ')}
         </p>
       )}
     </div>
   )
+}
+
+/** One announced condition with its name and its unit, for example "Aire 26 °C". */
+function conditionText(t: TFunction, key: string, value: unknown): string {
+  const unit = key.endsWith('_c') ? ' °C' : ''
+  return `${t(`compare.conditionNames.${key}`, { defaultValue: key.replace(/_/g, ' ') })} ${String(value)}${unit}`
 }
 
 /** The delta along the track, with the zero line. Above zero: B is behind. */

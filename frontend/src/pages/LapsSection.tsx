@@ -217,7 +217,7 @@ function DriverTable({ driver, hasSectors }: { driver: DriverLaps; hasSectors: b
   const { t } = useTranslation()
   const sectorCount = driver.best_sectors_ms.length
   return (
-    <details className="card">
+    <details className="card lap-driver">
       <summary>
         #{driver.number} {driver.driver_name} · {t('laps.count', { count: driver.laps.length })}
       </summary>

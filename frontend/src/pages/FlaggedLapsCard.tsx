@@ -87,7 +87,7 @@ function FlaggedRow({ lap, onChange }: { lap: FlaggedLap; onChange: () => void }
           <button type="button" className="secondary small" onClick={() => run(() => api.POST('/api/telemetry-laps/{lap_id}/recheck', { params: { path } }))}>
             {t('flaggedLaps.recheck')}
           </button>
-          {lap.round_id && lap.driver_id && !lap.issues.includes('bad_samples') && (
+          {lap.round_id && lap.driver_id && !lap.issues.includes('bad_samples') && !lap.issues.includes('partial_samples') && (
             <>
               <select value={session} onChange={(event) => setSession(event.target.value as SessionType)} aria-label={t('flaggedLaps.session')}>
                 <option value="race">{t('flaggedLaps.sessions.race')}</option>

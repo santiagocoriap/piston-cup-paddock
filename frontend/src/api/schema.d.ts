@@ -2992,6 +2992,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/rounds/{round_id}/incidents/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Review Many Incidents
+         * @description The same review for many incidents, in one step.
+         */
+        put: operations["apps_collectors_incident_api_review_many_incidents"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/rounds/{round_id}/incidents/{key}/review": {
         parameters: {
             query?: never;
@@ -3018,6 +3038,61 @@ export interface paths {
         };
         /** Season Safety */
         get: operations["apps_collectors_safety_api_season_safety"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/rounds/{round_id}/analysis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Round Analysis */
+        get: operations["apps_analytics_api_get_round_analysis"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seasons/{season_id}/analysis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Season Analysis */
+        get: operations["apps_analytics_api_get_season_analysis"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/drivers/{driver_id}/analysis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Driver Analysis
+         * @description The analysis of each season of the driver that the viewer can see. The driver page shows
+         *     the row of the driver and the field around it. A rival comes from the same seasons.
+         */
+        get: operations["apps_analytics_api_get_driver_analysis"];
         put?: never;
         post?: never;
         delete?: never;
@@ -7489,6 +7564,21 @@ export interface components {
              */
             reviewed_at: string;
         };
+        /** ManyReviewsIn */
+        ManyReviewsIn: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "open" | "no_action" | "racing_incident" | "penalty";
+            /**
+             * Note
+             * @default
+             */
+            note?: string;
+            /** Keys */
+            keys: number[];
+        };
         /** ReviewIn */
         ReviewIn: {
             /**
@@ -7553,6 +7643,223 @@ export interface components {
             computed_at: string;
             /** Drivers */
             drivers: components["schemas"]["DriverSafetyOut"][];
+        };
+        /** LapPointOut */
+        LapPointOut: {
+            /** Number */
+            number: number;
+            /** Ms */
+            ms: number;
+            /** Sectors Ms */
+            sectors_ms: number[];
+            /** Valid */
+            valid: boolean;
+            /** Clean */
+            clean: boolean;
+            /** Pit */
+            pit: string | null;
+            /** Contact */
+            contact: boolean;
+            /** Tyre */
+            tyre: string;
+            /** Position */
+            position: number | null;
+            /** Gap To Leader Ms */
+            gap_to_leader_ms: number | null;
+            /** Ahead Ms */
+            ahead_ms: number | null;
+        };
+        /** LapSpreadOut */
+        LapSpreadOut: {
+            /** Count */
+            count: number;
+            /** Mean */
+            mean: number | null;
+            /** Median */
+            median: number | null;
+            /** Trimmed */
+            trimmed: number | null;
+            /** Stdev */
+            stdev: number | null;
+            /** Mad */
+            mad: number | null;
+            /** Q1 */
+            q1: number | null;
+            /** Q3 */
+            q3: number | null;
+            /** Low */
+            low: number | null;
+            /** High */
+            high: number | null;
+            /** Outliers */
+            outliers: number[];
+        };
+        /** RoundAnalysisOut */
+        RoundAnalysisOut: {
+            /** Session */
+            session: string;
+            /** Sessions */
+            sessions: string[];
+            /** Has Sectors */
+            has_sectors: boolean;
+            /** Has Pit Data */
+            has_pit_data: boolean;
+            /** Clean Rules */
+            clean_rules: string[];
+            /** Drivers */
+            drivers: components["schemas"]["RoundDriverOut"][];
+        };
+        /** RoundDriverOut */
+        RoundDriverOut: {
+            /** Entry Id */
+            entry_id: number;
+            /** Driver Id */
+            driver_id: number;
+            /** Name */
+            name: string;
+            /** Number */
+            number: number;
+            /** Grid */
+            grid: number | null;
+            /** Finish */
+            finish: number | null;
+            /** Status */
+            status: string | null;
+            /** Points */
+            points: number | null;
+            /** Best Ms */
+            best_ms: number | null;
+            /** Best Lap */
+            best_lap: number | null;
+            /** Theoretical Ms */
+            theoretical_ms: number | null;
+            /** Best Sectors Ms */
+            best_sectors_ms: (number | null)[];
+            spread: components["schemas"]["LapSpreadOut"];
+            /** Battle */
+            battle: {
+                [key: string]: number;
+            } | null;
+            /** Laps */
+            laps: components["schemas"]["LapPointOut"][];
+        };
+        /** RoundCellOut */
+        RoundCellOut: {
+            /** Round Id */
+            round_id: number;
+            /** Number */
+            number: number;
+            /** Track */
+            track: string;
+            /** Grid */
+            grid: number | null;
+            /** Finish */
+            finish: number | null;
+            /** Status */
+            status: string | null;
+            /** Points */
+            points: number;
+            /** Total Points */
+            total_points: number;
+            /** Rank */
+            rank: number | null;
+            /** Gap To Leader */
+            gap_to_leader: number | null;
+            /** Pole */
+            pole: boolean;
+            /** Fastest Lap */
+            fastest_lap: boolean;
+            /** Best Ms */
+            best_ms: number | null;
+            /** Median Ms */
+            median_ms: number | null;
+            /** Stdev Ms */
+            stdev_ms: number | null;
+            /** Pace Pct */
+            pace_pct: number | null;
+            /** Qualifying Pct */
+            qualifying_pct: number | null;
+            /** Elo */
+            elo: number | null;
+        };
+        /** SeasonAnalysisOut */
+        SeasonAnalysisOut: {
+            /** Season Id */
+            season_id: number;
+            /** Season Name */
+            season_name: string;
+            /** Championship Name */
+            championship_name: string;
+            /** Planned Rounds */
+            planned_rounds: number;
+            /** Remaining Rounds */
+            remaining_rounds: number;
+            /** Points By Position */
+            points_by_position: number[];
+            /** Rounds */
+            rounds: components["schemas"]["SeasonRoundOut"][];
+            /** Drivers */
+            drivers: components["schemas"]["SeasonDriverOut"][];
+        };
+        /** SeasonDriverOut */
+        SeasonDriverOut: {
+            /** Entry Id */
+            entry_id: number;
+            /** Driver Id */
+            driver_id: number;
+            /** Name */
+            name: string;
+            /** Number */
+            number: number;
+            /** Rank */
+            rank: number;
+            /** Points */
+            points: number;
+            /** Wins */
+            wins: number;
+            /** Podiums */
+            podiums: number;
+            /** Poles */
+            poles: number;
+            /** Fastest Laps */
+            fastest_laps: number;
+            /** Finishes */
+            finishes: number;
+            /** Dnfs */
+            dnfs: number;
+            /** Cells */
+            cells: components["schemas"]["RoundCellOut"][];
+            /** Scores */
+            scores: {
+                [key: string]: number | null;
+            };
+            /** Average Pace Pct */
+            average_pace_pct: number | null;
+            /** Average Stdev Ms */
+            average_stdev_ms: number | null;
+            /** Max Points */
+            max_points: number | null;
+            /** Can Win */
+            can_win: boolean | null;
+            /** Win Pct */
+            win_pct: number | null;
+            /** Expected Rank */
+            expected_rank: number | null;
+            /** Rank Odds */
+            rank_odds: number[] | null;
+        };
+        /** SeasonRoundOut */
+        SeasonRoundOut: {
+            /** Id */
+            id: number;
+            /** Number */
+            number: number;
+            /** Track */
+            track: string;
+            /** Has Result */
+            has_result: boolean;
+            /** Field Spread Pct */
+            field_spread_pct: number | null;
         };
         /** CarTrackOut */
         CarTrackOut: {
@@ -12617,6 +12924,32 @@ export interface operations {
             };
         };
     };
+    apps_collectors_incident_api_review_many_incidents: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManyReviewsIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentsOut"];
+                };
+            };
+        };
+    };
     apps_collectors_incident_api_review_incident: {
         parameters: {
             query?: never;
@@ -12662,6 +12995,74 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SafetyOut"];
+                };
+            };
+        };
+    };
+    apps_analytics_api_get_round_analysis: {
+        parameters: {
+            query?: {
+                session?: "race" | "qualifying" | "practice";
+            };
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundAnalysisOut"];
+                };
+            };
+        };
+    };
+    apps_analytics_api_get_season_analysis: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonAnalysisOut"];
+                };
+            };
+        };
+    };
+    apps_analytics_api_get_driver_analysis: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                driver_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeasonAnalysisOut"][];
                 };
             };
         };

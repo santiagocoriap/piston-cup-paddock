@@ -69,6 +69,13 @@ def pack(content: Path, needed: dict | None, out: Path) -> tuple[int, int, list[
                 path = child(folder, name)
                 if path and path.is_file():
                     archive.write(path, f"{base}/{name}")
+            # The points of the track map. A track with layouts has one ai folder for each.
+            ai_base = child(track, item["layout"]) if item["layout"] else track
+            ai = child(ai_base, "ai") if ai_base else None
+            line = child(ai, "fast_lane.ai") if ai else None
+            if line and line.is_file():
+                inner = f"{item['layout']}/" if item["layout"] else ""
+                archive.write(line, f"tracks/{item['track']}/{inner}ai/fast_lane.ai")
             track_count += 1
         for key in cars:
             car = child(cars_dir, key)

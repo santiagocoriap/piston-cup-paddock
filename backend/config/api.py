@@ -1,6 +1,7 @@
 from ninja import NinjaAPI
 from ninja.security import django_auth
 
+from apps.analytics.api import router as analytics_router
 from apps.audit.api import router as audit_router
 from apps.catalog.api import router as catalog_router
 from apps.collectors.api import router as collectors_router
@@ -58,6 +59,7 @@ api.add_router("/", telemetry_router)
 api.add_router("/", health_router)
 api.add_router("/", incidents_router)
 api.add_router("/", safety_router)
+api.add_router("/", analytics_router)
 api.add_router("/", replay_router)
 api.add_router("/", rules_router)
 api.add_router("/", community_router)

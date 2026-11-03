@@ -1,11 +1,13 @@
-"""The map of a track from the positions that the server collector records.
+"""The map of a track. The game file (ai/fast_lane.ai, see catalog/track_line.py) gives it.
 
-Each position sample of the collector has the world x and z and the place on the lap (the
+A layout without the game file uses the positions that the server collector records. Each
+position sample of the collector has the world x and z and the place on the lap (the
 spline position, 0 to 1). The map is the fastest full lap of any car: a lap through the pit lane
 is slower, so the pit lane does not go into the drawing. A telemetry sample has only the place on
 the lap, so the map gives it its point on the track.
 """
 
+import json
 from datetime import timedelta
 
 from apps.collectors.models import CollectorEvent
@@ -35,8 +37,23 @@ def _full(lap: list[tuple[int, float, float, float]]) -> bool:
     return all(b - a <= MAX_HOLE for a, b in zip(splines, splines[1:], strict=False))
 
 
+def _game_file(round_: Round) -> list[tuple[float, float, float]]:
+    line = round_.track_layout.line
+    if not line:
+        return []
+    try:
+        with line.open("rb") as handle:
+            data = json.loads(handle.read())
+    except (OSError, ValueError):
+        return []  # A missing file stays missing.
+    return list(zip(data["spline"], data["x"], data["z"], strict=True))
+
+
 def track_map(round_: Round) -> list[tuple[float, float, float]]:
     """The (spline, x, z) points of the track, in lap order. Empty without a full lap."""
+    from_game = _game_file(round_)
+    if from_game:
+        return from_game
     if round_.scheduled_at is None:
         return []
     events = CollectorEvent.objects.filter(

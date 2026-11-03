@@ -22,7 +22,7 @@ from datetime import datetime, timedelta
 
 from django.core.files.base import ContentFile
 from django.db import transaction
-from django.db.models import Max
+from django.db.models import Max, Sum
 from django.utils import timezone
 
 from apps.collectors.incident_api import AC_SESSION_TYPES
@@ -32,7 +32,7 @@ from apps.identity.models import DriverProfile, driver_for_guid
 from apps.imports.ac_results import track_key
 
 from .models import ScriptCode, TelemetryLap
-from .samples import trim_to_lap
+from .samples import covers_lap, trim_to_lap
 from .services import TelemetryError
 
 # An old race code still works for this long after a new one, for a race in progress.
@@ -51,10 +51,13 @@ MAX_SCRIPT_SAMPLES = 36_000
 TIMELINE_KINDS = ("session_started", "session_ended", "connected", "disconnected", "lap_completed")
 # The lap time of the script and of the server for the same lap.
 LAP_TIME_TOLERANCE_MS = 50
-# Every driver on the server has the race code. This limit stops a flood of laps with issues.
-MAX_FLAGGED = 5_000
+# Every driver on the server has the race code. This limit stops a flood of laps that do not
+# count. One lap of 100 seconds takes about 80 KB, so 1 GB is about 12,000 laps.
+MAX_REVIEW_BYTES = 1024**3
 # The checks of a lap in order. A failed lap gets the last check that it reached.
 MATCH_ISSUES = ("no_session", "other_track", "not_connected", "other_car", "no_server_lap")
+# A new check does not repair the samples, and a lap with these issues cannot count.
+SAMPLE_ISSUES = ("bad_samples", "partial_samples")
 
 
 # Race codes
@@ -381,12 +384,10 @@ def receive_lap(championship: Championship, payload: dict) -> tuple[TelemetryLap
         # The app keeps the samples as they came, for the admin.
         issues.append("bad_samples")
         channels = {"raw": (payload.get("samples") or [])[:MAX_SCRIPT_SAMPLES]}
-    if issues and (
-        TelemetryLap.objects.filter(
-            championship=championship, match=TelemetryLap.Match.FLAGGED
-        ).count()
-        >= MAX_FLAGGED
-    ):
+    else:
+        if not covers_lap(channels, int(payload["lap_time_ms"])):
+            issues.append("partial_samples")
+    if issues and _review_is_full(championship):
         raise TelemetryError("too_many_flagged")
     # The PC clock of the driver can be wrong. The age of the lap at the upload is right.
     age = max(0, int(payload["sent_at"]) - int(payload["ended_at"]))
@@ -415,6 +416,7 @@ def receive_lap(championship: Championship, payload: dict) -> tuple[TelemetryLap
         valid=bool(payload.get("valid", True)),
         recorded_at=recorded_at,
         sample_hz=SAMPLE_HZ,
+        samples_bytes=len(content),
         uploaded_by=driver.user if driver else None,
     )
     lap.samples.save("samples.json", ContentFile(content), save=False)
@@ -422,7 +424,20 @@ def receive_lap(championship: Championship, payload: dict) -> tuple[TelemetryLap
         lap.save()
     if issues:
         return lap, "rejected"
-    return lap, match(lap)
+    state = match(lap)
+    if state != "league" and _review_is_full(championship):
+        lap.samples.delete(save=False)
+        lap.delete()
+        raise TelemetryError("too_many_flagged")
+    return lap, state
+
+
+def _review_is_full(championship: Championship) -> bool:
+    used = TelemetryLap.objects.filter(
+        championship=championship,
+        match__in=[TelemetryLap.Match.PENDING, TelemetryLap.Match.FLAGGED],
+    ).aggregate(total=Sum("samples_bytes"))["total"]
+    return (used or 0) >= MAX_REVIEW_BYTES
 
 
 def _driver_issues(championship: Championship, driver: DriverProfile | None) -> list[str]:
@@ -442,8 +457,7 @@ def recheck(lap: TelemetryLap) -> str:
     if lap.driver is None:
         lap.driver = driver_for_guid(lap.steam_guid)
     issues = _driver_issues(lap.championship, lap.driver)
-    if "bad_samples" in lap.issues:
-        issues.append("bad_samples")
+    issues += [issue for issue in lap.issues if issue in SAMPLE_ISSUES]
     lap.uploaded_by = lap.driver.user if lap.driver else None
     lap.save(update_fields=["driver", "uploaded_by"])
     if issues:
@@ -468,8 +482,9 @@ def accept(lap: TelemetryLap, round_: Round, session_type: str) -> None:
     server events. The issues stay on the lap as a record. The cuts stay unknown."""
     if lap.driver is None:
         raise TelemetryError("unknown_driver")
-    if "bad_samples" in lap.issues:
-        raise TelemetryError("bad_samples")
+    for issue in lap.issues:
+        if issue in SAMPLE_ISSUES:
+            raise TelemetryError(issue)
     lap.round = round_
     lap.session_type = session_type
     lap.match = TelemetryLap.Match.LEAGUE
