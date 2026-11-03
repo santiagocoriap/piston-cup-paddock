@@ -9,6 +9,7 @@ keeps only the samples of the lap itself, in time order.
 import json
 
 SLACK_MS = 200  # A sample can come a little after the lap time.
+MIN_COVERAGE = 0.8  # The samples of a good lap cover at least this part of the lap time.
 
 
 def trim_to_lap(channels: dict[str, list], lap_time_ms: int) -> dict[str, list]:
@@ -28,6 +29,12 @@ def trim_to_lap(channels: dict[str, list], lap_time_ms: int) -> dict[str, list]:
     while positions and len(run) > 2 and positions[run[-1]] < 0.05 < 0.95 < positions[run[-2]]:
         run = run[:-1]
     return {name: [values[i] for i in run] for name, values in channels.items()}
+
+
+def covers_lap(channels: dict[str, list], lap_time_ms: int) -> bool:
+    """False for a lap with samples of only a part of the lap time."""
+    times = channels.get("t_ms") or []
+    return bool(times) and times[-1] - times[0] >= lap_time_ms * MIN_COVERAGE
 
 
 def trim_stored_laps(lap_model) -> None:

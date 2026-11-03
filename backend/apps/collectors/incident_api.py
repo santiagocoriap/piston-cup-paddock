@@ -164,6 +164,10 @@ class ReviewIn(Schema):
     note: str = Field("", max_length=1000)
 
 
+class ManyReviewsIn(ReviewIn):
+    keys: list[int] = Field(min_length=1, max_length=1000)
+
+
 def _incident_out(incident: Incident, names: dict, reviews: dict) -> IncidentOut:
     first = incident.events[0]
     review = reviews.get(incident.key)
@@ -230,8 +234,7 @@ def get_incidents(
     return _incidents_out(request.user, _round(request.user, round_id), session)
 
 
-@router.put("/rounds/{round_id}/incidents/{key}/review", response=IncidentsOut)
-def review_incident(request, round_id: int, key: int, payload: ReviewIn):
+def _save_reviews(request, round_id: int, wanted: list[int], payload: ReviewIn) -> Round:
     round_ = _round(request.user, round_id)
     if not can(request.user, round_.season.championship, "penalties"):
         raise HttpError(403, "forbidden")
@@ -239,25 +242,39 @@ def review_incident(request, round_id: int, key: int, payload: ReviewIn):
     keys = {i.key for i in group(found)}
     for session in ("qualifying", "practice"):
         keys |= {i.key for i in group(collisions(round_, session)[0])}
-    if key not in keys:
+    if not keys.issuperset(wanted):
         raise HttpError(404, "incident_not_found")
     with transaction.atomic():
-        IncidentReview.objects.update_or_create(
-            round=round_,
-            incident_key=key,
-            defaults={
-                "outcome": payload.outcome,
-                "note": payload.note,
-                "reviewed_by": request.user,
-            },
-        )
-        record(
-            request.user,
-            "incident.reviewed",
-            "round",
-            round_.id,
-            championship=round_.season.championship,
-            params={"number": round_.number, "incident": key, "outcome": payload.outcome},
-            reason=payload.note,
-        )
+        for key in wanted:
+            IncidentReview.objects.update_or_create(
+                round=round_,
+                incident_key=key,
+                defaults={
+                    "outcome": payload.outcome,
+                    "note": payload.note,
+                    "reviewed_by": request.user,
+                },
+            )
+            record(
+                request.user,
+                "incident.reviewed",
+                "round",
+                round_.id,
+                championship=round_.season.championship,
+                params={"number": round_.number, "incident": key, "outcome": payload.outcome},
+                reason=payload.note,
+            )
+    return round_
+
+
+@router.put("/rounds/{round_id}/incidents/review", response=IncidentsOut)
+def review_many_incidents(request, round_id: int, payload: ManyReviewsIn):
+    """The same review for many incidents, in one step."""
+    round_ = _save_reviews(request, round_id, list(dict.fromkeys(payload.keys)), payload)
+    return _incidents_out(request.user, round_, "race")
+
+
+@router.put("/rounds/{round_id}/incidents/{key}/review", response=IncidentsOut)
+def review_incident(request, round_id: int, key: int, payload: ReviewIn):
+    round_ = _save_reviews(request, round_id, [key], payload)
     return _incidents_out(request.user, round_, "race")

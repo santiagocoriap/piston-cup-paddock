@@ -506,7 +506,8 @@
       "restarts": "Restarts",
       "telemetry": "Telemetry",
       "engineer": "Engineer",
-      "report": "Report"
+      "report": "Report",
+      "analysis": "Analysis"
     },
     "beforeRace": "Before the race: briefing and attendance",
     "adminTools": "Admin tools",
@@ -1694,6 +1695,14 @@
       "different_handicaps": "The ballast or restrictor is different. The difference is not only driving.",
       "different_cars": "The cars are different. The difference is not only driving.",
       "different_tyres": "The tyres are different."
+    },
+    "conditionNames": {
+      "grip": "Grip",
+      "air_temp_c": "Air",
+      "track_temp_c": "Track",
+      "time_of_day": "Time",
+      "weather": "Weather",
+      "notes": "Notes"
     }
   },
   "health": {
@@ -1747,8 +1756,8 @@
     "attempt": "Start",
     "kindLabel": "Type",
     "kind": {
-      "car": "with a car",
-      "env": "with the track"
+      "car": "Against car",
+      "env": "Against wall"
     },
     "minSpeed": "Minimum impact: {{value}} km/h",
     "outcomeLabel": "Review",
@@ -1769,7 +1778,12 @@
     "saveReview": "Save review",
     "lap": "Lap",
     "mapHelpNoTrack": "Each dot is an incident, at its place on the track. The red areas show where many are. Without recorded positions, the map has no track drawing.",
-    "beforeRestart": "Before the restart"
+    "beforeRestart": "Before the restart",
+    "many": "Review many incidents",
+    "mark": "Mark the incident of {{cars}}, lap {{lap}}",
+    "markAll": "Mark all in the list ({{count}})",
+    "applyMany_one": "Apply to {{count}} incident",
+    "applyMany_other": "Apply to {{count}} incidents"
   },
   "engineer": {
     "title": "Race engineer",
@@ -2128,7 +2142,8 @@
     "handicaps": "Ballast",
     "ballots": "Ballots",
     "rules": "Rules",
-    "report": "Report"
+    "report": "Report",
+    "analysis": "Analysis"
   },
   "seasonStats": {
     "rounds": "Rounds raced",
@@ -2725,7 +2740,334 @@
       "not_connected": "The server did not see the driver connected",
       "other_car": "Another car",
       "no_server_lap": "The server does not have this lap",
-      "duplicate": "Repeated lap"
+      "duplicate": "Repeated lap",
+      "partial_samples": "The lap has data of only a part"
+    }
+  },
+  "analysis": {
+    "title": "Data analysis",
+    "fullscreen": "Full screen: {{title}}",
+    "exportSvg": "Download SVG: {{title}}",
+    "exportCsv": "Download CSV: {{title}}",
+    "driversOnGraphs": "Drivers on the graphs",
+    "resetZoom": "Show all",
+    "needsData_one": "{{count}} graph needs more data",
+    "needsData_other": "{{count}} graphs need more data",
+    "views": {
+      "race": "Race",
+      "laps": "Laps and sectors"
+    },
+    "session": "Session",
+    "season": "Season",
+    "rival": "Rival",
+    "driver": "Driver",
+    "lap": "Lap",
+    "round": "Round",
+    "lapNumber": "Lap {{number}}",
+    "lapsCount_one": "{{count}} lap",
+    "lapsCount_other": "{{count}} laps",
+    "onlyRace": "This graph is only for the race.",
+    "twoDrivers": "This graph needs 2 drivers with data.",
+    "noGrid": "No qualifying data: the start position is not known.",
+    "noLaps": "No laps for this graph.",
+    "noSectors": "This file has no sectors.",
+    "fewLaps": "This graph needs at least {{count}} clean laps.",
+    "fewRounds_one": "This graph needs at least {{count}} round with a result.",
+    "fewRounds_other": "This graph needs at least {{count}} rounds with a result.",
+    "noResults": "This season has no results yet.",
+    "noDriverResults": "This driver has no results yet.",
+    "noShared": "The 2 drivers have no shared rounds.",
+    "telemetryTab": "Speed, throttle, brake, gear, RPM, steering, delta by distance, and the map are in the Telemetry tab.",
+    "groups": {
+      "progression": "Progression and positions",
+      "pace": "Race pace",
+      "racecraft": "Battles",
+      "strategy": "Strategy and tyres",
+      "lapSector": "Laps and sectors",
+      "championship": "Championship",
+      "competitiveness": "Competitiveness",
+      "records": "Records and statistics",
+      "predictions": "Predictions",
+      "overview": "Overview",
+      "qualifyingRace": "Qualifying and race",
+      "headToHead": "Head to head",
+      "reliability": "Reliability"
+    },
+    "status": {
+      "finished": "Finished",
+      "dnf": "Did not finish",
+      "dns": "Did not start",
+      "dsq": "Disqualified"
+    },
+    "needs": {
+      "overtakes": "Verified overtakes: the collector sees only the order at the line, not the overtake on the track.",
+      "battles": "Attacks and defenses: this needs verified overtake events.",
+      "tyres": "Wear and pace by tyre: this needs more than one compound and pit data in each race.",
+      "pitTime": "Pit time: this needs the entry and exit time of each stop.",
+      "fuel": "Fuel: the script does not send it yet.",
+      "undercut": "Undercut and overcut: this needs an estimation model.",
+      "gforce": "G-forces and the G-G diagram: the script does not send them yet.",
+      "tyreTemp": "Tyre temperature: the script does not send it yet.",
+      "tyrePressure": "Tyre pressure: the script does not send it yet.",
+      "wheelSlip": "Wheel slip: the script does not send it yet.",
+      "suspension": "Suspension: the script does not send it yet.",
+      "fuelLap": "Fuel for each lap: the script does not send it yet.",
+      "rivalry": "Rivalry network: this needs verified battles.",
+      "scenario": "Scenario simulator: not built yet.",
+      "circuitType": "Circuit type: the tracks do not have this data.",
+      "forecast": "Development forecast: this needs more rounds."
+    },
+    "position": {
+      "title": "Position by lap",
+      "help": "The order at the line, from the sum of the lap times. Large point: incident. Hollow point: invalid lap."
+    },
+    "gap": {
+      "title": "Gap to the leader",
+      "help": "On each lap, against the leader of that lap. A lapped driver counts only on the laps that the driver completed."
+    },
+    "duel": {
+      "title": "Duel of 2 drivers",
+      "help": "B minus A. Above zero, B is behind. When the line crosses zero, the order of the 2 drivers changes."
+    },
+    "gained": {
+      "title": "Places gained and lost",
+      "help": "Start position minus finish position. The start is the order of the best valid qualifying laps."
+    },
+    "firstLap": {
+      "title": "First lap",
+      "help": "Places gained from the start to the end of lap 1."
+    },
+    "leaderboard": {
+      "title": "Classification lap by lap",
+      "help": "Move the bar to see the order and the gaps at the end of each lap."
+    },
+    "lapTimes": {
+      "title": "Lap times",
+      "help": "Large point: incident. Hollow point: invalid lap. Laps above {{limit}} stay on the top line."
+    },
+    "heat": {
+      "title": "Lap heat map",
+      "help": "Green: near the best lap of the session. Red: 8 % or more away. P: pits. !: incident. ×: invalid."
+    },
+    "distribution": {
+      "title": "Pace distribution",
+      "help": "Clean laps only. The box holds the middle half of the laps, and the line is the median. The circles are unusual laps."
+    },
+    "ranking": {
+      "title": "Race pace",
+      "help": "The gap to the fastest driver, with clean laps only.",
+      "measure": "Measure",
+      "median": "Median",
+      "mean": "Mean",
+      "trimmed": "Trimmed mean (without 10 % at each end)"
+    },
+    "consistency": {
+      "title": "Consistency",
+      "help": "The standard deviation of the clean laps: lower is more consistent. n is the lap count. With few laps, the comparison is less certain."
+    },
+    "trend": {
+      "title": "Pace trend",
+      "help": "The median of the last {{count}} clean laps.",
+      "window": "Laps"
+    },
+    "traffic": {
+      "title": "Clean air and traffic",
+      "help": "Measured at the line, not along the full lap. Within 1 s of the car ahead: attacking. With a car within 1 s behind: defending.",
+      "attacking": "Attacking",
+      "defending": "Defending",
+      "clean_air": "Clean air"
+    },
+    "changes": {
+      "title": "Places gained at the line",
+      "help": "The sum of the places gained from one lap to the next. These are not verified overtakes: they include stops and retirements of other drivers."
+    },
+    "stints": {
+      "title": "Tyres and stints",
+      "help": "One bar for each stint, with the length in laps. A stop starts a new stint.",
+      "noPits": "No Real Penalty log: the stops do not show, only the tyre of each lap.",
+      "pits_one": "{{count}} stop",
+      "pits_other": "{{count}} stops"
+    },
+    "bestLaps": {
+      "title": "Best lap",
+      "help": "The gap to the best valid lap of the session."
+    },
+    "sectors": {
+      "title": "Best sectors",
+      "help": "The gap to the best time of each sector. ★: the best."
+    },
+    "waterfall": {
+      "title": "Gap by sector",
+      "help": "The best lap of {{b}} against the best lap of {{a}}. Σ is the sum up to that sector.",
+      "total": "Total"
+    },
+    "theoretical": {
+      "title": "Theoretical lap",
+      "help": "The time between the best real lap and the sum of the best sectors. The sectors can be from different laps.",
+      "short": "Theoretical",
+      "real": "Real"
+    },
+    "sectorSpread": {
+      "title": "Sector consistency",
+      "help": "The time above the best sector, on clean laps. A wide box is an irregular sector.",
+      "best": "Best"
+    },
+    "improvement": {
+      "title": "Personal best progress",
+      "help": "The best valid lap up to each lap. A large point is a new personal best."
+    },
+    "points": {
+      "title": "Total points",
+      "help": "The points of each driver after each round."
+    },
+    "rank": {
+      "title": "Championship position",
+      "help": "The position after each round."
+    },
+    "gapPoints": {
+      "title": "Points behind the leader",
+      "help": "The points behind the leader after each round."
+    },
+    "contribution": {
+      "title": "Points by round",
+      "help": "The round that gave each point."
+    },
+    "momentum": {
+      "title": "Momentum",
+      "help": "The mean points of the last {{count}} rounds."
+    },
+    "contention": {
+      "title": "Title fight",
+      "help": "The points behind the leader. {{rounds}} rounds remain, and each gives up to {{points}} points without bonuses. Tie-breaks do not count here.",
+      "out": "No chance",
+      "max": "Maximum {{points}}"
+    },
+    "calendar": {
+      "title": "Result calendar",
+      "help": "The finish position in each round."
+    },
+    "finishBox": {
+      "title": "Finish position distribution",
+      "help": "The box holds the middle half of the results, and the line is the median."
+    },
+    "paceHeat": {
+      "title": "Pace by round",
+      "help": "The median clean lap against the best median of the round, in percent. 0 is the fastest."
+    },
+    "qualifyingHeat": {
+      "title": "Qualifying by round",
+      "help": "The best qualifying lap against the pole, in percent. The text is the position."
+    },
+    "qualifyingScatter": {
+      "title": "Qualifying against race",
+      "help": "Below the diagonal, the driver finishes worse than the start. Above it, better.",
+      "x": "Mean start position",
+      "y": "Mean finish position"
+    },
+    "seasonGained": {
+      "title": "Places gained in the season",
+      "help": "The sum of start minus finish in all rounds."
+    },
+    "seasonConsistency": {
+      "title": "Season consistency",
+      "help": "The mean standard deviation of the clean laps of each race."
+    },
+    "fieldSpread": {
+      "title": "Pace spread of the field",
+      "help": "The slowest driver against the fastest in each round, with the median clean lap. Lower is a closer race."
+    },
+    "honours": {
+      "title": "Wins, podiums, poles, and fastest laps",
+      "help": "The season totals.",
+      "wins": "Wins",
+      "podiums": "Podiums",
+      "poles": "Poles",
+      "fastest_laps": "Fastest laps"
+    },
+    "frequency": {
+      "title": "Result frequency",
+      "help": "How many times each driver finished in each group of positions."
+    },
+    "prediction": {
+      "title": "Title chance",
+      "help": "An estimate, not a fact. {{runs}} simulations: in each remaining round, each driver repeats by chance the points of a past round of that driver. Two drivers can take the same place.",
+      "over": "The season has no rounds to race."
+    },
+    "predictedRank": {
+      "title": "Estimated final position",
+      "help": "An estimate from the same simulations: the chance of each final position."
+    },
+    "radar": {
+      "title": "Driver profile",
+      "help": "From 0 to 100 against the other drivers of the season: pace (mean pace), consistency (lap deviation), qualifying (mean start), results (mean points), racecraft (places gained), reliability (races finished).",
+      "few": "This graph needs more drivers or more data.",
+      "pace": "Pace",
+      "consistency": "Consistency",
+      "qualifying": "Qualifying",
+      "results": "Results",
+      "racecraft": "Racecraft",
+      "reliability": "Reliability"
+    },
+    "paceConsistency": {
+      "title": "Pace against consistency",
+      "help": "Bottom left is fast and consistent. The large point is this driver.",
+      "x": "Pace against the best",
+      "y": "Lap deviation"
+    },
+    "form": {
+      "title": "Form",
+      "help": "The finish position of each round and its moving mean.",
+      "finish": "Position",
+      "rolling": "Mean of {{count}}"
+    },
+    "elo": {
+      "title": "Elo rating",
+      "help": "It starts at 1500. Each race is a duel against each other driver, with K = 24 shared between the duels. This season only."
+    },
+    "gridFinish": {
+      "title": "Start and finish",
+      "help": "The start position and the finish position of each round.",
+      "grid": "Start",
+      "finish": "Finish"
+    },
+    "qualifyingHistory": {
+      "title": "Qualifying history",
+      "help": "The gap to the pole in each round."
+    },
+    "paceHistory": {
+      "title": "Pace history",
+      "help": "The median clean lap against the best median of the round."
+    },
+    "histogram": {
+      "title": "Finish positions",
+      "help": "How many times the driver finished in each position.",
+      "out": "Did not finish"
+    },
+    "gainedPerRace": {
+      "title": "Places gained by round"
+    },
+    "bestTypical": {
+      "title": "Best lap against normal pace",
+      "help": "The gap between the best lap and the median of the race. It shows one-lap speed against race pace."
+    },
+    "headToHead": {
+      "title": "{{a}} against {{b}}",
+      "help": "Only rounds that both drivers raced.",
+      "races": "Race",
+      "qualifying": "Qualifying",
+      "pace": "Pace"
+    },
+    "pointsDuel": {
+      "title": "Points of the 2 drivers",
+      "help": "The total points after each round."
+    },
+    "paceDuel": {
+      "title": "Pace gap",
+      "help": "The median of {{a}} minus the median of {{b}}. Negative: {{a}} was faster."
+    },
+    "reliability": {
+      "title": "Reliability",
+      "help": "How each race of the season ended."
     }
   }
 }

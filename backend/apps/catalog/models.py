@@ -48,6 +48,8 @@ class TrackLayout(models.Model):
     # From the game files (ui/<layout>/): the track map and a picture. See game_images.py.
     outline = models.FileField(upload_to=layout_image_path, blank=True)
     preview = models.FileField(upload_to=layout_image_path, blank=True)
+    # From the game files (ai/fast_lane.ai): the points of the track. See track_line.py.
+    line = models.FileField(upload_to=layout_image_path, blank=True)
     length_m = models.PositiveIntegerField(null=True, blank=True)
     country = models.CharField(max_length=100, blank=True)
     # More facts from ui_track.json. An admin can change each one.

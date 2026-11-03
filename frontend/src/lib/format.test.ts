@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { formatDateTime, localInputToIso, offsetMinutes, sameClock, setDisplayTimeZone } from './format'
+import { formatDateTime, formatLapTime, localInputToIso, offsetMinutes, sameClock, setDisplayTimeZone } from './format'
 
 afterEach(() => setDisplayTimeZone(undefined))
 
@@ -21,5 +21,11 @@ describe('timezones', () => {
     expect(sameClock('2026-10-19T00:30:00Z', 'America/Argentina/Buenos_Aires', 'America/Sao_Paulo')).toBe(true)
     expect(sameClock('2026-10-19T00:30:00Z', 'America/Argentina/Buenos_Aires', 'Europe/Madrid')).toBe(false)
     expect(offsetMinutes('UTC', Date.UTC(2026, 0, 1))).toBe(0)
+  })
+})
+
+describe('formatLapTime with a calculated value', () => {
+  it('rounds to a whole millisecond', () => {
+    expect(formatLapTime(214480.20000000001)).toBe('3:34.480')
   })
 })

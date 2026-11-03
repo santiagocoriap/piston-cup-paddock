@@ -22,6 +22,8 @@ local settings = ac.configValues({ raceCode = '' })
 local headers = { ['Content-Type'] = 'application/json', ['X-Paddock-Code'] = settings.raceCode }
 
 local samples = {}
+local lastSamples = {} -- The samples before the timer last went back.
+local LAP_END_SLACK = 2000 -- ms between the last sample of a lap and the lap time.
 local sinceSample = 0
 local lastLapTime = 0
 local queue = {}
@@ -88,7 +90,16 @@ ac.onSessionStart(function()
 end)
 
 ac.onLapCompleted(0, function(carIndex, lapTime, valid, cuts, lapCount)
-  if #samples > 0 then
+  -- Online, this event can come some time after the timer goes back at the line. The samples
+  -- of the lap are then in lastSamples, and samples already has the start of the next lap.
+  local lap = samples
+  local last = lastSamples[#lastSamples]
+  local late = last ~= nil and math.abs(last[1] - lapTime) <= LAP_END_SLACK
+  if late then
+    lap = lastSamples
+  end
+  lastSamples = {}
+  if #lap > 0 then
     if #queue >= MAX_QUEUE then table.remove(queue, 1) end
     table.insert(queue, {
       steam_id = steamID,
@@ -100,18 +111,22 @@ ac.onLapCompleted(0, function(carIndex, lapTime, valid, cuts, lapCount)
       valid = valid,
       cuts = cuts,
       ended_at = os.time(),
-      samples = samples,
+      samples = lap,
     })
   end
-  samples = {}
-  lastLapTime = 0
+  if not late then
+    samples = {}
+    lastLapTime = 0
+  end
 end)
 
 function script.update(dt)
   -- The lap timer runs until the car crosses the line, also through a crash and a pit stop:
-  -- that is one long lap. When the timer goes back with no finished lap (for example a
-  -- return to the pits in practice), AC starts a new lap, so the old samples go away.
+  -- that is one long lap. When the timer goes back, AC starts a new lap. If the lap-completed
+  -- event comes next, it uses these samples. Otherwise (for example a return to the pits in
+  -- practice), the next time that the timer goes back replaces them.
   if car.lapTimeMs + 1000 < lastLapTime then
+    lastSamples = samples
     samples = {}
   end
   lastLapTime = car.lapTimeMs

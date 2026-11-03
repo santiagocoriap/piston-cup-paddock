@@ -68,6 +68,7 @@ export function isoToLocalInput(iso: string, timeZone: string = currentTimeZone(
 /** Show a time in milliseconds as m:ss.mmm, or h:mm:ss.mmm for one hour or more. */
 export function formatLapTime(ms: number | null | undefined): string {
   if (ms === null || ms === undefined || ms <= 0) return '—'
+  ms = Math.round(ms)
   const hours = Math.floor(ms / 3_600_000)
   const minutes = Math.floor((ms % 3_600_000) / 60_000)
   const seconds = Math.floor((ms % 60_000) / 1000)

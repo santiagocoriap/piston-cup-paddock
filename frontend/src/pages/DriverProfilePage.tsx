@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { DriverAnalysis } from './analysis/DriverAnalysis'
 import { Link, useParams } from 'react-router'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
@@ -98,6 +99,8 @@ export function DriverProfilePage() {
       </header>
 
       <ProfileStats stats={data.stats} />
+
+      <DriverAnalysis driverId={driverId} />
 
       <section aria-labelledby="badges">
         <h2 id="badges">{t('profile.badges')}</h2>

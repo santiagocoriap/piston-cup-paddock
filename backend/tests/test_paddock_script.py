@@ -97,6 +97,7 @@ def lap(
     ended_at=1_800_000_000,
     sent_at=None,
     lap_time_ms=113_689,
+    samples=None,
 ):
     payload = {
         "steam_id": steam_id,
@@ -109,7 +110,8 @@ def lap(
         "cuts": 0,
         "ended_at": ended_at,
         "sent_at": sent_at if sent_at is not None else ended_at + 5,
-        "samples": [[t * 50, t / 2000, 100.5, 1, 0, -2.5, 4, 7000] for t in range(100)],
+        "samples": samples
+        or [[t * lap_time_ms // 99, t / 100, 100.5, 1, 0, -2.5, 4, 7000] for t in range(100)],
     }
     return Client().post(
         "/api/script/laps", payload, content_type="application/json", HTTP_X_PADDOCK_CODE=code
@@ -425,3 +427,33 @@ def test_public_url_goes_into_the_script_and_the_server_setup(
     assert "local PADDOCK_URL = 'https://paddock.example.com'" in body
     setup = api(champ_admin).get(f"/championships/{championship.id}/script").json()
     assert setup["script_url"] == "https://paddock.example.com/api/script/paddock.lua"
+
+
+def test_the_laps_that_do_not_count_have_a_storage_limit(key, code, round_, driver, monkeypatch):
+    monkeypatch.setattr("apps.telemetry.script.MAX_REVIEW_BYTES", 1)
+    # No server data: the first lap of a real driver waits, then the limit removes it.
+    assert lap(code).json()["detail"] == "too_many_flagged"
+    assert not TelemetryLap.objects.exists()
+    # A lap that counts has no limit.
+    events(key, connected(), race_started(), server_lap())
+    assert lap(code).json()["state"] == "league"
+    # A made-up Steam ID has no room once the review is full.
+    TelemetryLap.objects.update(match="flagged")
+    assert lap(code, steam_id="76561190000000098").json()["detail"] == "too_many_flagged"
+    assert TelemetryLap.objects.count() == 1
+
+
+def test_a_lap_with_samples_of_a_small_part_of_the_lap_is_kept_for_review(
+    api, champ_admin, key, code, round_, driver
+):
+    """The script once sent only the samples after the line. The chart then shows a short line."""
+    events(key, connected(), race_started(), server_lap())
+    few = [[t * 50, t / 2000, 100.5, 1, 0, -2.5, 4, 7000] for t in range(5)]
+    assert lap(code, samples=few).json()["issues"] == ["partial_samples"]
+    kept = flagged()
+    admin = api(champ_admin)
+    assert admin.post(f"/telemetry-laps/{kept.id}/recheck").json()["issues"] == ["partial_samples"]
+    accepted = admin.post(
+        f"/telemetry-laps/{kept.id}/accept", {"round_id": round_.id, "session_type": "race"}
+    )
+    assert accepted.status_code == 422

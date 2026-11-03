@@ -18,6 +18,8 @@ services:
 
   web:
     build: .
+    # The worker uses this image too, so a deploy builds only one image.
+    image: piston-cup-paddock-app:latest
     command: >
       sh -c "python manage.py migrate --noinput &&
              gunicorn config.wsgi --bind 0.0.0.0:8000 --workers 3 --access-logfile -"
@@ -43,7 +45,9 @@ services:
       retries: 5
 
   worker:
-    build: .
+    image: piston-cup-paddock-app:latest
+    # The web service builds this image. No registry has it.
+    pull_policy: never
     command: python manage.py procrastinate worker
     env_file: .env
     environment:

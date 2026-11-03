@@ -4,6 +4,8 @@ The ZIP has the same paths as the content folder, so one reader works for both:
 
     tracks/<track>/ui/<layout>/outline.png, preview.png, ui_track.json
     tracks/<track>/ui/outline.png ...      (a track with one layout)
+    tracks/<track>/<layout>/ai/fast_lane.ai  (the points of the track map)
+    tracks/<track>/ai/fast_lane.ai           (a track with one layout)
     cars/<car>/ui/badge.png, ui_car.json
     cars/<car>/preview.jpg                 (in a ZIP: the preview of one skin)
     cars/<car>/skins/<skin>/preview.jpg    (in a folder: the first skin is used)
@@ -29,11 +31,13 @@ from .acd import AcdError, read_acd
 from .car_data import parse_ini, read_car_data
 from .game_facts import car_facts, data_facts, fill_empty, layout_facts
 from .models import Car, CarClass, CarClassMembership, CarSkin, TrackLayout, WeatherPreset
+from .track_line import line_bytes, read_line
 
 MAX_IMAGE_BYTES = 5 * 1024 * 1024
 MAX_JSON_BYTES = 256 * 1024
 MAX_ZIP_ENTRIES = 30_000
 MAX_ACD_BYTES = 20 * 1024 * 1024
+MAX_LINE_BYTES = 16 * 1024 * 1024
 MAX_DATA_FILE_BYTES = 2 * 1024 * 1024
 MAX_PICTURE_PIXELS = 40_000_000
 THUMBNAIL_SIDE = 640
@@ -246,6 +250,11 @@ def _layout_base(layout: TrackLayout) -> str:
     return f"{base}/{layout.key}" if layout.key else base
 
 
+def _layout_line(layout: TrackLayout) -> str:
+    base = f"tracks/{layout.track.key}"
+    return f"{base}/{layout.key}/ai/fast_lane.ai" if layout.key else f"{base}/ai/fast_lane.ai"
+
+
 def make_thumbnail(data: bytes | None, side: int = THUMBNAIL_SIDE) -> bytes | None:
     """A small WebP of a picture, or None when the bytes are not a picture. The game pictures
     are large (a skin preview is 1920x1080), and a car can have 30 skins."""
@@ -372,7 +381,8 @@ def import_game_images(
         outline = _image(source.read(f"{base}/outline.png", MAX_IMAGE_BYTES), PNG)
         preview = _image(source.read(f"{base}/preview.png", MAX_IMAGE_BYTES), PNG)
         info = _ui_json(source.read(f"{base}/ui_track.json", MAX_JSON_BYTES))
-        if not (outline or preview or info):
+        line = read_line(source.read(_layout_line(layout), MAX_LINE_BYTES))
+        if not (outline or preview or info or line):
             report.missing_layouts.append(label)
             continue
         # The game pictures are large: the app keeps a small copy.
@@ -380,6 +390,9 @@ def import_game_images(
             _put(layout.outline, "outline.png", shrink_png(outline) or outline)
         if preview and not _put_thumbnail(layout.preview, "preview", preview):
             _put(layout.preview, "preview.png", preview)
+        if line:
+            _put(layout.line, "line.json", line_bytes(line))
+            layout.length_m = layout.length_m or line["length_m"]
         # The facts fill only empty fields, so an admin edit stays.
         fill_empty(layout, layout_facts(info))
         layout.save()

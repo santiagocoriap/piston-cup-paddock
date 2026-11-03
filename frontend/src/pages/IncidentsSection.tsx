@@ -25,6 +25,7 @@ export function IncidentsSection({ roundId }: { roundId: number }) {
   const [override, setOverride] = useState<Incidents | null>(null)
   const [filters, setFilters] = useState<Filters>(NO_FILTERS)
   const [selected, setSelected] = useState<number | null>(null)
+  const [marked, setMarked] = useState<number[]>([])
   const data = override ?? load.data
   if (!data) return null
   if (!data.has_events) {
@@ -115,9 +116,31 @@ export function IncidentsSection({ roundId }: { roundId: number }) {
         </label>
       </div>
       <IncidentMap roundId={roundId} incidents={shown} selected={selected} onSelect={setSelected} />
+      {data.can_review && shown.length > 0 && (
+        <ManyReviews
+          roundId={roundId}
+          shownKeys={shown.map((i) => i.key)}
+          marked={marked}
+          onMarked={setMarked}
+          onChange={(next) => {
+            setOverride(next)
+            setMarked([])
+          }}
+        />
+      )}
       <ul className="incident-list">
         {shown.map((incident) => (
-          <li key={incident.key}>
+          <li key={incident.key} className={data.can_review ? 'with-mark' : undefined}>
+            {data.can_review && (
+              <input
+                type="checkbox"
+                checked={marked.includes(incident.key)}
+                aria-label={t('incidents.mark', { cars: incident.cars.join(' + '), lap: incident.lap ?? '—' })}
+                onChange={(e) =>
+                  setMarked((old) => (e.target.checked ? [...old, incident.key] : old.filter((k) => k !== incident.key)))
+                }
+              />
+            )}
             <button
               type="button"
               className={incident.key === selected ? 'incident-row on' : 'incident-row'}
@@ -150,6 +173,71 @@ export function IncidentsSection({ roundId }: { roundId: number }) {
         />
       )}
     </section>
+  )
+}
+
+/** The same review for all the marked incidents, so a steward does not go one by one. */
+function ManyReviews({
+  roundId,
+  shownKeys,
+  marked,
+  onMarked,
+  onChange,
+}: {
+  roundId: number
+  shownKeys: number[]
+  marked: number[]
+  onMarked: (keys: number[]) => void
+  onChange: (next: Incidents) => void
+}) {
+  const { t } = useTranslation()
+  const [outcome, setOutcome] = useState<Outcome>('no_action')
+  const [note, setNote] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const count = marked.filter((key) => shownKeys.includes(key)).length
+  const allMarked = count === shownKeys.length
+
+  async function apply() {
+    setError(null)
+    const { data, error: failed } = await api.PUT('/api/rounds/{round_id}/incidents/review', {
+      params: { path: { round_id: roundId } },
+      body: { keys: marked.filter((key) => shownKeys.includes(key)), outcome, note },
+    })
+    if (data) {
+      onChange(data)
+      setNote('')
+    } else setError(errorMessage(t, failed))
+  }
+
+  return (
+    <div className="incident-many" role="group" aria-label={t('incidents.many')}>
+      <label className="incident-many-all">
+        <input type="checkbox" checked={allMarked} onChange={() => onMarked(allMarked ? [] : shownKeys)} />
+        {t('incidents.markAll', { count: shownKeys.length })}
+      </label>
+      <label>
+        {t('incidents.outcomeLabel')}
+        <select value={outcome} onChange={(e) => setOutcome(e.target.value as Outcome)}>
+          {(['open', 'no_action', 'racing_incident', 'penalty'] as const).map((o) => (
+            <option key={o} value={o}>
+              {t(`incidents.outcome.${o}`)}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        {t('incidents.note')}
+        <input value={note} maxLength={1000} onChange={(e) => setNote(e.target.value)} />
+      </label>
+      <button type="button" disabled={count === 0} onClick={apply}>
+        {t('incidents.applyMany', { count })}
+      </button>
+      {error && (
+        <p role="alert" className="error">
+          {error}
+        </p>
+      )}
+    </div>
   )
 }
 

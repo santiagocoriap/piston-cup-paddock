@@ -139,7 +139,8 @@ def compare(viewer, round_: Round, session: str, a_id: int | None, b_id: int | N
         result.speed_b = speed_at(channels_b)
     if result.delta is None:
         result.gaps.append("no_telemetry")
-    result.gaps.append("no_map")  # No layout has a map yet.
+    if not round_.track_layout.line:
+        result.gaps.append("no_map")
     if (lap_a.ballast_kg, lap_a.restrictor) != (lap_b.ballast_kg, lap_b.restrictor):
         result.gaps.append("different_handicaps")
     if lap_a.entry.car_id != lap_b.entry.car_id:
