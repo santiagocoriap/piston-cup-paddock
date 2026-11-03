@@ -5,7 +5,9 @@ import type { components } from '../../api/schema'
 import { formatLapTime } from '../../lib/format'
 import { useLoad } from '../../lib/useLoad'
 import { TabEmpty } from '../TabEmpty'
-import { BarChart, BoxChart, ChartCard, ChartGroup, DriverFilter, driverColor, HeatMap, LineChart, NeedsData, StackChart, type BoxRow, type LineSeries } from './charts'
+import { fit, polyline, trackOutline } from '../../lib/trackMap'
+import { BarChart, BoxChart, ChartCard, ChartGroup, DriverFilter, driverColor, HeatMap, LineChart, StackChart, type BoxRow, type LineSeries } from './charts'
+import { TelemetryLab } from './TelemetryLab'
 
 type Analysis = components['schemas']['RoundAnalysisOut']
 type Driver = components['schemas']['RoundDriverOut']
@@ -56,7 +58,7 @@ export function RoundAnalysis({ roundId }: { roundId: number }) {
         </label>
         <DriverFilter drivers={data.drivers.map((d) => ({ id: d.driver_id, name: d.name }))} hidden={hidden} onChange={setHidden} />
       </div>
-      {view === 'race' ? <RaceView data={data} drivers={drivers} /> : <LapsView data={data} drivers={drivers} />}
+      {view === 'race' ? <RaceView data={data} drivers={drivers} roundId={roundId} /> : <LapsView data={data} drivers={drivers} roundId={roundId} />}
     </section>
   )
 }
@@ -71,7 +73,7 @@ function lapSeries(drivers: Driver[], value: (lap: Driver['laps'][number]) => nu
   }))
 }
 
-function RaceView({ data, drivers }: { data: Analysis; drivers: Driver[] }) {
+function RaceView({ data, drivers, roundId }: { data: Analysis; drivers: Driver[]; roundId: number }) {
   const { t } = useTranslation()
   const isRace = data.session === 'race'
   const notRace = isRace ? null : t('analysis.onlyRace')
@@ -94,13 +96,21 @@ function RaceView({ data, drivers }: { data: Analysis; drivers: Driver[] }) {
         <TrendChart drivers={drivers} />
       </ChartGroup>
       <ChartGroup title={t('analysis.groups.racecraft')}>
+        <OvertakesChart data={data} drivers={drivers} missing={notRace} />
+        <BattlesChart data={data} drivers={drivers} missing={notRace} />
+        <EventTimeline data={data} drivers={drivers} wide />
+        <OvertakeMap data={data} roundId={roundId} missing={notRace} />
         <TrafficChart drivers={drivers} missing={notRace} />
         <ChangesChart drivers={drivers} missing={notRace} />
       </ChartGroup>
       <ChartGroup title={t('analysis.groups.strategy')}>
         <StintChart drivers={drivers} hasPits={data.has_pit_data} />
+        <StintPace drivers={drivers} missing={notRace} />
+        <DegradationChart drivers={drivers} missing={notRace} />
+        <PitLossChart drivers={drivers} missing={notRace} hasPits={data.has_pit_data} />
+        <PitCycleChart drivers={drivers} missing={notRace} hasPits={data.has_pit_data} />
+        <FuelChart drivers={drivers} />
       </ChartGroup>
-      <NeedsData items={['overtakes', 'tyres', 'pitTime', 'fuel', 'undercut'].map((key) => t(`analysis.needs.${key}`))} />
     </>
   )
 }
@@ -429,6 +439,199 @@ function ChangesChart({ drivers, missing }: { drivers: Driver[]; missing: string
   )
 }
 
+function OvertakesChart({ data, drivers, missing }: { data: Analysis; drivers: Driver[]; missing: string | null }) {
+  const { t } = useTranslation()
+  const rows = [...drivers]
+    .sort((a, b) => (b.overtakes ?? 0) - (a.overtakes ?? 0))
+    .map((d) => ({ key: d.driver_id, label: d.name, value: d.overtakes ?? 0, color: driverColor(d.driver_id), note: t('analysis.overtakes.lost', { count: d.overtaken ?? 0 }) }))
+  return (
+    <ChartCard title={t('analysis.overtakes.title')} help={t('analysis.overtakes.help')} missing={missing ?? (data.has_positions ? null : t('analysis.noPositions'))} csv={() => [['driver', 'overtakes', 'overtaken'], ...drivers.map((d) => [d.name, d.overtakes, d.overtaken])]}>
+      <BarChart rows={rows} label={t('analysis.overtakes.title')} />
+    </ChartCard>
+  )
+}
+
+function BattlesChart({ data, drivers, missing }: { data: Analysis; drivers: Driver[]; missing: string | null }) {
+  const { t } = useTranslation()
+  const parts = [
+    ['attackWon', '#4ade80', (d: Driver) => d.attacks_won ?? 0],
+    ['attackLost', '#166534', (d: Driver) => (d.attacks ?? 0) - (d.attacks_won ?? 0)],
+    ['defenseWon', '#38bdf8', (d: Driver) => d.defenses_won ?? 0],
+    ['defenseLost', '#1e3a8a', (d: Driver) => (d.defenses ?? 0) - (d.defenses_won ?? 0)],
+  ] as const
+  return (
+    <ChartCard title={t('analysis.battles.title')} help={t('analysis.battles.help')} missing={missing ?? (data.has_positions ? null : t('analysis.noPositions'))}>
+      <StackChart
+        label={t('analysis.battles.title')}
+        legend={parts.map(([key, color]) => ({ label: t(`analysis.battles.${key}`), color }))}
+        rows={drivers.map((d) => ({
+          key: d.driver_id,
+          label: d.name,
+          note: `${Math.round((d.battle_seconds ?? 0) / 60)} min`,
+          parts: parts.map(([key, color, value]) => ({ key, label: t(`analysis.battles.${key}`), value: value(d), color })),
+        }))}
+      />
+    </ChartCard>
+  )
+}
+
+/** All the events of the race for each driver, lap by lap. */
+function EventTimeline({ data, drivers, wide }: { data: Analysis; drivers: Driver[]; wide?: boolean }) {
+  const { t } = useTranslation()
+  const last = Math.max(0, ...drivers.flatMap((d) => d.laps.map((l) => l.number)))
+  const columns = Array.from({ length: last }, (_, i) => String(i + 1))
+  const fastest = Math.min(...drivers.flatMap((d) => d.laps.filter((l) => l.valid).map((l) => l.ms)))
+  return (
+    <ChartCard wide={wide} title={t('analysis.timeline.title')} help={t('analysis.timeline.help')} missing={last === 0 ? t('analysis.noLaps') : null}>
+      <HeatMap
+        label={t('analysis.timeline.title')}
+        columns={columns}
+        low={0}
+        high={1}
+        rows={drivers.map((d) => ({
+          key: d.driver_id,
+          label: d.name,
+          cells: columns.map((_, index) => {
+            const lap = d.laps.find((l) => l.number === index + 1)
+            if (!lap) return { value: null }
+            const passed = data.overtakes.filter((o) => o.lap === lap.number && o.attacker_id === d.driver_id)
+            const lost = data.overtakes.filter((o) => o.lap === lap.number && o.defender_id === d.driver_id)
+            const mark = lap.ms === fastest ? '★' : passed.length ? '▲' : lost.length ? '▼' : lap.pit ? 'P' : lap.contact ? '!' : !lap.valid ? '×' : undefined
+            return { value: lost.length || lap.contact ? 1 : 0, mark, title: `${d.name} · ${t('analysis.lapNumber', { number: lap.number })}` }
+          }),
+        }))}
+      />
+    </ChartCard>
+  )
+}
+
+function OvertakeMap({ data, roundId, missing }: { data: Analysis; roundId: number; missing: string | null }) {
+  const { t } = useTranslation()
+  const map = useLoad(() => api.GET('/api/rounds/{round_id}/track-map', { params: { path: { round_id: roundId } } }), [roundId])
+  const outline = trackOutline(map.data, [])
+  const placed = data.overtakes.filter((o) => o.x !== null && o.x !== undefined && o.z !== null && o.z !== undefined)
+  const size = 460
+  const place = fit([...outline, ...placed.map((o) => ({ x: o.x as number, z: o.z as number }))], size, 16)
+  const name = (id: number) => data.drivers.find((d) => d.driver_id === id)?.name ?? ''
+  return (
+    <ChartCard title={t('analysis.overtakeMap.title')} help={t('analysis.overtakeMap.help')} missing={missing ?? (placed.length === 0 ? t('analysis.overtakeMap.none') : null)}>
+      <svg className="chart chart-map" viewBox={`0 0 ${size} ${size}`} role="img" aria-label={t('analysis.overtakeMap.title')}>
+        {outline.length > 0 && <polyline points={polyline(outline, place)} fill="none" stroke="var(--line-strong)" strokeWidth={5} strokeLinejoin="round" />}
+        {placed.map((o) => {
+          const [cx, cy] = place({ x: o.x as number, z: o.z as number })
+          return (
+            <circle key={`${o.at_s}-${o.attacker_id}-${o.defender_id}`} cx={cx} cy={cy} r={7} fill={driverColor(o.attacker_id)} fillOpacity={0.8}>
+              <title>{`${t('analysis.lapNumber', { number: o.lap })}: ${name(o.attacker_id)} → ${name(o.defender_id)}`}</title>
+            </circle>
+          )
+        })}
+      </svg>
+    </ChartCard>
+  )
+}
+
+/** The clean laps of each stint against the laps since the stint started. */
+function StintPace({ drivers, missing }: { drivers: Driver[]; missing: string | null }) {
+  const { t } = useTranslation()
+  const series: LineSeries[] = drivers.flatMap((d) =>
+    d.stints.map((stint, index) => ({
+      key: `${d.driver_id}-${index}`,
+      label: `${d.name} · ${stint.tyre || '?'} · ${index + 1}`,
+      color: driverColor(d.driver_id),
+      dashed: index % 2 === 1,
+      points: d.laps.filter((l) => l.number >= stint.start_lap && l.number <= stint.end_lap && l.clean).map((l) => ({ x: l.number - stint.start_lap + 1, y: l.ms / 1000 })),
+    })),
+  )
+  return (
+    <ChartCard title={t('analysis.stintPace.title')} help={t('analysis.stintPace.help')} missing={missing ?? (series.every((s) => s.points.length === 0) ? t('analysis.noLaps') : null)}>
+      <LineChart series={series} xLabel={t('analysis.stintPace.age')} yLabel={t('analysis.stintPace.title')} invert formatY={(v) => formatLapTime(v * 1000)} />
+    </ChartCard>
+  )
+}
+
+function DegradationChart({ drivers, missing }: { drivers: Driver[]; missing: string | null }) {
+  const { t } = useTranslation()
+  const rows = drivers.flatMap((d) =>
+    d.stints
+      .filter((s) => s.trend_ms !== null && s.trend_ms !== undefined)
+      .map((s, index) => ({ key: `${d.driver_id}-${index}`, label: `${d.name} · ${s.tyre || '?'}`, value: s.trend_ms as number, color: driverColor(d.driver_id), note: t('analysis.lapsCount', { count: s.laps }) })),
+  )
+  return (
+    <ChartCard title={t('analysis.degradation.title')} help={t('analysis.degradation.help')} missing={missing ?? (rows.length === 0 ? t('analysis.fewLaps', { count: 4 }) : null)}>
+      <BarChart rows={rows} label={t('analysis.degradation.title')} format={(v) => `${v > 0 ? '+' : ''}${(v / 1000).toFixed(3)} s`} />
+    </ChartCard>
+  )
+}
+
+function PitLossChart({ drivers, missing, hasPits }: { drivers: Driver[]; missing: string | null; hasPits: boolean }) {
+  const { t } = useTranslation()
+  const rows = drivers
+    .flatMap((d) =>
+      d.stints
+        .filter((s) => s.pit_loss_ms !== null && s.pit_loss_ms !== undefined)
+        .map((s) => {
+          const pitLane = d.laps.find((l) => l.number === s.end_lap)?.pit_ms
+          return { key: `${d.driver_id}-${s.end_lap}`, label: `${d.name} · ${t('analysis.lapNumber', { number: s.end_lap })}`, value: (s.pit_loss_ms as number) / 1000, color: driverColor(d.driver_id), note: pitLane ? t('analysis.pitLoss.lane', { value: (pitLane / 1000).toFixed(1) }) : undefined }
+        }),
+    )
+    .sort((a, b) => a.value - b.value)
+  return (
+    <ChartCard title={t('analysis.pitLoss.title')} help={t('analysis.pitLoss.help')} missing={missing ?? (!hasPits ? t('analysis.noPits') : rows.length === 0 ? t('analysis.noStops') : null)}>
+      <BarChart rows={rows} label={t('analysis.pitLoss.title')} format={(v) => `${v.toFixed(1)} s`} />
+    </ChartCard>
+  )
+}
+
+/** The gain of a stop against each car that the driver was near: the gap 2 laps before the stop
+ * against the gap 2 laps after the later stop of the 2 cars. A simple estimate. */
+function PitCycleChart({ drivers, missing, hasPits }: { drivers: Driver[]; missing: string | null; hasPits: boolean }) {
+  const { t } = useTranslation()
+  const total = (d: Driver, lap: number) => {
+    const rows = d.laps.filter((l) => l.number <= lap)
+    return rows.length === lap ? rows.reduce((sum, l) => sum + l.ms, 0) : null
+  }
+  const stops = (d: Driver) => d.stints.filter((s) => s.pit_loss_ms !== null && s.pit_loss_ms !== undefined).map((s) => s.end_lap)
+  const rows = drivers.flatMap((a, index) =>
+    drivers.slice(index + 1).flatMap((b) => {
+      const [first, second] = [stops(a)[0], stops(b)[0]]
+      if (!first || !second || first === second) return []
+      const [early, late] = first < second ? [a, b] : [b, a]
+      const from = Math.min(first, second) - 2
+      const to = Math.max(first, second) + 2
+      const values = [total(early, from), total(late, from), total(early, to), total(late, to)]
+      if (from < 1 || values.some((v) => v === null)) return []
+      const [e1, l1, e2, l2] = values as number[]
+      const gain = (l2 - e2 - (l1 - e1)) / 1000
+      return [{ key: `${a.driver_id}-${b.driver_id}`, label: `${early.name} / ${late.name}`, value: gain, color: driverColor(early.driver_id) }]
+    }),
+  )
+  return (
+    <ChartCard title={t('analysis.pitCycle.title')} help={t('analysis.pitCycle.help')} missing={missing ?? (!hasPits ? t('analysis.noPits') : rows.length === 0 ? t('analysis.noStops') : null)}>
+      <BarChart rows={rows} label={t('analysis.pitCycle.title')} format={(v) => `${v > 0 ? '+' : ''}${v.toFixed(2)} s`} />
+    </ChartCard>
+  )
+}
+
+function FuelChart({ drivers }: { drivers: Driver[] }) {
+  const { t } = useTranslation()
+  const series = lapSeries(drivers, (lap) => lap.fuel_left ?? null).filter((s) => s.points.some((p) => p.y !== null))
+  const used = drivers.flatMap((d) => {
+    const values = d.laps.filter((l) => l.clean && l.fuel_used).map((l) => l.fuel_used as number)
+    return values.length ? [{ key: d.driver_id, label: d.name, value: values.reduce((a, b) => a + b, 0) / values.length, color: driverColor(d.driver_id) }] : []
+  })
+  const missing = series.length === 0 ? t('analysis.lab.noData') : null
+  return (
+    <>
+      <ChartCard title={t('analysis.fuel.title')} help={t('analysis.fuel.help')} missing={missing}>
+        <LineChart series={series} xLabel={t('analysis.lap')} yLabel={t('analysis.fuel.title')} formatY={(v) => `${v.toFixed(1)} L`} />
+      </ChartCard>
+      <ChartCard title={t('analysis.fuel.perLap')} help={t('analysis.fuel.perLapHelp')} missing={used.length === 0 ? t('analysis.lab.noData') : null}>
+        <BarChart rows={used} label={t('analysis.fuel.perLap')} format={(v) => `${v.toFixed(2)} L`} />
+      </ChartCard>
+    </>
+  )
+}
+
 const TYRE_COLORS = ['#e8e6e3', '#e5484d', '#f5c542', '#3fb27f', '#3b82f6', '#c084fc']
 
 function StintChart({ drivers, hasPits }: { drivers: Driver[]; hasPits: boolean }) {
@@ -454,7 +657,7 @@ function StintChart({ drivers, hasPits }: { drivers: Driver[]; hasPits: boolean 
   )
 }
 
-function LapsView({ data, drivers }: { data: Analysis; drivers: Driver[] }) {
+function LapsView({ data, drivers, roundId }: { data: Analysis; drivers: Driver[]; roundId: number }) {
   const { t } = useTranslation()
   return (
     <>
@@ -466,8 +669,8 @@ function LapsView({ data, drivers }: { data: Analysis; drivers: Driver[] }) {
         {data.has_sectors && <SectorSpreadChart drivers={drivers} />}
         <ImprovementChart drivers={drivers} />
       </ChartGroup>
+      <TelemetryLab roundId={roundId} session={data.session} />
       <p className="muted">{t('analysis.telemetryTab')}</p>
-      <NeedsData items={['gforce', 'tyreTemp', 'tyrePressure', 'wheelSlip', 'suspension', 'fuelLap'].map((key) => t(`analysis.needs.${key}`))} />
     </>
   )
 }

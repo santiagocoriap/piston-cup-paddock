@@ -2751,8 +2751,6 @@
     "exportCsv": "Descargar CSV: {{title}}",
     "driversOnGraphs": "Pilotos en los gráficos",
     "resetZoom": "Ver todo",
-    "needsData_one": "{{count}} gráfico necesita más datos",
-    "needsData_other": "{{count}} gráficos necesitan más datos",
     "views": {
       "race": "Carrera",
       "laps": "Vueltas y sectores"
@@ -2777,7 +2775,7 @@
     "noResults": "Todavía no hay resultados en esta temporada.",
     "noDriverResults": "Este piloto todavía no tiene resultados.",
     "noShared": "Los 2 pilotos no tienen fechas en común.",
-    "telemetryTab": "Velocidad, acelerador, freno, marcha, RPM, volante, delta por distancia y mapa: están en la pestaña Telemetría.",
+    "telemetryTab": "Velocidad, acelerador, freno, marcha, RPM, volante, delta y mapa: pestaña Telemetría. Curvas y puntos de frenada: pestaña Ingeniero.",
     "groups": {
       "progression": "Progreso y posiciones",
       "pace": "Ritmo de carrera",
@@ -2791,31 +2789,15 @@
       "overview": "Resumen",
       "qualifyingRace": "Clasificación y carrera",
       "headToHead": "Mano a mano",
-      "reliability": "Fiabilidad"
+      "reliability": "Fiabilidad",
+      "lab": "Fuerzas, neumáticos y línea",
+      "advanced": "Métricas avanzadas"
     },
     "status": {
       "finished": "Terminó",
       "dnf": "Abandonó",
       "dns": "No largó",
       "dsq": "Descalificado"
-    },
-    "needs": {
-      "overtakes": "Sobrepasos verificados: el colector solo ve el orden en la línea, no el sobrepaso en la pista.",
-      "battles": "Ataques y defensas: necesita eventos de sobrepaso verificados.",
-      "tyres": "Desgaste y ritmo por neumático: necesita más de un compuesto y datos de pits en cada carrera.",
-      "pitTime": "Tiempo de pits: necesita la hora de entrada y salida de cada parada.",
-      "fuel": "Combustible: el script no lo manda todavía.",
-      "undercut": "Undercut y overcut: necesita un modelo de estimación.",
-      "gforce": "Fuerzas G y diagrama G-G: el script no las manda todavía.",
-      "tyreTemp": "Temperatura de neumáticos: el script no la manda todavía.",
-      "tyrePressure": "Presión de neumáticos: el script no la manda todavía.",
-      "wheelSlip": "Deslizamiento de ruedas: el script no lo manda todavía.",
-      "suspension": "Suspensión: el script no la manda todavía.",
-      "fuelLap": "Combustible por vuelta: el script no lo manda todavía.",
-      "rivalry": "Red de rivalidades: necesita duelos verificados.",
-      "scenario": "Simulador de escenarios: falta construirlo.",
-      "circuitType": "Tipo de circuito: las pistas no tienen esta clasificación.",
-      "forecast": "Pronóstico de desarrollo: necesita más fechas."
     },
     "position": {
       "title": "Posición por vuelta",
@@ -3068,6 +3050,177 @@
     "reliability": {
       "title": "Fiabilidad",
       "help": "Cómo terminó cada carrera de la temporada."
+    },
+    "noPositions": "Sin posiciones del colector: activá request_positions en el colector del servidor.",
+    "noPits": "Sin registro de Real Penalty: no se conocen las paradas.",
+    "noStops": "Ninguna parada en esta carrera.",
+    "noSectorsShared": "Los 2 pilotos no tienen sectores en fechas en común.",
+    "overtakes": {
+      "title": "Sobrepasos",
+      "help": "De las posiciones del colector en la pista. Cuenta un cambio de orden que dura 5 segundos. No cuenta un auto detenido, lento o con una vuelta de diferencia.",
+      "lost": "{{count}} recibidos",
+      "field": "media {{value}}"
+    },
+    "battles": {
+      "title": "Duelos",
+      "help": "Dos autos a menos de 1 % de vuelta durante 10 segundos o más. Ataque: empezó atrás. Defensa: empezó adelante. El texto es el tiempo total en duelo.",
+      "attackWon": "Ataque ganado",
+      "attackLost": "Ataque sin sobrepaso",
+      "defenseWon": "Defensa ganada",
+      "defenseLost": "Defensa perdida"
+    },
+    "timeline": {
+      "title": "Eventos por vuelta",
+      "help": "★: vuelta rápida. ▲: sobrepasó. ▼: lo sobrepasaron. P: pits. !: incidente. ×: inválida."
+    },
+    "overtakeMap": {
+      "title": "Mapa de sobrepasos",
+      "help": "Dónde pasó cada sobrepaso. El color es del piloto que sobrepasó.",
+      "none": "Sin sobrepasos con posición en esta carrera."
+    },
+    "stintPace": {
+      "title": "Ritmo por tanda",
+      "help": "Vueltas limpias de cada tanda, contadas desde el inicio de la tanda.",
+      "age": "Vuelta de la tanda"
+    },
+    "degradation": {
+      "title": "Degradación estimada",
+      "help": "Estimación: la línea recta de las vueltas limpias de cada tanda, con al menos 4 vueltas. Positivo: la vuelta es más lenta cada vez. Incluye el efecto del combustible."
+    },
+    "pitLoss": {
+      "title": "Tiempo perdido en pits",
+      "help": "Vuelta de entrada más vuelta de salida, menos 2 vueltas normales. El texto es el tiempo en boxes, con el script nuevo.",
+      "lane": "boxes {{value}} s"
+    },
+    "pitCycle": {
+      "title": "Undercut y overcut",
+      "help": "Estimación. Quien paró primero contra el otro: diferencia 2 vueltas antes de la primera parada contra 2 vueltas después de la segunda. Positivo: ganó quien paró primero."
+    },
+    "fuel": {
+      "title": "Combustible restante",
+      "help": "Del script nuevo: los litros al final de cada vuelta.",
+      "perLap": "Consumo por vuelta",
+      "perLapHelp": "Promedio de litros en vueltas limpias."
+    },
+    "rankHeat": {
+      "title": "Cambios en el campeonato",
+      "help": "La posición después de cada fecha. ▲ subió y ▼ bajó."
+    },
+    "milestones": {
+      "title": "Logros acumulados",
+      "help": "El total después de cada fecha."
+    },
+    "circuitType": {
+      "title": "Ritmo por tipo de pista",
+      "help": "Ritmo contra el mejor, en porcentaje, por tipo de pista. El tipo sale de las curvas por km del archivo del juego: menos de 1,8 es rápida y más de 2,8 es técnica.",
+      "none": "Sin datos: subí el ZIP de mapas para clasificar las pistas.",
+      "high_speed": "Rápida",
+      "mixed": "Mixta",
+      "technical": "Técnica"
+    },
+    "rivalry": {
+      "title": "Red de rivalidades",
+      "help": "Una línea más gruesa es más tiempo en duelo entre los 2 pilotos.",
+      "edge": "{{battles}} duelos, {{minutes}} min, {{passes}} sobrepasos"
+    },
+    "simulator": {
+      "title": "Simulador de escenarios",
+      "help": "Elegí la posición de cada piloto en las {{count}} fechas que faltan. Los puntos finales cambian al instante. Sin bonos y sin desempates."
+    },
+    "forecast": {
+      "title": "Pronóstico de ritmo",
+      "help": "Estimación con una línea recta del ritmo, con al menos 4 fechas. La parte punteada es el futuro.",
+      "helpDriver": "Estimación con una línea recta del ritmo, con al menos 4 fechas. Las líneas grises son la incertidumbre (2 errores estándar)."
+    },
+    "evolution": {
+      "title": "Evolución",
+      "help": "Ritmo de carrera y de clasificación contra el mejor, en porcentaje.",
+      "race": "Carrera",
+      "qualifying": "Clasificación"
+    },
+    "consistencyByRace": {
+      "title": "Consistencia por fecha"
+    },
+    "expected": {
+      "title": "Esperado contra real",
+      "help": "El modelo es simple: el resultado esperado es la posición de largada. Sobre la diagonal, terminó donde largó.",
+      "x": "Largada (esperado)",
+      "y": "Llegada (real)"
+    },
+    "sectorDuel": {
+      "title": "Sectores contra el rival",
+      "help": "Mejor sector de {{a}} menos el de {{b}}. Verde: {{a}} fue más rápido."
+    },
+    "rivalryHistory": {
+      "title": "Historial de la rivalidad",
+      "help": "Posiciones de ventaja de {{a}} sobre {{b}} en cada fecha."
+    },
+    "incidents": {
+      "title": "Incidentes",
+      "help": "Vueltas con incidente en cada carrera, según el colector."
+    },
+    "lab": {
+      "pick": "Elegí hasta {{count}} vueltas (Ctrl + clic)",
+      "noLaps": "Sin vueltas con telemetría completa en esta sesión.",
+      "noData": "Sin datos: estas vueltas son anteriores al script nuevo, que manda estos datos desde el próximo ingreso al servidor.",
+      "place": "Lugar en la vuelta",
+      "oneLap": "Vuelta: {{lap}}.",
+      "gLong": "Aceleración y frenada",
+      "gLongHelp": "Fuerza G hacia adelante y hacia atrás. Negativo: frenada.",
+      "gLat": "Fuerza lateral",
+      "gLatHelp": "Fuerza G hacia los lados, en las curvas.",
+      "gg": "Diagrama G-G",
+      "ggHelp": "Fuerza lateral contra fuerza longitudinal: cuánto usa el piloto el agarre disponible.",
+      "line": "Línea de carrera",
+      "lineHelp": "Del script nuevo. La banda gris es la línea del archivo del juego.",
+      "temps": "Temperatura de neumáticos",
+      "tempsHelp": "Vuelta: {{lap}}. Interior, medio y exterior de cada rueda en cada parte de la vuelta. Rojo: más caliente.",
+      "pressure": "Presión de neumáticos",
+      "slip": "Deslizamiento de ruedas",
+      "slipHelp": "Valor del juego para cada rueda. Por encima de 1, el neumático desliza.",
+      "suspension": "Suspensión",
+      "smooth": "Suavidad del volante",
+      "smoothHelp": "Cambio medio del volante entre 2 muestras. Más bajo es más suave.",
+      "correlation": "Correlación de canales",
+      "correlationHelp": "Elegí 2 canales. Cada punto es una muestra de la vuelta.",
+      "wheels": {
+        "fl": "Del. izq.",
+        "fr": "Del. der.",
+        "rl": "Tras. izq.",
+        "rr": "Tras. der."
+      },
+      "zones": {
+        "in": "int.",
+        "mid": "med.",
+        "out": "ext."
+      },
+      "axes": {
+        "speed_kmh": "Velocidad (km/h)",
+        "gas": "Acelerador",
+        "brake": "Freno",
+        "steer": "Volante (°)",
+        "rpm": "RPM",
+        "g_lat": "G lateral",
+        "g_long": "G longitudinal"
+      },
+      "exit": "Salida de curva",
+      "exitHelp": "Cada punto es una curva, con su número en la vuelta. Velocidad 2 segundos después del punto más lento, contra velocidad 5 segundos después. Vueltas: {{laps}}.",
+      "exitX": "Velocidad a los 2 s (km/h)",
+      "exitY": "Velocidad a los 5 s (km/h)"
+    },
+    "decomposition": {
+      "title": "Desglose del rendimiento",
+      "help": "Las partes del perfil, de 0 a 100, con el mismo peso. Puntaje total: {{value}}."
+    },
+    "similarity": {
+      "title": "Pilotos parecidos",
+      "help": "Distancia entre los perfiles de 0 a 100. Más bajo es más parecido."
+    },
+    "trackHistory": {
+      "title": "Progreso por pista",
+      "help": "Mejor vuelta en cada visita a una pista, contra la primera visita. Punto grande: nuevo récord personal.",
+      "visit": "Visita",
+      "none": "El piloto todavía no corrió 2 veces en la misma pista."
     }
   }
 }

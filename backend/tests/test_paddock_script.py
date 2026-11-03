@@ -1,6 +1,5 @@
 """Phase 2: laps of the Paddock script count only when the server says the driver was there."""
 
-import json
 from datetime import timedelta
 
 import pytest
@@ -11,7 +10,9 @@ from apps.catalog.models import Car, Track, TrackLayout
 from apps.competition.models import Round, SeasonEntry
 from apps.identity.models import DriverProfile, DriverSteamId
 from apps.telemetry.models import ScriptCode, TelemetryLap
+from apps.telemetry.samples import read_samples
 from apps.telemetry.script import CODE_GRACE
+from apps.telemetry.services import channels_for
 
 GUID = "76561190000000001"
 CAR = "TRR_LMDh_acura_arx-06"
@@ -362,7 +363,7 @@ def test_bad_samples_are_kept_as_they_came(key, code, round_, driver):
     )
     assert response.json()["issues"] == ["bad_samples"]
     with flagged().samples.open("rb") as handle:
-        assert json.loads(handle.read()) == {"raw": [[1, 2]]}
+        assert read_samples(handle) == {"raw": [[1, 2]]}
 
 
 def test_the_server_gives_the_lap_number_and_the_cuts(key, code, round_, driver):
@@ -457,3 +458,74 @@ def test_a_lap_with_samples_of_a_small_part_of_the_lap_is_kept_for_review(
         f"/telemetry-laps/{kept.id}/accept", {"round_id": round_.id, "session_type": "race"}
     )
     assert accepted.status_code == 422
+
+
+def _vehicle_row(t_ms, place, fuel, in_pit=0):
+    wheels = [80.0] * 16 + [27.0] * 4 + [0.1] * 4 + [0.05] * 4 + [0.02] * 4
+    return [t_ms, place, in_pit, fuel, *wheels]
+
+
+def test_the_new_channels_and_the_lap_numbers_are_stored(key, code, round_, driver):
+    events(key, connected(), race_started(), server_lap())
+    payload = {
+        "steam_id": GUID,
+        "track": "ks_highlands",
+        "layout": "layout_long",
+        "car": CAR,
+        "lap_number": 2,
+        "lap_time_ms": 113_689,
+        "valid": True,
+        "cuts": 0,
+        "ended_at": 1_800_000_000,
+        "sent_at": 1_800_000_005,
+        "samples": [
+            [t * 1148, t / 100, 100.5, 1, 0, -2.5, 4, 7000, t, t * 2, 0.5, -1.0] for t in range(100)
+        ],
+        "vehicle": [
+            _vehicle_row(0, 0.0, 40.0),
+            _vehicle_row(50_000, 0.5, 39.0, in_pit=1),
+            _vehicle_row(60_000, 0.6, 38.5, in_pit=1),
+            _vehicle_row(113_000, 0.99, 37.5),
+        ],
+    }
+    response = Client().post(
+        "/api/script/laps", payload, content_type="application/json", HTTP_X_PADDOCK_CODE=code
+    )
+    assert response.json()["state"] == "league"
+    saved = TelemetryLap.objects.get()
+    assert saved.summary == {
+        "fuel_start": 40.0,
+        "fuel_end": 37.5,
+        "fuel_used": 2.5,
+        "pit_ms": 10_000,
+        "wear": 0.1,
+    }
+    channels = channels_for(saved, "full")
+    assert channels["g_lat"][0] == 0.5
+    assert channels["v_temp_core_fl"][0] == 80
+    assert channels["v_pressure_rr"][0] == 27
+    assert "v_fuel" not in channels_for(saved, "laps")
+    assert saved.samples.open("rb").read(2) == b"\x1f\x8b"  # The file has compression.
+
+
+def test_a_bad_vehicle_block_does_not_stop_the_lap(key, code, round_, driver):
+    events(key, connected(), race_started(), server_lap())
+    payload = {
+        "steam_id": GUID,
+        "track": "ks_highlands",
+        "layout": "layout_long",
+        "car": CAR,
+        "lap_number": 2,
+        "lap_time_ms": 113_689,
+        "valid": True,
+        "cuts": 0,
+        "ended_at": 1_800_000_000,
+        "sent_at": 1_800_000_005,
+        "samples": [[t * 1148, t / 100, 100.5, 1, 0, -2.5, 4, 7000] for t in range(100)],
+        "vehicle": [[1, 2]],
+    }
+    response = Client().post(
+        "/api/script/laps", payload, content_type="application/json", HTTP_X_PADDOCK_CODE=code
+    )
+    assert response.json()["state"] == "league"
+    assert TelemetryLap.objects.get().summary == {}

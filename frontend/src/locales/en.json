@@ -2751,8 +2751,6 @@
     "exportCsv": "Download CSV: {{title}}",
     "driversOnGraphs": "Drivers on the graphs",
     "resetZoom": "Show all",
-    "needsData_one": "{{count}} graph needs more data",
-    "needsData_other": "{{count}} graphs need more data",
     "views": {
       "race": "Race",
       "laps": "Laps and sectors"
@@ -2777,7 +2775,7 @@
     "noResults": "This season has no results yet.",
     "noDriverResults": "This driver has no results yet.",
     "noShared": "The 2 drivers have no shared rounds.",
-    "telemetryTab": "Speed, throttle, brake, gear, RPM, steering, delta by distance, and the map are in the Telemetry tab.",
+    "telemetryTab": "Speed, throttle, brake, gear, RPM, steering, delta, and the map: Telemetry tab. Corners and braking points: Engineer tab.",
     "groups": {
       "progression": "Progression and positions",
       "pace": "Race pace",
@@ -2791,31 +2789,15 @@
       "overview": "Overview",
       "qualifyingRace": "Qualifying and race",
       "headToHead": "Head to head",
-      "reliability": "Reliability"
+      "reliability": "Reliability",
+      "lab": "Forces, tyres, and line",
+      "advanced": "Advanced metrics"
     },
     "status": {
       "finished": "Finished",
       "dnf": "Did not finish",
       "dns": "Did not start",
       "dsq": "Disqualified"
-    },
-    "needs": {
-      "overtakes": "Verified overtakes: the collector sees only the order at the line, not the overtake on the track.",
-      "battles": "Attacks and defenses: this needs verified overtake events.",
-      "tyres": "Wear and pace by tyre: this needs more than one compound and pit data in each race.",
-      "pitTime": "Pit time: this needs the entry and exit time of each stop.",
-      "fuel": "Fuel: the script does not send it yet.",
-      "undercut": "Undercut and overcut: this needs an estimation model.",
-      "gforce": "G-forces and the G-G diagram: the script does not send them yet.",
-      "tyreTemp": "Tyre temperature: the script does not send it yet.",
-      "tyrePressure": "Tyre pressure: the script does not send it yet.",
-      "wheelSlip": "Wheel slip: the script does not send it yet.",
-      "suspension": "Suspension: the script does not send it yet.",
-      "fuelLap": "Fuel for each lap: the script does not send it yet.",
-      "rivalry": "Rivalry network: this needs verified battles.",
-      "scenario": "Scenario simulator: not built yet.",
-      "circuitType": "Circuit type: the tracks do not have this data.",
-      "forecast": "Development forecast: this needs more rounds."
     },
     "position": {
       "title": "Position by lap",
@@ -3068,6 +3050,177 @@
     "reliability": {
       "title": "Reliability",
       "help": "How each race of the season ended."
+    },
+    "noPositions": "No collector positions: turn on request_positions in the server collector.",
+    "noPits": "No Real Penalty log: the stops are not known.",
+    "noStops": "No stops in this race.",
+    "noSectorsShared": "The 2 drivers have no sectors in shared rounds.",
+    "overtakes": {
+      "title": "Overtakes",
+      "help": "From the collector positions on the track. An order change that lasts 5 seconds counts. A stopped car, a slow car, or a car one lap away does not count.",
+      "lost": "{{count}} received",
+      "field": "mean {{value}}"
+    },
+    "battles": {
+      "title": "Battles",
+      "help": "Two cars within 1 % of a lap for 10 seconds or more. Attack: started behind. Defense: started ahead. The text is the total time in battles.",
+      "attackWon": "Attack won",
+      "attackLost": "Attack with no overtake",
+      "defenseWon": "Defense won",
+      "defenseLost": "Defense lost"
+    },
+    "timeline": {
+      "title": "Events by lap",
+      "help": "★: fastest lap. ▲: overtook. ▼: was overtaken. P: pits. !: incident. ×: invalid."
+    },
+    "overtakeMap": {
+      "title": "Overtake map",
+      "help": "Where each overtake happened. The color is of the driver who overtook.",
+      "none": "No overtakes with a position in this race."
+    },
+    "stintPace": {
+      "title": "Pace by stint",
+      "help": "The clean laps of each stint, counted from the start of the stint.",
+      "age": "Lap of the stint"
+    },
+    "degradation": {
+      "title": "Estimated degradation",
+      "help": "An estimate: the straight line of the clean laps of each stint with at least 4 laps. Positive: each lap is slower. It includes the effect of fuel."
+    },
+    "pitLoss": {
+      "title": "Time lost in pits",
+      "help": "The in-lap plus the out-lap, minus 2 normal laps. The text is the time in the pit lane, with the new script.",
+      "lane": "pit lane {{value}} s"
+    },
+    "pitCycle": {
+      "title": "Undercut and overcut",
+      "help": "An estimate. The first driver to stop against the other: the gap 2 laps before the first stop against 2 laps after the second stop. Positive: the first driver to stop gained."
+    },
+    "fuel": {
+      "title": "Fuel remaining",
+      "help": "From the new script: the liters at the end of each lap.",
+      "perLap": "Fuel for each lap",
+      "perLapHelp": "The mean liters on clean laps."
+    },
+    "rankHeat": {
+      "title": "Championship changes",
+      "help": "The position after each round. ▲ up and ▼ down."
+    },
+    "milestones": {
+      "title": "Total achievements",
+      "help": "The total after each round."
+    },
+    "circuitType": {
+      "title": "Pace by track type",
+      "help": "Pace against the best, in percent, by track type. The type comes from the corners for each km in the game file: below 1.8 is fast, and above 2.8 is technical.",
+      "none": "No data: upload the map ZIP to classify the tracks.",
+      "high_speed": "Fast",
+      "mixed": "Mixed",
+      "technical": "Technical"
+    },
+    "rivalry": {
+      "title": "Rivalry network",
+      "help": "A thicker line is more time in battle between the 2 drivers.",
+      "edge": "{{battles}} battles, {{minutes}} min, {{passes}} overtakes"
+    },
+    "simulator": {
+      "title": "Scenario simulator",
+      "help": "Choose the position of each driver in the {{count}} remaining rounds. The final points change at once. No bonuses and no tie-breaks."
+    },
+    "forecast": {
+      "title": "Pace forecast",
+      "help": "An estimate from a straight line of the pace, with at least 4 rounds. The dashed part is the future.",
+      "helpDriver": "An estimate from a straight line of the pace, with at least 4 rounds. The gray lines are the uncertainty (2 standard errors)."
+    },
+    "evolution": {
+      "title": "Evolution",
+      "help": "Race and qualifying pace against the best, in percent.",
+      "race": "Race",
+      "qualifying": "Qualifying"
+    },
+    "consistencyByRace": {
+      "title": "Consistency by round"
+    },
+    "expected": {
+      "title": "Expected against actual",
+      "help": "The model is simple: the expected result is the start position. On the diagonal, the driver finished at the start position.",
+      "x": "Start (expected)",
+      "y": "Finish (actual)"
+    },
+    "sectorDuel": {
+      "title": "Sectors against the rival",
+      "help": "The best sector of {{a}} minus that of {{b}}. Green: {{a}} was faster."
+    },
+    "rivalryHistory": {
+      "title": "Rivalry history",
+      "help": "The places that {{a}} finished ahead of {{b}} in each round."
+    },
+    "incidents": {
+      "title": "Incidents",
+      "help": "Laps with an incident in each race, from the collector."
+    },
+    "lab": {
+      "pick": "Choose up to {{count}} laps (Ctrl + click)",
+      "noLaps": "No laps with full telemetry in this session.",
+      "noData": "No data: these laps are older than the new script, which sends this data from the next server join.",
+      "place": "Place on the lap",
+      "oneLap": "Lap: {{lap}}.",
+      "gLong": "Acceleration and braking",
+      "gLongHelp": "G-force forwards and backwards. Negative: braking.",
+      "gLat": "Lateral force",
+      "gLatHelp": "G-force to the sides, in corners.",
+      "gg": "G-G diagram",
+      "ggHelp": "Lateral force against longitudinal force: how much of the grip the driver uses.",
+      "line": "Racing line",
+      "lineHelp": "From the new script. The gray band is the line of the game file.",
+      "temps": "Tyre temperature",
+      "tempsHelp": "Lap: {{lap}}. Inner, middle, and outer of each wheel in each part of the lap. Red: hotter.",
+      "pressure": "Tyre pressure",
+      "slip": "Wheel slip",
+      "slipHelp": "The game value for each wheel. Above 1, the tyre slides.",
+      "suspension": "Suspension",
+      "smooth": "Steering smoothness",
+      "smoothHelp": "The mean change of the steering between 2 samples. Lower is smoother.",
+      "correlation": "Channel correlation",
+      "correlationHelp": "Choose 2 channels. Each point is one sample of the lap.",
+      "wheels": {
+        "fl": "Front left",
+        "fr": "Front right",
+        "rl": "Rear left",
+        "rr": "Rear right"
+      },
+      "zones": {
+        "in": "in",
+        "mid": "mid",
+        "out": "out"
+      },
+      "axes": {
+        "speed_kmh": "Speed (km/h)",
+        "gas": "Throttle",
+        "brake": "Brake",
+        "steer": "Steering (°)",
+        "rpm": "RPM",
+        "g_lat": "Lateral G",
+        "g_long": "Longitudinal G"
+      },
+      "exit": "Corner exit",
+      "exitHelp": "Each point is a corner, with its number on the lap. The speed 2 seconds after the slowest point, against the speed 5 seconds after it. Laps: {{laps}}.",
+      "exitX": "Speed at 2 s (km/h)",
+      "exitY": "Speed at 5 s (km/h)"
+    },
+    "decomposition": {
+      "title": "Performance breakdown",
+      "help": "The parts of the profile, from 0 to 100, with the same weight. Total score: {{value}}."
+    },
+    "similarity": {
+      "title": "Similar drivers",
+      "help": "The distance between the profiles, from 0 to 100. Lower is more similar."
+    },
+    "trackHistory": {
+      "title": "Progress by track",
+      "help": "The best lap on each visit to a track, against the first visit. Large point: a new personal best.",
+      "visit": "Visit",
+      "none": "The driver has not raced 2 times on the same track."
     }
   }
 }

@@ -11090,7 +11090,11 @@ button.danger {
 }
 
 /* ---------- Data analysis ---------- */
-.analysis {
+/* A graph has no width of its own: it takes the width of the page. */
+.analysis,
+.analysis .chart-group,
+.analysis .chart-grid {
+  width: 100%;
   min-width: 0;
 }
 
@@ -11149,7 +11153,7 @@ button.danger {
 
 .chart-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
   gap: var(--space-4);
   margin-top: var(--space-4);
 }
@@ -11227,24 +11231,30 @@ button.danger {
   gap: 4px;
 }
 
-.chart-plot {
+/* The graph fills the card, also when a taller graph on the same row makes the card taller. */
+.chart-box {
   position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.chart-box > svg.chart,
+.chart-scroll {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .chart {
   display: block;
-  width: 100%;
-  height: auto;
   user-select: none;
 }
 
-.chart-radar {
-  max-width: 420px;
-  margin: 0 auto;
-}
-
 .chart-scroll {
-  overflow-x: auto;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
 }
 
 .chart-grid-line {
@@ -11330,4 +11340,16 @@ button.danger {
 
 .chart-needs > summary {
   cursor: pointer;
+}
+
+.chart-map {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.analysis-lab-pick select {
+  width: 100%;
+  max-width: 520px;
 }

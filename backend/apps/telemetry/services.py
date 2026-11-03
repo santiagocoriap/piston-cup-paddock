@@ -11,13 +11,12 @@ drivers, and for admins. "none" is the default for other drivers. Basic results 
 telemetry.
 """
 
-import json
-
 from apps.competition.models import SeasonEntry
 from apps.competition.permissions import can_manage, can_view
 from apps.identity.models import DriverProfile
 
 from .models import Access, TelemetryLap, TelemetrySharing
+from .samples import read_samples
 
 # The "laps" level gets only these. The other channels (gas, brake, steer, gear, rpm) are the
 # driver inputs: only the "full" level gets them.
@@ -67,7 +66,7 @@ def access(viewer, lap: TelemetryLap) -> str | None:
 
 def channels_for(lap: TelemetryLap, level: str) -> dict:
     with lap.samples.open("rb") as handle:
-        channels = json.loads(handle.read())
+        channels = read_samples(handle)
     if level == Access.FULL:
         return channels
     return {name: values for name, values in channels.items() if name in PUBLIC_CHANNELS}

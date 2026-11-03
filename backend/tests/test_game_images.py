@@ -1,6 +1,8 @@
+import importlib.util
 import io
 import struct
 import zipfile
+from pathlib import Path
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -192,3 +194,40 @@ def test_the_import_reads_the_ai_file(layout, tmp_path):
     layout.refresh_from_db()
     assert layout.line
     assert layout.length_m
+
+
+def _pack_tool():
+    path = Path(__file__).parents[2] / "tools" / "pack_game_images.py"
+    spec = importlib.util.spec_from_file_location("pack_game_images", path)
+    tool = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tool)
+    return tool
+
+
+def test_the_pack_tool_can_pack_only_the_map_points(layout, tmp_path):
+    root = tmp_path / "content"
+    ai = root / "tracks" / layout.track.key / layout.key / "ai"
+    ai.mkdir(parents=True)
+    full = _ai_line() + b"x" * 5000  # The AI data after the points.
+    (ai / "fast_lane.ai").write_bytes(full)
+    ui = root / "tracks" / layout.track.key / "ui" / layout.key
+    ui.mkdir(parents=True)
+    (ui / "outline.png").write_bytes(PNG)
+    (root / "cars" / "a_car").mkdir(parents=True)
+    out = tmp_path / "maps.zip"
+    tracks, cars, missing = _pack_tool().pack(root, None, out, maps_only=True)
+    assert (tracks, cars, missing) == (1, 0, [])
+    with zipfile.ZipFile(out) as archive:
+        name = f"tracks/{layout.track.key}/{layout.key}/ai/fast_lane.ai"
+        assert archive.namelist() == [name]
+        assert archive.read(name) == _ai_line()
+    report = import_game_images(open_source(out))
+    layout.refresh_from_db()
+    assert layout.line
+    assert report.layouts
+
+
+def test_the_pack_tool_skips_a_line_that_is_too_short(tmp_path):
+    bad = tmp_path / "fast_lane.ai"
+    bad.write_bytes(struct.pack("<4i", 7, 100, 0, 0))
+    assert _pack_tool().line_points(bad) is None

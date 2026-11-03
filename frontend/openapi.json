@@ -22435,6 +22435,70 @@
         "title": "SafetyOut",
         "type": "object"
       },
+      "DriverStintOut": {
+        "properties": {
+          "start_lap": {
+            "title": "Start Lap",
+            "type": "integer"
+          },
+          "end_lap": {
+            "title": "End Lap",
+            "type": "integer"
+          },
+          "tyre": {
+            "title": "Tyre",
+            "type": "string"
+          },
+          "laps": {
+            "title": "Laps",
+            "type": "integer"
+          },
+          "median_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median Ms"
+          },
+          "trend_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trend Ms"
+          },
+          "pit_loss_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pit Loss Ms"
+          }
+        },
+        "required": [
+          "start_lap",
+          "end_lap",
+          "tyre",
+          "laps",
+          "median_ms",
+          "trend_ms",
+          "pit_loss_ms"
+        ],
+        "title": "DriverStintOut",
+        "type": "object"
+      },
       "LapPointOut": {
         "properties": {
           "number": {
@@ -22511,6 +22575,50 @@
               }
             ],
             "title": "Ahead Ms"
+          },
+          "fuel_used": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fuel Used"
+          },
+          "fuel_left": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fuel Left"
+          },
+          "pit_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pit Ms"
+          },
+          "wear": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wear"
           }
         },
         "required": [
@@ -22524,7 +22632,11 @@
           "tyre",
           "position",
           "gap_to_leader_ms",
-          "ahead_ms"
+          "ahead_ms",
+          "fuel_used",
+          "fuel_left",
+          "pit_ms",
+          "wear"
         ],
         "title": "LapPointOut",
         "type": "object"
@@ -22658,6 +22770,58 @@
         "title": "LapSpreadOut",
         "type": "object"
       },
+      "OvertakeOut": {
+        "properties": {
+          "at_s": {
+            "title": "At S",
+            "type": "integer"
+          },
+          "lap": {
+            "title": "Lap",
+            "type": "integer"
+          },
+          "attacker_id": {
+            "title": "Attacker Id",
+            "type": "integer"
+          },
+          "defender_id": {
+            "title": "Defender Id",
+            "type": "integer"
+          },
+          "x": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "X"
+          },
+          "z": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Z"
+          }
+        },
+        "required": [
+          "at_s",
+          "lap",
+          "attacker_id",
+          "defender_id",
+          "x",
+          "z"
+        ],
+        "title": "OvertakeOut",
+        "type": "object"
+      },
       "RoundAnalysisOut": {
         "properties": {
           "session": {
@@ -22692,6 +22856,17 @@
             },
             "title": "Drivers",
             "type": "array"
+          },
+          "has_positions": {
+            "title": "Has Positions",
+            "type": "boolean"
+          },
+          "overtakes": {
+            "items": {
+              "$ref": "#/components/schemas/OvertakeOut"
+            },
+            "title": "Overtakes",
+            "type": "array"
           }
         },
         "required": [
@@ -22700,7 +22875,9 @@
           "has_sectors",
           "has_pit_data",
           "clean_rules",
-          "drivers"
+          "drivers",
+          "has_positions",
+          "overtakes"
         ],
         "title": "RoundAnalysisOut",
         "type": "object"
@@ -22837,6 +23014,90 @@
             },
             "title": "Laps",
             "type": "array"
+          },
+          "stints": {
+            "items": {
+              "$ref": "#/components/schemas/DriverStintOut"
+            },
+            "title": "Stints",
+            "type": "array"
+          },
+          "overtakes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Overtakes"
+          },
+          "overtaken": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Overtaken"
+          },
+          "attacks": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attacks"
+          },
+          "attacks_won": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attacks Won"
+          },
+          "defenses": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Defenses"
+          },
+          "defenses_won": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Defenses Won"
+          },
+          "battle_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Battle Seconds"
           }
         },
         "required": [
@@ -22854,9 +23115,78 @@
           "best_sectors_ms",
           "spread",
           "battle",
-          "laps"
+          "laps",
+          "stints",
+          "overtakes",
+          "overtaken",
+          "attacks",
+          "attacks_won",
+          "defenses",
+          "defenses_won",
+          "battle_seconds"
         ],
         "title": "RoundDriverOut",
+        "type": "object"
+      },
+      "ForecastOut": {
+        "properties": {
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          },
+          "low": {
+            "title": "Low",
+            "type": "number"
+          },
+          "high": {
+            "title": "High",
+            "type": "number"
+          }
+        },
+        "required": [
+          "number",
+          "value",
+          "low",
+          "high"
+        ],
+        "title": "ForecastOut",
+        "type": "object"
+      },
+      "RivalryOut": {
+        "properties": {
+          "a": {
+            "title": "A",
+            "type": "integer"
+          },
+          "b": {
+            "title": "B",
+            "type": "integer"
+          },
+          "battles": {
+            "title": "Battles",
+            "type": "integer"
+          },
+          "seconds": {
+            "title": "Seconds",
+            "type": "integer"
+          },
+          "passes": {
+            "title": "Passes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "a",
+          "b",
+          "battles",
+          "seconds",
+          "passes"
+        ],
+        "title": "RivalryOut",
         "type": "object"
       },
       "RoundCellOut": {
@@ -23009,6 +23339,86 @@
               }
             ],
             "title": "Elo"
+          },
+          "overtakes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Overtakes"
+          },
+          "attacks": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attacks"
+          },
+          "attacks_won": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attacks Won"
+          },
+          "defenses": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Defenses"
+          },
+          "defenses_won": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Defenses Won"
+          },
+          "incidents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Incidents"
+          },
+          "sectors_ms": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Sectors Ms",
+            "type": "array"
           }
         },
         "required": [
@@ -23029,7 +23439,14 @@
           "stdev_ms",
           "pace_pct",
           "qualifying_pct",
-          "elo"
+          "elo",
+          "overtakes",
+          "attacks",
+          "attacks_won",
+          "defenses",
+          "defenses_won",
+          "incidents",
+          "sectors_ms"
         ],
         "title": "RoundCellOut",
         "type": "object"
@@ -23076,6 +23493,13 @@
             },
             "title": "Drivers",
             "type": "array"
+          },
+          "rivalries": {
+            "items": {
+              "$ref": "#/components/schemas/RivalryOut"
+            },
+            "title": "Rivalries",
+            "type": "array"
           }
         },
         "required": [
@@ -23086,7 +23510,8 @@
           "remaining_rounds",
           "points_by_position",
           "rounds",
-          "drivers"
+          "drivers",
+          "rivalries"
         ],
         "title": "SeasonAnalysisOut",
         "type": "object"
@@ -23241,6 +23666,24 @@
               }
             ],
             "title": "Rank Odds"
+          },
+          "pace_trend": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pace Trend"
+          },
+          "pace_forecast": {
+            "items": {
+              "$ref": "#/components/schemas/ForecastOut"
+            },
+            "title": "Pace Forecast",
+            "type": "array"
           }
         },
         "required": [
@@ -23264,7 +23707,9 @@
           "can_win",
           "win_pct",
           "expected_rank",
-          "rank_odds"
+          "rank_odds",
+          "pace_trend",
+          "pace_forecast"
         ],
         "title": "SeasonDriverOut",
         "type": "object"
@@ -23287,6 +23732,28 @@
             "title": "Has Result",
             "type": "boolean"
           },
+          "circuit_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Circuit Type"
+          },
+          "corners": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corners"
+          },
           "field_spread_pct": {
             "anyOf": [
               {
@@ -23304,6 +23771,8 @@
           "number",
           "track",
           "has_result",
+          "circuit_type",
+          "corners",
           "field_spread_pct"
         ],
         "title": "SeasonRoundOut",
@@ -24076,6 +24545,17 @@
               "type": "array"
             },
             "title": "Samples",
+            "type": "array"
+          },
+          "vehicle": {
+            "default": [],
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Vehicle",
             "type": "array"
           }
         },

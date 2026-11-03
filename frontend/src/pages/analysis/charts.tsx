@@ -1,4 +1,4 @@
-import { useId, useRef, useState, type MouseEvent, type ReactNode } from 'react'
+import { useId, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Icon } from '../../components/Icon'
 
@@ -18,6 +18,19 @@ function download(name: string, content: string, type: string) {
   link.download = name
   link.click()
   URL.revokeObjectURL(link.href)
+}
+
+/** A copy of a graph that keeps its look in another program: the page style does not go with it. */
+function standalone(svg: SVGSVGElement): string {
+  const copy = svg.cloneNode(true) as SVGSVGElement
+  const from = svg.querySelectorAll('*')
+  copy.querySelectorAll('*').forEach((element, index) => {
+    const style = getComputedStyle(from[index])
+    for (const name of ['fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'font-size', 'font-family', 'font-weight']) {
+      element.setAttribute(name, style.getPropertyValue(name))
+    }
+  })
+  return new XMLSerializer().serializeToString(copy)
 }
 
 /** One graph with its title, its explanation, and its tools: full screen, SVG, and CSV. With
@@ -43,8 +56,8 @@ export function ChartCard({
   const file = title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
   function exportSvg() {
-    const svg = box.current?.querySelector('svg.chart')
-    if (svg) download(`${file}.svg`, new XMLSerializer().serializeToString(svg), 'image/svg+xml')
+    const svg = box.current?.querySelector<SVGSVGElement>('svg.chart')
+    if (svg) download(`${file}.svg`, standalone(svg), 'image/svg+xml')
   }
 
   function exportCsv() {
@@ -117,7 +130,51 @@ export function DriverFilter({ drivers, hidden, onChange }: { drivers: Driver[];
   )
 }
 
+/** The size of the graphs before the page measures them, and in tests. */
 const WIDTH = 760
+/** The width of a text in pixels. The graphs use one font size, so an estimate is enough. */
+const textWidth = (text: string, size = 12) => text.length * size * 0.56
+const LABEL = 13
+
+/** A box that fills its card. A graph draws in real pixels, so the text keeps its size at any
+ * width, and a graph fills the height of a taller graph on the same row. */
+function PlotBox({ min, children }: { min: number; children: (width: number, height: number) => ReactNode }) {
+  const box = useRef<HTMLDivElement>(null)
+  const [size, setSize] = useState({ width: WIDTH, height: min })
+  useLayoutEffect(() => {
+    const element = box.current
+    if (!element || typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect
+      if (width > 0) setSize({ width, height: Math.max(height, min) })
+    })
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [min])
+  return (
+    <div className="chart-box" ref={box} style={{ minHeight: min }}>
+      {children(size.width, Math.max(size.height, min))}
+    </div>
+  )
+}
+
+/** The room for the row names: the longest name, up to 30 % of the graph. */
+function labelColumn(labels: string[], width: number) {
+  const room = Math.max(60, Math.min(width * 0.3, Math.max(0, ...labels.map((l) => textWidth(l, LABEL))) + 12))
+  const fit = (label: string) => {
+    const chars = Math.floor((room - 10) / (LABEL * 0.56))
+    return label.length > chars ? `${label.slice(0, Math.max(chars - 1, 1))}…` : label
+  }
+  return { room, fit }
+}
+
+/** The height of each row: rows fill the box, up to a height that still looks like a bar. */
+function rowLayout(count: number, height: number, top = 0, bottom = 0, biggest = 46) {
+  const row = Math.min(biggest, (height - top - bottom) / Math.max(count, 1))
+  const start = top + (height - top - bottom - row * count) / 2
+  return { row, start, bar: Math.min(row - 8, 26) }
+}
+
 const niceStep = (span: number, count: number) => {
   const raw = span / Math.max(count, 1)
   const power = Math.pow(10, Math.floor(Math.log10(raw || 1)))
@@ -135,6 +192,7 @@ export function LineChart({
   xLabel,
   yLabel,
   formatY = (v) => String(Math.round(v * 100) / 100),
+  formatX = (v) => String(v),
   invert = false,
   integerY = false,
   zero = false,
@@ -146,6 +204,7 @@ export function LineChart({
   xLabel: string
   yLabel: string
   formatY?: (value: number) => string
+  formatX?: (value: number) => string
   invert?: boolean
   integerY?: boolean
   zero?: boolean
@@ -154,34 +213,72 @@ export function LineChart({
   /** Values above this value stay on the top line of the graph. */
   yLimit?: number
 }) {
+  if (!series.some((s) => s.points.length > 0)) return null
+  return (
+    <PlotBox min={height}>
+      {(width, boxHeight) => (
+        <LinePlot {...{ series, xLabel, yLabel, formatY, formatX, invert, integerY, zero, step, yLimit, width, height: boxHeight }} />
+      )}
+    </PlotBox>
+  )
+}
+
+function LinePlot({
+  series,
+  xLabel,
+  yLabel,
+  formatY,
+  formatX,
+  invert,
+  integerY,
+  zero,
+  step,
+  yLimit,
+  width,
+  height,
+}: {
+  series: LineSeries[]
+  xLabel: string
+  yLabel: string
+  formatY: (value: number) => string
+  formatX: (value: number) => string
+  invert: boolean
+  integerY: boolean
+  zero: boolean
+  step: boolean
+  yLimit?: number
+  width: number
+  height: number
+}) {
   const { t } = useTranslation()
   const [hover, setHover] = useState<number | null>(null)
   const [zoom, setZoom] = useState<[number, number] | null>(null)
   const [drag, setDrag] = useState<[number, number] | null>(null)
-  const pad = { left: 62, right: 14, top: 12, bottom: 34 }
   const clip = useId()
   const allX = [...new Set(series.flatMap((s) => s.points.map((p) => p.x)))].sort((a, b) => a - b)
-  if (allX.length === 0) return null
   const [minX, maxX] = zoom ?? [allX[0], allX[allX.length - 1]]
   const inView = allX.filter((x) => x >= minX && x <= maxX)
   const shown = (y: number) => (yLimit !== undefined ? Math.min(y, yLimit) : y)
   const ys = series.flatMap((s) => s.points.filter((p) => p.y !== null && p.x >= minX && p.x <= maxX).map((p) => shown(p.y as number)))
   let [minY, maxY] = [Math.min(...ys, zero ? 0 : Infinity), Math.max(...ys, zero ? 0 : -Infinity)]
+  if (!Number.isFinite(minY)) [minY, maxY] = [0, 1]
   if (minY === maxY) [minY, maxY] = [minY - 1, maxY + 1]
-  const px = (x: number) => pad.left + ((x - minX) / (maxX - minX || 1)) * (WIDTH - pad.left - pad.right)
+  const stepY = integerY ? Math.max(1, Math.ceil((maxY - minY) / 8)) : niceStep(maxY - minY, Math.max(3, height / 60))
+  const ticksY: number[] = []
+  for (let v = Math.ceil(minY / stepY) * stepY; v <= maxY; v += stepY) ticksY.push(v)
+  const pad = { left: 14 + Math.max(24, ...ticksY.map((v) => textWidth(formatY(v)))), right: 14, top: 12, bottom: 40 }
+  const px = (x: number) => pad.left + ((x - minX) / (maxX - minX || 1)) * (width - pad.left - pad.right)
   const py = (y: number) => {
     const share = (shown(y) - minY) / (maxY - minY)
     return pad.top + (invert ? share : 1 - share) * (height - pad.top - pad.bottom)
   }
-  const stepY = integerY ? Math.max(1, Math.ceil((maxY - minY) / 8)) : niceStep(maxY - minY, 5)
-  const ticksY: number[] = []
-  for (let v = Math.ceil(minY / stepY) * stepY; v <= maxY; v += stepY) ticksY.push(v)
-  const stepX = Math.max(1, Math.ceil(niceStep(maxX - minX, 10)))
-  const ticksX = inView.filter((x) => Number.isInteger(x) && x % stepX === 0)
+  const stepX = niceStep(maxX - minX || 1, Math.max(2, width / 70))
+  const ticksX: number[] = []
+  for (let v = Math.ceil(minX / stepX) * stepX; v <= maxX; v += stepX) ticksX.push(v)
 
   function toX(event: MouseEvent<SVGSVGElement>) {
     const rect = event.currentTarget.getBoundingClientRect()
-    const value = minX + (((event.clientX - rect.left) * (WIDTH / rect.width) - pad.left) / (WIDTH - pad.left - pad.right)) * (maxX - minX)
+    const value = minX + ((event.clientX - rect.left - pad.left) / (width - pad.left - pad.right)) * (maxX - minX)
     return inView.reduce((best, x) => (Math.abs(x - value) < Math.abs(best - value) ? x : best), inView[0])
   }
 
@@ -202,10 +299,12 @@ export function LineChart({
   }
 
   return (
-    <div className="chart-plot">
+    <>
       <svg
         className="chart"
-        viewBox={`0 0 ${WIDTH} ${height}`}
+        width={width}
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
         role="img"
         aria-label={yLabel}
         onMouseMove={(event) => {
@@ -228,23 +327,23 @@ export function LineChart({
         onDoubleClick={() => setZoom(null)}
       >
         <clipPath id={clip}>
-          <rect x={pad.left - 6} y={0} width={WIDTH - pad.left - pad.right + 12} height={height - pad.bottom + 6} />
+          <rect x={pad.left - 6} y={0} width={width - pad.left - pad.right + 12} height={height - pad.bottom + 6} />
         </clipPath>
         {ticksY.map((v) => (
           <g key={v}>
-            <line x1={pad.left} x2={WIDTH - pad.right} y1={py(v)} y2={py(v)} className="chart-grid-line" />
+            <line x1={pad.left} x2={width - pad.right} y1={py(v)} y2={py(v)} className="chart-grid-line" />
             <text x={pad.left - 8} y={py(v) + 4} textAnchor="end" className="chart-axis">
               {formatY(v)}
             </text>
           </g>
         ))}
-        {zero && minY < 0 && <line x1={pad.left} x2={WIDTH - pad.right} y1={py(0)} y2={py(0)} className="chart-zero" />}
+        {zero && minY < 0 && <line x1={pad.left} x2={width - pad.right} y1={py(0)} y2={py(0)} className="chart-zero" />}
         {ticksX.map((x) => (
-          <text key={x} x={px(x)} y={height - 16} textAnchor="middle" className="chart-axis">
-            {x}
+          <text key={x} x={px(x)} y={height - 22} textAnchor="middle" className="chart-axis">
+            {formatX(x)}
           </text>
         ))}
-        <text x={(WIDTH + pad.left) / 2} y={height - 2} textAnchor="middle" className="chart-axis">
+        <text x={(width + pad.left - pad.right) / 2} y={height - 4} textAnchor="middle" className="chart-axis">
           {xLabel}
         </text>
         <g clipPath={`url(#${clip})`}>
@@ -273,9 +372,9 @@ export function LineChart({
         )}
       </svg>
       {hover !== null && (
-        <div className="chart-tip" style={{ left: `${(px(hover) / WIDTH) * 100}%` }}>
+        <div className="chart-tip" style={px(hover) > width / 2 ? { right: width - px(hover) + 12 } : { left: px(hover) + 12 }}>
           <strong>
-            {xLabel} {hover}
+            {xLabel} {formatX(hover)}
           </strong>
           {series
             .map((s) => ({ s, y: s.points.find((p) => p.x === hover)?.y ?? null }))
@@ -294,45 +393,63 @@ export function LineChart({
           {t('analysis.resetZoom')}
         </button>
       )}
-    </div>
+    </>
   )
 }
 
 export type BarRow = { key: number | string; label: string; value: number | null; color?: string; note?: string; muted?: boolean }
 
-/** Horizontal bars. Negative values go to the left of the zero line. */
+/** Horizontal bars. Negative values go to the left of the zero line. The text of a bar has its
+ * own room on each side, so it never covers a name or goes out of the box. */
 export function BarChart({ rows, format = (v) => String(v), label }: { rows: BarRow[]; format?: (value: number) => string; label: string }) {
-  const known = rows.filter((r) => r.value !== null)
-  const left = Math.max(0, ...known.map((r) => -(r.value as number)))
-  const right = Math.max(0, ...known.map((r) => r.value as number))
-  const total = left + right || 1
-  const height = 28
-  const text = (row: BarRow) => `${row.value === null ? '—' : format(row.value)}${row.note ? ` · ${row.note}` : ''}`
-  const pad = { left: 150, right: Math.min(320, 16 + 6.6 * Math.max(0, ...rows.map((row) => text(row).length))) }
-  const span = WIDTH - pad.left - pad.right
-  const zero = pad.left + (left / total) * span
   return (
-    <svg className="chart" viewBox={`0 0 ${WIDTH} ${rows.length * height + 8}`} role="img" aria-label={label}>
-      {rows.map((row, index) => {
-        const y = index * height + 4
-        const width = row.value === null ? 0 : (Math.abs(row.value) / total) * span
-        const x = row.value !== null && row.value < 0 ? zero - width : zero
+    <PlotBox min={rows.length * 30 + 8}>
+      {(width, height) => {
+        const names = labelColumn(rows.map((r) => r.label), width)
+        const known = rows.filter((r) => r.value !== null)
+        const left = Math.max(0, ...known.map((r) => -(r.value as number)))
+        const right = Math.max(0, ...known.map((r) => r.value as number))
+        const total = left + right || 1
+        const short = (row: BarRow) => (row.value === null ? '—' : format(row.value))
+        const roomFor = (text: (row: BarRow) => string) => ({
+          before: Math.max(0, ...rows.filter((r) => r.value !== null && r.value < 0).map((r) => textWidth(text(r)) + 10)),
+          after: Math.max(0, ...rows.filter((r) => r.value === null || r.value >= 0).map((r) => textWidth(text(r)) + 10)),
+        })
+        const full = (row: BarRow) => `${short(row)}${row.note ? ` · ${row.note}` : ''}`
+        // On a narrow screen the notes go away, and the bars keep their room.
+        const long = roomFor(full)
+        const useFull = width - names.room - long.before - long.after >= width * 0.25
+        const text = useFull ? full : short
+        const { before, after } = useFull ? long : roomFor(short)
+        const span = Math.max(30, width - names.room - before - after)
+        const zero = names.room + before + (left / total) * span
+        const { row, start, bar } = rowLayout(rows.length, height)
         return (
-          <g key={row.key} opacity={row.muted ? 0.45 : 1}>
-            <text x={pad.left - 8} y={y + 16} textAnchor="end" className="chart-label">
-              {row.label}
-            </text>
-            <rect x={x} y={y + 3} width={Math.max(width, row.value === null ? 0 : 1.5)} height={height - 8} rx={3} fill={row.color ?? 'var(--brand)'}>
-              <title>{`${row.label}: ${row.value === null ? '—' : format(row.value)}`}</title>
-            </rect>
-            <text x={x + (row.value !== null && row.value < 0 ? -6 : width + 6)} y={y + 16} textAnchor={row.value !== null && row.value < 0 ? 'end' : 'start'} className="chart-value">
-              {text(row)}
-            </text>
-          </g>
+          <svg className="chart" width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label}>
+            {rows.map((item, index) => {
+              const y = start + index * row + row / 2
+              const size = item.value === null ? 0 : (Math.abs(item.value) / total) * span
+              const negative = item.value !== null && item.value < 0
+              return (
+                <g key={item.key} opacity={item.muted ? 0.45 : 1}>
+                  <text x={names.room - 8} y={y + 4} textAnchor="end" className="chart-label">
+                    <title>{item.label}</title>
+                    {names.fit(item.label)}
+                  </text>
+                  <rect x={negative ? zero - size : zero} y={y - bar / 2} width={Math.max(size, item.value === null ? 0 : 1.5)} height={bar} rx={3} fill={item.color ?? 'var(--brand)'}>
+                    <title>{`${item.label}: ${full(item)}`}</title>
+                  </rect>
+                  <text x={negative ? zero - size - 6 : zero + size + 6} y={y + 4} textAnchor={negative ? 'end' : 'start'} className="chart-value">
+                    {text(item)}
+                  </text>
+                </g>
+              )
+            })}
+            <line x1={zero} x2={zero} y1={start} y2={start + row * rows.length} className="chart-zero" />
+          </svg>
         )
-      })}
-      <line x1={zero} x2={zero} y1={0} y2={rows.length * height + 8} className="chart-zero" />
-    </svg>
+      }}
+    </PlotBox>
   )
 }
 
@@ -340,51 +457,63 @@ export type StackRow = { key: number | string; label: string; parts: { key: stri
 
 /** Bars of parts that add up. "share": each bar fills the width, so the bars show percents. */
 export function StackChart({ rows, label, share = false, legend, format = (v) => String(v) }: { rows: StackRow[]; label: string; share?: boolean; legend?: { label: string; color: string }[]; format?: (value: number) => string }) {
-  const height = 28
-  const pad = { left: 150, right: Math.min(240, 40 + 6.6 * Math.max(0, ...rows.map((row) => (row.note ?? '').length))) }
-  const span = WIDTH - pad.left - pad.right
-  const top = Math.max(1, ...rows.map((r) => r.parts.reduce((sum, p) => sum + p.value, 0)))
+  const totals = rows.map((r) => r.parts.reduce((sum, p) => sum + p.value, 0))
+  const top = Math.max(1, ...totals)
   return (
     <>
-      <svg className="chart" viewBox={`0 0 ${WIDTH} ${rows.length * height + 8}`} role="img" aria-label={label}>
-        {rows.map((row, index) => {
-          const y = index * height + 4
-          const total = row.parts.reduce((sum, p) => sum + p.value, 0)
-          const scale = span / (share ? total || 1 : top)
-          let x = pad.left
+      <PlotBox min={rows.length * 30 + 8}>
+        {(width, height) => {
+          const names = labelColumn(rows.map((r) => r.label), width)
+          const after = Math.max(30, ...rows.map((r, i) => textWidth(r.note ?? format(totals[i])) + 12))
+          const span = Math.max(30, width - names.room - after)
+          const { row, start, bar } = rowLayout(rows.length, height)
           return (
-            <g key={row.key}>
-              <text x={pad.left - 8} y={y + 16} textAnchor="end" className="chart-label">
-                {row.label}
-              </text>
-              {row.parts.map((part, partIndex) => {
-                const width = part.value * scale
-                const rect = (
-                  <rect key={`${part.key}-${partIndex}`} x={x} y={y + 3} width={Math.max(width - 1, 0)} height={height - 8} rx={2} fill={part.color}>
-                    <title>{`${row.label} · ${part.label ?? part.key}: ${format(part.value)}`}</title>
-                  </rect>
+            <svg className="chart" width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label}>
+              {rows.map((item, index) => {
+                const y = start + index * row + row / 2
+                const scale = span / (share ? totals[index] || 1 : top)
+                let x = names.room
+                return (
+                  <g key={item.key}>
+                    <text x={names.room - 8} y={y + 4} textAnchor="end" className="chart-label">
+                      <title>{item.label}</title>
+                      {names.fit(item.label)}
+                    </text>
+                    {item.parts.map((part, partIndex) => {
+                      const size = part.value * scale
+                      const rect = (
+                        <rect key={`${part.key}-${partIndex}`} x={x} y={y - bar / 2} width={Math.max(size - 1, 0)} height={bar} rx={2} fill={part.color}>
+                          <title>{`${item.label} · ${part.label ?? part.key}: ${format(part.value)}`}</title>
+                        </rect>
+                      )
+                      x += size
+                      return rect
+                    })}
+                    <text x={x + 6} y={y + 4} className="chart-value">
+                      {item.note ?? format(totals[index])}
+                    </text>
+                  </g>
                 )
-                x += width
-                return rect
               })}
-              <text x={x + 6} y={y + 16} className="chart-value">
-                {row.note ?? format(total)}
-              </text>
-            </g>
+            </svg>
           )
-        })}
-      </svg>
-      {legend && (
-        <div className="chart-legend">
-          {legend.map((item) => (
-            <span key={item.label}>
-              <span className="chart-swatch" style={{ background: item.color, borderColor: item.color }} />
-              {item.label}
-            </span>
-          ))}
-        </div>
-      )}
+        }}
+      </PlotBox>
+      {legend && <Legend items={legend} />}
     </>
+  )
+}
+
+function Legend({ items }: { items: { label: string; color: string }[] }) {
+  return (
+    <div className="chart-legend">
+      {items.map((item) => (
+        <span key={item.label}>
+          <span className="chart-swatch" style={{ background: item.color, borderColor: item.color }} />
+          {item.label}
+        </span>
+      ))}
+    </div>
   )
 }
 
@@ -392,47 +521,56 @@ export type BoxRow = { key: number | string; label: string; color: string; q1: n
 
 /** Box plots: the box holds the middle half of the values, and the line in it is the median. */
 export function BoxChart({ rows, format, label }: { rows: BoxRow[]; format: (value: number) => string; label: string }) {
-  const height = 34
-  const pad = { left: 150, right: Math.min(240, 16 + 6.6 * Math.max(0, ...rows.map((row) => (row.note ?? format(row.median)).length))), top: 4, bottom: 26 }
-  const low = Math.min(...rows.flatMap((r) => [r.low, ...r.outliers]))
-  const high = Math.max(...rows.flatMap((r) => [r.high, ...r.outliers]))
-  const px = (v: number) => pad.left + ((v - low) / (high - low || 1)) * (WIDTH - pad.left - pad.right)
-  const total = rows.length * height + pad.top + pad.bottom
-  const ticks: number[] = []
-  const step = niceStep(high - low, 5)
-  for (let v = Math.ceil(low / step) * step; v <= high; v += step) ticks.push(v)
   return (
-    <svg className="chart" viewBox={`0 0 ${WIDTH} ${total}`} role="img" aria-label={label}>
-      {ticks.map((v) => (
-        <g key={v}>
-          <line x1={px(v)} x2={px(v)} y1={pad.top} y2={total - pad.bottom} className="chart-grid-line" />
-          <text x={px(v)} y={total - 8} textAnchor="middle" className="chart-axis">
-            {format(v)}
-          </text>
-        </g>
-      ))}
-      {rows.map((row, index) => {
-        const y = pad.top + index * height + height / 2
+    <PlotBox min={rows.length * 34 + 34}>
+      {(width, height) => {
+        const names = labelColumn(rows.map((r) => r.label), width)
+        const after = Math.max(...rows.map((r) => textWidth(r.note ?? format(r.median)) + 16))
+        const bottom = 28
+        const low = Math.min(...rows.flatMap((r) => [r.low, ...r.outliers]))
+        const high = Math.max(...rows.flatMap((r) => [r.high, ...r.outliers]))
+        const end = width - after
+        const px = (v: number) => names.room + ((v - low) / (high - low || 1)) * Math.max(30, end - names.room - 10)
+        const ticks: number[] = []
+        const step = niceStep(high - low || 1, Math.max(2, (end - names.room) / 90))
+        for (let v = Math.ceil(low / step) * step; v <= high; v += step) ticks.push(v)
+        const { row, start } = rowLayout(rows.length, height, 4, bottom, 60)
         return (
-          <g key={row.key}>
-            <text x={pad.left - 8} y={y + 4} textAnchor="end" className="chart-label">
-              {row.label}
-            </text>
-            <line x1={px(row.low)} x2={px(row.high)} y1={y} y2={y} stroke={row.color} />
-            <rect x={px(row.q1)} y={y - 10} width={Math.max(px(row.q3) - px(row.q1), 1)} height={20} fill={row.color} fillOpacity={0.3} stroke={row.color}>
-              <title>{`${row.label}: ${format(row.median)}`}</title>
-            </rect>
-            <line x1={px(row.median)} x2={px(row.median)} y1={y - 10} y2={y + 10} stroke={row.color} strokeWidth={3} />
-            {row.outliers.map((v, i) => (
-              <circle key={i} cx={px(v)} cy={y} r={3} fill="none" stroke={row.color} />
+          <svg className="chart" width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label}>
+            {ticks.map((v) => (
+              <g key={v}>
+                <line x1={px(v)} x2={px(v)} y1={4} y2={height - bottom} className="chart-grid-line" />
+                <text x={px(v)} y={height - 8} textAnchor="middle" className="chart-axis">
+                  {format(v)}
+                </text>
+              </g>
             ))}
-            <text x={WIDTH - pad.right + 8} y={y + 4} className="chart-value">
-              {row.note ?? format(row.median)}
-            </text>
-          </g>
+            {rows.map((item, index) => {
+              const y = start + index * row + row / 2
+              return (
+                <g key={item.key}>
+                  <text x={names.room - 8} y={y + 4} textAnchor="end" className="chart-label">
+                    <title>{item.label}</title>
+                    {names.fit(item.label)}
+                  </text>
+                  <line x1={px(item.low)} x2={px(item.high)} y1={y} y2={y} stroke={item.color} />
+                  <rect x={px(item.q1)} y={y - 10} width={Math.max(px(item.q3) - px(item.q1), 1)} height={20} fill={item.color} fillOpacity={0.3} stroke={item.color}>
+                    <title>{`${item.label}: ${format(item.median)}`}</title>
+                  </rect>
+                  <line x1={px(item.median)} x2={px(item.median)} y1={y - 10} y2={y + 10} stroke={item.color} strokeWidth={3} />
+                  {item.outliers.map((v, i) => (
+                    <circle key={i} cx={px(v)} cy={y} r={3} fill="none" stroke={item.color} />
+                  ))}
+                  <text x={width - after + 8} y={y + 4} className="chart-value">
+                    {item.note ?? format(item.median)}
+                  </text>
+                </g>
+              )
+            })}
+          </svg>
         )
-      })}
-    </svg>
+      }}
+    </PlotBox>
   )
 }
 
@@ -440,8 +578,6 @@ export type HeatCell = { value: number | null; text?: string; mark?: string; tit
 
 /** A table of colors. Low values are green and high values are red, unless "reverse" is set. */
 export function HeatMap({ rows, columns, label, reverse = false, low, high }: { rows: { key: number | string; label: string; cells: HeatCell[] }[]; columns: string[]; label: string; reverse?: boolean; low?: number; high?: number }) {
-  const cell = Math.max(22, Math.min(46, (WIDTH - 150) / Math.max(columns.length, 1)))
-  const rowHeight = 26
   const values = rows.flatMap((r) => r.cells.map((c) => c.value)).filter((v): v is number => v !== null)
   const [min, max] = [low ?? Math.min(...values), high ?? Math.max(...values)]
   const color = (v: number) => {
@@ -449,163 +585,234 @@ export function HeatMap({ rows, columns, label, reverse = false, low, high }: { 
     const hue = (reverse ? share : 1 - share) * 130
     return `hsl(${hue} 70% 36%)`
   }
-  const width = 150 + cell * columns.length
+  const top = 22
+  const longest = Math.max(1, ...rows.flatMap((r) => r.cells.map((c) => (c.mark ?? c.text ?? '').length)))
   return (
-    <div className="chart-scroll">
-      <svg className="chart" viewBox={`0 0 ${Math.max(width, 300)} ${rows.length * rowHeight + 24}`} style={{ minWidth: Math.min(width, 760) }} role="img" aria-label={label}>
-        {columns.map((name, index) => (
-          <text key={index} x={150 + index * cell + cell / 2} y={14} textAnchor="middle" className="chart-axis">
-            {name}
-          </text>
-        ))}
-        {rows.map((row, r) => (
-          <g key={row.key}>
-            <text x={142} y={24 + r * rowHeight + 17} textAnchor="end" className="chart-label">
-              {row.label}
-            </text>
-            {row.cells.map((c, index) => (
-              <g key={index}>
-                <rect x={150 + index * cell} y={24 + r * rowHeight} width={cell - 2} height={rowHeight - 2} rx={2} fill={c.value === null ? 'var(--surface-3)' : color(c.value)}>
-                  <title>{c.title ?? ''}</title>
-                </rect>
-                {(c.mark ?? c.text) && (
-                  <text x={150 + index * cell + cell / 2 - 1} y={24 + r * rowHeight + 16} textAnchor="middle" className="chart-cell">
-                    {c.mark ?? c.text}
+    <PlotBox min={rows.length * 28 + top}>
+      {(width, height) => {
+        const names = labelColumn(rows.map((r) => r.label), width)
+        const smallest = Math.max(24, textWidth('x'.repeat(longest), 11) + 8)
+        // A long race scrolls to the side, and a short one fills the box.
+        const cell = Math.max(smallest, (width - names.room) / Math.max(columns.length, 1))
+        const inner = Math.max(width, names.room + cell * columns.length)
+        const row = Math.min(44, (height - top) / Math.max(rows.length, 1))
+        return (
+          <div className="chart-scroll">
+            <svg className="chart" width={inner} height={row * rows.length + top} viewBox={`0 0 ${inner} ${row * rows.length + top}`} role="img" aria-label={label}>
+              {columns.map((name, index) => (
+                <text key={index} x={names.room + index * cell + cell / 2} y={14} textAnchor="middle" className="chart-axis">
+                  {name}
+                </text>
+              ))}
+              {rows.map((item, r) => (
+                <g key={item.key}>
+                  <text x={names.room - 8} y={top + r * row + row / 2 + 4} textAnchor="end" className="chart-label">
+                    <title>{item.label}</title>
+                    {names.fit(item.label)}
                   </text>
-                )}
-              </g>
-            ))}
-          </g>
-        ))}
-      </svg>
-    </div>
+                  {item.cells.map((c, index) => (
+                    <g key={index}>
+                      <rect x={names.room + index * cell} y={top + r * row} width={cell - 2} height={row - 2} rx={2} fill={c.value === null ? 'var(--surface-3)' : color(c.value)}>
+                        <title>{c.title ?? ''}</title>
+                      </rect>
+                      {(c.mark ?? c.text) && (
+                        <text x={names.room + index * cell + cell / 2 - 1} y={top + r * row + row / 2 + 3} textAnchor="middle" className="chart-cell">
+                          {c.mark ?? c.text}
+                        </text>
+                      )}
+                    </g>
+                  ))}
+                </g>
+              ))}
+            </svg>
+          </div>
+        )
+      }}
+    </PlotBox>
   )
 }
 
 export type ScatterPoint = { key: number | string; label: string; x: number; y: number; color: string; strong?: boolean }
 
-/** Points with a name. A line goes through the middle value of each axis. */
-export function ScatterChart({ points, xLabel, yLabel, formatX = String, formatY = String, invertY = false, diagonal = false }: { points: ScatterPoint[]; xLabel: string; yLabel: string; formatX?: (v: number) => string; formatY?: (v: number) => string; invertY?: boolean; diagonal?: boolean }) {
-  const height = 340
-  const pad = { left: 62, right: 24, top: 14, bottom: 40 }
-  const range = (values: number[]) => {
-    const [a, b] = [Math.min(...values), Math.max(...values)]
-    const margin = (b - a || 1) * 0.1
-    return [a - margin, b + margin]
-  }
-  const [minX, maxX] = range(points.map((p) => p.x))
-  const [minY, maxY] = range(points.map((p) => p.y))
-  const px = (v: number) => pad.left + ((v - minX) / (maxX - minX)) * (WIDTH - pad.left - pad.right)
-  const py = (v: number) => {
-    const share = (v - minY) / (maxY - minY)
-    return pad.top + (invertY ? share : 1 - share) * (height - pad.top - pad.bottom)
-  }
-  const ticks = (a: number, b: number) => {
-    const step = niceStep(b - a, 5)
-    const out: number[] = []
-    for (let v = Math.ceil(a / step) * step; v <= b; v += step) out.push(v)
-    return out
-  }
+/** Points with a name. A name goes to a free side of its point, so names do not cover names. */
+export function ScatterChart({ points, xLabel, yLabel, formatX = String, formatY = String, invertY = false, diagonal = false, labels = true, height = 340 }: { points: ScatterPoint[]; xLabel: string; yLabel: string; formatX?: (v: number) => string; formatY?: (v: number) => string; invertY?: boolean; diagonal?: boolean; labels?: boolean; height?: number }) {
   return (
-    <svg className="chart" viewBox={`0 0 ${WIDTH} ${height}`} role="img" aria-label={`${xLabel} / ${yLabel}`}>
-      {ticks(minY, maxY).map((v) => (
-        <g key={v}>
-          <line x1={pad.left} x2={WIDTH - pad.right} y1={py(v)} y2={py(v)} className="chart-grid-line" />
-          <text x={pad.left - 8} y={py(v) + 4} textAnchor="end" className="chart-axis">
-            {formatY(v)}
-          </text>
-        </g>
-      ))}
-      {ticks(minX, maxX).map((v) => (
-        <text key={v} x={px(v)} y={height - 22} textAnchor="middle" className="chart-axis">
-          {formatX(v)}
-        </text>
-      ))}
-      <text x={(WIDTH + pad.left) / 2} y={height - 4} textAnchor="middle" className="chart-axis">
-        {xLabel}
-      </text>
-      <text x={14} y={height / 2} transform={`rotate(-90 14 ${height / 2})`} textAnchor="middle" className="chart-axis">
-        {yLabel}
-      </text>
-      {diagonal && <line x1={px(Math.max(minX, minY))} y1={py(Math.max(minX, minY))} x2={px(Math.min(maxX, maxY))} y2={py(Math.min(maxX, maxY))} className="chart-zero" />}
-      {points.map((p) => (
-        <g key={p.key}>
-          <circle cx={px(p.x)} cy={py(p.y)} r={p.strong ? 8 : 5.5} fill={p.color} stroke={p.strong ? 'var(--ink)' : 'none'} strokeWidth={2}>
-            <title>{`${p.label}: ${formatX(p.x)} · ${formatY(p.y)}`}</title>
-          </circle>
-          <text x={px(p.x) + 9} y={py(p.y) + 4} className="chart-value">
-            {p.label}
-          </text>
-        </g>
-      ))}
-    </svg>
+    <PlotBox min={height}>
+      {(width, boxHeight) => {
+        const range = (values: number[]) => {
+          const [a, b] = [Math.min(...values), Math.max(...values)]
+          const margin = (b - a || 1) * 0.1
+          return [a - margin, b + margin]
+        }
+        const [minX, maxX] = range(points.map((p) => p.x))
+        const [minY, maxY] = range(points.map((p) => p.y))
+        const ticks = (a: number, b: number, count: number) => {
+          const step = niceStep(b - a, count)
+          const out: number[] = []
+          for (let v = Math.ceil(a / step) * step; v <= b; v += step) out.push(v)
+          return out
+        }
+        const ticksY = ticks(minY, maxY, Math.max(3, boxHeight / 60))
+        const pad = { left: 34 + Math.max(24, ...ticksY.map((v) => textWidth(formatY(v)))), right: 16, top: 14, bottom: 44 }
+        const px = (v: number) => pad.left + ((v - minX) / (maxX - minX)) * (width - pad.left - pad.right)
+        const py = (v: number) => {
+          const share = (v - minY) / (maxY - minY)
+          return pad.top + (invertY ? share : 1 - share) * (boxHeight - pad.top - pad.bottom)
+        }
+        const taken: { x1: number; x2: number; y1: number; y2: number }[] = points.map((p) => ({ x1: px(p.x) - 8, x2: px(p.x) + 8, y1: py(p.y) - 8, y2: py(p.y) + 8 }))
+        const place = (p: ScatterPoint) => {
+          const w = textWidth(p.label)
+          const [cx, cy] = [px(p.x), py(p.y)]
+          const options = [
+            { x: cx + 10, y: cy + 4, anchor: 'start' },
+            { x: cx - 10, y: cy + 4, anchor: 'end' },
+            { x: cx, y: cy - 12, anchor: 'middle' },
+            { x: cx, y: cy + 20, anchor: 'middle' },
+            { x: cx + 10, y: cy - 10, anchor: 'start' },
+            { x: cx - 10, y: cy + 18, anchor: 'end' },
+          ]
+          const fits = (o: (typeof options)[number]) => {
+            const x1 = o.anchor === 'start' ? o.x : o.anchor === 'end' ? o.x - w : o.x - w / 2
+            const box = { x1, x2: x1 + w, y1: o.y - 11, y2: o.y + 3 }
+            if (box.x1 < pad.left || box.x2 > width || box.y1 < 0 || box.y2 > boxHeight - pad.bottom) return null
+            return taken.some((t) => box.x1 < t.x2 && box.x2 > t.x1 && box.y1 < t.y2 && box.y2 > t.y1) ? null : box
+          }
+          for (const option of options) {
+            const box = fits(option)
+            if (box) {
+              taken.push(box)
+              return option
+            }
+          }
+          return null // The point keeps its name in the tooltip.
+        }
+        return (
+          <svg className="chart" width={width} height={boxHeight} viewBox={`0 0 ${width} ${boxHeight}`} role="img" aria-label={`${xLabel} / ${yLabel}`}>
+            {ticksY.map((v) => (
+              <g key={v}>
+                <line x1={pad.left} x2={width - pad.right} y1={py(v)} y2={py(v)} className="chart-grid-line" />
+                <text x={pad.left - 8} y={py(v) + 4} textAnchor="end" className="chart-axis">
+                  {formatY(v)}
+                </text>
+              </g>
+            ))}
+            {ticks(minX, maxX, Math.max(2, width / 90)).map((v) => (
+              <text key={v} x={px(v)} y={boxHeight - 24} textAnchor="middle" className="chart-axis">
+                {formatX(v)}
+              </text>
+            ))}
+            <text x={(width + pad.left - pad.right) / 2} y={boxHeight - 6} textAnchor="middle" className="chart-axis">
+              {xLabel}
+            </text>
+            <text x={14} y={boxHeight / 2} transform={`rotate(-90 14 ${boxHeight / 2})`} textAnchor="middle" className="chart-axis">
+              {yLabel}
+            </text>
+            {diagonal && <line x1={px(Math.max(minX, minY))} y1={py(Math.max(minX, minY))} x2={px(Math.min(maxX, maxY))} y2={py(Math.min(maxX, maxY))} className="chart-zero" />}
+            {points.map((p) => {
+              const spot = labels ? place(p) : null
+              return (
+                <g key={p.key}>
+                  <circle cx={px(p.x)} cy={py(p.y)} r={labels ? (p.strong ? 8 : 5.5) : 1.6} fill={p.color} stroke={p.strong && labels ? 'var(--ink)' : 'none'} strokeWidth={2}>
+                    {labels && <title>{`${p.label}: ${formatX(p.x)} · ${formatY(p.y)}`}</title>}
+                  </circle>
+                  {spot && (
+                    <text x={spot.x} y={spot.y} textAnchor={spot.anchor as 'start' | 'end' | 'middle'} className="chart-value">
+                      {p.label}
+                    </text>
+                  )}
+                </g>
+              )
+            })}
+          </svg>
+        )
+      }}
+    </PlotBox>
   )
 }
 
 /** A radar graph of scores from 0 to 100. */
 export function RadarChart({ axes, series, label }: { axes: string[]; series: { key: number | string; label: string; color: string; values: (number | null)[]; dashed?: boolean }[]; label: string }) {
-  const size = 360
-  const middle = size / 2
-  const radius = 122
-  const at = (index: number, value: number): [number, number] => {
-    const angle = (Math.PI * 2 * index) / axes.length - Math.PI / 2
-    return [middle + (Math.cos(angle) * radius * value) / 100, middle + (Math.sin(angle) * radius * value) / 100]
-  }
   return (
     <>
-      <svg className="chart chart-radar" viewBox={`0 0 ${size} ${size}`} role="img" aria-label={label}>
-        {[25, 50, 75, 100].map((ring) => (
-          <polygon key={ring} points={axes.map((_, i) => at(i, ring).join(',')).join(' ')} fill="none" className="chart-grid-line" />
-        ))}
-        {axes.map((name, index) => {
-          const [x, y] = at(index, 100)
-          const [tx, ty] = at(index, 116)
+      <PlotBox min={320}>
+        {(width, height) => {
+          const room = Math.max(...axes.map((a) => textWidth(a)))
+          const radius = Math.max(50, Math.min(width / 2 - room - 12, height / 2 - 26))
+          const at = (index: number, value: number): [number, number] => {
+            const angle = (Math.PI * 2 * index) / axes.length - Math.PI / 2
+            return [width / 2 + (Math.cos(angle) * radius * value) / 100, height / 2 + (Math.sin(angle) * radius * value) / 100]
+          }
           return (
-            <g key={name}>
-              <line x1={middle} y1={middle} x2={x} y2={y} className="chart-grid-line" />
-              <text x={tx} y={ty + 4} textAnchor="middle" className="chart-axis">
-                {name}
-              </text>
-            </g>
+            <svg className="chart" width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label}>
+              {[25, 50, 75, 100].map((ring) => (
+                <polygon key={ring} points={axes.map((_, i) => at(i, ring).join(',')).join(' ')} fill="none" className="chart-grid-line" />
+              ))}
+              {axes.map((name, index) => {
+                const [x, y] = at(index, 100)
+                const [tx, ty] = at(index, 108)
+                const side = tx < width / 2 - 4 ? 'end' : tx > width / 2 + 4 ? 'start' : 'middle'
+                return (
+                  <g key={name}>
+                    <line x1={width / 2} y1={height / 2} x2={x} y2={y} className="chart-grid-line" />
+                    <text x={tx} y={ty + 4} textAnchor={side} className="chart-axis">
+                      {name}
+                    </text>
+                  </g>
+                )
+              })}
+              {series.map((s) => (
+                <polygon key={s.key} points={s.values.map((v, i) => at(i, v ?? 0).join(',')).join(' ')} fill={s.color} fillOpacity={0.2} stroke={s.color} strokeWidth={2} strokeDasharray={s.dashed ? '5 4' : undefined}>
+                  <title>{`${s.label}: ${s.values.map((v, i) => `${axes[i]} ${v ?? '—'}`).join(' · ')}`}</title>
+                </polygon>
+              ))}
+            </svg>
           )
-        })}
-        {series.map((s) => (
-          <polygon
-            key={s.key}
-            points={s.values.map((v, i) => at(i, v ?? 0).join(',')).join(' ')}
-            fill={s.color}
-            fillOpacity={0.2}
-            stroke={s.color}
-            strokeWidth={2}
-            strokeDasharray={s.dashed ? '5 4' : undefined}
-          >
-            <title>{`${s.label}: ${s.values.map((v, i) => `${axes[i]} ${v ?? '—'}`).join(' · ')}`}</title>
-          </polygon>
-        ))}
-      </svg>
-      <div className="chart-legend">
-        {series.map((s) => (
-          <span key={s.key}>
-            <span className="chart-swatch" style={{ background: s.color, borderColor: s.color }} />
-            {s.label}
-          </span>
-        ))}
-      </div>
+        }}
+      </PlotBox>
+      <Legend items={series.map((s) => ({ label: s.label, color: s.color }))} />
     </>
   )
 }
 
-/** The graphs that the current data cannot give, and what each one needs. */
-export function NeedsData({ items }: { items: string[] }) {
-  const { t } = useTranslation()
+/** Drivers on a circle, and a line for each pair. A thick line is a pair with many battles. */
+export function NetworkChart({ nodes, edges, label }: { nodes: { id: number; label: string; color: string }[]; edges: { a: number; b: number; weight: number; title: string }[]; label: string }) {
   return (
-    <details className="chart-needs">
-      <summary>{t('analysis.needsData', { count: items.length })}</summary>
-      <ul>
-        {items.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
-    </details>
+    <PlotBox min={340}>
+      {(width, height) => {
+        const room = Math.max(40, ...nodes.map((n) => textWidth(n.label)))
+        const radius = Math.max(50, Math.min(width / 2 - room - 16, height / 2 - 26))
+        const at = (index: number): [number, number] => {
+          const angle = (Math.PI * 2 * index) / nodes.length - Math.PI / 2
+          return [width / 2 + Math.cos(angle) * radius, height / 2 + Math.sin(angle) * radius]
+        }
+        const heaviest = Math.max(1, ...edges.map((e) => e.weight))
+        const place = new Map(nodes.map((n, i) => [n.id, at(i)]))
+        return (
+          <svg className="chart" width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label}>
+            {edges.map((edge) => {
+              const [a, b] = [place.get(edge.a), place.get(edge.b)]
+              if (!a || !b) return null
+              return (
+                <line key={`${edge.a}-${edge.b}`} x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke="var(--ink-2)" strokeOpacity={0.3 + (0.6 * edge.weight) / heaviest} strokeWidth={1 + (6 * edge.weight) / heaviest}>
+                  <title>{edge.title}</title>
+                </line>
+              )
+            })}
+            {nodes.map((node, index) => {
+              const [x, y] = at(index)
+              const side = x < width / 2 - 4 ? 'end' : x > width / 2 + 4 ? 'start' : 'middle'
+              return (
+                <g key={node.id}>
+                  <circle cx={x} cy={y} r={7} fill={node.color} />
+                  <text x={x + (side === 'end' ? -11 : side === 'start' ? 11 : 0)} y={y + (side === 'middle' ? (y < height / 2 ? -11 : 20) : 4)} textAnchor={side} className="chart-label">
+                    {node.label}
+                  </text>
+                </g>
+              )
+            })}
+          </svg>
+        )
+      }}
+    </PlotBox>
   )
 }

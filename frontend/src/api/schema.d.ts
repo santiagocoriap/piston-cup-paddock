@@ -7644,6 +7644,23 @@ export interface components {
             /** Drivers */
             drivers: components["schemas"]["DriverSafetyOut"][];
         };
+        /** DriverStintOut */
+        DriverStintOut: {
+            /** Start Lap */
+            start_lap: number;
+            /** End Lap */
+            end_lap: number;
+            /** Tyre */
+            tyre: string;
+            /** Laps */
+            laps: number;
+            /** Median Ms */
+            median_ms: number | null;
+            /** Trend Ms */
+            trend_ms: number | null;
+            /** Pit Loss Ms */
+            pit_loss_ms: number | null;
+        };
         /** LapPointOut */
         LapPointOut: {
             /** Number */
@@ -7668,6 +7685,14 @@ export interface components {
             gap_to_leader_ms: number | null;
             /** Ahead Ms */
             ahead_ms: number | null;
+            /** Fuel Used */
+            fuel_used: number | null;
+            /** Fuel Left */
+            fuel_left: number | null;
+            /** Pit Ms */
+            pit_ms: number | null;
+            /** Wear */
+            wear: number | null;
         };
         /** LapSpreadOut */
         LapSpreadOut: {
@@ -7694,6 +7719,21 @@ export interface components {
             /** Outliers */
             outliers: number[];
         };
+        /** OvertakeOut */
+        OvertakeOut: {
+            /** At S */
+            at_s: number;
+            /** Lap */
+            lap: number;
+            /** Attacker Id */
+            attacker_id: number;
+            /** Defender Id */
+            defender_id: number;
+            /** X */
+            x: number | null;
+            /** Z */
+            z: number | null;
+        };
         /** RoundAnalysisOut */
         RoundAnalysisOut: {
             /** Session */
@@ -7708,6 +7748,10 @@ export interface components {
             clean_rules: string[];
             /** Drivers */
             drivers: components["schemas"]["RoundDriverOut"][];
+            /** Has Positions */
+            has_positions: boolean;
+            /** Overtakes */
+            overtakes: components["schemas"]["OvertakeOut"][];
         };
         /** RoundDriverOut */
         RoundDriverOut: {
@@ -7742,6 +7786,46 @@ export interface components {
             } | null;
             /** Laps */
             laps: components["schemas"]["LapPointOut"][];
+            /** Stints */
+            stints: components["schemas"]["DriverStintOut"][];
+            /** Overtakes */
+            overtakes: number | null;
+            /** Overtaken */
+            overtaken: number | null;
+            /** Attacks */
+            attacks: number | null;
+            /** Attacks Won */
+            attacks_won: number | null;
+            /** Defenses */
+            defenses: number | null;
+            /** Defenses Won */
+            defenses_won: number | null;
+            /** Battle Seconds */
+            battle_seconds: number | null;
+        };
+        /** ForecastOut */
+        ForecastOut: {
+            /** Number */
+            number: number;
+            /** Value */
+            value: number;
+            /** Low */
+            low: number;
+            /** High */
+            high: number;
+        };
+        /** RivalryOut */
+        RivalryOut: {
+            /** A */
+            a: number;
+            /** B */
+            b: number;
+            /** Battles */
+            battles: number;
+            /** Seconds */
+            seconds: number;
+            /** Passes */
+            passes: number;
         };
         /** RoundCellOut */
         RoundCellOut: {
@@ -7781,6 +7865,20 @@ export interface components {
             qualifying_pct: number | null;
             /** Elo */
             elo: number | null;
+            /** Overtakes */
+            overtakes: number | null;
+            /** Attacks */
+            attacks: number | null;
+            /** Attacks Won */
+            attacks_won: number | null;
+            /** Defenses */
+            defenses: number | null;
+            /** Defenses Won */
+            defenses_won: number | null;
+            /** Incidents */
+            incidents: number | null;
+            /** Sectors Ms */
+            sectors_ms: (number | null)[];
         };
         /** SeasonAnalysisOut */
         SeasonAnalysisOut: {
@@ -7800,6 +7898,8 @@ export interface components {
             rounds: components["schemas"]["SeasonRoundOut"][];
             /** Drivers */
             drivers: components["schemas"]["SeasonDriverOut"][];
+            /** Rivalries */
+            rivalries: components["schemas"]["RivalryOut"][];
         };
         /** SeasonDriverOut */
         SeasonDriverOut: {
@@ -7847,6 +7947,10 @@ export interface components {
             expected_rank: number | null;
             /** Rank Odds */
             rank_odds: number[] | null;
+            /** Pace Trend */
+            pace_trend: number | null;
+            /** Pace Forecast */
+            pace_forecast: components["schemas"]["ForecastOut"][];
         };
         /** SeasonRoundOut */
         SeasonRoundOut: {
@@ -7858,6 +7962,10 @@ export interface components {
             track: string;
             /** Has Result */
             has_result: boolean;
+            /** Circuit Type */
+            circuit_type: string | null;
+            /** Corners */
+            corners: number | null;
             /** Field Spread Pct */
             field_spread_pct: number | null;
         };
@@ -8152,6 +8260,11 @@ export interface components {
             sent_at: number;
             /** Samples */
             samples: number[][];
+            /**
+             * Vehicle
+             * @default []
+             */
+            vehicle?: number[][];
         };
         /** NowOut */
         NowOut: {

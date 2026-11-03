@@ -32,7 +32,7 @@ from apps.identity.models import DriverProfile, driver_for_guid
 from apps.imports.ac_results import track_key
 
 from .models import ScriptCode, TelemetryLap
-from .samples import covers_lap, trim_to_lap
+from .samples import covers_lap, pack_samples, trim_to_lap
 from .services import TelemetryError
 
 # An old race code still works for this long after a new one, for a race in progress.
@@ -353,12 +353,23 @@ def rematch(championship: Championship) -> int:
     return count
 
 
-def _channels(samples: list) -> dict[str, list]:
-    """The script sends one row for each sample: time, position, speed, gas, brake, steer,
-    gear, rpm. The app stores one list for each channel."""
-    names = ["t_ms", "pos", "speed_kmh", "gas", "brake", "steer", "gear", "rpm"]
-    if not 0 < len(samples) <= MAX_SCRIPT_SAMPLES:
-        raise TelemetryError("bad_samples")
+# The channels of each sample. An older script sends only the first 8.
+CORE_CHANNELS = ["t_ms", "pos", "speed_kmh", "gas", "brake", "steer", "gear", "rpm"]
+MOTION_CHANNELS = ["x", "z", "g_lat", "g_long"]
+WHEELS = ("fl", "fr", "rl", "rr")
+# The channels of the second block, at 5 samples each second. The order is the order of paddock.lua.
+VEHICLE_CHANNELS = [
+    "t_ms",
+    "pos",
+    "in_pit",
+    "fuel",
+    *[f"{kind}_{w}" for kind in ("temp_core", "temp_in", "temp_mid", "temp_out") for w in WHEELS],
+    *[f"{kind}_{w}" for kind in ("pressure", "wear", "slip", "susp") for w in WHEELS],
+]
+MAX_VEHICLE_SAMPLES = 9_000
+
+
+def _rows(samples: list, names: list[str]) -> dict[str, list]:
     channels: dict[str, list] = {name: [] for name in names}
     for row in samples:
         if not isinstance(row, list) or len(row) != len(names):
@@ -368,6 +379,38 @@ def _channels(samples: list) -> dict[str, list]:
                 raise TelemetryError("bad_samples")
             channels[name].append(value)
     return channels
+
+
+def _channels(samples: list) -> dict[str, list]:
+    """The script sends one row for each sample. The app stores one list for each channel."""
+    if not 0 < len(samples) <= MAX_SCRIPT_SAMPLES:
+        raise TelemetryError("bad_samples")
+    full = [*CORE_CHANNELS, *MOTION_CHANNELS]
+    return _rows(samples, CORE_CHANNELS if len(samples[0]) == len(CORE_CHANNELS) else full)
+
+
+def _vehicle(samples: list, lap_time_ms: int) -> tuple[dict[str, list], dict]:
+    """The second block, with the prefix "v_", and the numbers of the lap from it. A bad block
+    does not stop the lap: the app keeps the lap without these channels."""
+    if not samples or len(samples) > MAX_VEHICLE_SAMPLES:
+        return {}, {}
+    try:
+        rows = trim_to_lap(_rows(samples, VEHICLE_CHANNELS), lap_time_ms)
+    except TelemetryError:
+        return {}, {}
+    if not rows["t_ms"]:
+        return {}, {}
+    fuel = rows["fuel"]
+    in_pit = [t for t, pit in zip(rows["t_ms"], rows["in_pit"], strict=True) if pit]
+    wear = [sum(rows[f"wear_{w}"][-1] for w in WHEELS) / len(WHEELS)]
+    summary = {
+        "fuel_start": fuel[0],
+        "fuel_end": fuel[-1],
+        "fuel_used": round(fuel[0] - fuel[-1], 3),
+        "pit_ms": (in_pit[-1] - in_pit[0]) if in_pit else 0,
+        "wear": round(wear[0], 4),
+    }
+    return {f"v_{name}": values for name, values in rows.items()}, summary
 
 
 def receive_lap(championship: Championship, payload: dict) -> tuple[TelemetryLap | None, str]:
@@ -387,12 +430,15 @@ def receive_lap(championship: Championship, payload: dict) -> tuple[TelemetryLap
     else:
         if not covers_lap(channels, int(payload["lap_time_ms"])):
             issues.append("partial_samples")
+    extra, summary = _vehicle(payload.get("vehicle") or [], int(payload["lap_time_ms"]))
+    channels.update(extra)
     if issues and _review_is_full(championship):
         raise TelemetryError("too_many_flagged")
     # The PC clock of the driver can be wrong. The age of the lap at the upload is right.
     age = max(0, int(payload["sent_at"]) - int(payload["ended_at"]))
     recorded_at = timezone.now() - timedelta(seconds=age)
     content = json.dumps(channels, separators=(",", ":"), sort_keys=True).encode()
+    packed = pack_samples(channels)
     sha256 = hashlib.sha256(
         content + f"{payload['ended_at']}:{payload['lap_number']}".encode()
     ).hexdigest()
@@ -416,10 +462,11 @@ def receive_lap(championship: Championship, payload: dict) -> tuple[TelemetryLap
         valid=bool(payload.get("valid", True)),
         recorded_at=recorded_at,
         sample_hz=SAMPLE_HZ,
-        samples_bytes=len(content),
+        samples_bytes=len(packed),
+        summary=summary,
         uploaded_by=driver.user if driver else None,
     )
-    lap.samples.save("samples.json", ContentFile(content), save=False)
+    lap.samples.save("samples.json", ContentFile(packed), save=False)
     with transaction.atomic():
         lap.save()
     if issues:

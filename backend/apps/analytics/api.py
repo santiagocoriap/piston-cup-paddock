@@ -8,7 +8,7 @@ from apps.competition.models import Round, Season
 from apps.competition.permissions import can_view
 from apps.dashboard.api import _driver as visible_driver
 
-from .services import round_analysis, season_analysis
+from .services import add_telemetry, round_analysis, season_analysis
 
 router = Router(tags=["analytics"])
 
@@ -39,6 +39,20 @@ class LapPointOut(Schema):
     position: int | None
     gap_to_leader_ms: int | None
     ahead_ms: int | None
+    fuel_used: float | None
+    fuel_left: float | None
+    pit_ms: int | None
+    wear: float | None
+
+
+class DriverStintOut(Schema):
+    start_lap: int
+    end_lap: int
+    tyre: str
+    laps: int
+    median_ms: float | None
+    trend_ms: float | None
+    pit_loss_ms: int | None
 
 
 class RoundDriverOut(Schema):
@@ -57,6 +71,23 @@ class RoundDriverOut(Schema):
     spread: LapSpreadOut
     battle: dict[str, int] | None
     laps: list[LapPointOut]
+    stints: list[DriverStintOut]
+    overtakes: int | None
+    overtaken: int | None
+    attacks: int | None
+    attacks_won: int | None
+    defenses: int | None
+    defenses_won: int | None
+    battle_seconds: int | None
+
+
+class OvertakeOut(Schema):
+    at_s: int
+    lap: int
+    attacker_id: int
+    defender_id: int
+    x: float | None
+    z: float | None
 
 
 class RoundAnalysisOut(Schema):
@@ -66,6 +97,8 @@ class RoundAnalysisOut(Schema):
     has_pit_data: bool
     clean_rules: list[str]
     drivers: list[RoundDriverOut]
+    has_positions: bool
+    overtakes: list[OvertakeOut]
 
 
 class RoundCellOut(Schema):
@@ -87,6 +120,28 @@ class RoundCellOut(Schema):
     pace_pct: float | None
     qualifying_pct: float | None
     elo: float | None
+    overtakes: int | None
+    attacks: int | None
+    attacks_won: int | None
+    defenses: int | None
+    defenses_won: int | None
+    incidents: int | None
+    sectors_ms: list[int | None]
+
+
+class ForecastOut(Schema):
+    number: int
+    value: float
+    low: float
+    high: float
+
+
+class RivalryOut(Schema):
+    a: int
+    b: int
+    battles: int
+    seconds: int
+    passes: int
 
 
 class SeasonDriverOut(Schema):
@@ -111,6 +166,8 @@ class SeasonDriverOut(Schema):
     win_pct: float | None
     expected_rank: float | None
     rank_odds: list[float] | None
+    pace_trend: float | None
+    pace_forecast: list[ForecastOut]
 
 
 class SeasonRoundOut(Schema):
@@ -118,6 +175,8 @@ class SeasonRoundOut(Schema):
     number: int
     track: str
     has_result: bool
+    circuit_type: str | None
+    corners: int | None
     field_spread_pct: float | None
 
 
@@ -130,6 +189,7 @@ class SeasonAnalysisOut(Schema):
     points_by_position: list[int]
     rounds: list[SeasonRoundOut]
     drivers: list[SeasonDriverOut]
+    rivalries: list[RivalryOut]
 
 
 @router.get("/rounds/{round_id}/analysis", response=RoundAnalysisOut)
@@ -139,7 +199,9 @@ def get_round_analysis(
     round_ = get_object_or_404(Round.objects.select_related("season__championship"), pk=round_id)
     if not can_view(request.user, round_.season.championship):
         raise Http404
-    return round_analysis(round_, session)
+    analysis = round_analysis(round_, session)
+    add_telemetry(analysis, round_, request.user)
+    return analysis
 
 
 @router.get("/seasons/{season_id}/analysis", response=SeasonAnalysisOut)
