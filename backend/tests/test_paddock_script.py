@@ -1,5 +1,6 @@
 """Phase 2: laps of the Paddock script count only when the server says the driver was there."""
 
+import json
 from datetime import timedelta
 
 import pytest
@@ -8,7 +9,7 @@ from django.utils import timezone
 
 from apps.catalog.models import Car, Track, TrackLayout
 from apps.competition.models import Round, SeasonEntry
-from apps.identity.models import DriverProfile
+from apps.identity.models import DriverProfile, DriverSteamId
 from apps.telemetry.models import ScriptCode, TelemetryLap
 from apps.telemetry.script import CODE_GRACE
 
@@ -118,7 +119,7 @@ def lap(
 def test_a_lap_on_the_league_server_counts(key, code, round_, driver):
     events(key, connected(), race_started(), server_lap())
     response = lap(code)
-    assert response.json() == {"state": "league", "lap_number": 1, "cuts": 0}
+    assert response.json() == {"state": "league", "lap_number": 1, "cuts": 0, "issues": []}
 
     saved = TelemetryLap.objects.get()
     assert (saved.source, saved.match, saved.round, saved.session_type) == (
@@ -150,16 +151,27 @@ def test_a_lap_before_the_server_data_waits_and_then_counts(key, code, round_, d
     assert (saved.match, saved.round) == ("league", round_)
 
 
-def test_a_driver_who_was_not_connected_goes_nowhere(key, code, round_, driver):
+def flagged() -> TelemetryLap:
+    return TelemetryLap.objects.get(match="flagged")
+
+
+def test_a_driver_who_was_not_connected_is_kept_for_review(key, code, round_, driver):
     other = "76561190000000099"
     events(key, connected(guid=other), race_started(), ("lap_completed", at(3), {"car_id": 0}))
-    assert lap(code).json()["state"] == "rejected"
-    assert not TelemetryLap.objects.exists()
+    assert lap(code).json() == {
+        "state": "rejected",
+        "lap_number": None,
+        "cuts": None,
+        "issues": ["not_connected"],
+    }
+    kept = flagged()
+    assert (kept.driver, kept.round, kept.issues) == (driver, None, ["not_connected"])
 
 
-def test_another_car_goes_nowhere(key, code, round_, driver):
+def test_another_car_is_kept_for_review(key, code, round_, driver):
     events(key, connected(), race_started(), ("lap_completed", at(3), {"car_id": 0}))
-    assert lap(code, car="ks_mazda_mx5_cup").json()["state"] == "rejected"
+    assert lap(code, car="ks_mazda_mx5_cup").json()["issues"] == ["other_car"]
+    assert flagged().issues == ["other_car"]
 
 
 def test_a_lap_after_the_session_goes_nowhere(key, code, round_, driver):
@@ -170,7 +182,7 @@ def test_a_lap_after_the_session_goes_nowhere(key, code, round_, driver):
         ("session_ended", at(-20), {"result_file": "x.json"}),
         ("lap_completed", at(3), {"car_id": 0}),
     )
-    assert lap(code).json()["state"] == "rejected"
+    assert lap(code).json()["issues"] == ["no_session"]
 
 
 def test_restarts_give_the_race_start_number(key, code, round_, driver):
@@ -198,7 +210,9 @@ def test_the_race_code_and_the_driver_are_checked(
         server_lap(lap_ms=115_000),
     )
     assert lap("not-a-code").status_code == 401
-    assert lap(code_of(championship), steam_id="76561190000000098").status_code == 422
+    unknown = lap(code_of(championship), steam_id="76561190000000098").json()
+    assert unknown["issues"] == ["unknown_driver"]
+    assert flagged().steam_guid == "76561190000000098"
 
     old = code_of(championship)
     new = api(champ_admin).post(f"/championships/{championship.id}/script/code").json()["race_code"]
@@ -219,7 +233,8 @@ def test_a_driver_of_another_championship_is_refused(code, round_, other_champio
     stranger = DriverProfile.objects.create(display_name="Bob", steam_guid="76561190000000077")
     assert stranger.id
     response = lap(code, steam_id="76561190000000077")
-    assert response.json()["detail"] == "not_in_championship"
+    assert response.json()["issues"] == ["not_in_championship"]
+    assert flagged().driver == stranger
 
 
 def test_the_line_in_ac_shows_the_session(key, code, round_, driver):
@@ -258,15 +273,94 @@ def test_another_driver_cannot_send_a_lap_in_my_name(key, code, round_, driver):
         server_lap(lap_ms=120_000),
         ("lap_completed", at(3), {"car_id": 1}),
     )
-    assert lap(code).json()["state"] == "rejected"  # 113.689 s, but the server saw 120.000 s.
+    # 113.689 s, but the server saw 120.000 s.
+    assert lap(code).json()["issues"] == ["no_server_lap"]
 
 
 def test_a_server_lap_counts_one_time(key, code, round_, driver):
     events(key, connected(), race_started(), server_lap(), ("lap_completed", at(3), {"car_id": 1}))
     assert lap(code).json()["state"] == "league"
     # A second upload for the same server lap, with other samples.
-    assert lap(code, number=9, ended_at=1_800_000_001).json()["state"] == "rejected"
+    assert lap(code, number=9, ended_at=1_800_000_001).json()["issues"] == ["duplicate"]
+    assert TelemetryLap.objects.filter(match="league").count() == 1
+
+
+def test_an_admin_reviews_the_laps_with_issues(
+    api, champ_admin, driver_user, championship, key, code, round_, driver
+):
+    """A driver raced with a second Steam account. The app keeps the laps. The admin adds the
+    Steam ID, and the laps count."""
+    alt = "76561190000000055"
+    events(key, connected(guid=alt), race_started(), server_lap(guid=alt))
+    assert lap(code, steam_id=alt).json()["issues"] == ["unknown_driver"]
+    admin = api(champ_admin)
+    rows = admin.get(f"/championships/{championship.id}/telemetry/flagged").json()
+    assert [(r["steam_guid"], r["issues"], r["round_id"]) for r in rows] == [
+        (alt, ["unknown_driver"], round_.id)
+    ]
+    assert api(driver_user).get(
+        f"/championships/{championship.id}/telemetry/flagged"
+    ).status_code in (403, 404)
+    lap_id = rows[0]["id"]
+    assert admin.post(f"/telemetry-laps/{lap_id}/recheck").json()["issues"] == ["unknown_driver"]
+    DriverSteamId.objects.create(driver=driver, guid=alt)
+    assert admin.post(f"/telemetry-laps/{lap_id}/recheck").json() == {
+        "state": "league",
+        "issues": [],
+    }
+    saved = TelemetryLap.objects.get()
+    assert (saved.driver, saved.round, saved.match) == (driver, round_, "league")
+
+
+def test_a_new_steam_id_rechecks_the_kept_laps(api, league_admin, key, code, round_, driver):
+    alt = "76561190000000055"
+    events(key, connected(guid=alt), race_started(), server_lap(guid=alt))
+    lap(code, steam_id=alt)
+    api(league_admin).post(f"/drivers/{driver.id}/steam-ids", {"guid": alt})
+    assert TelemetryLap.objects.get().match == "league"
+
+
+def test_an_admin_counts_or_deletes_a_lap_with_issues(
+    api, champ_admin, championship, key, code, round_, driver
+):
+    # The collector lost the server lap: the lap has no witness.
+    events(key, connected(), race_started(), ("lap_completed", at(3), {"car_id": 1}))
+    lap(code)
+    lap(code, number=3, ended_at=1_800_000_100)
+    admin = api(champ_admin)
+    first, second = TelemetryLap.objects.order_by("lap_number")
+    accepted = admin.post(
+        f"/telemetry-laps/{first.id}/accept", {"round_id": round_.id, "session_type": "race"}
+    )
+    assert accepted.json()["state"] == "league"
+    first.refresh_from_db()
+    assert (first.round, first.session_type, first.issues) == (round_, "race", ["no_server_lap"])
+    assert admin.delete(f"/telemetry-laps/{second.id}").status_code == 204
     assert TelemetryLap.objects.count() == 1
+    # Only a flagged lap is in the review.
+    assert admin.delete(f"/telemetry-laps/{first.id}").status_code == 404
+
+
+def test_bad_samples_are_kept_as_they_came(key, code, round_, driver):
+    payload = {
+        "steam_id": GUID,
+        "track": "ks_highlands",
+        "layout": "layout_long",
+        "car": CAR,
+        "lap_number": 2,
+        "lap_time_ms": 113_689,
+        "valid": True,
+        "cuts": 0,
+        "ended_at": 1_800_000_000,
+        "sent_at": 1_800_000_005,
+        "samples": [[1, 2]],
+    }
+    response = Client().post(
+        "/api/script/laps", payload, content_type="application/json", HTTP_X_PADDOCK_CODE=code
+    )
+    assert response.json()["issues"] == ["bad_samples"]
+    with flagged().samples.open("rb") as handle:
+        assert json.loads(handle.read()) == {"raw": [[1, 2]]}
 
 
 def test_the_server_gives_the_lap_number_and_the_cuts(key, code, round_, driver):
@@ -285,9 +379,9 @@ def test_the_server_gives_the_lap_number_and_the_cuts(key, code, round_, driver)
     second = lap(code, number=0, lap_time_ms=113_860, ended_at=2_000, sent_at=2_120)
     third = lap(code, number=1, lap_time_ms=105_337, ended_at=3_000, sent_at=3_000)
 
-    assert first.json() == {"state": "league", "lap_number": 1, "cuts": 2}
-    assert second.json() == {"state": "league", "lap_number": 2, "cuts": 2}
-    assert third.json() == {"state": "league", "lap_number": 3, "cuts": 0}
+    assert first.json() == {"state": "league", "lap_number": 1, "cuts": 2, "issues": []}
+    assert second.json() == {"state": "league", "lap_number": 2, "cuts": 2, "issues": []}
+    assert third.json() == {"state": "league", "lap_number": 3, "cuts": 0, "issues": []}
     saved = list(
         TelemetryLap.objects.order_by("lap_number").values_list("lap_number", "valid", "cuts")
     )

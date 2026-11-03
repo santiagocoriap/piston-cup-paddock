@@ -5,8 +5,9 @@ docs/plans/ac-integration.md). The script sends each lap with the race code of t
 championship and the Steam ID of the driver. Every driver on the server gets the race code, so
 the Steam ID alone proves nothing. The server collector is the witness: a lap counts only when
 the server recorded the same lap for this Steam ID, with the same lap time, in a session on the
-same track and with the same car. Only the first upload of a server lap counts. A lap that
-fails a check goes nowhere.
+same track and with the same car. Only the first upload of a server lap counts. The app keeps
+a lap that fails a check, with the reason ("flagged"). An admin reviews it: check it again, for
+example after a new Steam ID of the driver, count it, or delete it.
 
 The server sessions come from the collector events on the fly, as for the incidents and the
 replay. The order does not matter: a lap that comes before the server data waits, and the app
@@ -27,7 +28,7 @@ from django.utils import timezone
 from apps.collectors.incident_api import AC_SESSION_TYPES
 from apps.collectors.models import CollectorEvent
 from apps.competition.models import Championship, Round, SeasonEntry
-from apps.identity.models import driver_for_guid
+from apps.identity.models import DriverProfile, driver_for_guid
 from apps.imports.ac_results import track_key
 
 from .models import ScriptCode, TelemetryLap
@@ -36,7 +37,7 @@ from .services import TelemetryError
 
 # An old race code still works for this long after a new one, for a race in progress.
 CODE_GRACE = timedelta(hours=6)
-# A lap waits this long for the server data. After that it goes nowhere.
+# A lap waits this long for the server data. After that an admin reviews it.
 PENDING_LIMIT = timedelta(hours=12)
 # The clocks of the server PC and of the app can differ by a little.
 TOLERANCE = timedelta(minutes=2)
@@ -50,6 +51,10 @@ MAX_SCRIPT_SAMPLES = 36_000
 TIMELINE_KINDS = ("session_started", "session_ended", "connected", "disconnected", "lap_completed")
 # The lap time of the script and of the server for the same lap.
 LAP_TIME_TOLERANCE_MS = 50
+# Every driver on the server has the race code. This limit stops a flood of laps with issues.
+MAX_FLAGGED = 5_000
+# The checks of a lap in order. A failed lap gets the last check that it reached.
+MATCH_ISSUES = ("no_session", "other_track", "not_connected", "other_car", "no_server_lap")
 
 
 # Race codes
@@ -238,13 +243,24 @@ def _attempt_number(line: Timeline, span: Span, round_: Round | None) -> int | N
 # Laps
 
 
+def _flag(lap: TelemetryLap, issues: list[str]) -> str:
+    lap.match = TelemetryLap.Match.FLAGGED
+    lap.issues = issues
+    lap.save(update_fields=["match", "issues"])
+    return "rejected"
+
+
 def match(lap: TelemetryLap) -> str:
     """Link a pending lap to its session. Gives "league", "pending", or "rejected". A rejected
-    lap is deleted."""
+    lap stays, flagged with the reason, for an admin."""
     line = timeline(lap.championship, lap.recorded_at)
     guids = set(lap.driver.guids())
+    reached = 0  # The index in MATCH_ISSUES of the check that failed.
     for span in line.spans:
         if not _inside(span.started_at, span.ended_at, lap.recorded_at):
+            continue
+        if span.track != lap.track:
+            reached = max(reached, 1)
             continue
         connected = [
             p
@@ -254,7 +270,11 @@ def match(lap: TelemetryLap) -> str:
             and _inside(p.started_at, p.ended_at, lap.recorded_at)
         ]
         same_car = [p for p in connected if p.car_model.lower() == lap.car.lower()]
-        if span.track != lap.track or not same_car:
+        if not connected:
+            reached = max(reached, 2)
+            continue
+        if not same_car:
+            reached = max(reached, 3)
             continue
         witnessed = [
             server_lap
@@ -265,6 +285,7 @@ def match(lap: TelemetryLap) -> str:
             and abs(server_lap.at - lap.recorded_at) <= TOLERANCE
         ]
         if not witnessed:
+            reached = max(reached, 4)
             continue
         already = (
             TelemetryLap.objects.filter(
@@ -278,7 +299,7 @@ def match(lap: TelemetryLap) -> str:
             .exists()
         )
         if already:
-            break  # A second upload of the same server lap goes nowhere.
+            return _flag(lap, ["duplicate"])  # A second upload of the same server lap.
         # The server is the truth for the lap number and the cuts. The values that CSP gives
         # to the script can be wrong, for example after a lap with a track cut.
         server_lap = witnessed[0]
@@ -314,9 +335,7 @@ def match(lap: TelemetryLap) -> str:
     waiting = line.latest_event_at is None or line.latest_event_at < lap.recorded_at + TOLERANCE
     if waiting and lap.recorded_at > timezone.now() - PENDING_LIMIT:
         return "pending"
-    lap.samples.delete(save=False)
-    lap.delete()
-    return "rejected"
+    return _flag(lap, [MATCH_ISSUES[reached]])
 
 
 def rematch(championship: Championship) -> int:
@@ -351,15 +370,24 @@ def _channels(samples: list) -> dict[str, list]:
 def receive_lap(championship: Championship, payload: dict) -> tuple[TelemetryLap | None, str]:
     """Store one lap of the script and match it. Gives the lap (None when rejected) and the
     state: "league", "pending", "rejected", or "known" for a lap that came before."""
-    guid = str(payload.get("steam_id", ""))
+    guid = str(payload.get("steam_id", ""))[:17]
     driver = driver_for_guid(guid)
-    if driver is None:
-        raise TelemetryError("unknown_driver")
-    if not SeasonEntry.objects.filter(season__championship=championship, driver=driver).exists():
-        raise TelemetryError("not_in_championship")
-    channels = trim_to_lap(_channels(payload.get("samples") or []), int(payload["lap_time_ms"]))
-    if len(channels["t_ms"]) < 2:
-        raise TelemetryError("bad_samples")
+    issues = _driver_issues(championship, driver)
+    try:
+        channels = trim_to_lap(_channels(payload.get("samples") or []), int(payload["lap_time_ms"]))
+        if len(channels["t_ms"]) < 2:
+            raise TelemetryError("bad_samples")
+    except TelemetryError:
+        # The app keeps the samples as they came, for the admin.
+        issues.append("bad_samples")
+        channels = {"raw": (payload.get("samples") or [])[:MAX_SCRIPT_SAMPLES]}
+    if issues and (
+        TelemetryLap.objects.filter(
+            championship=championship, match=TelemetryLap.Match.FLAGGED
+        ).count()
+        >= MAX_FLAGGED
+    ):
+        raise TelemetryError("too_many_flagged")
     # The PC clock of the driver can be wrong. The age of the lap at the upload is right.
     age = max(0, int(payload["sent_at"]) - int(payload["ended_at"]))
     recorded_at = timezone.now() - timedelta(seconds=age)
@@ -367,14 +395,18 @@ def receive_lap(championship: Championship, payload: dict) -> tuple[TelemetryLap
     sha256 = hashlib.sha256(
         content + f"{payload['ended_at']}:{payload['lap_number']}".encode()
     ).hexdigest()
-    existing = TelemetryLap.objects.filter(driver=driver, sha256=sha256).first()
-    if existing:
-        return existing, "known"
+    existing = TelemetryLap.objects.filter(driver=None, steam_guid=guid, sha256=sha256)
+    if driver is not None:
+        existing = TelemetryLap.objects.filter(driver=driver, sha256=sha256)
+    if found := existing.first():
+        return found, "rejected" if found.match == TelemetryLap.Match.FLAGGED else "known"
     lap = TelemetryLap(
         driver=driver,
+        steam_guid=guid,
+        issues=issues,
         source=TelemetryLap.Source.SCRIPT,
         championship=championship,
-        match=TelemetryLap.Match.PENDING,
+        match=TelemetryLap.Match.FLAGGED if issues else TelemetryLap.Match.PENDING,
         sha256=sha256,
         track=track_key(str(payload.get("track", "")))[:100],
         car=str(payload.get("car", ""))[:100],
@@ -383,13 +415,70 @@ def receive_lap(championship: Championship, payload: dict) -> tuple[TelemetryLap
         valid=bool(payload.get("valid", True)),
         recorded_at=recorded_at,
         sample_hz=SAMPLE_HZ,
-        uploaded_by=driver.user,
+        uploaded_by=driver.user if driver else None,
     )
     lap.samples.save("samples.json", ContentFile(content), save=False)
     with transaction.atomic():
         lap.save()
-    state = match(lap)
-    return (None if state == "rejected" else lap), state
+    if issues:
+        return lap, "rejected"
+    return lap, match(lap)
+
+
+def _driver_issues(championship: Championship, driver: DriverProfile | None) -> list[str]:
+    if driver is None:
+        return ["unknown_driver"]
+    if not SeasonEntry.objects.filter(season__championship=championship, driver=driver).exists():
+        return ["not_in_championship"]
+    return []
+
+
+# Review of the flagged laps
+
+
+def recheck(lap: TelemetryLap) -> str:
+    """Do all the checks again, for example after an admin adds a Steam ID to a driver. Gives
+    "league", "pending", or "rejected" (the lap stays flagged)."""
+    if lap.driver is None:
+        lap.driver = driver_for_guid(lap.steam_guid)
+    issues = _driver_issues(lap.championship, lap.driver)
+    if "bad_samples" in lap.issues:
+        issues.append("bad_samples")
+    lap.uploaded_by = lap.driver.user if lap.driver else None
+    lap.save(update_fields=["driver", "uploaded_by"])
+    if issues:
+        return _flag(lap, issues)
+    lap.match = TelemetryLap.Match.PENDING
+    lap.issues = []
+    lap.save(update_fields=["match", "issues"])
+    return match(lap)
+
+
+def recheck_guid(guid: str) -> int:
+    """Check again the flagged laps of a Steam ID that now has a driver. Gives the count of laps
+    that now count."""
+    laps = TelemetryLap.objects.filter(
+        match=TelemetryLap.Match.FLAGGED, driver__isnull=True, steam_guid=guid
+    ).select_related("championship")
+    return sum(1 for lap in laps if recheck(lap) == "league")
+
+
+def accept(lap: TelemetryLap, round_: Round, session_type: str) -> None:
+    """An admin counts a flagged lap for a round, for example when the collector lost the
+    server events. The issues stay on the lap as a record. The cuts stay unknown."""
+    if lap.driver is None:
+        raise TelemetryError("unknown_driver")
+    if "bad_samples" in lap.issues:
+        raise TelemetryError("bad_samples")
+    lap.round = round_
+    lap.session_type = session_type
+    lap.match = TelemetryLap.Match.LEAGUE
+    lap.save(update_fields=["round", "session_type", "match"])
+
+
+def guess_round(lap: TelemetryLap) -> Round | None:
+    """The round of a flagged lap, from its track and its time."""
+    return _find_round(lap.championship, lap.track, lap.recorded_at)
 
 
 @dataclass

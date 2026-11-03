@@ -7536,6 +7536,163 @@
             "SessionAuth": []
           }
         ]
+      },
+      "delete": {
+        "operationId": "apps_telemetry_api_delete_flagged_lap",
+        "summary": "Delete Flagged Lap",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lap_id",
+            "schema": {
+              "title": "Lap Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "description": "Delete a lap with issues, for example a lap of another server.",
+        "tags": [
+          "telemetry"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/championships/{championship_id}/telemetry/flagged": {
+      "get": {
+        "operationId": "apps_telemetry_api_flagged_laps",
+        "summary": "Flagged Laps",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "championship_id",
+            "schema": {
+              "title": "Championship Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FlaggedLapOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "The laps that failed a check. The app keeps them for an admin.",
+        "tags": [
+          "telemetry"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/telemetry-laps/{lap_id}/recheck": {
+      "post": {
+        "operationId": "apps_telemetry_api_recheck_lap",
+        "summary": "Recheck Lap",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lap_id",
+            "schema": {
+              "title": "Lap Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LapReviewOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Do the checks again, for example after a new Steam ID of the driver.",
+        "tags": [
+          "telemetry"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
+    "/api/telemetry-laps/{lap_id}/accept": {
+      "post": {
+        "operationId": "apps_telemetry_api_accept_lap",
+        "summary": "Accept Lap",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "lap_id",
+            "schema": {
+              "title": "Lap Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LapReviewOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Count a lap with issues for a round of its championship.",
+        "tags": [
+          "telemetry"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LapAcceptIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
       }
     },
     "/api/rounds/{round_id}/track-map": {
@@ -20726,6 +20883,150 @@
         "title": "LapDetailOut",
         "type": "object"
       },
+      "FlaggedLapOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "steam_guid": {
+            "title": "Steam Guid",
+            "type": "string"
+          },
+          "driver_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Id"
+          },
+          "driver_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Name"
+          },
+          "track": {
+            "title": "Track",
+            "type": "string"
+          },
+          "car": {
+            "title": "Car",
+            "type": "string"
+          },
+          "lap_number": {
+            "title": "Lap Number",
+            "type": "integer"
+          },
+          "lap_time_ms": {
+            "title": "Lap Time Ms",
+            "type": "integer"
+          },
+          "recorded_at": {
+            "format": "date-time",
+            "title": "Recorded At",
+            "type": "string"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "round_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Round Id"
+          },
+          "round_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Round Number"
+          }
+        },
+        "required": [
+          "id",
+          "steam_guid",
+          "driver_id",
+          "driver_name",
+          "track",
+          "car",
+          "lap_number",
+          "lap_time_ms",
+          "recorded_at",
+          "issues",
+          "round_id",
+          "round_number"
+        ],
+        "title": "FlaggedLapOut",
+        "type": "object"
+      },
+      "LapReviewOut": {
+        "properties": {
+          "state": {
+            "title": "State",
+            "type": "string"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Issues",
+            "type": "array"
+          }
+        },
+        "required": [
+          "state",
+          "issues"
+        ],
+        "title": "LapReviewOut",
+        "type": "object"
+      },
+      "LapAcceptIn": {
+        "properties": {
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "session_type": {
+            "enum": [
+              "race",
+              "qualifying",
+              "practice"
+            ],
+            "title": "Session Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "round_id",
+          "session_type"
+        ],
+        "title": "LapAcceptIn",
+        "type": "object"
+      },
       "TrackMapOut": {
         "properties": {
           "length_m": {
@@ -22618,6 +22919,14 @@
               }
             ],
             "title": "Cuts"
+          },
+          "issues": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Issues",
+            "type": "array"
           }
         },
         "required": [

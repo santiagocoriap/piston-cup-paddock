@@ -2794,6 +2794,70 @@ export interface paths {
         get: operations["apps_telemetry_api_lap_detail"];
         put?: never;
         post?: never;
+        /**
+         * Delete Flagged Lap
+         * @description Delete a lap with issues, for example a lap of another server.
+         */
+        delete: operations["apps_telemetry_api_delete_flagged_lap"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/championships/{championship_id}/telemetry/flagged": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Flagged Laps
+         * @description The laps that failed a check. The app keeps them for an admin.
+         */
+        get: operations["apps_telemetry_api_flagged_laps"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/telemetry-laps/{lap_id}/recheck": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Recheck Lap
+         * @description Do the checks again, for example after a new Steam ID of the driver.
+         */
+        post: operations["apps_telemetry_api_recheck_lap"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/telemetry-laps/{lap_id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept Lap
+         * @description Count a lap with issues for a round of its championship.
+         */
+        post: operations["apps_telemetry_api_accept_lap"];
         delete?: never;
         options?: never;
         head?: never;
@@ -7075,6 +7139,53 @@ export interface components {
                 [key: string]: number[];
             };
         };
+        /** FlaggedLapOut */
+        FlaggedLapOut: {
+            /** Id */
+            id: number;
+            /** Steam Guid */
+            steam_guid: string;
+            /** Driver Id */
+            driver_id: number | null;
+            /** Driver Name */
+            driver_name: string | null;
+            /** Track */
+            track: string;
+            /** Car */
+            car: string;
+            /** Lap Number */
+            lap_number: number;
+            /** Lap Time Ms */
+            lap_time_ms: number;
+            /**
+             * Recorded At
+             * Format: date-time
+             */
+            recorded_at: string;
+            /** Issues */
+            issues: string[];
+            /** Round Id */
+            round_id: number | null;
+            /** Round Number */
+            round_number: number | null;
+        };
+        /** LapReviewOut */
+        LapReviewOut: {
+            /** State */
+            state: string;
+            /** Issues */
+            issues: string[];
+        };
+        /** LapAcceptIn */
+        LapAcceptIn: {
+            /** Round Id */
+            round_id: number;
+            /**
+             * Session Type
+             * @enum {string}
+             */
+            session_type: "race" | "qualifying" | "practice";
+        };
         /** TrackMapOut */
         TrackMapOut: {
             /** Length M */
@@ -7695,6 +7806,11 @@ export interface components {
             lap_number?: number | null;
             /** Cuts */
             cuts?: number | null;
+            /**
+             * Issues
+             * @default []
+             */
+            issues?: string[];
         };
         /** ScriptLapIn */
         ScriptLapIn: {
@@ -12241,6 +12357,96 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LapDetailOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_api_delete_flagged_lap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lap_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    apps_telemetry_api_flagged_laps: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FlaggedLapOut"][];
+                };
+            };
+        };
+    };
+    apps_telemetry_api_recheck_lap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lap_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LapReviewOut"];
+                };
+            };
+        };
+    };
+    apps_telemetry_api_accept_lap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lap_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LapAcceptIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LapReviewOut"];
                 };
             };
         };

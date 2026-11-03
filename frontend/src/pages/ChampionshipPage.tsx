@@ -17,6 +17,7 @@ import { useLoad } from '../lib/useLoad'
 import { useAdminView, useMe } from '../session'
 import { CollectorsSection } from './CollectorsSection'
 import { DriverScriptCard } from './DriverScriptCard'
+import { FlaggedLapsCard } from './FlaggedLapsCard'
 import { HealthSection } from './HealthSection'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { Avatar } from '../components/Avatar'
@@ -146,6 +147,7 @@ export function ChampionshipPage() {
                 <>
                   <CollectorsSection championshipId={championshipId} />
                   <DriverScriptCard championshipId={championshipId} />
+                  <FlaggedLapsCard championshipId={championshipId} />
                 </>
               )}
             </div>

@@ -8268,6 +8268,14 @@ form.card > label.wide {
   min-width: 0;
 }
 
+/* The laps of the Paddock script with issues, for the admin. */
+.flagged-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 /* The extra Steam accounts of a driver, under the main Steam ID. */
 .extra-guid {
   display: block;

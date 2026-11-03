@@ -6,13 +6,15 @@ from django.shortcuts import get_object_or_404
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
-from apps.competition.models import Round
+from apps.audit.services import record
+from apps.common.api import require
+from apps.competition.models import Championship, Round
 from apps.competition.permissions import can_manage, can_view
 from apps.identity.models import DriverProfile
 
-from . import coach
+from . import coach, script
 from .models import EngineerNote, TelemetryLap
-from .services import access, channels_for, sharing_for
+from .services import TelemetryError, access, channels_for, sharing_for
 from .track_map import track_map
 
 router = Router(tags=["telemetry"])
@@ -136,6 +138,125 @@ def lap_detail(request, lap_id: int):
         car=lap.car,
         channels=channels_for(lap, level),
     )
+
+
+# Review of the laps with issues (admins)
+
+
+class FlaggedLapOut(Schema):
+    id: int
+    steam_guid: str
+    driver_id: int | None
+    driver_name: str | None
+    track: str
+    car: str
+    lap_number: int
+    lap_time_ms: int
+    recorded_at: datetime
+    issues: list[str]
+    # The round of the lap, from its track and its time. None when no round fits.
+    round_id: int | None
+    round_number: int | None
+
+
+class LapReviewOut(Schema):
+    state: str  # "league", "pending", or "rejected" (the lap stays in the review)
+    issues: list[str]
+
+
+class LapAcceptIn(Schema):
+    round_id: int
+    session_type: Literal["race", "qualifying", "practice"]
+
+
+def _flagged_out(lap: TelemetryLap) -> FlaggedLapOut:
+    round_ = script.guess_round(lap)
+    return FlaggedLapOut(
+        id=lap.id,
+        steam_guid=lap.steam_guid,
+        driver_id=lap.driver_id,
+        driver_name=lap.driver.display_name if lap.driver else None,
+        track=lap.track,
+        car=lap.car,
+        lap_number=lap.lap_number,
+        lap_time_ms=lap.lap_time_ms,
+        recorded_at=lap.recorded_at,
+        issues=lap.issues,
+        round_id=round_.id if round_ else None,
+        round_number=round_.number if round_ else None,
+    )
+
+
+def _flagged(request, lap_id: int) -> TelemetryLap:
+    lap = get_object_or_404(
+        TelemetryLap.objects.select_related("driver", "championship"),
+        pk=lap_id,
+        match=TelemetryLap.Match.FLAGGED,
+    )
+    if lap.championship is None or not can_view(request.user, lap.championship):
+        raise Http404
+    require(can_manage(request.user, lap.championship))
+    return lap
+
+
+@router.get("/championships/{championship_id}/telemetry/flagged", response=list[FlaggedLapOut])
+def flagged_laps(request, championship_id: int):
+    """The laps that failed a check. The app keeps them for an admin."""
+    championship = get_object_or_404(Championship, pk=championship_id)
+    if not can_view(request.user, championship):
+        raise Http404
+    require(can_manage(request.user, championship))
+    laps = (
+        TelemetryLap.objects.filter(championship=championship, match=TelemetryLap.Match.FLAGGED)
+        .select_related("driver", "championship")
+        .order_by("-recorded_at")[:500]
+    )
+    return [_flagged_out(lap) for lap in laps]
+
+
+@router.post("/telemetry-laps/{lap_id}/recheck", response=LapReviewOut)
+def recheck_lap(request, lap_id: int):
+    """Do the checks again, for example after a new Steam ID of the driver."""
+    lap = _flagged(request, lap_id)
+    state = script.recheck(lap)
+    return LapReviewOut(state=state, issues=lap.issues if state == "rejected" else [])
+
+
+@router.post("/telemetry-laps/{lap_id}/accept", response=LapReviewOut)
+def accept_lap(request, lap_id: int, payload: LapAcceptIn):
+    """Count a lap with issues for a round of its championship."""
+    lap = _flagged(request, lap_id)
+    round_ = get_object_or_404(Round, pk=payload.round_id, season__championship=lap.championship)
+    try:
+        script.accept(lap, round_, payload.session_type)
+    except TelemetryError as error:
+        raise HttpError(422, str(error)) from error
+    record(
+        request.user,
+        "telemetry.lap_accepted",
+        "round",
+        round_.id,
+        championship=lap.championship,
+        params={"driver": lap.driver.display_name, "lap": lap.lap_number},
+    )
+    return LapReviewOut(state="league", issues=[])
+
+
+@router.delete("/telemetry-laps/{lap_id}", response={204: None})
+def delete_flagged_lap(request, lap_id: int):
+    """Delete a lap with issues, for example a lap of another server."""
+    lap = _flagged(request, lap_id)
+    record(
+        request.user,
+        "telemetry.lap_deleted",
+        "championship",
+        lap.championship_id,
+        championship=lap.championship,
+        params={"driver": lap.driver.display_name if lap.driver else lap.steam_guid},
+    )
+    lap.samples.delete(save=False)
+    lap.delete()
+    return 204, None
 
 
 class TrackMapOut(Schema):
