@@ -207,7 +207,9 @@ def write(note_id: int) -> EngineerNote:
     if not reports.ai_configured():
         return _fail(note, "ai_not_configured")
     try:
-        response = reports.litellm.completion(
+        import litellm
+
+        response = litellm.completion(
             model=note.model,
             messages=[
                 {

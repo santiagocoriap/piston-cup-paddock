@@ -647,7 +647,9 @@
       "ballot.rights_changed": "{{actor}} adjusted the votes of {{ballot}}.",
       "driver.changed": "{{actor}} changed the data of the driver {{driver}}.",
       "driver.steam_id_added": "{{actor}} added a Steam account to {{driver}}.",
-      "driver.steam_id_removed": "{{actor}} removed a Steam account from {{driver}}."
+      "driver.steam_id_removed": "{{actor}} removed a Steam account from {{driver}}.",
+      "telemetry.lap_accepted": "{{actor}} counted lap {{lap}} of {{driver}}.",
+      "telemetry.lap_deleted": "{{actor}} deleted a lap of {{driver}}."
     },
     "fields": {
       "role": "Role",
@@ -2694,5 +2696,36 @@
     "expired": "Expired",
     "remove": "Remove access",
     "confirmRemove": "Remove the access of {{name}}? It must sign in again."
+  },
+  "flaggedLaps": {
+    "title": "Laps to review",
+    "help": "These script laps failed a check. The app keeps them. Review them: check them again, count them for a round, or delete them.",
+    "driver": "Driver",
+    "lap": "Lap",
+    "issue": "Issue",
+    "actions": "Actions",
+    "round": "Round {{number}}",
+    "recheck": "Check again",
+    "accept": "Count",
+    "session": "Session of the lap",
+    "delete": "Delete",
+    "confirmDelete": "Delete this lap? You cannot undo this.",
+    "still": "The lap still does not count: {{issue}}.",
+    "sessions": {
+      "race": "Race",
+      "qualifying": "Qualifying",
+      "practice": "Practice"
+    },
+    "issues": {
+      "unknown_driver": "Unknown Steam ID: add the account to the driver",
+      "not_in_championship": "The driver is not in this championship",
+      "bad_samples": "Damaged lap data",
+      "no_session": "The server had no session at that time",
+      "other_track": "Another track",
+      "not_connected": "The server did not see the driver connected",
+      "other_car": "Another car",
+      "no_server_lap": "The server does not have this lap",
+      "duplicate": "Repeated lap"
+    }
   }
 }

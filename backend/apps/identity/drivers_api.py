@@ -114,6 +114,7 @@ def edit_driver(request, driver_id: int, payload: DriverEditIn):
                 params={"driver": profile.display_name},
                 changes=changes,
             )
+    _recheck_laps(profile.steam_guid)
     return profile
 
 
@@ -147,7 +148,16 @@ def add_steam_id(request, driver_id: int, payload: ExtraGuidIn):
             params={"driver": profile.display_name},
             changes=[change("steam_guid", None, payload.guid)],
         )
+    _recheck_laps(payload.guid)
     return profile
+
+
+def _recheck_laps(guid: str | None) -> None:
+    """The laps with this Steam ID that the app kept as unknown can count now."""
+    from apps.telemetry.script import recheck_guid
+
+    if guid:
+        recheck_guid(guid)
 
 
 @router.delete("/drivers/{driver_id}/steam-ids/{guid}", response=DriverOut)

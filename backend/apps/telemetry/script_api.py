@@ -65,6 +65,8 @@ class ScriptLapOut(Schema):
     # From the server, when the lap counts. The script shows them in AC.
     lap_number: int | None = None
     cuts: int | None = None
+    # Why the lap does not count, for example "no_server_lap". The app keeps the lap.
+    issues: list[str] = []
 
 
 @router.post("/script/laps", response=ScriptLapOut, auth=ScriptAuth())
@@ -75,8 +77,8 @@ def script_lap(request: HttpRequest, payload: ScriptLapIn):
         lap, state = script.receive_lap(request.auth, payload.dict())
     except TelemetryError as error:
         raise HttpError(422, str(error)) from error
-    if lap is None or state not in ("league", "known"):
-        return ScriptLapOut(state=state)
+    if state not in ("league", "known"):
+        return ScriptLapOut(state=state, issues=lap.issues)
     return ScriptLapOut(state=state, lap_number=lap.lap_number, cuts=lap.cuts)
 
 

@@ -1,27 +1,30 @@
 """AI race reports: facts first, the AI only writes the text. LiteLLM is mocked."""
 
+import subprocess
+import sys
 from types import SimpleNamespace
 
 import pytest
 
 from apps.competition.models import Round, SeasonEntry
 from apps.identity.models import DriverProfile
-from apps.reports import services
 from apps.reports.models import RaceReport
 from apps.reports.prompt import PROMPT_VERSION
 from apps.reports.services import generate
 
 
+def use_fake_ai(monkeypatch, fake) -> None:
+    """The code imports litellm when it writes a text, so the fake goes into sys.modules."""
+    monkeypatch.setitem(sys.modules, "litellm", fake)
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+
+
 class FakeAI:
-    def __init__(self, configured=True, text="Gran carrera.", error=None):
+    def __init__(self, text="Gran carrera.", error=None):
         self.finish_reason = "stop"
-        self.configured = configured
         self.text = text
         self.error = error
         self.calls = []
-
-    def validate_environment(self, model):
-        return {"keys_in_environment": self.configured, "missing_keys": []}
 
     def completion(self, **kwargs):
         self.calls.append(kwargs)
@@ -35,7 +38,7 @@ class FakeAI:
 @pytest.fixture
 def ai(monkeypatch):
     fake = FakeAI()
-    monkeypatch.setattr(services, "litellm", fake)
+    use_fake_ai(monkeypatch, fake)
     return fake
 
 
@@ -124,8 +127,8 @@ def test_cut_text_fails_the_report(api, champ_admin, raced, ai):
     assert (report.status, report.error, report.text) == ("failed", "ai_text_cut", "")
 
 
-def test_no_api_key_fails_the_report_but_not_the_results(api, champ_admin, raced, ai):
-    ai.configured = False
+def test_no_api_key_fails_the_report_but_not_the_results(api, champ_admin, raced, ai, monkeypatch):
+    monkeypatch.delenv("ANTHROPIC_API_KEY")
     request(api, champ_admin, raced)
     report = generate(RaceReport.objects.get().id)
     assert (report.status, report.error) == ("failed", "ai_not_configured")
@@ -188,7 +191,22 @@ def test_round_without_result_cannot_have_a_report(api, champ_admin, season, lay
     assert request(api, champ_admin, round_).json()["detail"] == "result_required"
 
 
-def test_approval_requests_a_report_only_with_a_key(api, champ_admin, raced, ai):
-    ai.configured = False
+def test_approval_requests_a_report_only_with_a_key(api, champ_admin, raced, ai, monkeypatch):
+    monkeypatch.delenv("ANTHROPIC_API_KEY")
     api(champ_admin).post(f"/rounds/{raced.id}/result/approve")
     assert RaceReport.objects.count() == 0
+
+
+def test_the_web_processes_do_not_load_litellm():
+    """litellm takes 140 MB in each process. The worker loads it only to write a text."""
+    code = (
+        "import os, sys, django\n"
+        "os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings'\n"
+        "django.setup()\n"
+        "import config.urls\n"
+        "from apps.reports.services import ai_configured\n"
+        "ai_configured()\n"
+        "print('litellm' in sys.modules)\n"
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.stdout.strip() == "False", result.stderr

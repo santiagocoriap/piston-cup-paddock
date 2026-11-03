@@ -4,8 +4,9 @@
 -- championship. AC downloads the script when a driver joins and runs it inside the game: the
 -- driver installs nothing and opens nothing. At the end of each lap, the script sends the lap
 -- to the Paddock app, also a lap with track cuts. The app takes the lap number and the cuts
--- from the server, not from CSP. The app keeps the lap only when the server collector says that this
--- driver was on the server at that time (docs/plans/ac-integration.md, phase 2).
+-- from the server, not from CSP. The lap counts only when the server collector says that this
+-- driver was on the server at that time (docs/plans/ac-integration.md, phase 2). The app keeps
+-- the other laps for an admin.
 --
 -- The app writes its own address into PADDOCK_URL when it gives the script to CSP.
 
@@ -62,7 +63,9 @@ local function pump()
     if response.status == 200 then
       local answer = JSON.parse(response.body) or {}
       if answer.state == 'rejected' then
-        setStatus('esta vuelta no cuenta para la liga')
+        -- The app keeps the lap for an admin. The reason helps the admin.
+        local issue = (answer.issues and answer.issues[1]) or ''
+        setStatus('esta vuelta no cuenta para la liga' .. (issue ~= '' and (' (' .. issue .. ')') or ''))
       elseif answer.state == 'pending' then
         setStatus('vuelta enviada, espera los datos del servidor')
       else

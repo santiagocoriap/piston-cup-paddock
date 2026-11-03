@@ -43,8 +43,17 @@ class TelemetryLap(models.Model):
     class Match(models.TextChoices):
         PENDING = "pending", _("Waits for the server data")
         LEAGUE = "league", _("A league session")
+        # The app keeps a lap that fails a check. An admin reviews it.
+        FLAGGED = "flagged", _("Needs review")
 
-    driver = models.ForeignKey(DriverProfile, on_delete=models.CASCADE, related_name="laps")
+    # None for a lap with an unknown Steam ID: an admin links the Steam ID to a driver.
+    driver = models.ForeignKey(
+        DriverProfile, null=True, blank=True, on_delete=models.CASCADE, related_name="laps"
+    )
+    # The Steam ID that the script sent.
+    steam_guid = models.CharField(max_length=17, blank=True)
+    # The checks that the lap failed, for example "no_server_lap". Empty for a good lap.
+    issues = models.JSONField(default=list, blank=True)
     source = models.CharField(max_length=10, choices=Source.choices, default=Source.SCRIPT)
     # Only for a lap of the script: the championship of the race code, the match state, the
     # start of the server session, and the race start number.
@@ -81,7 +90,7 @@ class TelemetryLap(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.driver} lap {self.lap_number}"
+        return f"{self.driver or self.steam_guid} lap {self.lap_number}"
 
 
 class ScriptCode(models.Model):

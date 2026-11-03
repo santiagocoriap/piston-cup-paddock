@@ -8,12 +8,12 @@ import pytest
 
 from apps.competition.models import ChampionshipMember, Round, SeasonEntry
 from apps.identity.models import DriverProfile
-from apps.reports import services as reports
 from apps.telemetry import coach
 from apps.telemetry.engineer import analyze, corners, to_lap
 from apps.telemetry.models import EngineerNote
 
 from .telemetry_laps import save_lap
+from .test_reports import use_fake_ai
 
 TZ = ZoneInfo("America/Argentina/Buenos_Aires")
 LENGTH_M = 5000
@@ -178,9 +178,6 @@ class FakeAI:
     def __init__(self):
         self.calls = []
 
-    def validate_environment(self, model):
-        return {"keys_in_environment": True, "missing_keys": []}
-
     def completion(self, **kwargs):
         self.calls.append(kwargs)
         message = SimpleNamespace(content="Curva 1: probá frenar 50 m más tarde.")
@@ -190,7 +187,7 @@ class FakeAI:
 def test_the_ai_note_is_written_once_for_the_same_numbers(api, setup, monkeypatch):
     users, round_ = setup
     fake = FakeAI()
-    monkeypatch.setattr(reports, "litellm", fake)
+    use_fake_ai(monkeypatch, fake)
     deferred = []
     monkeypatch.setattr(
         "apps.telemetry.tasks.write_note.defer", lambda **kw: deferred.append(kw["note_id"])

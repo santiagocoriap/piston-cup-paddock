@@ -647,7 +647,9 @@
       "ballot.rights_changed": "{{actor}} ajustó los votos de {{ballot}}.",
       "driver.changed": "{{actor}} cambió los datos del piloto {{driver}}.",
       "driver.steam_id_added": "{{actor}} agregó una cuenta de Steam a {{driver}}.",
-      "driver.steam_id_removed": "{{actor}} quitó una cuenta de Steam de {{driver}}."
+      "driver.steam_id_removed": "{{actor}} quitó una cuenta de Steam de {{driver}}.",
+      "telemetry.lap_accepted": "{{actor}} contó la vuelta {{lap}} de {{driver}}.",
+      "telemetry.lap_deleted": "{{actor}} borró una vuelta de {{driver}}."
     },
     "fields": {
       "role": "Rol",
@@ -2694,5 +2696,36 @@
     "expired": "Vencido",
     "remove": "Quitar acceso",
     "confirmRemove": "¿Quitar el acceso de {{name}}? Va a tener que iniciar sesión de nuevo."
+  },
+  "flaggedLaps": {
+    "title": "Vueltas para revisar",
+    "help": "Estas vueltas del script no pasaron un control. La app las guarda. Revisalas: controlalas de nuevo, contalas para una fecha o borralas.",
+    "driver": "Piloto",
+    "lap": "Vuelta",
+    "issue": "Problema",
+    "actions": "Acciones",
+    "round": "Fecha {{number}}",
+    "recheck": "Controlar de nuevo",
+    "accept": "Contar",
+    "session": "Sesión de la vuelta",
+    "delete": "Borrar",
+    "confirmDelete": "¿Borrar esta vuelta? No se puede deshacer.",
+    "still": "La vuelta sigue sin contar: {{issue}}.",
+    "sessions": {
+      "race": "Carrera",
+      "qualifying": "Clasificación",
+      "practice": "Práctica"
+    },
+    "issues": {
+      "unknown_driver": "Steam ID desconocido: agregá la cuenta al piloto",
+      "not_in_championship": "El piloto no corre en este campeonato",
+      "bad_samples": "Datos de la vuelta dañados",
+      "no_session": "El servidor no tenía una sesión a esa hora",
+      "other_track": "Otra pista",
+      "not_connected": "El servidor no vio al piloto conectado",
+      "other_car": "Otro auto",
+      "no_server_lap": "El servidor no tiene esta vuelta",
+      "duplicate": "Vuelta repetida"
+    }
   }
 }
