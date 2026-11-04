@@ -63,9 +63,11 @@ def progress_track(samples: list[tuple[float, float, float, float]]) -> dict[int
     """For each second: (progress, x, z). A sample is (seconds, x, z, place on the lap). Progress
     only goes on at the line, so a car that resets to the pits does not gain a lap."""
     track: dict[int, tuple] = {}
-    laps = 0
+    ordered = sorted(samples)
+    # A car on the grid starts before the line, so its first crossing is the start of lap 1.
+    laps = -1 if ordered and ordered[0][3] > 0.5 else 0
     before = None
-    for at, x, z, spline in sorted(samples):
+    for at, x, z, spline in ordered:
         if before is not None:
             if before - spline > 0.5:
                 laps += 1
