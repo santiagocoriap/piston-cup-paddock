@@ -210,3 +210,10 @@ def test_the_circuit_type_comes_from_the_corners():
         "z": [100 * math.sin(a) for a in angle],
     }
     assert corner_count(circle) == 1
+
+
+def test_a_car_on_the_grid_is_on_lap_1_after_the_line():
+    samples = [(0.0, 0, 0, 0.99), (1.0, 0, 0, 0.995), (2.0, 0, 0, 0.002), (3.0, 0, 0, 0.01)]
+    track = racecraft.progress_track(samples)
+    assert round(track[0][0], 2) == -0.01
+    assert round(track[3][0], 2) == 0.01
