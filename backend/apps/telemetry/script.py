@@ -22,7 +22,7 @@ from datetime import datetime, timedelta
 
 from django.core.files.base import ContentFile
 from django.db import transaction
-from django.db.models import Max, Sum
+from django.db.models import DurationField, ExpressionWrapper, F, Max, Min, Sum
 from django.utils import timezone
 
 from apps.collectors.incident_api import AC_SESSION_TYPES
@@ -51,6 +51,9 @@ MAX_SCRIPT_SAMPLES = 36_000
 TIMELINE_KINDS = ("session_started", "session_ended", "connected", "disconnected", "lap_completed")
 # The lap time of the script and of the server for the same lap.
 LAP_TIME_TOLERANCE_MS = 50
+# A server lap with the same lap time counts up to this far from the lap of the script. The lap
+# time is the strong check: this window only keeps a lap of an hour before from counting.
+MATCH_WINDOW = timedelta(minutes=10)
 # Every driver on the server has the race code. This limit stops a flood of laps that do not
 # count. One lap of 100 seconds takes about 80 KB, so 1 GB is about 12,000 laps.
 MAX_REVIEW_BYTES = 1024**3
@@ -141,31 +144,61 @@ class Timeline:
     latest_event_at: datetime | None
 
 
+def clock_shifts(championship: Championship, around: datetime) -> dict[tuple[int, str], timedelta]:
+    """The time to add to the events of each collector run, to get the time of the app.
+
+    The collector PC writes the time of each event with its own clock. The app receives each
+    event after it happens, so an event with a time after its arrival shows a PC clock that runs
+    ahead. The shift is the largest of these differences. A clock that runs behind is not
+    visible this way (the upload can wait), and MATCH_WINDOW covers it."""
+    rows = (
+        CollectorEvent.objects.filter(
+            token__championship=championship,
+            occurred_at__gte=around - WINDOW,
+            occurred_at__lte=around + WINDOW,
+        )
+        .values("token_id", "run_id")
+        .annotate(
+            delay=Min(
+                ExpressionWrapper(F("received_at") - F("occurred_at"), output_field=DurationField())
+            )
+        )
+    )
+    return {(r["token_id"], r["run_id"]): min(r["delay"], timedelta(0)) for r in rows}
+
+
 def timeline(championship: Championship, around: datetime) -> Timeline:
+    """The sessions, connections, and laps around a moment, all in the time of the app."""
     events = CollectorEvent.objects.filter(
         token__championship=championship,
         kind__in=TIMELINE_KINDS,
         occurred_at__gte=around - WINDOW,
         occurred_at__lte=around + WINDOW,
     ).order_by("token_id", "run_id", "seq")
+    shifts = clock_shifts(championship, around)
     spans: list[Span] = []
     presences: list[Presence] = []
     laps: list[ServerLap] = []
     open_spans: dict[tuple[int, str], Span] = {}
     open_presences: dict[tuple[int, str, str], Presence] = {}
     # Any event, also a lap or a position, shows how far the server data goes.
-    latest = (
+    ends = (
         CollectorEvent.objects.filter(
             token__championship=championship,
             occurred_at__gte=around - WINDOW,
             occurred_at__lte=around + WINDOW,
         )
-        .aggregate(latest=Max("occurred_at"))
-        .get("latest")
+        .values("token_id", "run_id")
+        .annotate(last=Max("occurred_at"))
+    )
+    latest = max(
+        (r["last"] + shifts.get((r["token_id"], r["run_id"]), timedelta(0)) for r in ends),
+        default=None,
     )
     for event in events:
         run = (event.token_id, event.run_id)
         data = event.data or {}
+        event.occurred_at += shifts.get(run, timedelta(0))
         if event.kind in ("session_started", "session_ended"):
             previous = open_spans.pop(run, None)
             if previous:
@@ -246,17 +279,42 @@ def _attempt_number(line: Timeline, span: Span, round_: Round | None) -> int | N
 # Laps
 
 
-def _flag(lap: TelemetryLap, issues: list[str]) -> str:
+def _flag(lap: TelemetryLap, issues: list[str], hint: dict | None = None) -> str:
     lap.match = TelemetryLap.Match.FLAGGED
     lap.issues = issues
-    lap.save(update_fields=["match", "issues"])
+    fields = ["match", "issues"]
+    if hint is not None:
+        lap.summary = {**lap.summary, "match_hint": hint}
+        fields.append("summary")
+    lap.save(update_fields=fields)
     return "rejected"
 
 
-def match(lap: TelemetryLap) -> str:
+def _nearest(line: Timeline, guids: set[str], lap: TelemetryLap) -> dict | None:
+    """The server lap of the driver nearest to this lap, for the admin: the time between them in
+    seconds, and the difference of the lap times in ms. First the laps with the same lap time."""
+    mine = [s for s in line.laps if s.guid in guids]
+    if not mine:
+        return {"server_laps": 0}
+    found = min(
+        mine,
+        key=lambda s: (
+            abs(s.lap_ms - lap.lap_time_ms) > LAP_TIME_TOLERANCE_MS,
+            abs(s.at - lap.recorded_at),
+        ),
+    )
+    return {
+        "server_laps": len(mine),
+        "seconds": round((found.at - lap.recorded_at).total_seconds()),
+        "lap_ms": found.lap_ms - lap.lap_time_ms,
+    }
+
+
+def match(lap: TelemetryLap, line: Timeline | None = None) -> str:
     """Link a pending lap to its session. Gives "league", "pending", or "rejected". A rejected
-    lap stays, flagged with the reason, for an admin."""
-    line = timeline(lap.championship, lap.recorded_at)
+    lap stays, flagged with the reason, for an admin. A caller with many laps of one night can
+    give the timeline, so the app reads the events one time."""
+    line = line or timeline(lap.championship, lap.recorded_at)
     guids = set(lap.driver.guids())
     reached = 0  # The index in MATCH_ISSUES of the check that failed.
     for span in line.spans:
@@ -285,8 +343,9 @@ def match(lap: TelemetryLap) -> str:
             if (server_lap.token_id, server_lap.run_id) == (span.token_id, span.run_id)
             and server_lap.guid in guids
             and abs(server_lap.lap_ms - lap.lap_time_ms) <= LAP_TIME_TOLERANCE_MS
-            and abs(server_lap.at - lap.recorded_at) <= TOLERANCE
+            and abs(server_lap.at - lap.recorded_at) <= MATCH_WINDOW
         ]
+        witnessed.sort(key=lambda s: abs(s.at - lap.recorded_at))
         if not witnessed:
             reached = max(reached, 4)
             continue
@@ -338,7 +397,8 @@ def match(lap: TelemetryLap) -> str:
     waiting = line.latest_event_at is None or line.latest_event_at < lap.recorded_at + TOLERANCE
     if waiting and lap.recorded_at > timezone.now() - PENDING_LIMIT:
         return "pending"
-    return _flag(lap, [MATCH_ISSUES[reached]])
+    hint = _nearest(line, guids, lap) if MATCH_ISSUES[reached] == "no_server_lap" else None
+    return _flag(lap, [MATCH_ISSUES[reached]], hint)
 
 
 def rematch(championship: Championship) -> int:
@@ -498,7 +558,27 @@ def _driver_issues(championship: Championship, driver: DriverProfile | None) -> 
 # Review of the flagged laps
 
 
-def recheck(lap: TelemetryLap) -> str:
+def recheck_all(championship: Championship) -> dict[str, int]:
+    """Check again every flagged lap of a championship that a new check can change. The laps
+    of one night share one timeline."""
+    laps = (
+        TelemetryLap.objects.filter(championship=championship, match=TelemetryLap.Match.FLAGGED)
+        .exclude(issues__contains=["bad_samples"])
+        .exclude(issues__contains=["partial_samples"])
+        .select_related("driver", "championship")
+        .order_by("recorded_at")
+    )
+    lines: dict[object, Timeline] = {}
+    counts = {"league": 0, "pending": 0, "rejected": 0}
+    for lap in laps:
+        night = lap.recorded_at.date()
+        if night not in lines:
+            lines[night] = timeline(championship, lap.recorded_at)
+        counts[recheck(lap, lines[night])] += 1
+    return counts
+
+
+def recheck(lap: TelemetryLap, line: Timeline | None = None) -> str:
     """Do all the checks again, for example after an admin adds a Steam ID to a driver. Gives
     "league", "pending", or "rejected" (the lap stays flagged)."""
     if lap.driver is None:
@@ -512,7 +592,7 @@ def recheck(lap: TelemetryLap) -> str:
     lap.match = TelemetryLap.Match.PENDING
     lap.issues = []
     lap.save(update_fields=["match", "issues"])
-    return match(lap)
+    return match(lap, line)
 
 
 def recheck_guid(guid: str) -> int:

@@ -44,4 +44,16 @@ describe('FlaggedLapsCard', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Controlar de nuevo' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('La vuelta sigue sin contar')
   })
+
+  it('shows the nearest server lap and checks all the laps again', async () => {
+    const calls = mockApi({
+      'GET /api/championships/1/telemetry/flagged': () => json(200, [lap(9, { match_hint: { server_laps: 14, seconds: -245, lap_ms: 0 } })]),
+      'POST /api/championships/1/telemetry/flagged/recheck': () => json(200, { league: 1, pending: 0, rejected: 0 }),
+    })
+    renderPage(<FlaggedLapsCard championshipId={1} />, { path: '/', url: '/' })
+    expect(await screen.findByText('Vuelta del servidor más cercana: −4:05 min, diferencia 0.000 s.')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Controlar todas de nuevo' }))
+    expect(await screen.findByRole('status')).toHaveTextContent('Listo: 1 cuentan ahora y 0 siguen sin contar.')
+    expect(calls.some((c) => c.key === 'POST /api/championships/1/telemetry/flagged/recheck')).toBe(true)
+  })
 })

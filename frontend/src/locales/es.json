@@ -2742,7 +2742,12 @@
       "no_server_lap": "El servidor no tiene esta vuelta",
       "duplicate": "Vuelta repetida",
       "partial_samples": "La vuelta tiene datos de solo una parte"
-    }
+    },
+    "recheckAll": "Controlar todas de nuevo",
+    "recheckingAll": "Controlando…",
+    "recheckedAll": "Listo: {{league}} cuentan ahora y {{still}} siguen sin contar.",
+    "hint": "Vuelta del servidor más cercana: {{time}} min, diferencia {{diff}} s.",
+    "hintNone": "El servidor no tiene vueltas de este piloto."
   },
   "analysis": {
     "title": "Análisis de datos",
