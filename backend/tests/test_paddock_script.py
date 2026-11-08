@@ -3,10 +3,12 @@
 from datetime import timedelta
 
 import pytest
+from django.db.models import F
 from django.test import Client
 from django.utils import timezone
 
 from apps.catalog.models import Car, Track, TrackLayout
+from apps.collectors.models import CollectorEvent
 from apps.competition.models import Round, SeasonEntry
 from apps.identity.models import DriverProfile, DriverSteamId
 from apps.telemetry.models import ScriptCode, TelemetryLap
@@ -55,7 +57,7 @@ def at(minutes: float) -> str:
     return (timezone.now() + timedelta(minutes=minutes)).isoformat()
 
 
-def events(key, *items, run_id="run-1"):
+def events(key, *items, run_id="run-1", clock_ahead=False):
     batch = {
         "run_id": run_id,
         "events": [
@@ -63,12 +65,19 @@ def events(key, *items, run_id="run-1"):
             for n, (kind, when, data) in enumerate(items)
         ],
     }
-    return Client().post(
+    response = Client().post(
         "/api/collector/events",
         batch,
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Bearer {key}",
     )
+    if not clock_ahead:
+        # A real event arrives after it happens. A test event with a later time stands for
+        # server data that the app gets later, not for a PC clock that runs ahead.
+        CollectorEvent.objects.filter(received_at__lt=F("occurred_at")).update(
+            received_at=F("occurred_at") + timedelta(seconds=1)
+        )
+    return response
 
 
 def race_started(minutes=-30):
@@ -529,3 +538,40 @@ def test_a_bad_vehicle_block_does_not_stop_the_lap(key, code, round_, driver):
     )
     assert response.json()["state"] == "league"
     assert TelemetryLap.objects.get().summary == {}
+
+
+def test_a_collector_clock_that_runs_ahead_still_matches(key, code, round_, driver):
+    """The PC of the collector writes event times 5 minutes after the real time."""
+    events(key, connected(4), race_started(5), server_lap(5), clock_ahead=True)
+    assert lap(code).json()["state"] == "league"
+
+
+def test_a_lap_with_no_server_lap_tells_the_nearest_one(
+    api, champ_admin, championship, key, code, round_, driver
+):
+    events(
+        key,
+        connected(),
+        race_started(),
+        server_lap(-4, lap_ms=120_000),
+        ("lap_completed", at(3), {"car_id": 1}),
+    )
+    assert lap(code).json()["issues"] == ["no_server_lap"]
+    row = api(champ_admin).get(f"/championships/{championship.id}/telemetry/flagged").json()[0]
+    assert row["match_hint"]["server_laps"] == 1
+    assert row["match_hint"]["lap_ms"] == 120_000 - 113_689
+    assert -250 < row["match_hint"]["seconds"] < -230
+
+
+def test_an_admin_checks_all_the_laps_again(
+    api, champ_admin, championship, key, code, round_, driver
+):
+    alt = "76561190000000055"
+    events(key, connected(guid=alt), race_started(), server_lap(guid=alt))
+    lap(code, steam_id=alt)
+    DriverSteamId.objects.create(driver=driver, guid=alt)
+    answer = (
+        api(champ_admin).post(f"/championships/{championship.id}/telemetry/flagged/recheck").json()
+    )
+    assert answer == {"league": 1, "pending": 0, "rejected": 0}
+    assert TelemetryLap.objects.get().match == "league"

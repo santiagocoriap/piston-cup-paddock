@@ -157,6 +157,8 @@ class FlaggedLapOut(Schema):
     # The round of the lap, from its track and its time. None when no round fits.
     round_id: int | None
     round_number: int | None
+    # For "no_server_lap": the nearest server lap of the driver. See script._nearest.
+    match_hint: dict | None = None
 
 
 class LapReviewOut(Schema):
@@ -184,6 +186,7 @@ def _flagged_out(lap: TelemetryLap) -> FlaggedLapOut:
         issues=lap.issues,
         round_id=round_.id if round_ else None,
         round_number=round_.number if round_ else None,
+        match_hint=lap.summary.get("match_hint"),
     )
 
 
@@ -212,6 +215,22 @@ def flagged_laps(request, championship_id: int):
         .order_by("-recorded_at")[:500]
     )
     return [_flagged_out(lap) for lap in laps]
+
+
+class RecheckAllOut(Schema):
+    league: int
+    pending: int
+    rejected: int
+
+
+@router.post("/championships/{championship_id}/telemetry/flagged/recheck", response=RecheckAllOut)
+def recheck_all_laps(request, championship_id: int):
+    """Check again all the laps with issues, for example after a fix of the server data."""
+    championship = get_object_or_404(Championship, pk=championship_id)
+    if not can_view(request.user, championship):
+        raise Http404
+    require(can_manage(request.user, championship))
+    return script.recheck_all(championship)
 
 
 @router.post("/telemetry-laps/{lap_id}/recheck", response=LapReviewOut)

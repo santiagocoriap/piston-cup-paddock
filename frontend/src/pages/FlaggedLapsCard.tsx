@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { api } from '../api/client'
 import type { components } from '../api/schema'
 import { errorMessage } from '../lib/errors'
@@ -23,6 +24,7 @@ export function FlaggedLapsCard({ championshipId }: { championshipId: number }) 
     <div className="card" role="region" aria-label={t('flaggedLaps.title')}>
       <h3>{t('flaggedLaps.title')}</h3>
       <p className="muted">{t('flaggedLaps.help')}</p>
+      <RecheckAll championshipId={championshipId} onDone={laps.reload} />
       <div className="table-wrap">
         <table>
           <thead>
@@ -40,6 +42,44 @@ export function FlaggedLapsCard({ championshipId }: { championshipId: number }) 
           </tbody>
         </table>
       </div>
+    </div>
+  )
+}
+
+type Hint = { server_laps?: number; seconds?: number; lap_ms?: number }
+
+/** The nearest server lap of the driver, so an admin sees why the lap did not count. */
+function hintText(t: TFunction, raw: Record<string, unknown>): string {
+  const hint = raw as Hint
+  if (!hint.server_laps) return t('flaggedLaps.hintNone')
+  const seconds = hint.seconds ?? 0
+  return t('flaggedLaps.hint', {
+    time: `${seconds > 0 ? '+' : '−'}${Math.floor(Math.abs(seconds) / 60)}:${String(Math.abs(seconds) % 60).padStart(2, '0')}`,
+    diff: `${(hint.lap_ms ?? 0) > 0 ? '+' : ''}${((hint.lap_ms ?? 0) / 1000).toFixed(3)}`,
+  })
+}
+
+function RecheckAll({ championshipId, onDone }: { championshipId: number; onDone: () => void }) {
+  const { t } = useTranslation()
+  const [message, setMessage] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  async function run() {
+    setBusy(true)
+    setMessage(null)
+    const { data, error } = await api.POST('/api/championships/{championship_id}/telemetry/flagged/recheck', {
+      params: { path: { championship_id: championshipId } },
+    })
+    setBusy(false)
+    if (error || !data) return setMessage(errorMessage(t, error))
+    setMessage(t('flaggedLaps.recheckedAll', { league: data.league, still: data.rejected + data.pending }))
+    onDone()
+  }
+  return (
+    <div className="flagged-actions">
+      <button type="button" className="secondary" disabled={busy} onClick={run}>
+        {busy ? t('flaggedLaps.recheckingAll') : t('flaggedLaps.recheckAll')}
+      </button>
+      {message && <span role="status">{message}</span>}
     </div>
   )
 }
@@ -76,6 +116,7 @@ function FlaggedRow({ lap, onChange }: { lap: FlaggedLap; onChange: () => void }
       </td>
       <td>
         {issueText(lap.issues)}
+        {lap.match_hint && <span className="muted extra-guid">{hintText(t, lap.match_hint)}</span>}
         {message && (
           <p role="alert" className="error">
             {message}

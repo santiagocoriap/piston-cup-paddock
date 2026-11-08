@@ -2824,6 +2824,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/championships/{championship_id}/telemetry/flagged/recheck": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Recheck All Laps
+         * @description Check again all the laps with issues, for example after a fix of the server data.
+         */
+        post: operations["apps_telemetry_api_recheck_all_laps"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/telemetry-laps/{lap_id}/recheck": {
         parameters: {
             query?: never;
@@ -7243,6 +7263,19 @@ export interface components {
             round_id: number | null;
             /** Round Number */
             round_number: number | null;
+            /** Match Hint */
+            match_hint?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** RecheckAllOut */
+        RecheckAllOut: {
+            /** League */
+            league: number;
+            /** Pending */
+            pending: number;
+            /** Rejected */
+            rejected: number;
         };
         /** LapReviewOut */
         LapReviewOut: {
@@ -12819,6 +12852,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FlaggedLapOut"][];
+                };
+            };
+        };
+    };
+    apps_telemetry_api_recheck_all_laps: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                championship_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecheckAllOut"];
                 };
             };
         };

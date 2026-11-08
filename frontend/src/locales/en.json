@@ -2742,7 +2742,12 @@
       "no_server_lap": "The server does not have this lap",
       "duplicate": "Repeated lap",
       "partial_samples": "The lap has data of only a part"
-    }
+    },
+    "recheckAll": "Check all again",
+    "recheckingAll": "Checking…",
+    "recheckedAll": "Done: {{league}} count now and {{still}} still do not count.",
+    "hint": "Nearest server lap: {{time}} min, difference {{diff}} s.",
+    "hintNone": "The server has no laps of this driver."
   },
   "analysis": {
     "title": "Data analysis",
