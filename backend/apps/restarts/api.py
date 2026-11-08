@@ -182,6 +182,9 @@ def _start_times(round_: Round) -> dict[int, object]:
 
 
 def _round_restarts(round_: Round) -> RoundRestartsOut:
+    from .auto import sync_restarts
+
+    sync_restarts(round_)
     session = race_session(round_)
     restarts = list(
         Restart.objects.filter(abandoned_attempt__session=session)

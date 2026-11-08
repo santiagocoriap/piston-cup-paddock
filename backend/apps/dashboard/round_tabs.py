@@ -46,6 +46,9 @@ def tab_counts(viewer, round_: Round) -> TabCounts:
         else 0
     )
     found, _, _ = collisions(round_, "race")
+    from apps.restarts.auto import sync_restarts
+
+    sync_restarts(round_)
     restarts = Restart.objects.filter(
         abandoned_attempt__session__round=round_,
         abandoned_attempt__session__kind=Session.Kind.RACE,

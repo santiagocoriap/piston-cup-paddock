@@ -650,7 +650,8 @@
       "driver.steam_id_added": "{{actor}} agregó una cuenta de Steam a {{driver}}.",
       "driver.steam_id_removed": "{{actor}} quitó una cuenta de Steam de {{driver}}.",
       "telemetry.lap_accepted": "{{actor}} contó la vuelta {{lap}} de {{driver}}.",
-      "telemetry.lap_deleted": "{{actor}} borró una vuelta de {{driver}}."
+      "telemetry.lap_deleted": "{{actor}} borró una vuelta de {{driver}}.",
+      "restart.detected": "{{actor}} detectó {{count}} reinicios en la fecha {{number}} ({{track}}) con las largadas del colector."
     },
     "fields": {
       "role": "Rol",
