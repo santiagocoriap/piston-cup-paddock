@@ -650,7 +650,8 @@
       "driver.steam_id_added": "{{actor}} added a Steam account to {{driver}}.",
       "driver.steam_id_removed": "{{actor}} removed a Steam account from {{driver}}.",
       "telemetry.lap_accepted": "{{actor}} counted lap {{lap}} of {{driver}}.",
-      "telemetry.lap_deleted": "{{actor}} deleted a lap of {{driver}}."
+      "telemetry.lap_deleted": "{{actor}} deleted a lap of {{driver}}.",
+      "restart.detected": "{{actor}} found {{count}} restarts in round {{number}} ({{track}}) from the collector starts."
     },
     "fields": {
       "role": "Role",

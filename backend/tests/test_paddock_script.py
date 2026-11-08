@@ -13,7 +13,7 @@ from apps.competition.models import Round, SeasonEntry
 from apps.identity.models import DriverProfile, DriverSteamId
 from apps.telemetry.models import ScriptCode, TelemetryLap
 from apps.telemetry.samples import read_samples
-from apps.telemetry.script import CODE_GRACE
+from apps.telemetry.script import CODE_GRACE, recheck_all
 from apps.telemetry.services import channels_for
 
 GUID = "76561190000000001"
@@ -575,3 +575,21 @@ def test_an_admin_checks_all_the_laps_again(
     )
     assert answer == {"league": 1, "pending": 0, "rejected": 0}
     assert TelemetryLap.objects.get().match == "league"
+
+
+def test_the_laps_show_a_collector_clock_that_is_11_minutes_off(key, code, round_, driver):
+    """The events come 11 minutes after the laps, also after the events arrive."""
+    times = [113_689 + n * 437 for n in range(6)]
+    events(
+        key,
+        connected(-20),
+        race_started(-19),
+        *[server_lap(11 + n * 2, lap_ms=ms) for n, ms in enumerate(times)],
+    )
+    states = [
+        lap(code, number=n + 1, lap_time_ms=ms, ended_at=1_800_000_000 + n * 120).json()["state"]
+        for n, ms in enumerate(times)
+    ]
+    assert states[-1] in ("league", "rejected")
+    recheck_all(round_.season.championship)  # A new check sees all the pairs.
+    assert TelemetryLap.objects.filter(match="league").count() == 6

@@ -54,6 +54,11 @@ LAP_TIME_TOLERANCE_MS = 50
 # A server lap with the same lap time counts up to this far from the lap of the script. The lap
 # time is the strong check: this window only keeps a lap of an hour before from counting.
 MATCH_WINDOW = timedelta(minutes=10)
+# The offset of a collector clock from the laps: script laps and server laps with the same lap
+# time, up to OFFSET_SEARCH apart. The middle difference counts with OFFSET_MIN_PAIRS pairs.
+OFFSET_SEARCH = timedelta(minutes=30)
+OFFSET_LAP_MS = 2
+OFFSET_MIN_PAIRS = 5
 # Every driver on the server has the race code. This limit stops a flood of laps that do not
 # count. One lap of 100 seconds takes about 80 KB, so 1 GB is about 12,000 laps.
 MAX_REVIEW_BYTES = 1024**3
@@ -142,6 +147,8 @@ class Timeline:
     presences: list[Presence]
     laps: list[ServerLap]
     latest_event_at: datetime | None
+    # The clock offset of each run, from the laps (see run_offsets). None until computed.
+    offsets: dict[tuple[int, str], timedelta] | None = None
 
 
 def clock_shifts(championship: Championship, around: datetime) -> dict[tuple[int, str], timedelta]:
@@ -310,6 +317,40 @@ def _nearest(line: Timeline, guids: set[str], lap: TelemetryLap) -> dict | None:
     }
 
 
+def run_offsets(line: Timeline, championship: Championship, around: datetime) -> dict:
+    """How much later the events of each run come than the laps of the script.
+
+    Two laps of one driver with the same lap time to the millisecond are the same lap, so the
+    time between them is the error of the collector clock. The app takes the middle value of
+    all such pairs of the night, so one wrong pair does not change it."""
+    if line.offsets is not None:
+        return line.offsets
+    laps = TelemetryLap.objects.filter(
+        championship=championship,
+        driver__isnull=False,
+        recorded_at__gte=around - WINDOW,
+        recorded_at__lte=around + WINDOW,
+    ).select_related("driver")
+    guids_of: dict[int, set[str]] = {}
+    gaps: dict[tuple[int, str], list[float]] = {}
+    for lap in laps:
+        guids = guids_of.setdefault(lap.driver_id, set(lap.driver.guids()))
+        for server_lap in line.laps:
+            if (
+                server_lap.guid in guids
+                and abs(server_lap.lap_ms - lap.lap_time_ms) <= OFFSET_LAP_MS
+                and abs(server_lap.at - lap.recorded_at) <= OFFSET_SEARCH
+            ):
+                run = (server_lap.token_id, server_lap.run_id)
+                gaps.setdefault(run, []).append((server_lap.at - lap.recorded_at).total_seconds())
+    line.offsets = {
+        run: timedelta(seconds=sorted(values)[len(values) // 2])
+        for run, values in gaps.items()
+        if len(values) >= OFFSET_MIN_PAIRS
+    }
+    return line.offsets
+
+
 def match(lap: TelemetryLap, line: Timeline | None = None) -> str:
     """Link a pending lap to its session. Gives "league", "pending", or "rejected". A rejected
     lap stays, flagged with the reason, for an admin. A caller with many laps of one night can
@@ -337,15 +378,21 @@ def match(lap: TelemetryLap, line: Timeline | None = None) -> str:
         if not same_car:
             reached = max(reached, 3)
             continue
+        offset = run_offsets(line, lap.championship, lap.recorded_at).get(
+            (span.token_id, span.run_id), timedelta(0)
+        )
         witnessed = [
             server_lap
             for server_lap in line.laps
             if (server_lap.token_id, server_lap.run_id) == (span.token_id, span.run_id)
             and server_lap.guid in guids
             and abs(server_lap.lap_ms - lap.lap_time_ms) <= LAP_TIME_TOLERANCE_MS
-            and abs(server_lap.at - lap.recorded_at) <= MATCH_WINDOW
+            and abs(server_lap.at - offset - lap.recorded_at) <= MATCH_WINDOW
         ]
-        witnessed.sort(key=lambda s: abs(s.at - lap.recorded_at))
+        # The closest lap time first, then the closest time.
+        witnessed.sort(
+            key=lambda s: (abs(s.lap_ms - lap.lap_time_ms), abs(s.at - offset - lap.recorded_at))
+        )
         if not witnessed:
             reached = max(reached, 4)
             continue
