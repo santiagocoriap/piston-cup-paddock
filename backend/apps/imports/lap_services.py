@@ -48,13 +48,18 @@ def _log_laps(
     The last log is the last start. A start before a restart has its own log, so its pit entries
     and cuts do not count."""
     log_type = LOG_TYPES.get(kind)
-    log_file = (
-        PenaltyLogFile.objects.filter(round=round_, session_type=log_type)
-        .order_by("-started_at")
-        .first()
-    )
+    logs = PenaltyLogFile.objects.filter(round=round_, session_type=log_type)
+    log_file = logs.order_by("-started_at").first()
     if log_file is None:
         return None
+    if log_type == "race":
+        from apps.restarts.api import _start_times
+
+        # Real Penalty writes one log for each start. With fewer logs than collector starts,
+        # the log of the final start is missing: the last log is from a start before a
+        # restart, and its pit entries are not pit stops of the race.
+        if logs.count() < len(_start_times(round_)):
+            return None
     log = read_log(log_file)
     pits: dict[str, dict[int, str]] = {}
     for event in log.pits:

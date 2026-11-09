@@ -19,6 +19,7 @@ import json
 import secrets
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from statistics import median
 
 from django.core.files.base import ContentFile
 from django.db import transaction
@@ -59,6 +60,8 @@ MATCH_WINDOW = timedelta(minutes=10)
 OFFSET_SEARCH = timedelta(minutes=30)
 OFFSET_LAP_MS = 2
 OFFSET_MIN_PAIRS = 5
+# A driver sends the lap times of the script, so one driver alone cannot set the offset.
+OFFSET_MIN_DRIVERS = 2
 # Every driver on the server has the race code. This limit stops a flood of laps that do not
 # count. One lap of 100 seconds takes about 80 KB, so 1 GB is about 12,000 laps.
 MAX_REVIEW_BYTES = 1024**3
@@ -332,7 +335,7 @@ def run_offsets(line: Timeline, championship: Championship, around: datetime) ->
         recorded_at__lte=around + WINDOW,
     ).select_related("driver")
     guids_of: dict[int, set[str]] = {}
-    gaps: dict[tuple[int, str], list[float]] = {}
+    gaps: dict[tuple[int, str], dict[int, list[float]]] = {}
     for lap in laps:
         guids = guids_of.setdefault(lap.driver_id, set(lap.driver.guids()))
         for server_lap in line.laps:
@@ -342,12 +345,17 @@ def run_offsets(line: Timeline, championship: Championship, around: datetime) ->
                 and abs(server_lap.at - lap.recorded_at) <= OFFSET_SEARCH
             ):
                 run = (server_lap.token_id, server_lap.run_id)
-                gaps.setdefault(run, []).append((server_lap.at - lap.recorded_at).total_seconds())
-    line.offsets = {
-        run: timedelta(seconds=sorted(values)[len(values) // 2])
-        for run, values in gaps.items()
-        if len(values) >= OFFSET_MIN_PAIRS
-    }
+                gaps.setdefault(run, {}).setdefault(lap.driver_id, []).append(
+                    (server_lap.at - lap.recorded_at).total_seconds()
+                )
+    line.offsets = {}
+    for run, by_driver in gaps.items():
+        pairs = sum(len(values) for values in by_driver.values())
+        if pairs < OFFSET_MIN_PAIRS or len(by_driver) < OFFSET_MIN_DRIVERS:
+            continue
+        # One value for each driver: a driver with many laps has one vote, as all others.
+        each = sorted(median(values) for values in by_driver.values())
+        line.offsets[run] = timedelta(seconds=median(each))
     return line.offsets
 
 
@@ -463,6 +471,8 @@ def rematch(championship: Championship) -> int:
 # The channels of each sample. An older script sends only the first 8.
 CORE_CHANNELS = ["t_ms", "pos", "speed_kmh", "gas", "brake", "steer", "gear", "rpm"]
 MOTION_CHANNELS = ["x", "z", "g_lat", "g_long"]
+# The clutch pedal: 0 is up, 1 is pressed to the floor. An older script does not send it.
+PEDAL_CHANNELS = ["clutch"]
 WHEELS = ("fl", "fr", "rl", "rr")
 # The channels of the second block, at 5 samples each second. The order is the order of paddock.lua.
 VEHICLE_CHANNELS = [
@@ -492,8 +502,14 @@ def _channels(samples: list) -> dict[str, list]:
     """The script sends one row for each sample. The app stores one list for each channel."""
     if not 0 < len(samples) <= MAX_SCRIPT_SAMPLES:
         raise TelemetryError("bad_samples")
-    full = [*CORE_CHANNELS, *MOTION_CHANNELS]
-    return _rows(samples, CORE_CHANNELS if len(samples[0]) == len(CORE_CHANNELS) else full)
+    versions = [
+        CORE_CHANNELS,
+        [*CORE_CHANNELS, *MOTION_CHANNELS],
+        [*CORE_CHANNELS, *MOTION_CHANNELS, *PEDAL_CHANNELS],
+    ]
+    width = len(samples[0]) if isinstance(samples[0], list) else 0
+    names = next((v for v in versions if len(v) == width), versions[-1])
+    return _rows(samples, names)
 
 
 def _vehicle(samples: list, lap_time_ms: int) -> tuple[dict[str, list], dict]:

@@ -10038,6 +10038,29 @@ button.danger {
   touch-action: none;
 }
 
+.tm-resize {
+  position: absolute;
+  right: 0;
+  bottom: -4px;
+  left: 0;
+  z-index: 4;
+  height: 8px;
+  cursor: row-resize;
+}
+
+.tm-resize:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.tm-overview-label {
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  font-size: 11px;
+  color: var(--ink-3);
+  pointer-events: none;
+}
+
 .tm-overview svg {
   display: block;
   width: 100%;
@@ -11352,4 +11375,14 @@ button.danger {
 .analysis-lab-pick select {
   width: 100%;
   max-width: 520px;
+}
+
+.handicap-table {
+  font-variant-numeric: tabular-nums;
+}
+
+.handicap-table tfoot th,
+.handicap-table tfoot td {
+  border-top: 1px solid var(--line-strong);
+  font-weight: 700;
 }

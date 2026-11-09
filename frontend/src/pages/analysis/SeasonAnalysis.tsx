@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../../api/client'
 import type { components } from '../../api/schema'
 import { useLoad } from '../../lib/useLoad'
+import { HandicapEffect } from './HandicapEffect'
 import { BarChart, BoxChart, ChartCard, ChartGroup, DriverFilter, driverColor, HeatMap, LineChart, NetworkChart, ScatterChart, StackChart, type BoxRow, type LineSeries } from './charts'
 
 export type Season = components['schemas']['SeasonAnalysisOut']
@@ -96,6 +97,7 @@ export function SeasonAnalysis({ seasonId }: { seasonId: number }) {
         <Simulator season={season} />
         <ForecastChart drivers={drivers} />
       </ChartGroup>
+      <HandicapEffect seasonId={seasonId} hidden={hidden} />
     </div>
   )
 }

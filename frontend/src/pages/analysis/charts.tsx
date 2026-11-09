@@ -187,6 +187,16 @@ export type LineSeries = { key: number | string; label: string; color: string; p
 
 /** Lines on one x axis. Move the mouse to read the values of a lap. Drag to zoom in, and a double
  * click shows all again. */
+/** The ticks from low to high, with no floating point error such as 1.5999999999. */
+export function stepTicks(low: number, high: number, step: number): number[] {
+  const out: number[] = []
+  const digits = Math.max(0, -Math.floor(Math.log10(step)) + 2)
+  for (let n = Math.ceil(low / step - 1e-9); n * step <= high + 1e-9; n++) {
+    out.push(Number((n * step).toFixed(digits)))
+  }
+  return out
+}
+
 export function LineChart({
   series,
   xLabel,
@@ -264,17 +274,18 @@ function LinePlot({
   if (!Number.isFinite(minY)) [minY, maxY] = [0, 1]
   if (minY === maxY) [minY, maxY] = [minY - 1, maxY + 1]
   const stepY = integerY ? Math.max(1, Math.ceil((maxY - minY) / 8)) : niceStep(maxY - minY, Math.max(3, height / 60))
-  const ticksY: number[] = []
-  for (let v = Math.ceil(minY / stepY) * stepY; v <= maxY; v += stepY) ticksY.push(v)
+  const ticksY = stepTicks(minY, maxY, stepY)
   const pad = { left: 14 + Math.max(24, ...ticksY.map((v) => textWidth(formatY(v)))), right: 14, top: 12, bottom: 40 }
   const px = (x: number) => pad.left + ((x - minX) / (maxX - minX || 1)) * (width - pad.left - pad.right)
   const py = (y: number) => {
     const share = (shown(y) - minY) / (maxY - minY)
     return pad.top + (invert ? share : 1 - share) * (height - pad.top - pad.bottom)
   }
-  const stepX = niceStep(maxX - minX || 1, Math.max(2, width / 70))
-  const ticksX: number[] = []
-  for (let v = Math.ceil(minX / stepX) * stepX; v <= maxX; v += stepX) ticksX.push(v)
+  // Round numbers and lap numbers are whole numbers: no tick between them.
+  const wholeX = allX.every(Number.isInteger)
+  const niceX = niceStep(maxX - minX || 1, Math.max(2, width / 70))
+  const stepX = wholeX ? Math.max(1, Math.round(niceX)) : niceX
+  const ticksX = stepTicks(minX, maxX, stepX)
 
   function toX(event: MouseEvent<SVGSVGElement>) {
     const rect = event.currentTarget.getBoundingClientRect()
@@ -531,9 +542,7 @@ export function BoxChart({ rows, format, label }: { rows: BoxRow[]; format: (val
         const high = Math.max(...rows.flatMap((r) => [r.high, ...r.outliers]))
         const end = width - after
         const px = (v: number) => names.room + ((v - low) / (high - low || 1)) * Math.max(30, end - names.room - 10)
-        const ticks: number[] = []
-        const step = niceStep(high - low || 1, Math.max(2, (end - names.room) / 90))
-        for (let v = Math.ceil(low / step) * step; v <= high; v += step) ticks.push(v)
+        const ticks = stepTicks(low, high, niceStep(high - low || 1, Math.max(2, (end - names.room) / 90)))
         const { row, start } = rowLayout(rows.length, height, 4, bottom, 60)
         return (
           <svg className="chart" width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label}>
@@ -647,10 +656,7 @@ export function ScatterChart({ points, xLabel, yLabel, formatX = String, formatY
         const [minX, maxX] = range(points.map((p) => p.x))
         const [minY, maxY] = range(points.map((p) => p.y))
         const ticks = (a: number, b: number, count: number) => {
-          const step = niceStep(b - a, count)
-          const out: number[] = []
-          for (let v = Math.ceil(a / step) * step; v <= b; v += step) out.push(v)
-          return out
+          return stepTicks(a, b, niceStep(b - a, count))
         }
         const ticksY = ticks(minY, maxY, Math.max(3, boxHeight / 60))
         const pad = { left: 34 + Math.max(24, ...ticksY.map((v) => textWidth(formatY(v)))), right: 16, top: 14, bottom: 44 }

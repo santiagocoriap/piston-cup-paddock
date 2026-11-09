@@ -1364,28 +1364,37 @@ def entry_list(
     for entry in entries:
         model = safe_name(entry["model"])
         guid = str(entry.get("guid") or "")
-        skin = chosen_skin(content_dir, model, str(entry.get("skin") or ""))
         cars.append(
             {
                 "DRIVERNAME": ini_value(entry["name"]),
                 "TEAM": ini_value(entry.get("team", "")),
                 "GUID": guid if STEAM_ID.match(guid) else "",
                 "MODEL": model,
-                "SKIN": skin or skins.get(model.lower()) or first_skin(content_dir, model),
+                "SKIN": chosen_skin(content_dir, model, str(entry.get("skin") or "")),
                 "BALLAST": str(int(entry.get("ballast_kg", 0))),
                 "SPECTATOR_MODE": "0",
                 "RESTRICTOR": str(int(entry.get("restrictor_pct", 0))),
             }
         )
+    # The chosen skins first. A driver with no choice gets a skin that no other driver uses, so
+    # two drivers do not look the same.
+    used = {(car["MODEL"].lower(), car["SKIN"].lower()) for car in cars if car["SKIN"]}
+    for car in cars:
+        if car["SKIN"]:
+            continue
+        model = car["MODEL"]
+        choices = car_skins(content_dir, model) or [skins.get(model.lower(), "")]
+        free = [skin for skin in choices if (model.lower(), skin.lower()) not in used]
+        car["SKIN"] = (free or choices)[0] or skins.get(model.lower()) or ""
+        used.add((model.lower(), car["SKIN"].lower()))
     league_models = list(dict.fromkeys(car["MODEL"] for car in cars))
-    used = {(car["MODEL"].lower(), car["SKIN"]) for car in cars}
     for index in range(open_slots if league_models else 0):
         model = league_models[index % len(league_models)]
         # A skin that no other car uses yet, when the server has one.
         choices = car_skins(content_dir, model) or [skins.get(model.lower(), "")]
-        free = [skin for skin in choices if (model.lower(), skin) not in used]
+        free = [skin for skin in choices if (model.lower(), skin.lower()) not in used]
         skin = (free or choices)[0]
-        used.add((model.lower(), skin))
+        used.add((model.lower(), skin.lower()))
         cars.append(
             {
                 "DRIVERNAME": "",

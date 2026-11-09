@@ -64,9 +64,9 @@ export function SafetySection({ seasonId }: { seasonId: number }) {
                     ? t('safety.unknownRound')
                     : t('safety.change', {
                         laps: change.laps,
-                        up: sign(change.laps * 0.01),
                         points: change.points,
-                        down: sign(-change.points * 0.05),
+                        mine: change.per_100_laps ?? '—',
+                        field: change.field_per_100_laps ?? '—',
                         total: sign(change.change),
                         after: change.rating_after.toFixed(2),
                       })}

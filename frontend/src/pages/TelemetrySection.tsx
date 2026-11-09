@@ -154,6 +154,7 @@ function Workbench({
     speed_kmh: { key: 'speed_kmh', label: t('telemetryTool.lanes.speed_kmh'), unit: 'km/h', height: 190, digits: 0 },
     gas: { key: 'gas', label: t('telemetryTool.lanes.gas'), unit: '%', height: 90, digits: 0, range: [-4, 104] },
     brake: { key: 'brake', label: t('telemetryTool.lanes.brake'), unit: '%', height: 90, digits: 0, range: [-4, 104] },
+    clutch: { key: 'clutch', label: t('telemetryTool.lanes.clutch'), unit: '%', height: 80, digits: 0, range: [-4, 104] },
     steer: { key: 'steer', label: t('telemetryTool.lanes.steer'), unit: '°', height: 110, digits: 0, zero: true },
     gear: { key: 'gear', label: t('telemetryTool.lanes.gear'), unit: '', height: 80, digits: 0, step: true },
     rpm: { key: 'rpm', label: t('telemetryTool.lanes.rpm'), unit: 'rpm', height: 110, digits: 0 },
@@ -311,6 +312,8 @@ function Workbench({
             cursor={cursor}
             onCursor={setCursor}
             overview={refGrid?.values.speed_kmh ?? gridLaps[0].values.speed_kmh}
+            resizeLabel={t('telemetryTool.resizeLane')}
+            overviewLabel={t('telemetryTool.overview')}
           />
           <aside className="tm-side">
             {map && (

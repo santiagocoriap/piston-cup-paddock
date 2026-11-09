@@ -1851,7 +1851,7 @@
   },
   "safety": {
     "title": "Rating de seguridad",
-    "rules": "Reglas {{version}}: empieza en 3,00. +0,01 por vuelta, −0,05 por punto de incidente. Muro 1 punto, contacto con auto 2 puntos para cada auto, impacto de más de 100 km/h el doble. Provisional hasta {{laps}} vueltas. Los puntos no son culpa: las decisiones de los comisarios van aparte.",
+    "rules": "Reglas {{version}}: empieza en 2,50, entre 0,00 y 4,99. Cada fecha compara tus puntos de incidente por vuelta con los de todos los pilotos de esa carrera. Menos que el grupo: sube. Más que el grupo: baja. Una carrera limpia y completa da hasta +0,40. Cerca de 0 y de 4,99 los cambios son más chicos, así que llegar a 0 es difícil. Muro 1 punto, contacto con auto 2 puntos para cada auto, impacto de más de 100 km/h el doble. Provisional hasta {{laps}} vueltas. Los puntos no son culpa: las decisiones de los comisarios van aparte.",
     "rating": "Rating",
     "laps": "Vueltas",
     "points": "Puntos de incidente",
@@ -1863,7 +1863,7 @@
     },
     "history": "Cambios de {{name}}",
     "unknownRound": "sin eventos del colector: sin cambio (no cuenta como carrera limpia).",
-    "change": "{{laps}} vueltas {{up}}, {{points}} puntos {{down}} = {{total}} → {{after}}",
+    "change": "{{laps}} vueltas, {{points}} puntos: {{mine}} cada 100 vueltas, el grupo {{field}}. Cambio {{total}} → {{after}}",
     "howItWorks": "Cómo se calcula"
   },
   "replay": {
@@ -2627,6 +2627,7 @@
       "speed_kmh": "Velocidad",
       "gas": "Acelerador",
       "brake": "Freno",
+      "clutch": "Embrague",
       "steer": "Volante",
       "gear": "Marcha",
       "rpm": "RPM"
@@ -2652,7 +2653,9 @@
     "map": "Mapa de la pista con el cursor del gráfico",
     "noMap": "Sin posiciones del servidor, no hay mapa de la pista.",
     "mapHelp": "En rojo: el tramo del gráfico. Pasá el mouse por la pista para mover el cursor. Clic: zoom a esa curva.",
-    "mapHelpCompare": "Cada tramo tiene el color de la vuelta más rápida ahí. El tramo del gráfico va resaltado. Clic: zoom a esa curva."
+    "mapHelpCompare": "Cada tramo tiene el color de la vuelta más rápida ahí. El tramo del gráfico va resaltado. Clic: zoom a esa curva.",
+    "resizeLane": "Arrastrá este borde para cambiar la altura. Doble clic: altura normal.",
+    "overview": "Vuelta entera (velocidad). El recuadro rojo es la parte que ves: arrastralo para moverte."
   },
   "carDetail": {
     "source": {
@@ -2797,7 +2800,8 @@
       "headToHead": "Mano a mano",
       "reliability": "Fiabilidad",
       "lab": "Fuerzas, neumáticos y línea",
-      "advanced": "Métricas avanzadas"
+      "advanced": "Métricas avanzadas",
+      "handicap": "Efecto del lastre y restrictor"
     },
     "status": {
       "finished": "Terminó",
@@ -3227,6 +3231,36 @@
       "help": "Mejor vuelta en cada visita a una pista, contra la primera visita. Punto grande: nuevo récord personal.",
       "visit": "Visita",
       "none": "El piloto todavía no corrió 2 veces en la misma pista."
+    },
+    "handicap": {
+      "help": "Modelo: vuelta × (peso con lastre ÷ peso)^{{mass}} × (potencia ÷ potencia con restrictor)^{{power}}. El peso es el del auto más {{driver}} kg de piloto. Un restrictor de N % saca cerca de N % de potencia. Es una estimación: una pista con rectas largas pierde más con el restrictor.",
+      "none": "Nadie llevó lastre ni restrictor en las fechas con resultado.",
+      "perLap": "{{value}} por vuelta",
+      "total": {
+        "title": "Tiempo perdido por lastre y restrictor",
+        "help": "El costo estimado en todas las vueltas de carrera de la temporada."
+      },
+      "table": {
+        "title": "Costo por piloto",
+        "help": "Modelo: el costo estimado por vuelta. Medido: el ritmo (mediana de vueltas limpias contra la mejor mediana de la fecha) en las fechas con lastre o restrictor, menos el ritmo en las fechas sin nada. Con pocas fechas, el valor medido tiene mucho error.",
+        "driver": "Piloto",
+        "ballast": "Lastre medio",
+        "restrictor": "Restrictor medio",
+        "model": "Modelo por vuelta",
+        "total": "Total temporada",
+        "measured": "Medido",
+        "all": "Todos"
+      },
+      "cars": {
+        "title": "Costo por auto",
+        "help": "Con la mediana de vueltas limpias de la temporada en ese auto, y el peso y la potencia de los datos del juego.",
+        "car": "Auto",
+        "weight": "Peso",
+        "power": "Potencia",
+        "lap": "Vuelta típica",
+        "per10kg": "Cada 10 kg",
+        "per1pct": "Cada 1 % de restrictor"
+      }
     }
   }
 }

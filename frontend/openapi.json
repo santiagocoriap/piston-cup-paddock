@@ -8364,6 +8364,44 @@
         ]
       }
     },
+    "/api/seasons/{season_id}/handicap-effect": {
+      "get": {
+        "operationId": "apps_analytics_api_get_handicap_effect",
+        "summary": "Get Handicap Effect",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "schema": {
+              "title": "Season Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandicapEffectOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "How much time the ballast and the restrictor cost: a model estimate and the lap times.",
+        "tags": [
+          "analytics"
+        ],
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/rounds/{round_id}/replay": {
       "get": {
         "operationId": "apps_collectors_replay_api_replay",
@@ -22403,6 +22441,28 @@
             },
             "title": "Explanation",
             "type": "array"
+          },
+          "per_100_laps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Per 100 Laps"
+          },
+          "field_per_100_laps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field Per 100 Laps"
           }
         },
         "required": [
@@ -23849,6 +23909,290 @@
           "field_spread_pct"
         ],
         "title": "SeasonRoundOut",
+        "type": "object"
+      },
+      "HandicapCarOut": {
+        "properties": {
+          "car_id": {
+            "title": "Car Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "weight_kg": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Kg"
+          },
+          "power_hp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Hp"
+          },
+          "lap_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap Ms"
+          },
+          "per_10kg_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Per 10Kg Ms"
+          },
+          "per_1pct_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Per 1Pct Ms"
+          }
+        },
+        "required": [
+          "car_id",
+          "name",
+          "weight_kg",
+          "power_hp",
+          "lap_ms",
+          "per_10kg_ms",
+          "per_1pct_ms"
+        ],
+        "title": "HandicapCarOut",
+        "type": "object"
+      },
+      "HandicapDriverOut": {
+        "properties": {
+          "entry_id": {
+            "title": "Entry Id",
+            "type": "integer"
+          },
+          "driver_id": {
+            "title": "Driver Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "car": {
+            "title": "Car",
+            "type": "string"
+          },
+          "rounds": {
+            "items": {
+              "$ref": "#/components/schemas/HandicapRoundOut"
+            },
+            "title": "Rounds",
+            "type": "array"
+          },
+          "model_total_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Total Ms"
+          },
+          "model_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Pct"
+          },
+          "measured_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measured Pct"
+          }
+        },
+        "required": [
+          "entry_id",
+          "driver_id",
+          "name",
+          "car",
+          "rounds",
+          "model_total_ms",
+          "model_pct",
+          "measured_pct"
+        ],
+        "title": "HandicapDriverOut",
+        "type": "object"
+      },
+      "HandicapEffectOut": {
+        "properties": {
+          "mass_exponent": {
+            "title": "Mass Exponent",
+            "type": "number"
+          },
+          "power_exponent": {
+            "title": "Power Exponent",
+            "type": "number"
+          },
+          "driver_kg": {
+            "title": "Driver Kg",
+            "type": "integer"
+          },
+          "cars": {
+            "items": {
+              "$ref": "#/components/schemas/HandicapCarOut"
+            },
+            "title": "Cars",
+            "type": "array"
+          },
+          "drivers": {
+            "items": {
+              "$ref": "#/components/schemas/HandicapDriverOut"
+            },
+            "title": "Drivers",
+            "type": "array"
+          },
+          "model_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Pct"
+          },
+          "measured_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measured Pct"
+          }
+        },
+        "required": [
+          "mass_exponent",
+          "power_exponent",
+          "driver_kg",
+          "cars",
+          "drivers",
+          "model_pct",
+          "measured_pct"
+        ],
+        "title": "HandicapEffectOut",
+        "type": "object"
+      },
+      "HandicapRoundOut": {
+        "properties": {
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "ballast_kg": {
+            "title": "Ballast Kg",
+            "type": "integer"
+          },
+          "restrictor_pct": {
+            "title": "Restrictor Pct",
+            "type": "integer"
+          },
+          "laps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Laps"
+          },
+          "lap_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lap Ms"
+          },
+          "model_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Ms"
+          },
+          "pace_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pace Pct"
+          }
+        },
+        "required": [
+          "number",
+          "ballast_kg",
+          "restrictor_pct",
+          "laps",
+          "lap_ms",
+          "model_ms",
+          "pace_pct"
+        ],
+        "title": "HandicapRoundOut",
         "type": "object"
       },
       "CarTrackOut": {

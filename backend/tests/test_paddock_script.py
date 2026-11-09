@@ -577,19 +577,31 @@ def test_an_admin_checks_all_the_laps_again(
     assert TelemetryLap.objects.get().match == "league"
 
 
-def test_the_laps_show_a_collector_clock_that_is_11_minutes_off(key, code, round_, driver):
-    """The events come 11 minutes after the laps, also after the events arrive."""
+def eleven_minutes_off(key, code, season, guids):
+    """Laps of each driver, and the same laps from the server 11 to 21 minutes later."""
+    car = Car.objects.get(key=CAR.lower())
+    for n, guid in enumerate(guids[1:], start=2):
+        profile = DriverProfile.objects.create(display_name=f"D{n}", steam_guid=guid)
+        SeasonEntry.objects.create(season=season, driver=profile, car=car, number=n + 10)
     times = [113_689 + n * 437 for n in range(6)]
-    events(
-        key,
-        connected(-20),
-        race_started(-19),
-        *[server_lap(11 + n * 2, lap_ms=ms) for n, ms in enumerate(times)],
-    )
-    states = [
-        lap(code, number=n + 1, lap_time_ms=ms, ended_at=1_800_000_000 + n * 120).json()["state"]
-        for n, ms in enumerate(times)
-    ]
-    assert states[-1] in ("league", "rejected")
+    rows = [race_started(-19)]
+    for guid in guids:
+        rows.insert(0, connected(-20, guid=guid))
+        rows += [server_lap(11 + n * 2, guid=guid, lap_ms=ms) for n, ms in enumerate(times)]
+    events(key, *rows)
+    for guid in guids:
+        for n, ms in enumerate(times):
+            lap(code, number=n + 1, steam_id=guid, lap_time_ms=ms, ended_at=1_800_000_000 + n)
+
+
+def test_the_laps_show_a_collector_clock_that_is_11_minutes_off(key, code, round_, driver, season):
+    eleven_minutes_off(key, code, season, [GUID, "76561190000000002"])
     recheck_all(round_.season.championship)  # A new check sees all the pairs.
-    assert TelemetryLap.objects.filter(match="league").count() == 6
+    assert TelemetryLap.objects.filter(match="league").count() == 12
+
+
+def test_one_driver_alone_does_not_move_the_collector_clock(key, code, round_, driver, season):
+    eleven_minutes_off(key, code, season, [GUID])
+    recheck_all(round_.season.championship)
+    # Only the laps that are within 10 minutes of the server lap count.
+    assert TelemetryLap.objects.filter(match="league").count() == 0

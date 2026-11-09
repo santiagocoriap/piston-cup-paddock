@@ -204,3 +204,12 @@ describe('cornerExits', () => {
     expect(cornerExits(Array.from({ length: 300 }, () => 200))).toEqual([])
   })
 })
+
+describe('stepTicks', () => {
+  it('gives round numbers with no floating point error', async () => {
+    const { stepTicks } = await import('./charts')
+    expect(stepTicks(1, 2, 0.2)).toEqual([1, 1.2, 1.4, 1.6, 1.8, 2])
+    expect(stepTicks(0, 45, 10)).toEqual([0, 10, 20, 30, 40])
+  })
+})
+

@@ -27,10 +27,11 @@ JUMP_CAUSE = "jump"
 
 
 def _jump_starts(round_: Round, starts: int) -> dict[int, list[str]]:
-    """For each start number: the GUIDs with a jump start penalty. Empty when the race logs do
-    not match the starts one to one."""
+    """For each start number: the GUIDs with a jump start penalty. Log N is start N, in time
+    order. The log of the final start can be missing (it uploads later), so fewer logs than
+    starts still match. More logs than starts do not: then the order is not sure."""
     logs = list(round_.penalty_logs.filter(session_type="race").order_by("started_at"))
-    if len(logs) != starts:
+    if len(logs) > starts:
         return {}
     found = {}
     for number, log_file in enumerate(logs, start=1):
@@ -45,14 +46,71 @@ def _jump_starts(round_: Round, starts: int) -> dict[int, list[str]]:
     return found
 
 
+def _assign(round_: Round, restarts: list[Restart], starts: int) -> None:
+    """Set the reason and the responsible drivers of restarts from the evidence."""
+    from .api import _collector_evidence
+
+    evidence = _collector_evidence(round_)
+    jumps = _jump_starts(round_, starts)
+    entries = by_guid(round_.season.entries.select_related("driver"))
+    for restart in restarts:
+        number = restart.abandoned_attempt.number
+        jumpers = [entries[g] for g in jumps.get(number, []) if g in entries]
+        suggested = evidence.get(number, ([], []))[1]
+        if jumpers:
+            reason = Restart.Reason.FALSE_START
+            responsible = jumpers
+        elif suggested:
+            reason = Restart.Reason.FIRST_LAP_CRASH
+            responsible = [e for e in entries.values() if e.id == suggested[0].entry_id][:1]
+        else:
+            reason = Restart.Reason.OTHER
+            responsible = []
+        responsibility = (
+            Restart.Responsibility.DRIVERS if responsible else Restart.Responsibility.UNKNOWN
+        )
+        same = (
+            restart.reason == reason
+            and restart.responsibility == responsibility
+            and {e.id for e in restart.responsible_entries.all()} == {e.id for e in responsible}
+        )
+        if same:
+            continue  # Most views: nothing new, so no write.
+        restart.reason = reason
+        restart.responsibility = responsibility
+        restart.responsible_entries.set(responsible)
+        restart.save(update_fields=["reason", "responsibility"])
+
+
+def _unreviewed(session) -> list[Restart]:
+    """The restarts that the app made and that nobody reviewed or changed yet. New evidence (a
+    log that comes later) can still change them."""
+    return list(
+        Restart.objects.filter(
+            abandoned_attempt__session=session,
+            logged_by__isnull=True,
+            explanation=AUTO_NOTE,
+            review_status="pending",
+        ).select_related("abandoned_attempt")
+    )
+
+
 def sync_restarts(round_: Round) -> list[Restart]:
-    """Create the restarts of the collector starts that the round does not have yet."""
-    from .api import _collector_evidence, _start_times
+    """Create the restarts of the collector starts that the round does not have yet. Update
+    the suggestion of the app restarts that nobody reviewed when the race logs change."""
+    from .api import _start_times
 
     starts = _start_times(round_)
     session = race_session(round_)
     have = session.attempts.count()
-    if len(starts) < 2 or have >= len(starts):
+    if len(starts) < 2:
+        return []
+    if have >= len(starts):
+        logs = round_.penalty_logs.filter(session_type="race").count()
+        unreviewed = _unreviewed(session)
+        if logs and unreviewed:
+            with transaction.atomic():
+                _assign(round_, unreviewed, len(starts))
         return []
     times = [starts[n] for n in sorted(starts)]
     new_numbers = list(range(max(have, 1), len(starts)))  # The abandoned starts to add.
@@ -68,25 +126,7 @@ def sync_restarts(round_: Round) -> list[Restart]:
             ],
             None,
         )
-        evidence = _collector_evidence(round_)
-        jumps = _jump_starts(round_, len(starts))
-        entries = by_guid(round_.season.entries.select_related("driver"))
-        for restart in created:
-            number = restart.abandoned_attempt.number
-            jumpers = [entries[g] for g in jumps.get(number, []) if g in entries]
-            suggested = evidence.get(number, ([], []))[1]
-            if jumpers:
-                restart.reason = Restart.Reason.FALSE_START
-                responsible = jumpers
-            elif suggested:
-                restart.reason = Restart.Reason.FIRST_LAP_CRASH
-                responsible = [e for e in entries.values() if e.id == suggested[0].entry_id][:1]
-            else:
-                responsible = []
-            if responsible:
-                restart.responsibility = Restart.Responsibility.DRIVERS
-                restart.responsible_entries.set(responsible)
-            restart.save(update_fields=["reason", "responsibility"])
+        _assign(round_, created, len(starts))
         record(
             None,
             "restart.detected",

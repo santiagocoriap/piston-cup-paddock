@@ -8,6 +8,7 @@ from apps.competition.models import Round, Season
 from apps.competition.permissions import can_view
 from apps.dashboard.api import _driver as visible_driver
 
+from .handicap_effect import handicap_effect
 from .services import add_telemetry, round_analysis, season_analysis
 
 router = Router(tags=["analytics"])
@@ -224,3 +225,53 @@ def get_driver_analysis(request, driver_id: int):
         .distinct()
     )
     return [season_analysis(s) for s in seasons if can_view(request.user, s.championship)]
+
+
+class HandicapRoundOut(Schema):
+    number: int
+    ballast_kg: int
+    restrictor_pct: int
+    laps: int | None
+    lap_ms: float | None
+    model_ms: float | None
+    pace_pct: float | None
+
+
+class HandicapDriverOut(Schema):
+    entry_id: int
+    driver_id: int
+    name: str
+    car: str
+    rounds: list[HandicapRoundOut]
+    model_total_ms: float | None
+    model_pct: float | None
+    measured_pct: float | None
+
+
+class HandicapCarOut(Schema):
+    car_id: int
+    name: str
+    weight_kg: int | None
+    power_hp: int | None
+    lap_ms: float | None
+    per_10kg_ms: float | None
+    per_1pct_ms: float | None
+
+
+class HandicapEffectOut(Schema):
+    mass_exponent: float
+    power_exponent: float
+    driver_kg: int
+    cars: list[HandicapCarOut]
+    drivers: list[HandicapDriverOut]
+    model_pct: float | None
+    measured_pct: float | None
+
+
+@router.get("/seasons/{season_id}/handicap-effect", response=HandicapEffectOut)
+def get_handicap_effect(request, season_id: int):
+    """How much time the ballast and the restrictor cost: a model estimate and the lap times."""
+    season = get_object_or_404(Season.objects.select_related("championship"), pk=season_id)
+    if not can_view(request.user, season.championship):
+        raise Http404
+    return handicap_effect(season)
