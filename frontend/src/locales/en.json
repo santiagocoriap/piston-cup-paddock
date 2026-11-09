@@ -1851,7 +1851,7 @@
   },
   "safety": {
     "title": "Safety rating",
-    "rules": "Rules {{version}}: starts at 3.00. +0.01 for each lap, −0.05 for each incident point. Wall 1 point, car contact 2 points for each car, an impact faster than 100 km/h double. Provisional until {{laps}} laps. Points are not blame: steward decisions stay separate.",
+    "rules": "Rules {{version}}: starts at 2.50, between 0.00 and 4.99. Each round compares your incident points per lap with all the drivers of that race. Fewer than the field: it goes up. More than the field: it goes down. A clean full race gives up to +0.40. Near 0 and 4.99 the changes are smaller, so 0 is hard to reach. Wall 1 point, car contact 2 points for each car, an impact faster than 100 km/h double. Provisional until {{laps}} laps. Points are not blame: steward decisions stay separate.",
     "rating": "Rating",
     "laps": "Laps",
     "points": "Incident points",
@@ -1863,7 +1863,7 @@
     },
     "history": "Changes of {{name}}",
     "unknownRound": "no collector events: no change (it does not count as a clean race).",
-    "change": "{{laps}} laps {{up}}, {{points}} points {{down}} = {{total}} → {{after}}",
+    "change": "{{laps}} laps, {{points}} points: {{mine}} per 100 laps, the field {{field}}. Change {{total}} → {{after}}",
     "howItWorks": "How it works"
   },
   "replay": {
@@ -2627,6 +2627,7 @@
       "speed_kmh": "Speed",
       "gas": "Throttle",
       "brake": "Brake",
+      "clutch": "Clutch",
       "steer": "Steering",
       "gear": "Gear",
       "rpm": "RPM"
@@ -2652,7 +2653,9 @@
     "map": "Track map with the chart cursor",
     "noMap": "Without server positions, there is no track map.",
     "mapHelp": "In red: the part on the chart. Move the mouse on the track to move the cursor. Click: zoom to that corner.",
-    "mapHelpCompare": "Each part has the color of the fastest lap there. The part on the chart is bright. Click: zoom to that corner."
+    "mapHelpCompare": "Each part has the color of the fastest lap there. The part on the chart is bright. Click: zoom to that corner.",
+    "resizeLane": "Drag this edge to change the height. Double click: normal height.",
+    "overview": "Full lap (speed). The red box is the part on screen: drag it to move."
   },
   "carDetail": {
     "source": {
@@ -2797,7 +2800,8 @@
       "headToHead": "Head to head",
       "reliability": "Reliability",
       "lab": "Forces, tyres, and line",
-      "advanced": "Advanced metrics"
+      "advanced": "Advanced metrics",
+      "handicap": "Effect of ballast and restrictor"
     },
     "status": {
       "finished": "Finished",
@@ -3227,6 +3231,36 @@
       "help": "The best lap on each visit to a track, against the first visit. Large point: a new personal best.",
       "visit": "Visit",
       "none": "The driver has not raced 2 times on the same track."
+    },
+    "handicap": {
+      "help": "Model: lap × (weight with ballast ÷ weight)^{{mass}} × (power ÷ power with restrictor)^{{power}}. The weight is the car plus {{driver}} kg of driver. A restrictor of N % takes about N % of the power. It is an estimate: a track with long straights loses more with the restrictor.",
+      "none": "Nobody carried ballast or restrictor in the rounds with a result.",
+      "perLap": "{{value}} per lap",
+      "total": {
+        "title": "Time lost to ballast and restrictor",
+        "help": "The estimated cost on all race laps of the season."
+      },
+      "table": {
+        "title": "Cost per driver",
+        "help": "Model: the estimated cost per lap. Measured: the pace (median clean lap against the best median of the round) in rounds with ballast or restrictor, minus the pace in rounds with none. With few rounds, the measured value has a large error.",
+        "driver": "Driver",
+        "ballast": "Mean ballast",
+        "restrictor": "Mean restrictor",
+        "model": "Model per lap",
+        "total": "Season total",
+        "measured": "Measured",
+        "all": "All"
+      },
+      "cars": {
+        "title": "Cost per car",
+        "help": "With the median clean lap of the season in that car, and the weight and the power of the game data.",
+        "car": "Car",
+        "weight": "Weight",
+        "power": "Power",
+        "lap": "Typical lap",
+        "per10kg": "Each 10 kg",
+        "per1pct": "Each 1 % of restrictor"
+      }
     }
   }
 }

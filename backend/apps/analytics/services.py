@@ -476,6 +476,8 @@ def _build_season(season: Season) -> SeasonAnalysis:
         by_entry = {d.entry_id: d for d in analysis.drivers}
         medians = [d.spread.median for d in analysis.drivers if d.spread.median]
         best_median = min(medians, default=None)
+        # The league gives no bonus for these, so the result lines do not mark them: the laps do.
+        fastest = min((d.best_ms for d in analysis.drivers if d.best_ms), default=None)
         track = round_.track_layout.track.name
         finished = []
         for entry_id in entries:
@@ -490,8 +492,10 @@ def _build_season(season: Season) -> SeasonAnalysis:
                 finish=line.position if line else None,
                 status=line.status if line else None,
                 points=line.points if line else 0,
-                pole=line.pole if line else False,
-                fastest_lap=line.fastest_lap if line else False,
+                pole=bool(line and line.pole)
+                or (pole is not None and best_qualifying.get(entry_id) == pole),
+                fastest_lap=bool(line and line.fastest_lap)
+                or (fastest is not None and driver is not None and driver.best_ms == fastest),
                 best_ms=driver.best_ms if driver else None,
                 median_ms=median,
                 stdev_ms=driver.spread.stdev if driver else None,

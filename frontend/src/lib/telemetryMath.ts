@@ -2,8 +2,8 @@
  * line up, and the time delta between them. */
 
 export const GRID = 1500
-export type Channel = 'speed_kmh' | 'gas' | 'brake' | 'steer' | 'gear' | 'rpm'
-export const CHANNELS: Channel[] = ['speed_kmh', 'gas', 'brake', 'steer', 'gear', 'rpm']
+export type Channel = 'speed_kmh' | 'gas' | 'brake' | 'clutch' | 'steer' | 'gear' | 'rpm'
+export const CHANNELS: Channel[] = ['speed_kmh', 'gas', 'brake', 'clutch', 'steer', 'gear', 'rpm']
 
 export type Lap = { id: number; channels: Record<string, number[]> }
 /** A lap on the grid: for each grid point, the value of each channel, or null. */
@@ -60,7 +60,7 @@ export function toGrid(lap: Lap): GridLap {
       values[channel] = grid.map(() => null)
       continue
     }
-    const scaled = channel === 'gas' || channel === 'brake' ? raw.map((v) => v * 100) : raw
+    const scaled = channel === 'gas' || channel === 'brake' || channel === 'clutch' ? raw.map((v) => v * 100) : raw
     values[channel] = sample(pos, scaled, channel === 'gear')
   }
   const times = lap.channels.t_ms ?? []

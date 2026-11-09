@@ -16,7 +16,7 @@ describe('SafetySection', () => {
             {
               entry_id: 1, driver_name: 'Ana', rating: 3.0, status: 'provisional', laps: 10, points: 2, per_100_laps: 20,
               history: [
-                { round_id: 9, label: '2026 R1 Highlands', status: 'rated', laps: 10, points: 2, change: 0, rating_after: 3.0,
+                { round_id: 9, label: '2026 R1 Highlands', status: 'rated', laps: 10, points: 2, change: 0, rating_after: 3.0, per_100_laps: 20, field_per_100_laps: 20,
                   explanation: ['2 pts · lap 3 · car · 60 km/h · Ana + Beto'] },
                 { round_id: 10, label: '2026 R2 Spa', status: 'unknown', laps: 12, points: 0, change: 0, rating_after: 3.0, explanation: [] },
               ],
@@ -29,7 +29,7 @@ describe('SafetySection', () => {
     expect(await screen.findByText('provisional')).toBeInTheDocument()
     expect(screen.getByText('sin datos')).toBeInTheDocument()
     await userEvent.click(screen.getByText('Cambios de Ana'))
-    expect(screen.getByText(/10 vueltas \+0.10, 2 puntos -0.10 = 0.00 → 3.00/)).toBeInTheDocument()
+    expect(screen.getByText(/10 vueltas, 2 puntos: 20 cada 100 vueltas, el grupo 20. Cambio 0.00 → 3.00/)).toBeInTheDocument()
     expect(screen.getByText('2 pts · lap 3 · car · 60 km/h · Ana + Beto')).toBeInTheDocument()
     expect(screen.getByText(/no cuenta como carrera limpia/)).toBeInTheDocument()
   })

@@ -57,6 +57,14 @@ def _round_inputs(round_: Round) -> dict[str, RoundInput]:
                 f"{round(incident.max_speed)} km/h · {' + '.join(others)}"
             )
             inputs[car].incidents.append((incident.kind, incident.max_speed, text))
+    field_points = sum(
+        incident_points(kind, speed)
+        for item in inputs.values()
+        for kind, speed, _ in item.incidents
+    )
+    field_laps = sum(item.laps for item in inputs.values())
+    for item in inputs.values():
+        item.field_points, item.field_laps = field_points, field_laps
     return inputs
 
 
@@ -69,6 +77,8 @@ class ChangeOut(Schema):
     change: float
     rating_after: float
     explanation: list[str]
+    per_100_laps: float | None = None
+    field_per_100_laps: float | None = None
 
 
 class DriverSafetyOut(Schema):

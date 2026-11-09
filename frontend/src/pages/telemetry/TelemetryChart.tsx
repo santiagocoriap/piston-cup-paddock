@@ -19,6 +19,17 @@ export type View = [number, number]
 const SYNC = 'paddock-telemetry'
 const AXIS = 58
 const MIN_SPAN = 0.004
+const MIN_LANE = 50
+const MAX_LANE = 600
+const HEIGHTS_KEY = 'paddock-telemetry-heights'
+
+function savedHeights(): Record<string, number> {
+  try {
+    return JSON.parse(localStorage.getItem(HEIGHTS_KEY) ?? '{}') as Record<string, number>
+  } catch {
+    return {}
+  }
+}
 
 /** The lanes of the telemetry, one under the other, on the same lap distance. All lanes zoom,
  * move, and show the cursor together. */
@@ -32,6 +43,8 @@ export function TelemetryChart({
   cursor,
   onCursor,
   overview,
+  resizeLabel = '',
+  overviewLabel = '',
 }: {
   x: number[]
   xLabel: (value: number) => string
@@ -42,6 +55,10 @@ export function TelemetryChart({
   cursor: number | null
   onCursor: (index: number | null) => void
   overview: (number | null)[]
+  /** The help text of the bottom edge of a lane. */
+  resizeLabel?: string
+  /** The text over the bar of the whole lap. */
+  overviewLabel?: string
 }) {
   const box = useRef<HTMLDivElement>(null)
   const holders = useRef<(HTMLDivElement | null)[]>([])
@@ -49,6 +66,8 @@ export function TelemetryChart({
   const applying = useRef(false)
   const fromChart = useRef(false)
   const viewRef = useRef(view)
+  // The height of each lane that the user changed, by lane key. It stays for the next visit.
+  const heights = useRef<Record<string, number>>(savedHeights())
   const [width, setWidth] = useState(0)
   const [hovered, setHovered] = useState<number | null>(null)
   // The drawing area of the plots, so that the overview bar lines up with it.
@@ -86,7 +105,7 @@ export function TelemetryChart({
       const last = index === lanes.length - 1
       const opts: uPlot.Options = {
         width,
-        height: lane.def.height + (last ? 34 : 0),
+        height: (heights.current[lane.def.key] ?? lane.def.height) + (last ? 34 : 0),
         legend: { show: false },
         cursor: {
           sync: { key: SYNC, setSeries: false },
@@ -255,6 +274,49 @@ export function TelemetryChart({
     plot.setCursor({ left: plot.valToPos(x[cursor], 'x'), top: plot.bbox.height / devicePixelRatio / 2 })
   }, [cursor, x])
 
+  /** Drag the bottom edge of a lane to change its height. A double click gives the first height. */
+  function resize(index: number, event: ReactPointerEvent<HTMLDivElement>) {
+    const plot = plots.current[index]
+    const lane = lanes[index]
+    if (!plot || !lane) return
+    event.preventDefault()
+    const extra = index === lanes.length - 1 ? 34 : 0
+    const startY = event.clientY
+    const start = heights.current[lane.def.key] ?? lane.def.height
+    const target = event.currentTarget
+    target.setPointerCapture(event.pointerId)
+    const move = (e: PointerEvent) => {
+      const next = Math.round(Math.min(MAX_LANE, Math.max(MIN_LANE, start + e.clientY - startY)))
+      heights.current = { ...heights.current, [lane.def.key]: next }
+      plot.setSize({ width: plot.width, height: next + extra })
+    }
+    const up = () => {
+      target.removeEventListener('pointermove', move)
+      target.removeEventListener('pointerup', up)
+      try {
+        localStorage.setItem(HEIGHTS_KEY, JSON.stringify(heights.current))
+      } catch {
+        // No storage: the height stays until the page closes.
+      }
+    }
+    target.addEventListener('pointermove', move)
+    target.addEventListener('pointerup', up)
+  }
+
+  function resetHeight(index: number) {
+    const plot = plots.current[index]
+    const lane = lanes[index]
+    if (!plot || !lane) return
+    const { [lane.def.key]: _removed, ...rest } = heights.current
+    heights.current = rest
+    plot.setSize({ width: plot.width, height: lane.def.height + (index === lanes.length - 1 ? 34 : 0) })
+    try {
+      localStorage.setItem(HEIGHTS_KEY, JSON.stringify(rest))
+    } catch {
+      // No storage.
+    }
+  }
+
   const first = plots.current[0]
   // The cursor place in the lane, from the left side of the lane.
   const left = cursor !== null && first ? first.over.offsetLeft + first.valToPos(x[cursor], 'x') : null
@@ -273,6 +335,15 @@ export function TelemetryChart({
             {lane.def.unit && <small> {lane.def.unit}</small>}
           </span>
           <div ref={(element) => void (holders.current[index] = element)} />
+          <div
+            className="tm-resize"
+            role="separator"
+            aria-orientation="horizontal"
+            aria-label={resizeLabel}
+            title={resizeLabel}
+            onPointerDown={(event) => resize(index, event)}
+            onDoubleClick={() => resetHeight(index)}
+          />
           {hovered === index && cursor !== null && left !== null && (
             <div className={left > width * 0.6 ? 'tm-tip left' : 'tm-tip'} style={{ left }}>
               <b>{xLabel(x[cursor])}</b>
@@ -294,7 +365,7 @@ export function TelemetryChart({
           )}
         </div>
       ))}
-      <Overview x={x} values={overview} view={view} onView={onView} full={full} area={area} />
+      <Overview x={x} values={overview} view={view} onView={onView} full={full} area={area} label={overviewLabel} />
     </div>
   )
 }
@@ -308,6 +379,7 @@ function Overview({
   onView,
   full,
   area,
+  label,
 }: {
   x: number[]
   values: (number | null)[]
@@ -315,8 +387,20 @@ function Overview({
   onView: (view: View) => void
   full: View
   area: { left: number; width: number }
+  label: string
 }) {
-  const inner = Math.max(area.width, 1)
+  // The bar measures its own width. Before the plots have a size, area.width is 0.
+  const bar = useRef<HTMLDivElement>(null)
+  const [own, setOwn] = useState(0)
+  useLayoutEffect(() => {
+    const element = bar.current
+    if (!element) return
+    const observer = new ResizeObserver(() => setOwn(element.clientWidth))
+    observer.observe(element)
+    setOwn(element.clientWidth)
+    return () => observer.disconnect()
+  }, [])
+  const inner = Math.max(own, 1)
   const span = full[1] - full[0] || 1
   const px = (v: number) => ((v - full[0]) / span) * inner
   const numbers = values.filter((v): v is number => v !== null)
@@ -349,7 +433,14 @@ function Overview({
   }
 
   return (
-    <div className="tm-overview" style={{ marginLeft: area.left, width: inner }} onPointerDown={drag}>
+    <div
+      ref={bar}
+      className="tm-overview"
+      style={{ marginLeft: area.left, width: area.width > 0 ? area.width : undefined }}
+      onPointerDown={drag}
+      title={label}
+    >
+      {label && <span className="tm-overview-label">{label}</span>}
       <svg viewBox={`0 0 ${inner} 32`} preserveAspectRatio="none" aria-hidden="true">
         <polyline points={points} />
       </svg>

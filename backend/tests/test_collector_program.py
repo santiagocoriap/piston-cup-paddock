@@ -400,6 +400,16 @@ def test_a_chosen_skin_that_the_server_does_not_have_is_replaced(preset):
     assert cars[1]["SKIN"] == "a_skin"  # The first skin of the car, as with no choice.
 
 
+def test_drivers_with_no_skin_choice_get_different_skins(preset):
+    entries = [dict(entry) for entry in CONTENT["entries"]]
+    third = {**entries[1], "number": 9, "name": "Ceci", "guid": "76561190000000003"}
+    entries = [entries[0], {**entries[1], "skin": "A_SKIN"}, third]
+    pc.write_setup(preset, {**CONTENT, "entries": entries})
+    cars = pc.car_blocks((preset / "entry_list.ini").read_text(encoding="utf-8"))
+    # Juan chose a_skin, so Ceci (no choice) gets the other skin, not the same one.
+    assert [c["SKIN"] for c in cars[1:3]] == ["a_skin", "b_skin"]
+
+
 def test_the_setup_goes_into_the_preset_and_keeps_the_rest(preset):
     backup = pc.write_setup(preset, CONTENT)
 

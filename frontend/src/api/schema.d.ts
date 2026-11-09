@@ -3121,6 +3121,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/seasons/{season_id}/handicap-effect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Handicap Effect
+         * @description How much time the ballast and the restrictor cost: a model estimate and the lap times.
+         */
+        get: operations["apps_analytics_api_get_handicap_effect"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/rounds/{round_id}/replay": {
         parameters: {
             query?: never;
@@ -7643,6 +7663,10 @@ export interface components {
             rating_after: number;
             /** Explanation */
             explanation: string[];
+            /** Per 100 Laps */
+            per_100_laps?: number | null;
+            /** Field Per 100 Laps */
+            field_per_100_laps?: number | null;
         };
         /** DriverSafetyOut */
         DriverSafetyOut: {
@@ -8001,6 +8025,76 @@ export interface components {
             corners: number | null;
             /** Field Spread Pct */
             field_spread_pct: number | null;
+        };
+        /** HandicapCarOut */
+        HandicapCarOut: {
+            /** Car Id */
+            car_id: number;
+            /** Name */
+            name: string;
+            /** Weight Kg */
+            weight_kg: number | null;
+            /** Power Hp */
+            power_hp: number | null;
+            /** Lap Ms */
+            lap_ms: number | null;
+            /** Per 10Kg Ms */
+            per_10kg_ms: number | null;
+            /** Per 1Pct Ms */
+            per_1pct_ms: number | null;
+        };
+        /** HandicapDriverOut */
+        HandicapDriverOut: {
+            /** Entry Id */
+            entry_id: number;
+            /** Driver Id */
+            driver_id: number;
+            /** Name */
+            name: string;
+            /** Car */
+            car: string;
+            /** Rounds */
+            rounds: components["schemas"]["HandicapRoundOut"][];
+            /** Model Total Ms */
+            model_total_ms: number | null;
+            /** Model Pct */
+            model_pct: number | null;
+            /** Measured Pct */
+            measured_pct: number | null;
+        };
+        /** HandicapEffectOut */
+        HandicapEffectOut: {
+            /** Mass Exponent */
+            mass_exponent: number;
+            /** Power Exponent */
+            power_exponent: number;
+            /** Driver Kg */
+            driver_kg: number;
+            /** Cars */
+            cars: components["schemas"]["HandicapCarOut"][];
+            /** Drivers */
+            drivers: components["schemas"]["HandicapDriverOut"][];
+            /** Model Pct */
+            model_pct: number | null;
+            /** Measured Pct */
+            measured_pct: number | null;
+        };
+        /** HandicapRoundOut */
+        HandicapRoundOut: {
+            /** Number */
+            number: number;
+            /** Ballast Kg */
+            ballast_kg: number;
+            /** Restrictor Pct */
+            restrictor_pct: number;
+            /** Laps */
+            laps: number | null;
+            /** Lap Ms */
+            lap_ms: number | null;
+            /** Model Ms */
+            model_ms: number | null;
+            /** Pace Pct */
+            pace_pct: number | null;
         };
         /** CarTrackOut */
         CarTrackOut: {
@@ -13231,6 +13325,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SeasonAnalysisOut"][];
+                };
+            };
+        };
+    };
+    apps_analytics_api_get_handicap_effect: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HandicapEffectOut"];
                 };
             };
         };

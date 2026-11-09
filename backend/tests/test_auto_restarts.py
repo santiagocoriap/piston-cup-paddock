@@ -60,7 +60,7 @@ def starts_at(*seconds):
     return [("session_started", s, {"type": 3}) for s in seconds]
 
 
-def race_log(minute: int, jumpers=()) -> bytes:
+def race_log(minute: int, jumpers=(), pit=()) -> bytes:
     stamp = f"2026-10-17 21:{minute:02d}:00.000000"
     lines = [
         f"{stamp}: ----------------------------------------------------",
@@ -73,6 +73,11 @@ def race_log(minute: int, jumpers=()) -> bytes:
         lines.append(
             f"{stamp}: New penalty - Car ID: {car_id} - Name: D - GUID: {guid} - Penalty: "
             "Drive Through - Cause: jump - Other: ['15'] - Lap: 1 - Laps left: 2 - ID: 1 - True"
+        )
+    for car_id, guid in enumerate(pit):
+        lines.append(
+            f"{stamp}: Pit lane entered - Car: {car_id} - Driver: D - GUID: {guid} - "
+            "Correct way: True - lap: 1"
         )
     lines.append(f"2026-10-17 21:{minute:02d}:50.000000: End session - new info from AC")
     return ("\n".join(lines) + "\n").encode()
@@ -141,3 +146,33 @@ def test_one_race_start_gives_no_restart(api, champ_admin, round_):
     api(champ_admin).get(f"/rounds/{round_.id}/restarts")
     assert not Restart.objects.exists()
     assert Round.objects.count() == 1
+
+
+def test_the_jump_start_counts_when_the_log_of_the_final_start_is_missing(
+    api, champ_admin, round_, grid
+):
+    collector(round_, champ_admin, starts_at(0, 120, 200))
+    api(champ_admin).get(f"/rounds/{round_.id}/restarts")  # Before the logs: no jump.
+    for minute, jumpers in ((0, (GUIDS[0],)), (2, ())):  # The log of start 3 is not here.
+        upload_log(round_, f"race_{minute}.log", race_log(minute, jumpers), champ_admin)
+    api(champ_admin).get(f"/rounds/{round_.id}/restarts")
+    first = Restart.objects.get(abandoned_attempt__number=1)
+    assert first.reason == Restart.Reason.FALSE_START
+    assert list(first.responsible_entries.all()) == [grid[0]]
+    # A reviewed restart does not change any more.
+    first.review_status = "confirmed"
+    first.save()
+    second = Restart.objects.get(abandoned_attempt__number=2)
+    assert second.reason == Restart.Reason.OTHER
+
+
+def test_a_pit_entry_in_the_log_of_a_restart_is_not_a_pit_stop(api, champ_admin, round_):
+    from apps.competition.models import Session
+    from apps.imports.lap_services import _log_laps
+
+    collector(round_, champ_admin, starts_at(0, 120))
+    upload_log(round_, "race_0.log", race_log(0, pit=(GUIDS[1],)), champ_admin)
+    assert _log_laps(round_, Session.Kind.RACE) is None  # The final start has no log yet.
+    upload_log(round_, "race_2.log", race_log(2), champ_admin)
+    pits, _ = _log_laps(round_, Session.Kind.RACE)
+    assert pits == {}  # The final log: no pit entry.

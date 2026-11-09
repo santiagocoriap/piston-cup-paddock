@@ -184,6 +184,8 @@ function script.update(dt)
       math.floor(car.position.z * 100) / 100,
       math.floor(car.acceleration.x * 100) / 100,
       math.floor(car.acceleration.z * 100) / 100,
+      -- AC gives 1 when the clutch is engaged (pedal up). The app stores the pedal: 1 is pressed.
+      math.floor((1 - (car.clutch or 1)) * 1000) / 1000,
     }
   end
   sinceVehicle = sinceVehicle + dt

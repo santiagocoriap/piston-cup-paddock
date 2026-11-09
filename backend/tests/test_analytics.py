@@ -217,3 +217,34 @@ def test_a_car_on_the_grid_is_on_lap_1_after_the_line():
     track = racecraft.progress_track(samples)
     assert round(track[0][0], 2) == -0.01
     assert round(track[3][0], 2) == 0.01
+
+
+def test_the_model_cost_of_ballast_and_restrictor():
+    from apps.analytics.handicap_effect import lap_factor
+
+    assert lap_factor(1000, 0, 0) == 1
+    ten_kg = lap_factor(1000, 10, 0) - 1
+    one_pct = lap_factor(1000, 0, 1) - 1
+    assert 0.001 < ten_kg < 0.002  # About 0.15 s on a lap of 100 s.
+    assert 0.002 < one_pct < 0.004
+    assert lap_factor(1000, 10, 1) > lap_factor(1000, 10, 0)
+
+
+def test_handicap_effect_of_the_real_night(api, night):
+    from apps.catalog.models import Car
+    from apps.handicaps.models import UsedHandicap
+
+    admin, round_ = night
+    Car.objects.update(weight_kg=1000, power_hp=500)
+    entry = round_.season.entries.order_by("number").first()
+    UsedHandicap.objects.update_or_create(
+        round=round_, entry=entry, defaults={"ballast_kg": 20, "restrictor_pct": 2}
+    )
+    data = api(admin).get(f"/seasons/{round_.season_id}/handicap-effect").json()
+    mine = next(d for d in data["drivers"] if d["entry_id"] == entry.id)
+    first = mine["rounds"][0]
+    assert (first["ballast_kg"], first["restrictor_pct"]) == (20, 2)
+    assert first["model_ms"] > 0
+    assert mine["model_total_ms"] == pytest.approx(first["model_ms"] * first["laps"], rel=0.01)
+    assert data["cars"][0]["per_10kg_ms"] > 0
+    assert mine["measured_pct"] is None  # No round without a handicap to compare.

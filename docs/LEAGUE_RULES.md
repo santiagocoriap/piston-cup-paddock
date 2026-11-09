@@ -96,17 +96,23 @@ Examples for a driver who only wins:
 
 ## Safety rating
 
-The league agreed to these rules on 2026-10-12 (rules version `safety-1`).
+The league agreed to rules version `safety-1` on 2026-10-12. Rules version `safety-2` replaces it on 2026-11-08.
 
-- Only the accepted race start of each round counts. Practice, qualifying, and abandoned starts do not count.
+- Incidents of every start count: the qualifying, the abandoned race starts, and the accepted race start. A crash before a restart counts.
 - Incidents come from the collision events of the server collector, grouped as in "Incidents" (3 seconds, shared car).
 - Incident points for each driver in an incident:
   - Contact with the track or a wall: 1 point.
   - Contact with another car: 2 points for each car in the contact.
   - An impact faster than 100 km/h counts double.
-- Exposure is laps driven, from the race result file. The page also shows points per 100 laps.
-- The rating starts at 3.00. It stays between 0.00 and 5.00.
-- Each round changes the rating: +0.01 for each lap driven, and −0.05 for each incident point. The page shows this sum for each round.
+- Exposure is laps driven in the qualifying and the race, from the result files.
+- The rating starts at 2.50. It stays between 0.00 and 4.99.
+- As in iRacing, the rating compares incidents with the distance driven. Different from iRacing, the target is the field of the same round, not a fixed number:
+  - Driver rate = the incident points of the driver ÷ the laps of the driver.
+  - Field rate = the incident points of all drivers ÷ the laps of all drivers, in the same round.
+  - Score = (field rate − driver rate) ÷ field rate, from −1 to +1. No incidents give +1. The field rate gives 0. Twice the field rate or more gives −1.
+  - When the field has no incidents, a driver with no incidents gets +1.
+- Change = 0.40 × score × (laps ÷ 20, at most 1).
+  - A gain is multiplied by (4.99 − rating) ÷ 2.49. A loss is multiplied by rating ÷ 2.50. So the changes get smaller near the ends, and 0.00 is hard to reach.
 - A driver is provisional until 50 rated laps.
 - A round without collector events gives no change. Its status is unknown, not zero incidents.
 - Incident points are not blame. Steward decisions and restarts caused stay separate.
