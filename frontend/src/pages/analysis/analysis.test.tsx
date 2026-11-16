@@ -213,3 +213,19 @@ describe('stepTicks', () => {
   })
 })
 
+describe('team analysis', () => {
+  it('groups the drivers by team and counts the teammate duels', async () => {
+    const { seasonTeams, headToHead } = await import('./TeamAnalysis')
+    const cell = (number: number, finish: number, grid: number) => ({ number, finish, grid })
+    const a = { driver_id: 1, name: 'A', team: 'Rojo', points: 40, cells: [cell(1, 1, 2), cell(2, 3, 1)] }
+    const b = { driver_id: 2, name: 'B', team: 'Rojo', points: 20, cells: [cell(1, 2, 1), cell(2, 2, 3)] }
+    const c = { driver_id: 3, name: 'C', team: 'Azul', points: 50, cells: [] }
+    const d = { driver_id: 4, name: 'D', team: '', points: 99, cells: [] }
+    // @ts-expect-error The test drivers have only the fields that the functions read.
+    const teams = seasonTeams([a, b, c, d])
+    expect(teams.map((t) => [t.name, t.drivers.length])).toEqual([['Rojo', 2], ['Azul', 1]])
+    // @ts-expect-error The same partial drivers.
+    expect(headToHead(a, b)).toEqual({ races: 2, raceA: 1, raceB: 1, grids: 2, gridA: 1, gridB: 1 })
+  })
+})
+

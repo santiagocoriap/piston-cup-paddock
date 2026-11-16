@@ -105,7 +105,7 @@ export function ChampionshipPage() {
 
       <h2>{t('championship.seasons')}</h2>
       {data.seasons.length === 0 && <p className="muted">{t('championship.noSeasons')}</p>}
-      <ul className="champ-grid">
+      <ul className="season-list">
         {[...data.seasons].reverse().map((season) => (
           <SeasonCard
             key={season.id}
@@ -158,7 +158,7 @@ export function ChampionshipPage() {
   )
 }
 
-/** A season card: the progress bar, the leader, and the next round. */
+/** A season row: the progress and the calendar, the leaders, and the last and next rounds. */
 function SeasonCard({
   season,
   progress,
@@ -176,38 +176,117 @@ function SeasonCard({
   const done = progress?.done ?? 0
   const total = progress?.total ?? season.planned_round_count
   const next = progress?.next_round
+  const last = progress?.last_round
+  const podium = progress?.podium ?? []
+  const teams = progress?.teams ?? []
+  const calendar = progress?.calendar ?? []
+  const finished = total > 0 && done >= total
   return (
-    <li className="champ-card">
-      <div className="champ-head">
-        <span className="champ-icon">
-          <Icon name="flag" />
-        </span>
-        <div>
-          <h3>
-            <Link to={`/seasons/${season.id}`}>{season.name}</Link>
-          </h3>
-          <p className="muted">{t('season.plannedRounds', { count: season.planned_round_count })}</p>
+    <li className={latest ? 'season-row is-latest' : 'season-row'}>
+      <div className="season-row-main">
+        <div className="season-row-head">
+          <span className="champ-icon">
+            <Icon name="flag" />
+          </span>
+          <div className="season-row-title">
+            <h3>
+              <Link to={`/seasons/${season.id}`}>{season.name}</Link>
+            </h3>
+            <p className="muted">
+              {[
+                t('season.plannedRounds', { count: season.planned_round_count }),
+                t('championship.drivers', { count: progress?.drivers ?? 0 }),
+                ...(progress?.cars ?? []).slice(0, 2),
+              ].join(' · ')}
+            </p>
+          </div>
+          {latest && <span className="badge">{t('championship.latest')}</span>}
+          {finished && <span className="badge">{t('championship.finished')}</span>}
+          {adminView && <DangerMenu target={{ kind: 'season', id: season.id, name: season.name }} onDeleted={onDeleted} />}
         </div>
-        {latest && <span className="badge">{t('championship.latest')}</span>}
-        {adminView && <DangerMenu target={{ kind: 'season', id: season.id, name: season.name }} onDeleted={onDeleted} />}
+        <div className="season-progress">
+          <span>{t('championship.progress', { done, total })}</span>
+          <span
+            className="season-progress-bar"
+            role="progressbar"
+            aria-label={t('championship.progress', { done, total })}
+            aria-valuemin={0}
+            aria-valuemax={total}
+            aria-valuenow={done}
+          >
+            <span style={{ width: `${total ? Math.min(100, (done / total) * 100) : 0}%` }} />
+          </span>
+        </div>
+        {calendar.length > 0 && (
+          <ol className="season-dots" aria-label={t('championship.calendar')}>
+            {calendar.map((dot) => (
+              <li key={dot.round_id}>
+                <Link
+                  to={`/rounds/${dot.round_id}`}
+                  className={`season-dot ${dot.state}${next?.round_id === dot.round_id ? ' next' : ''}`}
+                  title={`${t('season.roundLabel', { number: dot.number })} · ${dot.track_name} · ${t(`championship.dot.${dot.state}`)}`}
+                  aria-label={`${t('season.roundLabel', { number: dot.number })} · ${dot.track_name} · ${t(`championship.dot.${dot.state}`)}`}
+                >
+                  {dot.number}
+                </Link>
+              </li>
+            ))}
+          </ol>
+        )}
+        {adminView && (
+          <p className="muted champ-season">{t('championship.protestWindow', { count: season.protest_window_minutes })}</p>
+        )}
       </div>
-      <div className="season-progress">
-        <span>{t('championship.progress', { done, total })}</span>
-        <span
-          className="season-progress-bar"
-          role="progressbar"
-          aria-label={t('championship.progress', { done, total })}
-          aria-valuemin={0}
-          aria-valuemax={total}
-          aria-valuenow={done}
-        >
-          <span style={{ width: `${total ? Math.min(100, (done / total) * 100) : 0}%` }} />
-        </span>
+
+      <div className="season-row-standings">
+        <h4>{t('championship.drivers_title')}</h4>
+        {podium.length > 0 ? (
+          <ol className="season-podium">
+            {podium.map((row, index) => (
+              <li key={row.name} className={`medal-${index + 1}`}>
+                <span className="season-podium-pos">{index + 1}</span>
+                <span className="season-podium-name">
+                  {row.name}
+                  {row.team && <small>{row.team}</small>}
+                </span>
+                <b>{t('championship.points', { count: row.points })}</b>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="muted">{t('championship.noPoints')}</p>
+        )}
+        {teams.length > 0 && (
+          <>
+            <h4>{t('championship.teams_title')}</h4>
+            <ol className="season-teams">
+              {teams.map((row, index) => (
+                <li key={row.name}>
+                  <span className="season-podium-pos">{index + 1}</span>
+                  <span className="season-podium-name">{row.name}</span>
+                  <b>{t('championship.points', { count: row.points })}</b>
+                </li>
+              ))}
+            </ol>
+          </>
+        )}
       </div>
-      <dl className="champ-facts">
+
+      <dl className="season-row-facts">
         <div>
-          <dt>{t('seasonStats.leader')}</dt>
-          <dd>{progress?.leader ?? '—'}</dd>
+          <dt>{t('championship.lastRound')}</dt>
+          <dd>
+            {last ? (
+              <>
+                <Link to={`/rounds/${last.round_id}`}>
+                  {t('season.roundLabel', { number: last.number })} · {last.track_name}
+                </Link>
+                <small>{last.winner ? t('championship.winner', { name: last.winner }) : '—'}</small>
+              </>
+            ) : (
+              '—'
+            )}
+          </dd>
         </div>
         <div>
           <dt>{t('seasonStats.next')}</dt>
@@ -224,16 +303,11 @@ function SeasonCard({
             )}
           </dd>
         </div>
+        <Link className="button-link secondary-link season-row-open" to={`/seasons/${season.id}`}>
+          {t('championship.openSeason')}
+          <Icon name="arrow" small />
+        </Link>
       </dl>
-      {adminView && (
-        <p className="muted champ-season">
-          {t('championship.protestWindow', { count: season.protest_window_minutes })}
-        </p>
-      )}
-      <Link className="small-link" to={`/seasons/${season.id}`}>
-        {t('championship.openSeason')}
-        <Icon name="arrow" small />
-      </Link>
     </li>
   )
 }

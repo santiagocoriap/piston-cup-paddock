@@ -142,7 +142,23 @@
     "rename": "Change the name",
     "autoPublish": "Publish clean collector results automatically (they stay provisional)",
     "openSlots": "Open slots on the server",
-    "openSlotsHelp": "Extra cars after the league drivers, so a driver can change car. \"Send to server\" uses this number."
+    "openSlotsHelp": "Extra cars after the league drivers, so a driver can change car. \"Send to server\" uses this number.",
+    "drivers_one": "{{count}} driver",
+    "drivers_other": "{{count}} drivers",
+    "finished": "Finished",
+    "calendar": "Season calendar",
+    "dot": {
+      "done": "raced",
+      "cancelled": "cancelled",
+      "planned": "to race"
+    },
+    "drivers_title": "Drivers",
+    "teams_title": "Teams",
+    "points_one": "{{count}} pt",
+    "points_other": "{{count}} pts",
+    "noPoints": "No points yet.",
+    "lastRound": "Last round",
+    "winner": "Won by {{name}}"
   },
   "season": {
     "plannedRounds": "{{count}} planned rounds",
@@ -413,7 +429,7 @@
     "round_started": "The round already started.",
     "round_already_cancelled": "The round is already cancelled.",
     "round_not_cancelled": "The round is not cancelled.",
-    "round_has_result": "The round has a result: the track cannot change.",
+    "round_has_result": "The round already has a result.",
     "same_track": "It is the same track.",
     "track_excluded": "That track is excluded from this ballot.",
     "grid_too_small": "The track has fewer pit boxes than drivers.",
@@ -452,7 +468,8 @@
     "class_not_found": "The class was not found.",
     "subclass_in_class_rounds": "In two rounds, the first round has only main classes.",
     "not_a_candidate": "That person already votes, or is not in the championship.",
-    "voter_already_voted": "That person already voted: the votes do not change."
+    "voter_already_voted": "That person already voted: the votes do not change.",
+    "round_has_no_date": "The round has no date and time."
   },
   "standings": {
     "title": "Drivers' championship",
@@ -651,7 +668,8 @@
       "driver.steam_id_removed": "{{actor}} removed a Steam account from {{driver}}.",
       "telemetry.lap_accepted": "{{actor}} counted lap {{lap}} of {{driver}}.",
       "telemetry.lap_deleted": "{{actor}} deleted a lap of {{driver}}.",
-      "restart.detected": "{{actor}} found {{count}} restarts in round {{number}} ({{track}}) from the collector starts."
+      "restart.detected": "{{actor}} found {{count}} restarts in round {{number}} ({{track}}) from the collector starts.",
+      "round.postponed": "{{actor}} moved round {{number}} of {{season}} {{weeks}} week(s) later, with {{count}} rounds."
     },
     "fields": {
       "role": "Role",
@@ -2040,7 +2058,9 @@
       "sol_41_light_thunderstorm": "Light thunderstorm",
       "sol_42_thunderstorm": "Thunderstorm"
     },
-    "weatherKeep": "No change (the preset weather)"
+    "weatherKeep": "No change (the preset weather)",
+    "postpone": "Move to the next week",
+    "postponeConfirm": "Move round {{number}} one week later? All later rounds with no result also move one week. The time stays the same."
   },
   "protestExtras": {
     "addEvidence": "Add evidence",
@@ -2801,7 +2821,8 @@
       "reliability": "Reliability",
       "lab": "Forces, tyres, and line",
       "advanced": "Advanced metrics",
-      "handicap": "Effect of ballast and restrictor"
+      "handicap": "Effect of ballast and restrictor",
+      "teams": "Teams"
     },
     "status": {
       "finished": "Finished",
@@ -3260,6 +3281,35 @@
         "lap": "Typical lap",
         "per10kg": "Each 10 kg",
         "per1pct": "Each 1 % of restrictor"
+      }
+    },
+    "teams": {
+      "none": "No driver has a team in this season.",
+      "noPairs": "No team has two drivers.",
+      "standings": {
+        "title": "Team championship",
+        "help": "The points of the drivers of each team, added. Each color is a driver."
+      },
+      "points": {
+        "title": "Team points after each round",
+        "help": "The points of the team after each round."
+      },
+      "pace": {
+        "title": "Team pace",
+        "help": "The mean pace of the drivers of the team in each round: the median clean lap against the best median. Lower is faster."
+      },
+      "share": {
+        "title": "Share of each driver",
+        "help": "The part of the team points that each driver scored."
+      },
+      "duels": {
+        "title": "Teammate duels",
+        "help": "The driver with the most points of each team against each teammate: races finished ahead, starts ahead, and points.",
+        "team": "Team",
+        "drivers": "Drivers",
+        "race": "Race",
+        "grid": "Start",
+        "points": "Points"
       }
     }
   }

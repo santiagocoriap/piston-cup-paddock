@@ -1,5 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Literal
+from zoneinfo import ZoneInfo
 
 from django.db import transaction
 from django.db.models import Count, Prefetch
@@ -140,6 +141,26 @@ class NextRoundBrief(Schema):
     scheduled_at: datetime | None
 
 
+class StandingBrief(Schema):
+    name: str
+    points: int
+    team: str = ""
+
+
+class LastRoundBrief(Schema):
+    round_id: int
+    number: int
+    track_name: str
+    winner: str | None
+
+
+class CalendarDot(Schema):
+    round_id: int
+    number: int
+    track_name: str
+    state: str  # "done", "cancelled", or "planned"
+
+
 class LatestSeasonOut(Schema):
     season_id: int
     name: str
@@ -147,6 +168,13 @@ class LatestSeasonOut(Schema):
     total: int  # The planned number of rounds.
     next_round: NextRoundBrief | None
     leader: str | None  # The driver in first place, after the first points.
+    # The first three drivers and teams, after the first points.
+    podium: list[StandingBrief] = []
+    teams: list[StandingBrief] = []
+    drivers: int = 0
+    cars: list[str] = []
+    last_round: LastRoundBrief | None = None
+    calendar: list[CalendarDot] = []
 
 
 class ChampionshipDetail(ChampionshipOut):
@@ -453,22 +481,65 @@ def get_championship(request, championship_id: int):
 
 
 def _latest(season: Season) -> LatestSeasonOut:
-    """The progress of a season: rounds done, the next round, and the leader."""
-    from apps.results.services import season_standings
+    """The progress of a season: rounds done, the next round, the leaders, and the last
+    winner."""
+    from apps.results.services import current_lines, season_standings, team_standings
 
-    rounds = list(
-        season.rounds.filter(cancelled_at__isnull=True)
-        .select_related("track_layout__track", "result")
-        .order_by("number")
-    )
+    every = list(season.rounds.select_related("track_layout__track", "result").order_by("number"))
+    rounds = [r for r in every if r.cancelled_at is None]
     done = [r for r in rounds if hasattr(r, "result")]
     upcoming = next((r for r in rounds if not hasattr(r, "result")), None)
+    entries = {e.id: e for e in season.entries.select_related("driver", "car")}
     leader = None
+    podium: list[StandingBrief] = []
+    teams: list[StandingBrief] = []
+    last_round = None
     if done:
-        table = season_standings(season)
-        if table and table[0].points > 0:
-            entry = SeasonEntry.objects.select_related("driver").get(pk=table[0].entry_id)
-            leader = entry.driver.display_name
+        table = [row for row in season_standings(season) if row.points > 0]
+        if table:
+            leader = entries[table[0].entry_id].driver.display_name
+        podium = [
+            StandingBrief(
+                name=entries[row.entry_id].driver.display_name,
+                points=row.points,
+                team=entries[row.entry_id].team.strip(),
+            )
+            for row in table[:3]
+        ]
+        teams = [
+            StandingBrief(name=row.team, points=row.points)
+            for row in team_standings(season)[:3]
+            if row.points > 0
+        ]
+        last = done[-1]
+        winner = next(
+            (
+                line
+                for line in current_lines(version__result__round=last)
+                if line.position == 1 and line.status == "finished"
+            ),
+            None,
+        )
+        last_round = LastRoundBrief(
+            round_id=last.id,
+            number=last.number,
+            track_name=last.track_layout.track.name,
+            winner=entries[winner.entry_id].driver.display_name
+            if winner and winner.entry_id in entries
+            else None,
+        )
+    calendar = [
+        CalendarDot(
+            round_id=r.id,
+            number=r.number,
+            track_name=r.track_layout.track.name,
+            state="cancelled"
+            if r.cancelled_at
+            else ("done" if hasattr(r, "result") else "planned"),
+        )
+        for r in every
+    ]
+    cars = sorted({e.car.name for e in entries.values() if e.car})
     return LatestSeasonOut(
         season_id=season.id,
         name=season.name,
@@ -484,6 +555,12 @@ def _latest(season: Season) -> LatestSeasonOut:
         if upcoming
         else None,
         leader=leader,
+        podium=podium,
+        teams=teams,
+        drivers=len(entries),
+        cars=cars,
+        last_round=last_round,
+        calendar=calendar,
     )
 
 
@@ -920,6 +997,58 @@ def update_round(request, round_id: int, payload: RoundPatchIn):
         )
     round_.refresh_from_db()
     return _round_out(round_)
+
+
+class PostponeIn(Schema):
+    weeks: int = Field(1, ge=1, le=8)
+
+
+@router.post("/rounds/{round_id}/postpone", response=list[RoundOut])
+def postpone_round(request, round_id: int, payload: PostponeIn):
+    """Move a round and every later round of the season with no result by whole weeks. The
+    clock time in the event timezone stays the same. Gives the rounds that moved."""
+    round_ = get_object_or_404(Round.objects.select_related("season__championship"), pk=round_id)
+    if not can_view(request.user, round_.season.championship):
+        raise Http404
+    require(can_manage(request.user, round_.season.championship))
+    if round_.scheduled_at is None:
+        raise HttpError(422, "round_has_no_date")
+    if hasattr(round_, "result"):
+        raise HttpError(409, "round_has_result")
+    season = round_.season
+    tz = ZoneInfo(season.championship.league.timezone or DEFAULT_EVENT_TIMEZONE)
+    moved = list(
+        season.rounds.filter(
+            number__gte=round_.number, scheduled_at__isnull=False, result__isnull=True
+        )
+        .select_related("track_layout__track")
+        .order_by("number")
+    )
+    with transaction.atomic():
+        changes = []
+        for item in moved:
+            old = item.scheduled_at
+            # Add the weeks to the local time, so the start stays at the same clock time.
+            item.scheduled_at = old.astimezone(tz) + timedelta(weeks=payload.weeks)
+            item.save(update_fields=["scheduled_at"])
+            changes.append(
+                change(f"round_{item.number}", old.isoformat(), item.scheduled_at.isoformat())
+            )
+        record(
+            request.user,
+            "round.postponed",
+            "round",
+            round_.id,
+            championship=season.championship,
+            params={
+                "season": season.name,
+                "number": round_.number,
+                "weeks": payload.weeks,
+                "count": len(moved),
+            },
+            changes=changes,
+        )
+    return [_round_out(item) for item in moved]
 
 
 class RoundOrderIn(Schema):

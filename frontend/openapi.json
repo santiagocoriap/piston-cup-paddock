@@ -2837,6 +2837,58 @@
         ]
       }
     },
+    "/api/rounds/{round_id}/postpone": {
+      "post": {
+        "operationId": "apps_competition_api_postpone_round",
+        "summary": "Postpone Round",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "round_id",
+            "schema": {
+              "title": "Round Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RoundOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "Move a round and every later round of the season with no result by whole weeks. The\nclock time in the event timezone stays the same. Gives the rounds that moved.",
+        "tags": [
+          "competition"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostponeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "SessionAuth": []
+          }
+        ]
+      }
+    },
     "/api/seasons/{season_id}/round-order": {
       "put": {
         "operationId": "apps_competition_api_order_rounds",
@@ -11400,6 +11452,34 @@
         "title": "NameIn",
         "type": "object"
       },
+      "CalendarDot": {
+        "properties": {
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "track_name": {
+            "title": "Track Name",
+            "type": "string"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "round_id",
+          "number",
+          "track_name",
+          "state"
+        ],
+        "title": "CalendarDot",
+        "type": "object"
+      },
       "ChampionshipDetail": {
         "properties": {
           "id": {
@@ -11475,6 +11555,41 @@
         "title": "ChampionshipDetail",
         "type": "object"
       },
+      "LastRoundBrief": {
+        "properties": {
+          "round_id": {
+            "title": "Round Id",
+            "type": "integer"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "track_name": {
+            "title": "Track Name",
+            "type": "string"
+          },
+          "winner": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Winner"
+          }
+        },
+        "required": [
+          "round_id",
+          "number",
+          "track_name",
+          "winner"
+        ],
+        "title": "LastRoundBrief",
+        "type": "object"
+      },
       "LatestSeasonOut": {
         "properties": {
           "season_id": {
@@ -11513,6 +11628,53 @@
               }
             ],
             "title": "Leader"
+          },
+          "podium": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/StandingBrief"
+            },
+            "title": "Podium",
+            "type": "array"
+          },
+          "teams": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/StandingBrief"
+            },
+            "title": "Teams",
+            "type": "array"
+          },
+          "drivers": {
+            "default": 0,
+            "title": "Drivers",
+            "type": "integer"
+          },
+          "cars": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Cars",
+            "type": "array"
+          },
+          "last_round": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LastRoundBrief"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "calendar": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/CalendarDot"
+            },
+            "title": "Calendar",
+            "type": "array"
           }
         },
         "required": [
@@ -11608,6 +11770,29 @@
           "voted_slots"
         ],
         "title": "SeasonSummary",
+        "type": "object"
+      },
+      "StandingBrief": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "team": {
+            "default": "",
+            "title": "Team",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "points"
+        ],
+        "title": "StandingBrief",
         "type": "object"
       },
       "MemberOut": {
@@ -12477,6 +12662,19 @@
           }
         },
         "title": "RoundPatchIn",
+        "type": "object"
+      },
+      "PostponeIn": {
+        "properties": {
+          "weeks": {
+            "default": 1,
+            "maximum": 8,
+            "minimum": 1,
+            "title": "Weeks",
+            "type": "integer"
+          }
+        },
+        "title": "PostponeIn",
         "type": "object"
       },
       "RoundOrderIn": {
@@ -23667,6 +23865,10 @@
             "title": "Number",
             "type": "integer"
           },
+          "team": {
+            "title": "Team",
+            "type": "string"
+          },
           "rank": {
             "title": "Rank",
             "type": "integer"
@@ -23824,6 +24026,7 @@
           "driver_id",
           "name",
           "number",
+          "team",
           "rank",
           "points",
           "wins",

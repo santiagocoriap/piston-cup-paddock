@@ -323,6 +323,7 @@ class SeasonDriver:
     finishes: int
     dnfs: int
     cells: list[RoundCell]
+    team: str = ""  # The team of the entry. Empty: no team.
     # A score from 0 to 100 inside the field for each part of the radar. See _radar.
     scores: dict[str, int | None] = field(default_factory=dict)
     # The mean values under the scores. None without enough data.
@@ -577,6 +578,7 @@ def _build_season(season: Season) -> SeasonAnalysis:
                 finishes=sum(1 for c in mine if c.status == "finished"),
                 dnfs=sum(1 for c in mine if c.status == "dnf"),
                 cells=mine,
+                team=entry.team.strip(),
             )
         )
     _radar(drivers)

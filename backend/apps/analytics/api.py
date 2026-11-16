@@ -150,6 +150,7 @@ class SeasonDriverOut(Schema):
     driver_id: int
     name: str
     number: int
+    team: str
     rank: int
     points: int
     wins: int

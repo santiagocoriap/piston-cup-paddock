@@ -142,7 +142,23 @@
     "rename": "Cambiar el nombre",
     "autoPublish": "Publicar solos los resultados del colector cuando no tienen problemas (quedan provisionales)",
     "openSlots": "Lugares libres en el servidor",
-    "openSlotsHelp": "Autos extra después de los pilotos de la liga, para cambiar de auto. \"Enviar al servidor\" usa este número."
+    "openSlotsHelp": "Autos extra después de los pilotos de la liga, para cambiar de auto. \"Enviar al servidor\" usa este número.",
+    "drivers_one": "{{count}} piloto",
+    "drivers_other": "{{count}} pilotos",
+    "finished": "Terminada",
+    "calendar": "Calendario de la temporada",
+    "dot": {
+      "done": "corrida",
+      "cancelled": "cancelada",
+      "planned": "por correr"
+    },
+    "drivers_title": "Pilotos",
+    "teams_title": "Equipos",
+    "points_one": "{{count}} pt",
+    "points_other": "{{count}} pts",
+    "noPoints": "Todavía no hay puntos.",
+    "lastRound": "Última fecha",
+    "winner": "Ganó {{name}}"
   },
   "season": {
     "plannedRounds": "{{count}} carreras previstas",
@@ -413,7 +429,7 @@
     "round_started": "La fecha ya empezó.",
     "round_already_cancelled": "La fecha ya está cancelada.",
     "round_not_cancelled": "La fecha no está cancelada.",
-    "round_has_result": "La fecha ya tiene resultado: no se puede cambiar la pista.",
+    "round_has_result": "La fecha ya tiene resultado.",
     "same_track": "Es la misma pista.",
     "track_excluded": "Esa pista está excluida de esta votación.",
     "grid_too_small": "La pista tiene menos boxes que pilotos inscriptos.",
@@ -452,7 +468,8 @@
     "class_not_found": "No se encontró la clase.",
     "subclass_in_class_rounds": "En dos rondas, la primera ronda tiene solo clases principales.",
     "not_a_candidate": "Esa persona ya vota, o no es del campeonato.",
-    "voter_already_voted": "Esa persona ya votó: sus votos no cambian."
+    "voter_already_voted": "Esa persona ya votó: sus votos no cambian.",
+    "round_has_no_date": "La fecha no tiene día y hora."
   },
   "standings": {
     "title": "Campeonato de pilotos",
@@ -651,7 +668,8 @@
       "driver.steam_id_removed": "{{actor}} quitó una cuenta de Steam de {{driver}}.",
       "telemetry.lap_accepted": "{{actor}} contó la vuelta {{lap}} de {{driver}}.",
       "telemetry.lap_deleted": "{{actor}} borró una vuelta de {{driver}}.",
-      "restart.detected": "{{actor}} detectó {{count}} reinicios en la fecha {{number}} ({{track}}) con las largadas del colector."
+      "restart.detected": "{{actor}} detectó {{count}} reinicios en la fecha {{number}} ({{track}}) con las largadas del colector.",
+      "round.postponed": "{{actor}} pasó la fecha {{number}} de {{season}} {{weeks}} semana(s) más tarde, con {{count}} fechas."
     },
     "fields": {
       "role": "Rol",
@@ -2040,7 +2058,9 @@
       "sol_41_light_thunderstorm": "Tormenta leve",
       "sol_42_thunderstorm": "Tormenta"
     },
-    "weatherKeep": "Sin cambio (el clima del preset)"
+    "weatherKeep": "Sin cambio (el clima del preset)",
+    "postpone": "Pasar a la semana siguiente",
+    "postponeConfirm": "¿Pasar la fecha {{number}} una semana más tarde? Todas las fechas siguientes sin resultado también se mueven una semana. La hora queda igual."
   },
   "protestExtras": {
     "addEvidence": "Agregar prueba",
@@ -2801,7 +2821,8 @@
       "reliability": "Fiabilidad",
       "lab": "Fuerzas, neumáticos y línea",
       "advanced": "Métricas avanzadas",
-      "handicap": "Efecto del lastre y restrictor"
+      "handicap": "Efecto del lastre y restrictor",
+      "teams": "Equipos"
     },
     "status": {
       "finished": "Terminó",
@@ -3260,6 +3281,35 @@
         "lap": "Vuelta típica",
         "per10kg": "Cada 10 kg",
         "per1pct": "Cada 1 % de restrictor"
+      }
+    },
+    "teams": {
+      "none": "Ningún piloto tiene equipo en esta temporada.",
+      "noPairs": "Ningún equipo tiene dos pilotos.",
+      "standings": {
+        "title": "Campeonato de equipos",
+        "help": "Los puntos de los pilotos de cada equipo, sumados. Cada color es un piloto."
+      },
+      "points": {
+        "title": "Puntos acumulados por equipo",
+        "help": "Los puntos del equipo después de cada fecha."
+      },
+      "pace": {
+        "title": "Ritmo del equipo",
+        "help": "El promedio del ritmo de los pilotos del equipo en cada fecha: la mediana de vueltas limpias contra la mejor mediana. Más bajo es más rápido."
+      },
+      "share": {
+        "title": "Aporte de cada piloto",
+        "help": "La parte de los puntos del equipo que hizo cada piloto."
+      },
+      "duels": {
+        "title": "Duelo de compañeros",
+        "help": "El piloto con más puntos de cada equipo contra cada compañero: carreras terminadas adelante, largadas adelante, y puntos.",
+        "team": "Equipo",
+        "drivers": "Pilotos",
+        "race": "Carrera",
+        "grid": "Largada",
+        "points": "Puntos"
       }
     }
   }
