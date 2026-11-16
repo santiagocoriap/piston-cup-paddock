@@ -34,6 +34,16 @@ export function RoundTools({ round, onChange }: { round: RoundOut; onChange: () 
     else onChange()
   }
 
+  async function postpone() {
+    if (!window.confirm(t('roundTools.postponeConfirm', { number: round.number }))) return
+    const { error } = await api.POST('/api/rounds/{round_id}/postpone', {
+      params: { path: { round_id: round.id } },
+      body: { weeks: 1 },
+    })
+    if (error) setError(errorMessage(t, error))
+    else onChange()
+  }
+
   return (
     <span className="round-tools">
       <DangerMenu
@@ -44,6 +54,7 @@ export function RoundTools({ round, onChange }: { round: RoundOut; onChange: () 
           { label: t('roundTools.settings'), onSelect: () => setSettings(true) },
           { label: t(round.cancelled ? 'roundTools.restore' : 'roundTools.cancel'), onSelect: cancelOrRestore },
           { label: t('roundTools.replace'), onSelect: () => setOpen(true) },
+          ...(round.scheduled_at && !round.cancelled ? [{ label: t('roundTools.postpone'), onSelect: postpone }] : []),
           {
             label: t('draw.button'),
             onSelect: async () => {

@@ -13,6 +13,18 @@ const progress = {
   total: 8,
   leader: 'Bing',
   next_round: { round_id: 9, number: 4, track_name: 'Monza', layout_name: 'GP', scheduled_at: '2026-10-20T00:00:00Z' },
+  podium: [
+    { name: 'Bing', points: 61, team: 'Rojo' },
+    { name: 'Vice', points: 40, team: '' },
+  ],
+  teams: [{ name: 'Rojo', points: 90, team: '' }],
+  drivers: 9,
+  cars: ['Mazda MX5 Cup'],
+  last_round: { round_id: 8, number: 3, track_name: 'Imola', winner: 'Vice' },
+  calendar: [
+    { round_id: 8, number: 3, track_name: 'Imola', state: 'done' },
+    { round_id: 9, number: 4, track_name: 'Monza', state: 'planned' },
+  ],
 }
 
 function championship(canManage: boolean) {
@@ -47,7 +59,11 @@ describe('ChampionshipPage', () => {
     expect(bar).toHaveAttribute('aria-valuenow', '3')
     const card = bar.closest('li')!
     expect(within(card).getByText('Bing')).toBeInTheDocument()
+    expect(within(card).getByText('61 pts')).toBeInTheDocument()
+    expect(within(card).getByText('Ganó Vice')).toBeInTheDocument()
+    expect(within(card).getByText(/9 pilotos · Mazda MX5 Cup/)).toBeInTheDocument()
     expect(within(card).getByRole('link', { name: 'Fecha 4 · Monza' })).toHaveAttribute('href', '/rounds/9')
+    expect(within(card).getByRole('link', { name: 'Fecha 4 · Monza · por correr' })).toHaveClass('next')
     expect(screen.queryByText(/Protestas: 60 minutos/)).not.toBeInTheDocument()
     expect(screen.queryByRole('tablist')).not.toBeInTheDocument()
   })

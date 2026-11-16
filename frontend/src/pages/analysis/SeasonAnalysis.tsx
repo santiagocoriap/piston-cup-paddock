@@ -4,6 +4,7 @@ import { api } from '../../api/client'
 import type { components } from '../../api/schema'
 import { useLoad } from '../../lib/useLoad'
 import { HandicapEffect } from './HandicapEffect'
+import { TeamAnalysis } from './TeamAnalysis'
 import { BarChart, BoxChart, ChartCard, ChartGroup, DriverFilter, driverColor, HeatMap, LineChart, NetworkChart, ScatterChart, StackChart, type BoxRow, type LineSeries } from './charts'
 
 export type Season = components['schemas']['SeasonAnalysisOut']
@@ -87,6 +88,7 @@ export function SeasonAnalysis({ seasonId }: { seasonId: number }) {
         <FieldSpread season={season} few={few} />
         <CircuitTypeChart season={season} drivers={drivers} />
       </ChartGroup>
+      <TeamAnalysis season={season} drivers={drivers} />
       <ChartGroup title={t('analysis.groups.records')}>
         <HonoursChart drivers={drivers} />
         <FinishFrequency drivers={drivers} />

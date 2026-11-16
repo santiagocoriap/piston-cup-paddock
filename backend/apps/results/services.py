@@ -748,3 +748,34 @@ def decide_appeal(protest: Protest, user, *, outcome: str, decision: str) -> Pro
         f"/rounds/{round_.id}",
     )
     return protest
+
+
+@dataclass
+class TeamStanding:
+    rank: int
+    team: str
+    points: int
+    wins: int
+    drivers: list[str]
+
+
+def team_standings(season: Season) -> list[TeamStanding]:
+    """The teams of a season: the points and wins of their drivers together. A driver with no
+    team is not in a team. Equal points: more wins first, then the name."""
+    names = {
+        e.id: (e.team.strip(), e.driver.display_name)
+        for e in season.entries.select_related("driver")
+    }
+    teams: dict[str, TeamStanding] = {}
+    for row in season_standings(season):
+        team, driver = names.get(row.entry_id, ("", ""))
+        if not team:
+            continue
+        item = teams.setdefault(team, TeamStanding(0, team, 0, 0, []))
+        item.points += row.points
+        item.wins += row.wins
+        item.drivers.append(driver)
+    ordered = sorted(teams.values(), key=lambda t: (-t.points, -t.wins, t.team.lower()))
+    for rank, item in enumerate(ordered, start=1):
+        item.rank = rank
+    return ordered

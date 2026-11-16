@@ -1005,6 +1005,27 @@ export interface paths {
         patch: operations["apps_competition_api_update_round"];
         trace?: never;
     };
+    "/api/rounds/{round_id}/postpone": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Postpone Round
+         * @description Move a round and every later round of the season with no result by whole weeks. The
+         *     clock time in the event timezone stays the same. Gives the rounds that moved.
+         */
+        post: operations["apps_competition_api_postpone_round"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/seasons/{season_id}/round-order": {
         parameters: {
             query?: never;
@@ -4131,6 +4152,17 @@ export interface components {
             /** Name */
             name: string;
         };
+        /** CalendarDot */
+        CalendarDot: {
+            /** Round Id */
+            round_id: number;
+            /** Number */
+            number: number;
+            /** Track Name */
+            track_name: string;
+            /** State */
+            state: string;
+        };
         /** ChampionshipDetail */
         ChampionshipDetail: {
             /** Id */
@@ -4155,6 +4187,17 @@ export interface components {
             /** Progress */
             progress: components["schemas"]["LatestSeasonOut"][];
         };
+        /** LastRoundBrief */
+        LastRoundBrief: {
+            /** Round Id */
+            round_id: number;
+            /** Number */
+            number: number;
+            /** Track Name */
+            track_name: string;
+            /** Winner */
+            winner: string | null;
+        };
         /** LatestSeasonOut */
         LatestSeasonOut: {
             /** Season Id */
@@ -4168,6 +4211,32 @@ export interface components {
             next_round: components["schemas"]["NextRoundBrief"] | null;
             /** Leader */
             leader: string | null;
+            /**
+             * Podium
+             * @default []
+             */
+            podium?: components["schemas"]["StandingBrief"][];
+            /**
+             * Teams
+             * @default []
+             */
+            teams?: components["schemas"]["StandingBrief"][];
+            /**
+             * Drivers
+             * @default 0
+             */
+            drivers?: number;
+            /**
+             * Cars
+             * @default []
+             */
+            cars?: string[];
+            last_round?: components["schemas"]["LastRoundBrief"] | null;
+            /**
+             * Calendar
+             * @default []
+             */
+            calendar?: components["schemas"]["CalendarDot"][];
         };
         /** NextRoundBrief */
         NextRoundBrief: {
@@ -4198,6 +4267,18 @@ export interface components {
             free_join: boolean;
             /** Voted Slots */
             voted_slots: number;
+        };
+        /** StandingBrief */
+        StandingBrief: {
+            /** Name */
+            name: string;
+            /** Points */
+            points: number;
+            /**
+             * Team
+             * @default
+             */
+            team?: string;
         };
         /** MemberOut */
         MemberOut: {
@@ -4487,6 +4568,14 @@ export interface components {
             /** Scheduled At */
             scheduled_at?: string | null;
             announced_conditions?: components["schemas"]["ConditionsIn"] | null;
+        };
+        /** PostponeIn */
+        PostponeIn: {
+            /**
+             * Weeks
+             * @default 1
+             */
+            weeks?: number;
         };
         /** RoundOrderIn */
         RoundOrderIn: {
@@ -7968,6 +8057,8 @@ export interface components {
             name: string;
             /** Number */
             number: number;
+            /** Team */
+            team: string;
             /** Rank */
             rank: number;
             /** Points */
@@ -10242,6 +10333,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoundOut"];
+                };
+            };
+        };
+    };
+    apps_competition_api_postpone_round: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                round_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PostponeIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoundOut"][];
                 };
             };
         };
