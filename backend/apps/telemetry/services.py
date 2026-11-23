@@ -70,3 +70,75 @@ def channels_for(lap: TelemetryLap, level: str) -> dict:
     if level == Access.FULL:
         return channels
     return {name: values for name, values in channels.items() if name in PUBLIC_CHANNELS}
+
+
+# A lap of the script and a lap of the result file with this lap time are the same lap.
+OFFICIAL_LAP_MS = 1
+
+
+def official_numbers(round_) -> dict[int, tuple[int, bool]]:
+    """For each script lap of the round: the lap number and the validity from the applied
+    result file of its session. The file is the truth: a lost server lap in the collector
+    data shifts the count of the server laps, not the file.
+
+    The file has the laps of the final start only. So a lap of an earlier start, or a lap
+    with no lap of the same time in the file, keeps its own number."""
+    from apps.imports.models import ImportedLap, ResultImport
+
+    found: dict[int, tuple[int, bool]] = {}
+    laps = list(round_.telemetry_laps.select_related("driver"))
+    for session_type in {lap.session_type for lap in laps}:
+        applied = (
+            ResultImport.objects.filter(
+                round=round_, session__kind=session_type, status=ResultImport.State.APPLIED
+            )
+            .order_by("-applied_at")
+            .first()
+        )
+        if applied is None:
+            continue
+        by_guid: dict[str, list] = {}
+        for row in ImportedLap.objects.filter(result_import=applied):
+            by_guid.setdefault(row.guid, []).append(row)
+        last_attempt = last_start(laps).get(session_type, 0)
+        for lap in laps:
+            if lap.session_type != session_type or (lap.attempt_number or 0) != last_attempt:
+                continue
+            same = [
+                row
+                for guid in lap.driver.guids()
+                for row in by_guid.get(guid, [])
+                if abs(row.lap_time_ms - lap.lap_time_ms) <= OFFICIAL_LAP_MS
+            ]
+            if len(same) == 1:
+                found[lap.id] = (same[0].lap_number, same[0].cuts == 0)
+    return found
+
+
+def last_start(laps) -> dict[str, int]:
+    """For each session type: the number of the last start. A race restart makes a new start,
+    and only the laps of the last start count. A session with no start numbers gives 0."""
+    found: dict[str, int] = {}
+    for lap in laps:
+        found[lap.session_type] = max(found.get(lap.session_type, 0), lap.attempt_number or 0)
+    return found
+
+
+def final_laps(round_, session: str) -> list[TelemetryLap]:
+    """The script laps of the session that count: only the laps of the last start. Each lap
+    gets the lap number and the validity of the result file when the file has the lap."""
+    laps = [
+        lap
+        for lap in round_.telemetry_laps.select_related("driver", "round__season__championship")
+        if lap.session_type == session
+    ]
+    last = last_start(laps).get(session, 0)
+    official = official_numbers(round_)
+    kept = []
+    for lap in laps:
+        if (lap.attempt_number or 0) != last:
+            continue
+        if lap.id in official:
+            lap.lap_number, lap.valid = official[lap.id]
+        kept.append(lap)
+    return kept

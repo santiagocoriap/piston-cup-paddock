@@ -47,13 +47,21 @@ export function TelemetrySection({ roundId }: { roundId: number }) {
   return <Workbench laps={laps.data} map={map.data ?? null} />
 }
 
+/** The laps of the last start only. A race restart makes a new start, and the laps of an
+ * earlier start do not count. */
+function lastStartLaps(laps: LapRow[]): LapRow[] {
+  const last = Math.max(0, ...laps.map((lap) => lap.attempt_number ?? 0))
+  return laps.filter((lap) => (lap.attempt_number ?? 0) === last)
+}
+
 function bestOf(laps: LapRow[]): LapRow | undefined {
   return [...laps].sort((a, b) => Number(b.valid) - Number(a.valid) || a.lap_time_ms - b.lap_time_ms)[0]
 }
 
 /** The laps that the tool shows first: the best lap of each driver, or the 2 best laps of a
  * single driver. */
-function firstPick(laps: LapRow[]): number[] {
+function firstPick(session: LapRow[]): number[] {
+  const laps = lastStartLaps(session)
   const drivers = [...new Set(laps.map((lap) => lap.driver_name))]
   if (drivers.length === 1) {
     return [...laps]
@@ -203,11 +211,16 @@ function Workbench({
     const min = Math.min(Math.max(fullView[0], middle - size / 2), fullView[1] - size)
     setView([min, min + size])
   }
+  // A lap of a start before a restart keeps its start number, so two "V1" laps differ.
+  const lastStart = Math.max(0, ...inSession.map((lap) => lap.attempt_number ?? 0))
+  const earlier = (lap: LapRow) => lap.attempt_number !== null && lap.attempt_number !== undefined && lap.attempt_number < lastStart
   const byDriver = [...new Set(inSession.map((lap) => lap.driver_name))].map((name) => ({
     name,
-    laps: inSession.filter((lap) => lap.driver_name === name).sort((a, b) => a.lap_number - b.lap_number),
+    laps: inSession
+      .filter((lap) => lap.driver_name === name)
+      .sort((a, b) => (a.attempt_number ?? 0) - (b.attempt_number ?? 0) || a.lap_number - b.lap_number),
   }))
-  const sessionBest = bestOf(inSession)
+  const sessionBest = bestOf(lastStartLaps(inSession))
 
   return (
     <section className="tm" aria-label={t('telemetry.roundTitle')}>
@@ -235,7 +248,13 @@ function Workbench({
                   <span key={lap.id} className={on ? 'tm-lap on' : 'tm-lap'} style={on ? { borderColor: colorOf(lap.id) } : undefined}>
                     <button type="button" aria-pressed={on} onClick={() => toggle(lap.id)} disabled={!on && picked.length >= MAX_LAPS}>
                       {on && <i style={{ background: colorOf(lap.id) }} aria-hidden="true" />}
-                      {t('telemetryTool.lapShort', { number: lap.lap_number })}
+                      {earlier(lap) ? (
+                        <span title={t('telemetryTool.earlierStart', { number: lap.attempt_number })}>
+                          {t('telemetryTool.startLapShort', { start: lap.attempt_number, number: lap.lap_number })}
+                        </span>
+                      ) : (
+                        t('telemetryTool.lapShort', { number: lap.lap_number })
+                      )}
                       <span className={lap.valid ? 'tm-time' : 'tm-time invalid'}>{formatLapTime(lap.lap_time_ms)}</span>
                       {lap.id === sessionBest?.id && <Icon name="trophy" small />}
                     </button>

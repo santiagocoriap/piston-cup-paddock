@@ -2675,7 +2675,9 @@
     "mapHelp": "En rojo: el tramo del gráfico. Pasá el mouse por la pista para mover el cursor. Clic: zoom a esa curva.",
     "mapHelpCompare": "Cada tramo tiene el color de la vuelta más rápida ahí. El tramo del gráfico va resaltado. Clic: zoom a esa curva.",
     "resizeLane": "Arrastrá este borde para cambiar la altura. Doble clic: altura normal.",
-    "overview": "Vuelta entera (velocidad). El recuadro rojo es la parte que ves: arrastralo para moverte."
+    "overview": "Vuelta entera (velocidad). El recuadro rojo es la parte que ves: arrastralo para moverte.",
+    "startLapShort": "L{{start}} V{{number}}",
+    "earlierStart": "Largada {{number}}: una largada antes de un reinicio"
   },
   "carDetail": {
     "source": {

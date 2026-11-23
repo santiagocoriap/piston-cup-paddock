@@ -283,7 +283,7 @@ def test_another_driver_cannot_send_a_lap_in_my_name(key, code, round_, driver):
         connected(),
         race_started(),
         server_lap(lap_ms=120_000),
-        ("lap_completed", at(3), {"car_id": 1}),
+        ("lap_completed", at(11), {"car_id": 1}),
     )
     # 113.689 s, but the server saw 120.000 s.
     assert lap(code).json()["issues"] == ["no_server_lap"]
@@ -336,7 +336,7 @@ def test_an_admin_counts_or_deletes_a_lap_with_issues(
     api, champ_admin, championship, key, code, round_, driver
 ):
     # The collector lost the server lap: the lap has no witness.
-    events(key, connected(), race_started(), ("lap_completed", at(3), {"car_id": 1}))
+    events(key, connected(), race_started(), ("lap_completed", at(11), {"car_id": 1}))
     lap(code)
     lap(code, number=3, ended_at=1_800_000_100)
     admin = api(champ_admin)
@@ -554,7 +554,7 @@ def test_a_lap_with_no_server_lap_tells_the_nearest_one(
         connected(),
         race_started(),
         server_lap(-4, lap_ms=120_000),
-        ("lap_completed", at(3), {"car_id": 1}),
+        ("lap_completed", at(11), {"car_id": 1}),
     )
     assert lap(code).json()["issues"] == ["no_server_lap"]
     row = api(champ_admin).get(f"/championships/{championship.id}/telemetry/flagged").json()[0]
@@ -605,3 +605,26 @@ def test_one_driver_alone_does_not_move_the_collector_clock(key, code, round_, d
     recheck_all(round_.season.championship)
     # Only the laps that are within 10 minutes of the server lap count.
     assert TelemetryLap.objects.filter(match="league").count() == 0
+
+
+def test_a_lap_waits_for_a_server_lap_that_comes_after_other_events(key, code, round_, driver):
+    """In a race, the events of the other cars come before the server lap of this car."""
+    first = [connected(), race_started(), ("lap_completed", at(1), {"car_id": 1})]
+    events(key, *first)
+    assert lap(code).json()["state"] == "pending"
+    events(key, *first, server_lap(2))  # The same batch again, with the server lap after it.
+    assert TelemetryLap.objects.get().match == "league"
+
+
+def test_two_laps_with_almost_the_same_time_both_count(key, code, round_, driver):
+    events(
+        key,
+        connected(),
+        race_started(),
+        server_lap(0, lap_ms=117_064),
+        server_lap(2, lap_ms=117_085),
+        ("lap_completed", at(12), {"car_id": 1}),
+    )
+    assert lap(code, number=4, lap_time_ms=117_064).json()["state"] == "league"
+    second = lap(code, number=5, lap_time_ms=117_085, ended_at=1_800_000_120).json()
+    assert second["state"] == "league"

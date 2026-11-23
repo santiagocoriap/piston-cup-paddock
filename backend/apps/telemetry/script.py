@@ -366,6 +366,7 @@ def match(lap: TelemetryLap, line: Timeline | None = None) -> str:
     line = line or timeline(lap.championship, lap.recorded_at)
     guids = set(lap.driver.guids())
     reached = 0  # The index in MATCH_ISSUES of the check that failed.
+    wait_offset = timedelta(0)  # The clock offset of the run with the session, for the wait.
     for span in line.spans:
         if not _inside(span.started_at, span.ended_at, lap.recorded_at):
             continue
@@ -403,20 +404,8 @@ def match(lap: TelemetryLap, line: Timeline | None = None) -> str:
         )
         if not witnessed:
             reached = max(reached, 4)
+            wait_offset = offset
             continue
-        already = (
-            TelemetryLap.objects.filter(
-                driver=lap.driver,
-                match=TelemetryLap.Match.LEAGUE,
-                server_session_at=span.started_at,
-                lap_time_ms__gte=lap.lap_time_ms - LAP_TIME_TOLERANCE_MS,
-                lap_time_ms__lte=lap.lap_time_ms + LAP_TIME_TOLERANCE_MS,
-            )
-            .exclude(pk=lap.pk)
-            .exists()
-        )
-        if already:
-            return _flag(lap, ["duplicate"])  # A second upload of the same server lap.
         # The server is the truth for the lap number and the cuts. The values that CSP gives
         # to the script can be wrong, for example after a lap with a track cut.
         server_lap = witnessed[0]
@@ -427,6 +416,20 @@ def match(lap: TelemetryLap, line: Timeline | None = None) -> str:
             == (server_lap.token_id, server_lap.run_id, server_lap.guid)
             and span.started_at <= other.at <= server_lap.at
         ]
+        # A second upload of the same server lap: the same session and lap number. Two laps
+        # with almost the same time are two laps, not a second upload.
+        already = (
+            TelemetryLap.objects.filter(
+                driver=lap.driver,
+                match=TelemetryLap.Match.LEAGUE,
+                server_session_at=span.started_at,
+                lap_number=len(session_laps),
+            )
+            .exclude(pk=lap.pk)
+            .exists()
+        )
+        if already:
+            return _flag(lap, ["duplicate"])
         lap.lap_number = len(session_laps)
         lap.valid = server_lap.cuts == 0
         lap.cuts = server_lap.cuts
@@ -449,7 +452,16 @@ def match(lap: TelemetryLap, line: Timeline | None = None) -> str:
             ]
         )
         return "league"
-    waiting = line.latest_event_at is None or line.latest_event_at < lap.recorded_at + TOLERANCE
+    if MATCH_ISSUES[reached] == "no_server_lap":
+        # The server lap can come later than the lap of the script: the events of the other
+        # cars come first, or the collector clock is behind. So the lap waits until the server
+        # data is MATCH_WINDOW past the lap.
+        waiting = (
+            line.latest_event_at is None
+            or line.latest_event_at - wait_offset < lap.recorded_at + MATCH_WINDOW
+        )
+    else:
+        waiting = line.latest_event_at is None or line.latest_event_at < lap.recorded_at + TOLERANCE
     if waiting and lap.recorded_at > timezone.now() - PENDING_LIMIT:
         return "pending"
     hint = _nearest(line, guids, lap) if MATCH_ISSUES[reached] == "no_server_lap" else None
@@ -460,10 +472,19 @@ def rematch(championship: Championship) -> int:
     """Match again the waiting laps of a championship, for example after new server events.
     Gives the count of laps that now count."""
     count = 0
-    for lap in TelemetryLap.objects.filter(
-        championship=championship, match=TelemetryLap.Match.PENDING
-    ).select_related("driver", "championship"):
-        if match(lap) == "league":
+    # Laps now wait up to MATCH_WINDOW, so a race can have many. Laps of the same hour share
+    # one read of the events (the timeline covers WINDOW on each side).
+    line: Timeline | None = None
+    around = None
+    for lap in (
+        TelemetryLap.objects.filter(championship=championship, match=TelemetryLap.Match.PENDING)
+        .select_related("driver", "championship")
+        .order_by("recorded_at")
+    ):
+        if line is None or abs(lap.recorded_at - around) > timedelta(hours=1):
+            around = lap.recorded_at
+            line = timeline(championship, around)
+        if match(lap, line) == "league":
             count += 1
     return count
 
