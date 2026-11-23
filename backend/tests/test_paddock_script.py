@@ -628,3 +628,35 @@ def test_two_laps_with_almost_the_same_time_both_count(key, code, round_, driver
     assert lap(code, number=4, lap_time_ms=117_064).json()["state"] == "league"
     second = lap(code, number=5, lap_time_ms=117_085, ended_at=1_800_000_120).json()
     assert second["state"] == "league"
+
+
+def test_a_lap_with_no_server_lap_counts_from_the_result_file(key, code, round_, driver):
+    """The collector stops before the end of the race, so the last laps have no server lap.
+    The applied result file has the lap with the same time: the lap counts, with its number."""
+    from apps.competition.models import Session
+    from apps.imports.models import ImportedLap, ResultImport
+
+    session = Session.objects.create(round=round_, kind="race")
+    applied = ResultImport.objects.create(
+        round=round_,
+        session=session,
+        session_type="race",
+        filename="race.json",
+        sha256="x",
+        status=ResultImport.State.APPLIED,
+        applied_at=timezone.now(),
+    )
+    for number, ms in ((14, 117_431), (15, 115_976)):
+        ImportedLap.objects.create(
+            result_import=applied, guid=GUID, lap_number=number, lap_time_ms=ms
+        )
+    # Old events: the lap does not wait for more server data.
+    events(key, connected(-60), race_started(-59), ("lap_completed", at(30), {"car_id": 1}))
+    assert lap(code, number=13, lap_time_ms=115_976).json()["state"] == "league"
+    found = TelemetryLap.objects.get()
+    assert (found.lap_number, found.session_type, found.valid) == (15, "race", True)
+    # A lap time that is not in the file still waits for its server lap.
+    assert lap(code, number=14, lap_time_ms=120_000, ended_at=1_800_000_130).json()["state"] in (
+        "pending",
+        "rejected",
+    )
