@@ -15,7 +15,7 @@ from apps.reports import services as reports
 
 from .engineer import Analysis, analyze, to_lap
 from .models import EngineerNote, TelemetryLap
-from .services import access, channels_for
+from .services import access, channels_for, final_laps
 
 logger = logging.getLogger(__name__)
 
@@ -84,9 +84,8 @@ def pick(
     reference: "own", a lap ID, or by default the fastest valid lap of another driver when it is
     faster, else the best corners of the driver."""
     invalid = invalid_laps(round_, session)
-    rows = round_.telemetry_laps.filter(session_type=session, valid=True).select_related(
-        "driver", "round__season__championship"
-    )
+    # Only the laps of the last start, with the lap numbers of the result file.
+    rows = [lap for lap in final_laps(round_, session) if lap.valid]
     visible = [
         lap
         for lap in rows

@@ -14,7 +14,7 @@ from apps.identity.models import DriverProfile
 
 from . import coach, script
 from .models import EngineerNote, TelemetryLap
-from .services import TelemetryError, access, channels_for, sharing_for
+from .services import TelemetryError, access, channels_for, official_numbers, sharing_for
 from .track_map import track_map
 
 router = Router(tags=["telemetry"])
@@ -116,11 +116,15 @@ def round_telemetry(request, round_id: int):
     round_ = get_object_or_404(Round.objects.select_related("season__championship"), pk=round_id)
     if not can_view(request.user, round_.season.championship):
         raise Http404
+    official = official_numbers(round_)
     rows = []
     for lap in round_.telemetry_laps.select_related("driver", "round__season__championship"):
         level = access(request.user, lap)
         if level:
-            rows.append(LapOut(**_lap_out(lap, level)))
+            row = _lap_out(lap, level)
+            if lap.id in official:
+                row["lap_number"], row["valid"] = official[lap.id]
+            rows.append(LapOut(**row))
     return rows
 
 
@@ -132,8 +136,13 @@ def lap_detail(request, lap_id: int):
     level = access(request.user, lap)
     if not level:
         raise Http404
+    row = _lap_out(lap, level)
+    if lap.round_id:
+        official = official_numbers(lap.round)
+        if lap.id in official:
+            row["lap_number"], row["valid"] = official[lap.id]
     return LapDetailOut(
-        **_lap_out(lap, level),
+        **row,
         sample_hz=lap.sample_hz,
         car=lap.car,
         channels=channels_for(lap, level),

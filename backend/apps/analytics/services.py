@@ -15,7 +15,7 @@ from apps.imports.lap_analysis import _exclusion
 from apps.imports.lap_services import RoundLaps, round_laps
 from apps.results.models import RaceResult
 from apps.results.services import current_lines, season_standings
-from apps.telemetry.services import access
+from apps.telemetry.services import access, final_laps
 
 from . import metrics
 from .racecraft import round_racecraft
@@ -182,9 +182,8 @@ def add_telemetry(analysis: RoundAnalysis, round_: Round, viewer) -> None:
     """The fuel, pit time, and tyre wear of each lap. Each driver chooses who sees the telemetry,
     so a lap of another driver gets these values only with full access."""
     drivers = {d.driver_id: d for d in analysis.drivers}
-    laps = round_.telemetry_laps.filter(session_type=analysis.session).select_related(
-        "driver", "round__season__championship"
-    )
+    # Only the laps of the last start, with the lap numbers of the result file.
+    laps = final_laps(round_, analysis.session)
     levels: dict[int, str | None] = {}
     for lap in laps:
         driver = drivers.get(lap.driver_id)

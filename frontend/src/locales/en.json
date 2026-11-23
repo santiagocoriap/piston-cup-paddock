@@ -2675,7 +2675,9 @@
     "mapHelp": "In red: the part on the chart. Move the mouse on the track to move the cursor. Click: zoom to that corner.",
     "mapHelpCompare": "Each part has the color of the fastest lap there. The part on the chart is bright. Click: zoom to that corner.",
     "resizeLane": "Drag this edge to change the height. Double click: normal height.",
-    "overview": "Full lap (speed). The red box is the part on screen: drag it to move."
+    "overview": "Full lap (speed). The red box is the part on screen: drag it to move.",
+    "startLapShort": "S{{start}} L{{number}}",
+    "earlierStart": "Start {{number}}: a start before a restart"
   },
   "carDetail": {
     "source": {

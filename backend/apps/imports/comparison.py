@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 
 from apps.competition.models import Round
 from apps.telemetry.models import TelemetryLap
-from apps.telemetry.services import access, channels_for
+from apps.telemetry.services import access, channels_for, last_start
 
 from .delta import delta, speed_at
 from .lap_services import _applied_import
@@ -56,10 +56,14 @@ def _telemetry(viewer, round_: Round, lap: ImportedLap) -> tuple[str, dict | Non
     found = TelemetryLap.objects.filter(
         round=round_,
         driver=lap.entry.driver,
+        session_type__in=[lap.result_import.session.kind, ""],  # "": an uploaded lap.
         lap_time_ms__gte=lap.lap_time_ms - TELEMETRY_MATCH_MS,
         lap_time_ms__lte=lap.lap_time_ms + TELEMETRY_MATCH_MS,
     ).select_related("driver", "round__season__championship")
-    item = found.first()
+    # The result file has the laps of the last start only. So a lap of an earlier start with
+    # almost the same time is not this lap.
+    last = last_start(round_.telemetry_laps.filter(session_type=lap.result_import.session.kind))
+    item = next((t for t in found if (t.attempt_number or 0) == last.get(t.session_type, 0)), None)
     if item is None:
         return "none", None
     level = access(viewer, item)
