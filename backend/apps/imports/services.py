@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import logging
 from dataclasses import dataclass, field
 
 from django.core.files.base import ContentFile
@@ -19,6 +20,8 @@ from apps.rules.scoring import Line, ResultError, Status
 
 from .ac_results import ParsedSession, ResultFileError, is_steam_guid, parse
 from .models import ImportedLap, ResultImport
+
+logger = logging.getLogger(__name__)
 
 MAX_BYTES = 5 * 1024 * 1024
 
@@ -260,6 +263,7 @@ def apply(
         result_import.save(update_fields=["session", "attempt", "status", "applied_at"])
         if kind == Session.Kind.RACE and round_.season.championship.provisional_reports:
             transaction.on_commit(lambda: _provisional_report(round_, user))
+        transaction.on_commit(lambda: _match_waiting_laps(round_))
         record(
             user,
             "import.applied",
@@ -275,3 +279,13 @@ def apply(
             changes=[change("ignored", None, ", ".join(ignored) or None)],
         )
     return result_import
+
+
+def _match_waiting_laps(round_: Round) -> None:
+    """A waiting telemetry lap with no server lap can count from the new result file."""
+    from apps.telemetry.script import rematch
+
+    try:
+        rematch(round_.season.championship)
+    except Exception:  # The file is applied. A failed check must not hide that.
+        logger.exception("The telemetry laps of round %s were not checked again", round_.id)

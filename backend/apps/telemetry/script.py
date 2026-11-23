@@ -300,6 +300,78 @@ def _flag(lap: TelemetryLap, issues: list[str], hint: dict | None = None) -> str
     return "rejected"
 
 
+# A lap of the script and a lap of the result file with this lap time are the same lap.
+FILE_LAP_MS = 1
+
+
+def _file_lap(lap: TelemetryLap, guids: set[str], span: Span):
+    """The lap of the applied result file of the session with the same lap time, when exactly
+    one lap of the driver has it. The file has the laps of the final start only."""
+    from apps.imports.models import ImportedLap, ResultImport
+
+    round_ = _find_round(lap.championship, span.track, span.started_at)
+    if round_ is None:
+        return None
+    applied = (
+        ResultImport.objects.filter(
+            round=round_, session__kind=span.session_type, status=ResultImport.State.APPLIED
+        )
+        .order_by("-applied_at")
+        .first()
+    )
+    if applied is None:
+        return None
+    same = list(
+        ImportedLap.objects.filter(
+            result_import=applied,
+            guid__in=guids,
+            lap_time_ms__gte=lap.lap_time_ms - FILE_LAP_MS,
+            lap_time_ms__lte=lap.lap_time_ms + FILE_LAP_MS,
+        )
+    )
+    return same[0] if len(same) == 1 else None
+
+
+def _accept(lap: TelemetryLap, line: Timeline, span: Span, number: int, cuts: int) -> str:
+    """The lap counts for the league, in this session, with this lap number."""
+    # A second upload of the same lap: the same session and lap number. Two laps with almost
+    # the same time are two laps, not a second upload.
+    already = (
+        TelemetryLap.objects.filter(
+            driver=lap.driver,
+            match=TelemetryLap.Match.LEAGUE,
+            server_session_at=span.started_at,
+            lap_number=number,
+        )
+        .exclude(pk=lap.pk)
+        .exists()
+    )
+    if already:
+        return _flag(lap, ["duplicate"])
+    round_ = _find_round(lap.championship, span.track, span.started_at)
+    lap.lap_number = number
+    lap.valid = cuts == 0
+    lap.cuts = cuts
+    lap.round = round_
+    lap.session_type = span.session_type
+    lap.server_session_at = span.started_at
+    lap.attempt_number = _attempt_number(line, span, round_)
+    lap.match = TelemetryLap.Match.LEAGUE
+    lap.save(
+        update_fields=[
+            "lap_number",
+            "valid",
+            "cuts",
+            "round",
+            "session_type",
+            "server_session_at",
+            "attempt_number",
+            "match",
+        ]
+    )
+    return "league"
+
+
 def _nearest(line: Timeline, guids: set[str], lap: TelemetryLap) -> dict | None:
     """The server lap of the driver nearest to this lap, for the admin: the time between them in
     seconds, and the difference of the lap times in ms. First the laps with the same lap time."""
@@ -402,56 +474,25 @@ def match(lap: TelemetryLap, line: Timeline | None = None) -> str:
         witnessed.sort(
             key=lambda s: (abs(s.lap_ms - lap.lap_time_ms), abs(s.at - offset - lap.recorded_at))
         )
-        if not witnessed:
-            reached = max(reached, 4)
-            wait_offset = offset
-            continue
-        # The server is the truth for the lap number and the cuts. The values that CSP gives
-        # to the script can be wrong, for example after a lap with a track cut.
-        server_lap = witnessed[0]
-        session_laps = [
-            other
-            for other in line.laps
-            if (other.token_id, other.run_id, other.guid)
-            == (server_lap.token_id, server_lap.run_id, server_lap.guid)
-            and span.started_at <= other.at <= server_lap.at
-        ]
-        # A second upload of the same server lap: the same session and lap number. Two laps
-        # with almost the same time are two laps, not a second upload.
-        already = (
-            TelemetryLap.objects.filter(
-                driver=lap.driver,
-                match=TelemetryLap.Match.LEAGUE,
-                server_session_at=span.started_at,
-                lap_number=len(session_laps),
-            )
-            .exclude(pk=lap.pk)
-            .exists()
-        )
-        if already:
-            return _flag(lap, ["duplicate"])
-        lap.lap_number = len(session_laps)
-        lap.valid = server_lap.cuts == 0
-        lap.cuts = server_lap.cuts
-        round_ = _find_round(lap.championship, span.track, span.started_at)
-        lap.round = round_
-        lap.session_type = span.session_type
-        lap.server_session_at = span.started_at
-        lap.attempt_number = _attempt_number(line, span, round_)
-        lap.match = TelemetryLap.Match.LEAGUE
-        lap.save(
-            update_fields=[
-                "lap_number",
-                "valid",
-                "cuts",
-                "round",
-                "session_type",
-                "server_session_at",
-                "attempt_number",
-                "match",
+        if witnessed:
+            # The server is the truth for the lap number and the cuts. The values that CSP
+            # gives to the script can be wrong, for example after a lap with a track cut.
+            server_lap = witnessed[0]
+            session_laps = [
+                other
+                for other in line.laps
+                if (other.token_id, other.run_id, other.guid)
+                == (server_lap.token_id, server_lap.run_id, server_lap.guid)
+                and span.started_at <= other.at <= server_lap.at
             ]
-        )
-        return "league"
+            return _accept(lap, line, span, len(session_laps), server_lap.cuts)
+        # No server lap: the collector can stop or lose events before the end of the session.
+        # Then the result file gives the lap, when exactly one lap of the driver has this time.
+        found = _file_lap(lap, guids, span)
+        if found is not None:
+            return _accept(lap, line, span, found.lap_number, found.cuts)
+        reached = max(reached, 4)
+        wait_offset = offset
     if MATCH_ISSUES[reached] == "no_server_lap":
         # The server lap can come later than the lap of the script: the events of the other
         # cars come first, or the collector clock is behind. So the lap waits until the server
